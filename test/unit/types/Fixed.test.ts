@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { utils } from 'ethers'
 import { expect } from 'chai'
-import HRE, { waffle } from 'hardhat'
+import HRE from 'hardhat'
 
 import { MockFixed18, MockFixed18__factory } from '../../../types/generated'
 

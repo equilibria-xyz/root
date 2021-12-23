@@ -2,7 +2,13 @@
 
 Core library for DeFi.
 
-## Usage
+## Installation
+
+```
+npm install @equilibria/root
+```
+
+## Contributing
 
 ### Pre Requisites
 

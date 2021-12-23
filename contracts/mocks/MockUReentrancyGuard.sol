@@ -19,7 +19,7 @@ contract MockUReentrancyGuard is UReentrancyGuard {
         }
     }
 
-    function noReenter() nonReentrant public { emit NoOp(); }
-    function reenterRecursive() nonReentrant public { reenterRecursive(); }
-    function reenterDifferent() nonReentrant external { noReenter(); }
+    function noReenter() public nonReentrant { emit NoOp(); }
+    function reenterRecursive() public nonReentrant { reenterRecursive(); }
+    function reenterDifferent() external nonReentrant { noReenter(); }
 }

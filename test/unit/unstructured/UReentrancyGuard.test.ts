@@ -1,6 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
-import HRE, { waffle } from 'hardhat'
+import HRE from 'hardhat'
 
 import { MockUReentrancyGuard, MockUReentrancyGuard__factory } from '../../../types/generated'
 
@@ -8,7 +8,6 @@ const { ethers } = HRE
 
 describe('UOwnable', () => {
   let owner: SignerWithAddress
-  let user: SignerWithAddress
   let uReentrancyGuard: MockUReentrancyGuard
 
   beforeEach(async () => {
