@@ -1,5 +1,5 @@
 {
-  "name": "hh-template",
+  "name": "root",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,6 @@
     "compile": "hardhat compile",
     "gasReport": "REPORT_GAS=true yarn test",
     "test": "hardhat test ./test/unit/**/*",
-    "test-integration": "FORK_ENABLED=true hardhat test ./test/integration/*",
     "coverage": "hardhat coverage --testfiles './test/unit/**/*'",
     "lint": "eslint --fix --ext '.ts,.js' ./ && solhint 'contracts/**/*.sol' --fix",
     "format": "prettier -w .",
