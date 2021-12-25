@@ -38,6 +38,256 @@ describe('Token', () => {
     })
   })
 
+  describe('#approve', async () => {
+    it('approves tokens (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').div(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100'))
+    })
+
+    it('approves tokens (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100')).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100'))
+    })
+
+    it('approves tokens (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').mul(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100'))
+    })
+
+    it('approves tokens (ether)', async () => {
+      await expect(
+        token.connect(user)['approve(address,address,uint256)'](ETHER, recipient.address, utils.parseEther('100')),
+      ).to.be.revertedWith('TokenApproveEtherError()')
+    })
+
+    it('approves tokens (round down implicit) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').div(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100').add(1))
+    })
+
+    it('approves tokens (round down implicit) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100').add(1))
+    })
+
+    it('approves tokens (round down implicit) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').add(1).mul(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100').add(1))
+    })
+
+    it('approves tokens (round down implicit) (ether)', async () => {
+      await expect(
+        token
+          .connect(user)
+          ['approve(address,address,uint256)'](ETHER, recipient.address, utils.parseEther('100').add(1)),
+      ).to.be.revertedWith('TokenApproveEtherError()')
+    })
+
+    it('approves tokens (round down explicit) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').div(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256,bool)'](
+          erc20.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          false,
+        )
+    })
+
+    it('approves tokens (round down explicit) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256,bool)'](
+          erc20.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          false,
+        )
+    })
+
+    it('approves tokens (round down explicit) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').add(1).mul(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256,bool)'](
+          erc20.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          false,
+        )
+    })
+
+    it('approves tokens (round down explicit) (ether)', async () => {
+      await expect(
+        token
+          .connect(user)
+          ['approve(address,address,uint256,bool)'](ETHER, recipient.address, utils.parseEther('100').add(1), false),
+      ).to.be.revertedWith('TokenApproveEtherError()')
+    })
+
+    it('approves tokens (round up) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').div(1000000).add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256,bool)'](
+          erc20.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          true,
+        )
+    })
+
+    it('approves tokens (round up) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256,bool)'](
+          erc20.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          true,
+        )
+    })
+
+    it('approves tokens (round up) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').add(1).mul(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256,bool)'](
+          erc20.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          true,
+        )
+    })
+
+    it('approves tokens (round up) (ether)', async () => {
+      await expect(
+        token
+          .connect(user)
+          ['approve(address,address,uint256,bool)'](ETHER, recipient.address, utils.parseEther('100').add(1), true),
+      ).to.be.revertedWith('TokenApproveEtherError()')
+    })
+
+    it('approves tokens (round up when no decimal) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').div(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100'), true)
+    })
+
+    it('approves tokens (round up when no decimal) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100')).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100'), true)
+    })
+
+    it('approves tokens (round up when no decimal) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').mul(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['approve(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100'), true)
+    })
+
+    it('approves tokens (round up when no decimal) (ether)', async () => {
+      await expect(
+        token
+          .connect(user)
+          ['approve(address,address,uint256,bool)'](ETHER, recipient.address, utils.parseEther('100'), true),
+      ).to.be.revertedWith('TokenApproveEtherError()')
+    })
+
+    it('approves tokens all (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, ethers.constants.MaxUint256).returns(true)
+
+      await token.connect(user)['approve(address,address)'](erc20.address, recipient.address)
+    })
+
+    it('approves tokens all (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, ethers.constants.MaxUint256).returns(true)
+
+      await token.connect(user)['approve(address,address)'](erc20.address, recipient.address)
+    })
+
+    it('approves tokens all (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.allowance.withArgs(token.address, recipient.address).returns(0)
+      await erc20.mock.approve.withArgs(recipient.address, ethers.constants.MaxUint256).returns(true)
+
+      await token.connect(user)['approve(address,address)'](erc20.address, recipient.address)
+    })
+
+    it('approves tokens all (ether)', async () => {
+      await expect(token.connect(user)['approve(address,address)'](ETHER, recipient.address)).to.be.revertedWith(
+        'TokenApproveEtherError()',
+      )
+    })
+  })
+
   describe('#push', async () => {
     it('transfers tokens (12)', async () => {
       await erc20.mock.decimals.withArgs().returns(12)
@@ -70,6 +320,150 @@ describe('Token', () => {
       const recipientBefore = await recipient.getBalance()
       await user.sendTransaction({ to: token.address, value: ethers.utils.parseEther('100') })
       await token.connect(user)['push(address,address,uint256)'](ETHER, recipient.address, utils.parseEther('100'))
+      expect(await recipient.getBalance()).to.equal(recipientBefore.add(ethers.utils.parseEther('100')))
+    })
+
+    it('transfers tokens (round down implicit) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').div(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100').add(1))
+    })
+
+    it('transfers tokens (round down implicit) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100').add(1))
+    })
+
+    it('transfers tokens (round down implicit) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').add(1).mul(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100').add(1))
+    })
+
+    it('transfers tokens (round down implicit) (ether)', async () => {
+      const recipientBefore = await recipient.getBalance()
+      await user.sendTransaction({ to: token.address, value: ethers.utils.parseEther('100').add(1) })
+      await token
+        .connect(user)
+        ['push(address,address,uint256)'](ETHER, recipient.address, utils.parseEther('100').add(1))
+      expect(await recipient.getBalance()).to.equal(recipientBefore.add(ethers.utils.parseEther('100').add(1)))
+    })
+
+    it('transfers tokens (round down explicit) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').div(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100').add(1), false)
+    })
+
+    it('transfers tokens (round down explicit) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100').add(1), false)
+    })
+
+    it('transfers tokens (round down explicit) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').add(1).mul(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100').add(1), false)
+    })
+
+    it('transfers tokens (round down explicit) (ether)', async () => {
+      const recipientBefore = await recipient.getBalance()
+      await user.sendTransaction({ to: token.address, value: ethers.utils.parseEther('100').add(1) })
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](ETHER, recipient.address, utils.parseEther('100').add(1), false)
+      expect(await recipient.getBalance()).to.equal(recipientBefore.add(ethers.utils.parseEther('100').add(1)))
+    })
+
+    it('transfers tokens (round up) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').div(1000000).add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100').add(1), true)
+    })
+
+    it('transfers tokens (round up) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100').add(1), true)
+    })
+
+    it('transfers tokens (round up) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').add(1).mul(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100').add(1), true)
+    })
+
+    it('transfers tokens (round up) (ether)', async () => {
+      const recipientBefore = await recipient.getBalance()
+      await user.sendTransaction({ to: token.address, value: ethers.utils.parseEther('100').add(1) })
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](ETHER, recipient.address, utils.parseEther('100').add(1), true)
+      expect(await recipient.getBalance()).to.equal(recipientBefore.add(ethers.utils.parseEther('100').add(1)))
+    })
+
+    it('transfers tokens (round up when no decimal) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').div(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100'), true)
+    })
+
+    it('transfers tokens (round up when no decimal) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100')).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100'), true)
+    })
+
+    it('transfers tokens (round up when no decimal) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').mul(1000000)).returns(true)
+
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100'), true)
+    })
+
+    it('transfers tokens (round up when no decimal) (ether)', async () => {
+      const recipientBefore = await recipient.getBalance()
+      await user.sendTransaction({ to: token.address, value: ethers.utils.parseEther('100') })
+      await token
+        .connect(user)
+        ['push(address,address,uint256,bool)'](ETHER, recipient.address, utils.parseEther('100'), true)
       expect(await recipient.getBalance()).to.equal(recipientBefore.add(ethers.utils.parseEther('100')))
     })
 
@@ -108,71 +502,493 @@ describe('Token', () => {
   describe('#pull', async () => {
     it('transfers tokens (12)', async () => {
       await erc20.mock.decimals.withArgs().returns(12)
-      await erc20.mock.allowance.withArgs(user.address, token.address).returns(utils.parseEther('100'))
       await erc20.mock.transferFrom
         .withArgs(user.address, token.address, utils.parseEther('100').div(1000000))
         .returns(true)
 
-      await token.connect(user).pull(erc20.address, user.address, utils.parseEther('100'))
+      await token.connect(user)['pull(address,address,uint256)'](erc20.address, user.address, utils.parseEther('100'))
     })
 
     it('transfers tokens (18)', async () => {
       await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.allowance.withArgs(user.address, token.address).returns(utils.parseEther('100'))
       await erc20.mock.transferFrom.withArgs(user.address, token.address, utils.parseEther('100')).returns(true)
 
-      await token.connect(user).pull(erc20.address, user.address, utils.parseEther('100'))
+      await token.connect(user)['pull(address,address,uint256)'](erc20.address, user.address, utils.parseEther('100'))
     })
 
     it('transfers tokens (24)', async () => {
       await erc20.mock.decimals.withArgs().returns(24)
-      await erc20.mock.allowance.withArgs(user.address, token.address).returns(utils.parseEther('100'))
       await erc20.mock.transferFrom
         .withArgs(user.address, token.address, utils.parseEther('100').mul(1000000))
         .returns(true)
 
-      await token.connect(user).pull(erc20.address, user.address, utils.parseEther('100'))
+      await token.connect(user)['pull(address,address,uint256)'](erc20.address, user.address, utils.parseEther('100'))
     })
 
     it('transfers tokens (ether)', async () => {
-      await expect(token.connect(user).pull(ETHER, user.address, utils.parseEther('100'))).to.be.revertedWith(
-        'TokenPullEtherError()',
-      )
+      await expect(
+        token.connect(user)['pull(address,address,uint256)'](ETHER, user.address, utils.parseEther('100')),
+      ).to.be.revertedWith('TokenPullEtherError()')
+    })
+
+    it('transfers tokens (round down implicit) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, token.address, utils.parseEther('100').div(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256)'](erc20.address, user.address, utils.parseEther('100').add(1))
+    })
+
+    it('transfers tokens (round down implicit) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transferFrom.withArgs(user.address, token.address, utils.parseEther('100').add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256)'](erc20.address, user.address, utils.parseEther('100').add(1))
+    })
+
+    it('transfers tokens (round down implicit) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, token.address, utils.parseEther('100').add(1).mul(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256)'](erc20.address, user.address, utils.parseEther('100').add(1))
+    })
+
+    it('transfers tokens (round down implicit) (ether)', async () => {
+      await expect(
+        token.connect(user)['pull(address,address,uint256)'](ETHER, user.address, utils.parseEther('100').add(1)),
+      ).to.be.revertedWith('TokenPullEtherError()')
+    })
+
+    it('transfers tokens (round down explicit) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, token.address, utils.parseEther('100').div(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100').add(1), false)
+    })
+
+    it('transfers tokens (round down explicit) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transferFrom.withArgs(user.address, token.address, utils.parseEther('100').add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100').add(1), false)
+    })
+
+    it('transfers tokens (round down explicit) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, token.address, utils.parseEther('100').add(1).mul(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100').add(1), false)
+    })
+
+    it('transfers tokens (round down explicit) (ether)', async () => {
+      await expect(
+        token
+          .connect(user)
+          ['pull(address,address,uint256,bool)'](ETHER, user.address, utils.parseEther('100').add(1), false),
+      ).to.be.revertedWith('TokenPullEtherError()')
+    })
+
+    it('transfers tokens (round up) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, token.address, utils.parseEther('100').div(1000000).add(1))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100').add(1), true)
+    })
+
+    it('transfers tokens (round up) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transferFrom.withArgs(user.address, token.address, utils.parseEther('100').add(1)).returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100').add(1), true)
+    })
+
+    it('transfers tokens (round up) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, token.address, utils.parseEther('100').add(1).mul(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100').add(1), true)
+    })
+
+    it('transfers tokens (round up) (ether)', async () => {
+      await expect(
+        token
+          .connect(user)
+          ['pull(address,address,uint256,bool)'](ETHER, user.address, utils.parseEther('100').add(1), true),
+      ).to.be.revertedWith('TokenPullEtherError()')
+    })
+
+    it('transfers tokens (round up when no decimal) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, token.address, utils.parseEther('100').div(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100'), true)
+    })
+
+    it('transfers tokens (round up when no decimal) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transferFrom.withArgs(user.address, token.address, utils.parseEther('100')).returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100'), true)
+    })
+
+    it('transfers tokens (round up when no decimal) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, token.address, utils.parseEther('100').mul(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100'), true)
+    })
+
+    it('transfers tokens (round up when no decimal) (ether)', async () => {
+      await expect(
+        token.connect(user)['pull(address,address,uint256,bool)'](ETHER, user.address, utils.parseEther('100'), true),
+      ).to.be.revertedWith('TokenPullEtherError()')
     })
   })
 
   describe('#pullTo', async () => {
     it('transfers tokens (12)', async () => {
       await erc20.mock.decimals.withArgs().returns(12)
-      await erc20.mock.allowance.withArgs(user.address, recipient.address).returns(utils.parseEther('100'))
       await erc20.mock.transferFrom
         .withArgs(user.address, recipient.address, utils.parseEther('100').div(1000000))
         .returns(true)
 
-      await token.connect(user).pullTo(erc20.address, user.address, recipient.address, utils.parseEther('100'))
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100'),
+        )
     })
 
     it('transfers tokens (18)', async () => {
       await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.allowance.withArgs(user.address, recipient.address).returns(utils.parseEther('100'))
       await erc20.mock.transferFrom.withArgs(user.address, recipient.address, utils.parseEther('100')).returns(true)
 
-      await token.connect(user).pullTo(erc20.address, user.address, recipient.address, utils.parseEther('100'))
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100'),
+        )
     })
 
     it('transfers tokens (24)', async () => {
       await erc20.mock.decimals.withArgs().returns(24)
-      await erc20.mock.allowance.withArgs(user.address, recipient.address).returns(utils.parseEther('100'))
       await erc20.mock.transferFrom
         .withArgs(user.address, recipient.address, utils.parseEther('100').mul(1000000))
         .returns(true)
 
-      await token.connect(user).pullTo(erc20.address, user.address, recipient.address, utils.parseEther('100'))
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100'),
+        )
     })
 
     it('transfers tokens (ether)', async () => {
       await expect(
-        token.connect(user).pullTo(ETHER, user.address, recipient.address, utils.parseEther('100')),
+        token
+          .connect(user)
+          ['pullTo(address,address,address,uint256)'](ETHER, user.address, recipient.address, utils.parseEther('100')),
+      ).to.be.revertedWith('TokenPullEtherError()')
+    })
+
+    it('transfers tokens (round down implicit) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').div(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+        )
+    })
+
+    it('transfers tokens (round down implicit) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').add(1))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+        )
+    })
+
+    it('transfers tokens (round down implicit) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').add(1).mul(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+        )
+    })
+
+    it('transfers tokens (round down implicit) (ether)', async () => {
+      await expect(
+        token
+          .connect(user)
+          ['pullTo(address,address,address,uint256)'](
+            ETHER,
+            user.address,
+            recipient.address,
+            utils.parseEther('100').add(1),
+          ),
+      ).to.be.revertedWith('TokenPullEtherError()')
+    })
+
+    it('transfers tokens (round down explicit) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').div(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256,bool)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          false,
+        )
+    })
+
+    it('transfers tokens (round down explicit) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').add(1))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256,bool)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          false,
+        )
+    })
+
+    it('transfers tokens (round down explicit) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').add(1).mul(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256,bool)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          false,
+        )
+    })
+
+    it('transfers tokens (round down explicit) (ether)', async () => {
+      await expect(
+        token
+          .connect(user)
+          ['pullTo(address,address,address,uint256,bool)'](
+            ETHER,
+            user.address,
+            recipient.address,
+            utils.parseEther('100').add(1),
+            false,
+          ),
+      ).to.be.revertedWith('TokenPullEtherError()')
+    })
+
+    it('transfers tokens (round up) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').div(1000000).add(1))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256,bool)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          true,
+        )
+    })
+
+    it('transfers tokens (round up) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').add(1))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256,bool)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          true,
+        )
+    })
+
+    it('transfers tokens (round up) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').add(1).mul(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256,bool)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100').add(1),
+          true,
+        )
+    })
+
+    it('transfers tokens (round up) (ether)', async () => {
+      await expect(
+        token
+          .connect(user)
+          ['pullTo(address,address,address,uint256,bool)'](
+            ETHER,
+            user.address,
+            recipient.address,
+            utils.parseEther('100').add(1),
+            true,
+          ),
+      ).to.be.revertedWith('TokenPullEtherError()')
+    })
+
+    it('transfers tokens (round up when no decimal) (12)', async () => {
+      await erc20.mock.decimals.withArgs().returns(12)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').div(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256,bool)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100'),
+          true,
+        )
+    })
+
+    it('transfers tokens (round up when no decimal) (18)', async () => {
+      await erc20.mock.decimals.withArgs().returns(18)
+      await erc20.mock.transferFrom.withArgs(user.address, recipient.address, utils.parseEther('100')).returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256,bool)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100'),
+          true,
+        )
+    })
+
+    it('transfers tokens (round up when no decimal) (24)', async () => {
+      await erc20.mock.decimals.withArgs().returns(24)
+      await erc20.mock.transferFrom
+        .withArgs(user.address, recipient.address, utils.parseEther('100').mul(1000000))
+        .returns(true)
+
+      await token
+        .connect(user)
+        ['pullTo(address,address,address,uint256,bool)'](
+          erc20.address,
+          user.address,
+          recipient.address,
+          utils.parseEther('100'),
+          true,
+        )
+    })
+
+    it('transfers tokens (round up when no decimal) (ether)', async () => {
+      await expect(
+        token
+          .connect(user)
+          ['pullTo(address,address,address,uint256)'](
+            ETHER,
+            user.address,
+            recipient.address,
+            utils.parseEther('100').add(1),
+          ),
       ).to.be.revertedWith('TokenPullEtherError()')
     })
   })
@@ -211,7 +1027,7 @@ describe('Token', () => {
   })
 
   describe('#balanceOf', async () => {
-    it('returns balanceOf', async () => {
+    it('returns balanceOf (12)', async () => {
       await erc20.mock.decimals.withArgs().returns(12)
       await erc20.mock.balanceOf.withArgs(user.address).returns(utils.parseEther('100').div(1000000))
       expect(await token.connect(user)['balanceOf(address,address)'](erc20.address, user.address)).to.equal(
@@ -219,7 +1035,7 @@ describe('Token', () => {
       )
     })
 
-    it('returns balanceOf', async () => {
+    it('returns balanceOf (18)', async () => {
       await erc20.mock.decimals.withArgs().returns(18)
       await erc20.mock.balanceOf.withArgs(user.address).returns(utils.parseEther('100'))
       expect(await token.connect(user)['balanceOf(address,address)'](erc20.address, user.address)).to.equal(
@@ -227,7 +1043,7 @@ describe('Token', () => {
       )
     })
 
-    it('returns balanceOf', async () => {
+    it('returns balanceOf (24)', async () => {
       await erc20.mock.decimals.withArgs().returns(24)
       await erc20.mock.balanceOf.withArgs(user.address).returns(utils.parseEther('100').mul(1000000))
       expect(await token.connect(user)['balanceOf(address,address)'](erc20.address, user.address)).to.equal(
@@ -247,19 +1063,19 @@ describe('Token', () => {
   })
 
   describe('#balanceOf', async () => {
-    it('returns balanceOf', async () => {
+    it('returns balanceOf (12)', async () => {
       await erc20.mock.decimals.withArgs().returns(12)
       await erc20.mock.balanceOf.withArgs(token.address).returns(utils.parseEther('100').div(1000000))
       expect(await token.connect(user)['balanceOf(address)'](erc20.address)).to.equal(utils.parseEther('100'))
     })
 
-    it('returns balanceOf', async () => {
+    it('returns balanceOf (18)', async () => {
       await erc20.mock.decimals.withArgs().returns(18)
       await erc20.mock.balanceOf.withArgs(token.address).returns(utils.parseEther('100'))
       expect(await token.connect(user)['balanceOf(address)'](erc20.address)).to.equal(utils.parseEther('100'))
     })
 
-    it('returns balanceOf', async () => {
+    it('returns balanceOf (24)', async () => {
       await erc20.mock.decimals.withArgs().returns(24)
       await erc20.mock.balanceOf.withArgs(token.address).returns(utils.parseEther('100').mul(1000000))
       expect(await token.connect(user)['balanceOf(address)'](erc20.address)).to.equal(utils.parseEther('100'))
