@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./UFixed18.sol";
 
 /// @dev Token
@@ -12,8 +13,9 @@ type Token is address;
 
 /**
  * @title TokenLib
- * @notice Library to manager Ether and ERC20s that is compliant with the fixed-decimal types.
- * @dev Normalizes token operations with Ether operations (using a magic Ether address).
+ * @notice Library to manage Ether and ERC20s that is compliant with the fixed-decimal types.
+ * @dev Normalizes token operations with Ether operations (using a magic Ether address)
+ *      Automatically converts from token decimal-Base amounts to Base-18 UFixed18 amounts, with optional rounding
  */
 library TokenLib {
     using UFixed18Lib for UFixed18;
@@ -21,6 +23,7 @@ library TokenLib {
     using SafeERC20 for IERC20;
 
     error TokenPullEtherError();
+    error TokenApproveEtherError();
 
     uint256 private constant BASE = 1e18;
     Token public constant ETHER = Token.wrap(address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE));
@@ -32,6 +35,39 @@ library TokenLib {
      */
     function isEther(Token self) internal pure returns (bool) {
         return Token.unwrap(self) == Token.unwrap(ETHER);
+    }
+
+    /**
+     * @notice Approves `grantee` to spend infinite tokens from the caller
+     * @param self Token to transfer
+     * @param grantee Address to allow spending
+     */
+    function approve(Token self, address grantee) internal {
+        if (isEther(self)) revert TokenApproveEtherError();
+        IERC20(Token.unwrap(self)).safeApprove(grantee, type(uint256).max);
+    }
+
+    /**
+     * @notice Approves `grantee` to spend `amount` tokens from the caller
+     * @param self Token to transfer
+     * @param grantee Address to allow spending
+     * @param amount Amount of tokens to approve to spend
+     */
+    function approve(Token self, address grantee, UFixed18 amount) internal {
+        if (isEther(self)) revert TokenApproveEtherError();
+        IERC20(Token.unwrap(self)).safeApprove(grantee, toTokenAmount(self, amount, false));
+    }
+
+    /**
+     * @notice Approves `grantee` to spend `amount` tokens from the caller
+     * @param self Token to transfer
+     * @param grantee Address to allow spending
+     * @param amount Amount of tokens to approve to spend
+     * @param roundUp Whether to round decimal token amount up to the next unit
+     */
+    function approve(Token self, address grantee, UFixed18 amount, bool roundUp) internal {
+        if (isEther(self)) revert TokenApproveEtherError();
+        IERC20(Token.unwrap(self)).safeApprove(grantee, toTokenAmount(self, amount, roundUp));
     }
 
     /**
@@ -49,14 +85,23 @@ library TokenLib {
      * @param recipient Address to transfer tokens to
      * @param amount Amount of tokens to transfer
      */
-    function push(
-        Token self,
-        address recipient,
-        UFixed18 amount
-    ) internal {
+    function push(Token self, address recipient, UFixed18 amount) internal {
         isEther(self)
             ? Address.sendValue(payable(recipient), UFixed18.unwrap(amount))
-            : IERC20(Token.unwrap(self)).safeTransfer(recipient, toTokenAmount(self, amount));
+            : IERC20(Token.unwrap(self)).safeTransfer(recipient, toTokenAmount(self, amount, false));
+    }
+
+    /**
+     * @notice Transfers `amount` tokens from the caller to the `recipient`
+     * @param self Token to transfer
+     * @param recipient Address to transfer tokens to
+     * @param amount Amount of tokens to transfer
+     * @param roundUp Whether to round decimal token amount up to the next unit
+     */
+    function push(Token self, address recipient, UFixed18 amount, bool roundUp) internal {
+        isEther(self)
+            ? Address.sendValue(payable(recipient), UFixed18.unwrap(amount))
+            : IERC20(Token.unwrap(self)).safeTransfer(recipient, toTokenAmount(self, amount, roundUp));
     }
 
     /**
@@ -66,13 +111,22 @@ library TokenLib {
      * @param benefactor Address to transfer tokens from
      * @param amount Amount of tokens to transfer
      */
-    function pull(
-        Token self,
-        address benefactor,
-        UFixed18 amount
-    ) internal {
+    function pull(Token self, address benefactor, UFixed18 amount) internal {
         if (isEther(self)) revert TokenPullEtherError();
-        IERC20(Token.unwrap(self)).safeTransferFrom(benefactor, address(this), toTokenAmount(self, amount));
+        IERC20(Token.unwrap(self)).safeTransferFrom(benefactor, address(this), toTokenAmount(self, amount, false));
+    }
+
+    /**
+     * @notice Transfers `amount` tokens from the `benefactor` to the caller
+     * @dev Reverts if trying to pull Ether
+     * @param self Token to transfer
+     * @param benefactor Address to transfer tokens from
+     * @param amount Amount of tokens to transfer
+     * @param roundUp Whether to round decimal token amount up to the next unit
+     */
+    function pull(Token self, address benefactor, UFixed18 amount, bool roundUp) internal {
+        if (isEther(self)) revert TokenPullEtherError();
+        IERC20(Token.unwrap(self)).safeTransferFrom(benefactor, address(this), toTokenAmount(self, amount, roundUp));
     }
 
     /**
@@ -83,14 +137,23 @@ library TokenLib {
      * @param recipient Address to transfer tokens to
      * @param amount Amount of tokens to transfer
      */
-    function pullTo(
-        Token self,
-        address benefactor,
-        address recipient,
-        UFixed18 amount
-    ) internal {
+    function pullTo(Token self, address benefactor, address recipient, UFixed18 amount) internal {
         if (isEther(self)) revert TokenPullEtherError();
-        IERC20(Token.unwrap(self)).safeTransferFrom(benefactor, recipient, toTokenAmount(self, amount));
+        IERC20(Token.unwrap(self)).safeTransferFrom(benefactor, recipient, toTokenAmount(self, amount, false));
+    }
+
+    /**
+     * @notice Transfers `amount` tokens from the `benefactor` to `recipient`
+     * @dev Reverts if trying to pull Ether
+     * @param self Token to transfer
+     * @param benefactor Address to transfer tokens from
+     * @param recipient Address to transfer tokens to
+     * @param amount Amount of tokens to transfer
+     * @param roundUp Whether to round decimal token amount up to the next unit
+     */
+    function pullTo(Token self, address benefactor, address recipient, UFixed18 amount, bool roundUp) internal {
+        if (isEther(self)) revert TokenPullEtherError();
+        IERC20(Token.unwrap(self)).safeTransferFrom(benefactor, recipient, toTokenAmount(self, amount, roundUp));
     }
 
     /**
@@ -116,8 +179,8 @@ library TokenLib {
      * @param self Token to check for
      * @return Token decimals
      */
-    function decimals(Token self) internal view returns (uint8) {
-        return isEther(self) ? 18 : IERC20Metadata(Token.unwrap(self)).decimals();
+    function decimals(Token self) internal view returns (uint256) {
+        return isEther(self) ? 18 : uint256(IERC20Metadata(Token.unwrap(self)).decimals());
     }
 
     /**
@@ -148,9 +211,16 @@ library TokenLib {
      * @param amount Amount to convert
      * @return Normalized token amount
      */
-    function toTokenAmount(Token self, UFixed18 amount) private view returns (uint256) {
-        UFixed18 conversion = UFixed18Lib.ratio(10 ** uint256(decimals(self)), BASE);
-        return UFixed18.unwrap(amount.mul(conversion));
+    function toTokenAmount(Token self, UFixed18 amount, bool roundUp) private view returns (uint256) {
+        uint256 tokenDecimals = decimals(self);
+
+        if (tokenDecimals < 18) {
+            uint256 offset = 10 ** (18 - tokenDecimals);
+            return roundUp ? Math.ceilDiv(UFixed18.unwrap(amount), offset) : UFixed18.unwrap(amount) / offset;
+        } else {
+            uint256 offset = 10 ** (tokenDecimals - 18);
+            return UFixed18.unwrap(amount) * offset;
+        }
     }
 
     /**
