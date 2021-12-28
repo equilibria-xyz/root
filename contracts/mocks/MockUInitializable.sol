@@ -71,3 +71,15 @@ contract MockUInitializableConstructor6 is MockUInitializableConstructor1 {
 
     function childInitializer6() public onlyInitializer { }
 }
+
+contract MockUInitializableConstructor7 is MockUInitializableConstructor2 {
+    constructor() MockUInitializableConstructor2() { }
+}
+
+contract MockUInitializableConstructor8 is MockUInitializableConstructor3 {
+    constructor() MockUInitializableConstructor3() { }
+}
+
+contract MockUInitializableConstructor9 is MockUInitializableConstructor4 {
+    constructor() MockUInitializableConstructor4() { }
+}

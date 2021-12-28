@@ -11,11 +11,14 @@ import {
   MockUInitializableConstructor4__factory,
   MockUInitializableConstructor5__factory,
   MockUInitializableConstructor6__factory,
+  MockUInitializableConstructor7__factory,
+  MockUInitializableConstructor8__factory,
+  MockUInitializableConstructor9__factory,
 } from '../../../types/generated'
 
 const { ethers } = HRE
 
-describe.only('UInitializer', () => {
+describe('UInitializer', () => {
   let owner: SignerWithAddress
   let uInitializable: MockUInitializable
 
@@ -74,6 +77,24 @@ describe.only('UInitializer', () => {
     it('successfully initializes when constructor and inherited constructor calls onlyInitializer (6)', async () => {
       const uInitializableConstructor6 = await new MockUInitializableConstructor6__factory(owner).deploy()
       expect(await uInitializableConstructor6.__initialized()).to.equal(false)
+    })
+
+    it('reverts when inherited constructor calls initializer (7)', async () => {
+      await expect(new MockUInitializableConstructor7__factory(owner).deploy()).to.be.revertedWith(
+        `UInitializableCalledFromConstructorError()`,
+      )
+    })
+
+    it('reverts when inherited constructor has initializer modifier (8)', async () => {
+      await expect(new MockUInitializableConstructor8__factory(owner).deploy()).to.be.revertedWith(
+        `UInitializableCalledFromConstructorError()`,
+      )
+    })
+
+    it('reverts when inherited constructor calls initializer with children (9)', async () => {
+      await expect(new MockUInitializableConstructor9__factory(owner).deploy()).to.be.revertedWith(
+        `UInitializableCalledFromConstructorError()`,
+      )
     })
 
     it('reverts if initialized twice', async () => {
