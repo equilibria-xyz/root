@@ -9,7 +9,7 @@ contract MockUReentrancyGuard is UReentrancyGuard {
     event NoOp();
 
     function __initialize() external {
-        super.UReentrancyGuard__initialize();
+        super.__UReentrancyGuard__initialize();
     }
 
     function __status() external view returns (uint256 result) {

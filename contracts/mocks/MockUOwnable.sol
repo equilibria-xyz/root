@@ -5,6 +5,6 @@ import "../unstructured/UOwnable.sol";
 
 contract MockUOwnable is UOwnable {
     function __initialize() external {
-        super.UOwnable__initialize();
+        super.__UOwnable__initialize();
     }
 }
