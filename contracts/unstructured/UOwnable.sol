@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+import "./UInitializable.sol";
+
 /**
  * @title UOwnable
  * @notice Library to manage the ownership lifecycle of upgradeable contracts.
@@ -8,7 +10,7 @@ pragma solidity ^0.8.0;
  *      unstructured storage pattern so that it can be safely mixed in with upgradeable
  *      contracts without affecting their storage patterns through inheritance.
  */
-abstract contract UOwnable {
+abstract contract UOwnable is UInitializable {
     /// @dev unstructured storage slot for the owner address
     bytes32 private constant OWNER_SLOT = keccak256("equilibria.utils.UOwnable.owner");
 
@@ -24,7 +26,7 @@ abstract contract UOwnable {
     /**
      * @notice Initializes the contract setting `msg.sender` as the initial owner
      */
-    function UOwnable__initialize() internal {
+    function __UOwnable__initialize() internal onlyInitializer {
         _setOwner(msg.sender);
     }
 

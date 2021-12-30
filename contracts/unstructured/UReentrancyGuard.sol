@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
+import "./UInitializable.sol";
+
 /**
  * @dev Contract module that helps prevent reentrant calls to a function.
  *
@@ -21,7 +23,7 @@ pragma solidity ^0.8.0;
  *       unstructured storage pattern, so that it can be safely mixed in with upgradeable
  *       contracts without affecting their storage patterns through inheritance.
  */
-abstract contract UReentrancyGuard {
+abstract contract UReentrancyGuard is UInitializable {
     error UReentrancyGuardReentrantCallError();
 
     // Booleans are more expensive than uint256 or any type that takes up a full
@@ -46,7 +48,7 @@ abstract contract UReentrancyGuard {
     /**
      * @dev Initializes the contract setting the status to _NOT_ENTERED.
      */
-    function UReentrancyGuard__initialize() internal {
+    function __UReentrancyGuard__initialize() internal onlyInitializer {
         _setStatus(_NOT_ENTERED);
     }
 
