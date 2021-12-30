@@ -24,7 +24,7 @@ abstract contract UInitializable {
 
     /// @dev Can only be called once, and cannot be called from another initializer or constructor
     modifier initializer() {
-        if (_isConstructor()) revert UInitializableCalledFromConstructorError();
+        if (_constructing()) revert UInitializableCalledFromConstructorError();
         if (_initialized()) revert UInitializableAlreadyInitializedError();
 
         _setInitializing(true);
@@ -37,7 +37,7 @@ abstract contract UInitializable {
 
     /// @dev Can only be called from an initializer or constructor
     modifier onlyInitializer() {
-        if (!_isConstructor() && !_initializing())
+        if (!_constructing() && !_initializing())
             revert UInitializableNotInitializingError();
         _;
     }
@@ -66,7 +66,6 @@ abstract contract UInitializable {
 
     /**
      * @notice Sets the initialized flag in unstructured storage
-     * @dev Internal helper
      * @param newInitialized New initialized flag to store
      */
     function _setInitialized(bool newInitialized) private {
@@ -78,7 +77,6 @@ abstract contract UInitializable {
 
     /**
      * @notice Sets the initializing flag in unstructured storage
-     * @dev Internal helper
      * @param newInitializing New initializing flag to store
      */
     function _setInitializing(bool newInitializing) private {
@@ -89,11 +87,11 @@ abstract contract UInitializable {
     }
 
     /**
-     * @notice Returns whether the code is currently being called from a constructor.
-     * @dev Internal helper, see {Address.isContract} for explanation of mechanics
-     * @return Whether the code is currently being called from a constructor
+     * @notice Returns whether the contract is currently being constructed
+     * @dev {Address.isContract} returns false for contracts currently in the process of being constructed
+     * @return Whether the contract is currently being constructed
      */
-    function _isConstructor() private view returns (bool) {
+    function _constructing() private view returns (bool) {
         return !Address.isContract(address(this));
     }
 }
