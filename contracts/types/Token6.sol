@@ -150,10 +150,9 @@ library Token6Lib {
 
     /**
      * @notice Returns the decimals of the token
-     * @param self Token to check for
      * @return Token decimals
      */
-    function decimals(Token6 self) internal pure returns (uint256) {
+    function decimals(Token6) internal pure returns (uint256) {
         return DECIMALS;
     }
 

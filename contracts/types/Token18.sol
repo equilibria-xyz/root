@@ -101,10 +101,9 @@ library Token18Lib {
 
     /**
      * @notice Returns the decimals of the token
-     * @param self Token to check for
      * @return Token decimals
      */
-    function decimals(Token18 self) internal pure returns (uint256) {
+    function decimals(Token18) internal pure returns (uint256) {
         return DECIMALS;
     }
 
