@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
@@ -9,6 +9,7 @@ import "./UFixed18.sol";
 
 /// @dev Token6
 type Token6 is address;
+using Token6Lib for Token6 global;
 
 /**
  * @title Token6Lib
