@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.13;
 
 import "./Fixed18.sol";
 
 /// @dev UFixed18 type
 type UFixed18 is uint256;
+using UFixed18Lib for UFixed18 global;
 
 /**
  * @title UFixed18Lib
