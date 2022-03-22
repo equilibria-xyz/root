@@ -16,7 +16,6 @@ using Token18Lib for Token18 global;
  * @dev Maintains significant gas savings over other Token implementations since no conversion take place
  */
 library Token18Lib {
-    using UFixed18Lib for UFixed18;
     using SafeERC20 for IERC20;
 
     uint256 private constant DECIMALS = 18;
