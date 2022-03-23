@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
+import "@openzeppelin/contracts/utils/math/SignedMath.sol";
 import "./UFixed18.sol";
 
 /// @dev Fixed18 type
@@ -183,8 +184,7 @@ library Fixed18Lib {
      * @return Minimum of `a` and `b`
      */
     function min(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        (int256 au, int256 bu) = (Fixed18.unwrap(a), Fixed18.unwrap(b));
-        return Fixed18.wrap(au < bu ? au : bu);
+        return Fixed18.wrap(SignedMath.min(Fixed18.unwrap(a), Fixed18.unwrap(b)));
     }
 
     /**
@@ -194,8 +194,7 @@ library Fixed18Lib {
      * @return Maximum of `a` and `b`
      */
     function max(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        (int256 au, int256 bu) = (Fixed18.unwrap(a), Fixed18.unwrap(b));
-        return Fixed18.wrap(au > bu ? au : bu);
+        return Fixed18.wrap(SignedMath.max(Fixed18.unwrap(a), Fixed18.unwrap(b)));
     }
 
     /**
@@ -227,7 +226,6 @@ library Fixed18Lib {
      * @return Absolute value of the signed fixed-decimal
      */
     function abs(Fixed18 a) internal pure returns (UFixed18) {
-        if (Fixed18.unwrap(a) < 0) return UFixed18.wrap(uint256(-1 * Fixed18.unwrap(a)));
-        return UFixed18.wrap(uint256(Fixed18.unwrap(a)));
+        return UFixed18.wrap(SignedMath.abs(Fixed18.unwrap(a)));
     }
 }

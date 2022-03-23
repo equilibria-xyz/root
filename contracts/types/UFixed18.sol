@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Fixed18.sol";
 
 /// @dev UFixed18 type
@@ -170,8 +171,7 @@ library UFixed18Lib {
      * @return Minimum of `a` and `b`
      */
     function min(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        (uint256 au, uint256 bu) = (UFixed18.unwrap(a), UFixed18.unwrap(b));
-        return UFixed18.wrap(au < bu ? au : bu);
+        return UFixed18.wrap(Math.min(UFixed18.unwrap(a), UFixed18.unwrap(b)));
     }
 
     /**
@@ -181,8 +181,7 @@ library UFixed18Lib {
      * @return Maximum of `a` and `b`
      */
     function max(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        (uint256 au, uint256 bu) = (UFixed18.unwrap(a), UFixed18.unwrap(b));
-        return UFixed18.wrap(au > bu ? au : bu);
+        return UFixed18.wrap(Math.max(UFixed18.unwrap(a), UFixed18.unwrap(b)));
     }
 
     /**
