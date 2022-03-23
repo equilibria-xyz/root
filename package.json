@@ -1,12 +1,12 @@
 {
   "name": "root",
-  "version": "0.1.0",
+  "version": "0.0.6",
   "scripts": {
     "build": "yarn compile",
     "compile": "hardhat compile",
     "gasReport": "REPORT_GAS=true yarn test",
-    "test": "hardhat test ./test/unit/**/*",
-    "coverage": "hardhat coverage --testfiles './test/unit/**/*'",
+    "test": "npx hardhat test ./test/unit/**/*.test.ts",
+    "coverage": "npx hardhat coverage --testfiles './test/unit/**/*.test.ts'",
     "lint": "eslint --fix --ext '.ts,.js' ./ && solhint 'contracts/**/*.sol' --fix",
     "format": "prettier -w .",
     "postinstall": "yarn build",

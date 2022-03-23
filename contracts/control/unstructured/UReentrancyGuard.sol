@@ -43,7 +43,7 @@ abstract contract UReentrancyGuard is UInitializable {
     /**
      * @dev unstructured storage slot for the reentrancy status
      */
-    bytes32 private constant STATUS_SLOT = keccak256("equilibria.root.UReentrancyGuard.status");
+    bytes32 private constant STATUS_SLOT = keccak256("equilibria.utils.UReentrancyGuard.status");
 
     /**
      * @dev Initializes the contract setting the status to _NOT_ENTERED.

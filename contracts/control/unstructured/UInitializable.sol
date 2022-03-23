@@ -17,10 +17,10 @@ abstract contract UInitializable {
     error UInitializableNotInitializingError();
 
     /// @dev Unstructured storage slot for the initialized flag
-    bytes32 private constant INITIALIZED_SLOT = keccak256("equilibria.root.UInitializable.initialized");
+    bytes32 private constant INITIALIZED_SLOT = keccak256("equilibria.utils.UInitializable.initialized");
 
     /// @dev Unstructured storage slot for the initializing flag
-    bytes32 private constant INITIALIZING_SLOT = keccak256("equilibria.root.UInitializable.initializing");
+    bytes32 private constant INITIALIZING_SLOT = keccak256("equilibria.utils.UInitializable.initializing");
 
     /// @dev Can only be called once, and cannot be called from another initializer or constructor
     modifier initializer() {
