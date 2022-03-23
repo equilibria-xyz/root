@@ -19,7 +19,6 @@ using TokenLib for Token global;
  *      Automatically converts from token decimal-Base amounts to Base-18 UFixed18 amounts, with optional rounding
  */
 library TokenLib {
-    using UFixed18Lib for UFixed18;
     using Address for address;
     using SafeERC20 for IERC20;
 

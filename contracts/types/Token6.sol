@@ -17,7 +17,6 @@ using Token6Lib for Token6 global;
  * @dev Automatically converts from Base-6 token amounts to Base-18 UFixed18 amounts, with optional rounding
  */
 library Token6Lib {
-    using UFixed18Lib for UFixed18;
     using SafeERC20 for IERC20;
 
     uint256 private constant DECIMALS = 6;
