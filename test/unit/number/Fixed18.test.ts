@@ -77,6 +77,22 @@ describe('Fixed18', () => {
     })
   })
 
+  describe('#pack', async () => {
+    it('creates new', async () => {
+      expect(await fixed18.pack(utils.parseEther('10'))).to.equal(utils.parseEther('10'))
+    })
+
+    it('reverts if too large', async () => {
+      const TOO_LARGE = ethers.constants.MaxInt256
+      await expect(fixed18.pack(TOO_LARGE)).to.be.revertedWith(`Fixed18PackingOverflowError(${TOO_LARGE})`)
+    })
+
+    it('reverts if too small', async () => {
+      const TOO_SMALL = ethers.constants.MinInt256
+      await expect(fixed18.pack(TOO_SMALL)).to.be.revertedWith(`Fixed18PackingUnderflowError(${TOO_SMALL})`)
+    })
+  })
+
   describe('#isZero', async () => {
     it('returns true', async () => {
       expect(await fixed18.isZero(0)).to.equal(true)

@@ -24,6 +24,10 @@ contract MockUFixed18 {
         return UFixed18Lib.from(a);
     }
 
+    function pack(UFixed18 a) external pure returns (PackedUFixed18) {
+        return UFixed18Lib.pack(a);
+    }
+
     function isZero(UFixed18 a) external pure returns (bool) {
         return UFixed18Lib.isZero(a);
     }
