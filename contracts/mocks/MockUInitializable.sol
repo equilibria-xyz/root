@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "../unstructured/UInitializable.sol";
 
 abstract contract MockUInitializableBase {
-    bytes32 private constant INITIALIZED_SLOT = keccak256("equilibria.utils.UInitializable.initialized");
+    bytes32 private constant INITIALIZED_SLOT = keccak256("equilibria.root.UInitializable.initialized");
 
     event NoOp();
     event NoOpChild();

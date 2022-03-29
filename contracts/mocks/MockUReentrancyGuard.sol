@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "../unstructured/UReentrancyGuard.sol";
 
 contract MockUReentrancyGuard is UReentrancyGuard {
-    bytes32 private constant STATUS_SLOT = keccak256("equilibria.utils.UReentrancyGuard.status");
+    bytes32 private constant STATUS_SLOT = keccak256("equilibria.root.UReentrancyGuard.status");
 
     event NoOp();
 
