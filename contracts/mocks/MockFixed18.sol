@@ -4,16 +4,24 @@ pragma solidity ^0.8.13;
 import "../types/Fixed18.sol";
 
 contract MockFixed18 {
-    function zero() external pure returns (Fixed18) {
+    function ZERO() external pure returns (Fixed18) {
         return Fixed18Lib.ZERO;
     }
 
-    function one() external pure returns (Fixed18) {
+    function ONE() external pure returns (Fixed18) {
         return Fixed18Lib.ONE;
     }
 
-    function negOne() external pure returns (Fixed18) {
+    function NEG_ONE() external pure returns (Fixed18) {
         return Fixed18Lib.NEG_ONE;
+    }
+
+    function MAX() external pure returns (Fixed18) {
+        return Fixed18Lib.MAX;
+    }
+
+    function MIN() external pure returns (Fixed18) {
+        return Fixed18Lib.MIN;
     }
 
     function from(UFixed18 a) external pure returns (Fixed18) {
