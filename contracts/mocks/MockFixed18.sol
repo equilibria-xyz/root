@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../types/Fixed18.sol";
+import "../number/types/Fixed18.sol";
 
 contract MockFixed18 {
     function ZERO() external pure returns (Fixed18) {

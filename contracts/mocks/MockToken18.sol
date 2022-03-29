@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../types/Token18.sol";
+import "../token/types/Token18.sol";
 
 contract MockToken18 {
     function approve(Token18 self, address grantee) external {
