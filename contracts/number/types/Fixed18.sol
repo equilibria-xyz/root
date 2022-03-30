@@ -57,7 +57,6 @@ library Fixed18Lib {
         return Fixed18.wrap(a * BASE);
     }
 
-
     /**
      * @notice Creates a packed signed fixed-decimal from an signed fixed-decimal
      * @param a signed fixed-decimal

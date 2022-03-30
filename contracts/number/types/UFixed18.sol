@@ -42,7 +42,6 @@ library UFixed18Lib {
         return UFixed18.wrap(a * BASE);
     }
 
-
     /**
      * @notice Creates a packed unsigned fixed-decimal from an unsigned fixed-decimal
      * @param a unsigned fixed-decimal
