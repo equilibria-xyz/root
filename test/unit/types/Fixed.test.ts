@@ -16,21 +16,33 @@ describe('Fixed18', () => {
     fixed18 = await new MockFixed18__factory(user).deploy()
   })
 
-  describe('#zero', async () => {
+  describe('#ZERO', async () => {
     it('returns zero', async () => {
-      expect(await fixed18.zero()).to.equal(0)
+      expect(await fixed18.ZERO()).to.equal(0)
     })
   })
 
-  describe('#one', async () => {
-    it('returns zero', async () => {
-      expect(await fixed18.one()).to.equal(utils.parseEther('1'))
+  describe('#ONE', async () => {
+    it('returns one', async () => {
+      expect(await fixed18.ONE()).to.equal(utils.parseEther('1'))
     })
   })
 
-  describe('#negOne', async () => {
-    it('returns zero', async () => {
-      expect(await fixed18.negOne()).to.equal(utils.parseEther('-1'))
+  describe('#NEG_ONE', async () => {
+    it('returns negative one', async () => {
+      expect(await fixed18.NEG_ONE()).to.equal(utils.parseEther('-1'))
+    })
+  })
+
+  describe('#MAX', async () => {
+    it('returns max', async () => {
+      expect(await fixed18.MAX()).to.equal(ethers.constants.MaxInt256)
+    })
+  })
+
+  describe('#MIN', async () => {
+    it('returns min', async () => {
+      expect(await fixed18.MIN()).to.equal(ethers.constants.MinInt256)
     })
   })
 

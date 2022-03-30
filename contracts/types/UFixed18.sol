@@ -18,6 +18,7 @@ library UFixed18Lib {
     uint256 private constant BASE = 1e18;
     UFixed18 public constant ZERO = UFixed18.wrap(0);
     UFixed18 public constant ONE = UFixed18.wrap(BASE);
+    UFixed18 public constant MAX = UFixed18.wrap(type(uint256).max);
 
     /**
      * @notice Creates a unsigned fixed-decimal from a signed fixed-decimal

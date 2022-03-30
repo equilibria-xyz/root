@@ -4,12 +4,16 @@ pragma solidity ^0.8.13;
 import "../types/UFixed18.sol";
 
 contract MockUFixed18 {
-    function zero() external pure returns (UFixed18) {
+    function ZERO() external pure returns (UFixed18) {
         return UFixed18Lib.ZERO;
     }
 
-    function one() external pure returns (UFixed18) {
+    function ONE() external pure returns (UFixed18) {
         return UFixed18Lib.ONE;
+    }
+
+    function MAX() external pure returns (UFixed18) {
+        return UFixed18Lib.MAX;
     }
 
     function from(Fixed18 a) external pure returns (UFixed18) {

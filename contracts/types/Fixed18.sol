@@ -19,6 +19,8 @@ library Fixed18Lib {
     Fixed18 public constant ZERO = Fixed18.wrap(0);
     Fixed18 public constant ONE = Fixed18.wrap(BASE);
     Fixed18 public constant NEG_ONE = Fixed18.wrap(-1 * BASE);
+    Fixed18 public constant MAX = Fixed18.wrap(type(int256).max);
+    Fixed18 public constant MIN = Fixed18.wrap(type(int256).min);
 
     /**
      * @notice Creates a signed fixed-decimal from an unsigned fixed-decimal

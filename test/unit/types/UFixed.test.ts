@@ -16,15 +16,21 @@ describe('UFixed18', () => {
     uFixed18 = await new MockUFixed18__factory(user).deploy()
   })
 
-  describe('#zero', async () => {
+  describe('#ZERO', async () => {
     it('returns zero', async () => {
-      expect(await uFixed18.zero()).to.equal(0)
+      expect(await uFixed18.ZERO()).to.equal(0)
     })
   })
 
-  describe('#one', async () => {
-    it('returns zero', async () => {
-      expect(await uFixed18.one()).to.equal(utils.parseEther('1'))
+  describe('#ONE', async () => {
+    it('returns one', async () => {
+      expect(await uFixed18.ONE()).to.equal(utils.parseEther('1'))
+    })
+  })
+
+  describe('#MAX', async () => {
+    it('returns max', async () => {
+      expect(await uFixed18.MAX()).to.equal(ethers.constants.MaxUint256)
     })
   })
 
