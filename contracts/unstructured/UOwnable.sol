@@ -12,10 +12,10 @@ import "./UInitializable.sol";
  */
 abstract contract UOwnable is UInitializable {
     /// @dev unstructured storage slot for the owner address
-    bytes32 private constant OWNER_SLOT = keccak256("equilibria.utils.UOwnable.owner");
+    bytes32 private constant OWNER_SLOT = keccak256("equilibria.root.UOwnable.owner");
 
     /// @dev unstructured storage slot for the pending owner address
-    bytes32 private constant PENDING_OWNER_SLOT = keccak256("equilibria.utils.UOwnable.pendingOwner");
+    bytes32 private constant PENDING_OWNER_SLOT = keccak256("equilibria.root.UOwnable.pendingOwner");
 
     event OwnerUpdated(address indexed newOwner);
     event PendingOwnerUpdated(address indexed newPendingOwner);
