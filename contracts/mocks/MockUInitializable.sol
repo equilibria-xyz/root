@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../unstructured/UInitializable.sol";
+import "../control/unstructured/UInitializable.sol";
 
 abstract contract MockUInitializableBase {
     bytes32 private constant INITIALIZED_SLOT = keccak256("equilibria.root.UInitializable.initialized");
