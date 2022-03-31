@@ -51,7 +51,7 @@ abstract contract ULinearUtilizationCurveProvider is UtilizationCurveProvider, U
      * @param utilization Utilization ratio
      * @return Corresponding rate
      */
-    function _computeUtilizationCurve(UFixed18 utilization) internal override view returns (Fixed18) {
+    function _computeRate(UFixed18 utilization) internal override view returns (Fixed18) {
         return _storedUtilizationCurve().compute(utilization);
     }
 

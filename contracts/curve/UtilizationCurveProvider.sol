@@ -14,5 +14,5 @@ abstract contract UtilizationCurveProvider {
      * @param utilization Utilization ratio
      * @return Corresponding rate
      */
-    function _computeUtilizationCurve(UFixed18 utilization) internal virtual view returns (Fixed18);
+    function _computeRate(UFixed18 utilization) internal virtual view returns (Fixed18);
 }

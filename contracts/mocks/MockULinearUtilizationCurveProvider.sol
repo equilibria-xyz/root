@@ -9,7 +9,7 @@ contract MockULinearUtilizationCurveProvider is ULinearUtilizationCurveProvider 
         super.__ULinearUtilizationCurveProvider__initialize(initialUtilizationCurve);
     }
 
-    function computeUtilizationCurve(UFixed18 utilization) external view returns (Fixed18) {
-        return super._computeUtilizationCurve(utilization);
+    function computeRate(UFixed18 utilization) external view returns (Fixed18) {
+        return super._computeRate(utilization);
     }
 }

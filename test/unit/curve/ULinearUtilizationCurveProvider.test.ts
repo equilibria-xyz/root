@@ -69,9 +69,9 @@ describe('ULinearUtilizationCurveProvider', () => {
     })
 
     it('computes from the utilization curve', async () => {
-      expect(
-        await uLinearUtilizationCurveProvider.connect(user).computeUtilizationCurve(ethers.utils.parseEther('0.40')),
-      ).to.equal(ethers.utils.parseEther('0.46'))
+      expect(await uLinearUtilizationCurveProvider.connect(user).computeRate(ethers.utils.parseEther('0.40'))).to.equal(
+        ethers.utils.parseEther('0.46'),
+      )
     })
   })
 })
