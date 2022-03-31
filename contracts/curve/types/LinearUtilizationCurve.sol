@@ -16,23 +16,6 @@ using LinearUtilizationCurveLib for LinearUtilizationCurve global;
  * @notice Library for the Linear utilization curve type
  */
 library LinearUtilizationCurveLib {
-    error LinearInvalidParametersError();
-
-    /**
-     * @notice Creates a Linear utilization curve from its parameters
-     * @param minRate The rate at zero utilization
-     * @param maxRate The rate at complete utilization
-     * @return New Linear utilization curve
-     */
-    function from(Fixed18 minRate, Fixed18 maxRate)
-    internal pure returns (LinearUtilizationCurve memory)
-    {
-        // Rate must be monotonically increasing
-        if (minRate.gt(maxRate)) revert LinearInvalidParametersError();
-
-        return LinearUtilizationCurve({minRate: minRate.pack(), maxRate: maxRate.pack() });
-    }
-
     /**
      * @notice Computes the corresponding rate for a utilization ratio
      * @param utilization The utilization ratio
