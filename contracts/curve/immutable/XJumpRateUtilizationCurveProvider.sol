@@ -8,7 +8,7 @@ import "../../number/types/Fixed18.sol";
 
 /**
  * @title XJumpRateUtilizationCurveProvider
- * @notice Library for manage storing, surfacing, and upgrading a Jump Rate utilization curve model.
+ * @notice Library for manage storing and surfacing a Jump Rate utilization curve model.
  * @dev Uses an immutable storage pattern to store the utilization curve parameters which is more gas efficient,
  *      but does not allow parameters to be updated over time.
  */
@@ -47,7 +47,7 @@ abstract contract XJumpRateUtilizationCurveProvider is UtilizationCurveProvider 
      * @param utilization Utilization ratio
      * @return Corresponding rate
      */
-    function _computeUtilizationCurve(UFixed18 utilization) internal override view returns (Fixed18) {
+    function _computeRate(UFixed18 utilization) internal override view returns (Fixed18) {
         return utilizationCurve().compute(utilization);
     }
 }

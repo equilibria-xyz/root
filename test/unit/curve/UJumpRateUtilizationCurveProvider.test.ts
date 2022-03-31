@@ -78,7 +78,7 @@ describe('UJumpRateUtilizationCurveProvider', () => {
 
     it('computes from the utilization curve', async () => {
       expect(
-        await uJumpRateUtilizationCurveProvider.connect(user).computeUtilizationCurve(ethers.utils.parseEther('0.40')),
+        await uJumpRateUtilizationCurveProvider.connect(user).computeRate(ethers.utils.parseEther('0.40')),
       ).to.equal(ethers.utils.parseEther('0.30'))
     })
   })
