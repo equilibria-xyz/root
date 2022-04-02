@@ -10,56 +10,39 @@ import "./UInitializable.sol";
  *      unstructured storage pattern so that it can be safely mixed in with upgradeable
  *      contracts without affecting their storage patterns through inheritance.
  */
-abstract contract UOwnable is UInitializable {
-    /// @dev unstructured storage slot for the owner address
-    bytes32 private constant OWNER_SLOT = keccak256("equilibria.root.UOwnable.owner");
-
-    /// @dev unstructured storage slot for the pending owner address
-    bytes32 private constant PENDING_OWNER_SLOT = keccak256("equilibria.root.UOwnable.pendingOwner");
-
+abstract contract UOwnable is UStorage, UInitializable {
     event OwnerUpdated(address indexed newOwner);
     event PendingOwnerUpdated(address indexed newPendingOwner);
 
     error UOwnableNotOwnerError(address sender);
     error UOwnableNotPendingOwnerError(address sender);
 
+    /// @dev The owner address
+    bytes32 private constant OWNER_SLOT = keccak256("equilibria.root.UOwnable.owner");
+    function owner() public view returns (address) { return _readAddress(OWNER_SLOT); }
+    function _setOwner(address newOwner) private { _write(OWNER_SLOT, newOwner); }
+
+    /// @dev The pending owner address
+    bytes32 private constant PENDING_OWNER_SLOT = keccak256("equilibria.root.UOwnable.pendingOwner");
+    function pendingOwner() public view returns (address) { return _readAddress(PENDING_OWNER_SLOT); }
+    function _setPendingOwner(address newPendingOwner) private { _write(PENDING_OWNER_SLOT, newPendingOwner); }
+
     /**
      * @notice Initializes the contract setting `msg.sender` as the initial owner
      */
     function __UOwnable__initialize() internal onlyInitializer {
-        _setOwner(msg.sender);
+        _updateOwner(msg.sender);
     }
 
     /**
-     * @notice Returns the address of the current owner
-     * @return result Current owner
-     */
-    function owner() public view returns (address result) {
-        bytes32 slot = OWNER_SLOT;
-        assembly {
-            result := sload(slot)
-        }
-    }
-
-    /**
-     * @notice Returns the address of the pending owner
-     * @return result Pending owner
-     */
-    function pendingOwner() public view returns (address result) {
-        bytes32 slot = PENDING_OWNER_SLOT;
-        assembly {
-            result := sload(slot)
-        }
-    }
-
-    /**
-     * @notice Sets a new pending owner
+     * @notice Updates the new pending owner
      * @dev Can only be called by the current owner
      *      New owner does not take affect until that address calls `acceptOwner()`
      * @param newPendingOwner New pending owner address
      */
-    function setPendingOwner(address newPendingOwner) external onlyOwner {
+    function updatePendingOwner(address newPendingOwner) public onlyOwner {
         _setPendingOwner(newPendingOwner);
+        emit PendingOwnerUpdated(newPendingOwner);
     }
 
     /**
@@ -69,36 +52,17 @@ abstract contract UOwnable is UInitializable {
     function acceptOwner() external {
         if (msg.sender != pendingOwner()) revert UOwnableNotPendingOwnerError(msg.sender);
 
-        _setOwner(pendingOwner());
-        _setPendingOwner(address(0));
+        _updateOwner(pendingOwner());
+        updatePendingOwner(address(0));
     }
 
     /**
-     * @notice Sets the new owner address in unstructured storage
-     * @dev Internal helper
-     * @param newOwner New owner address to store
+     * @notice Updates the owner address
+     * @param newOwner New owner address
      */
-    function _setOwner(address newOwner) private {
-        bytes32 slot = OWNER_SLOT;
-        assembly {
-            sstore(slot, newOwner)
-        }
-
+    function _updateOwner(address newOwner) private {
+        _setOwner(newOwner);
         emit OwnerUpdated(newOwner);
-    }
-
-    /**
-     * @notice Sets the new pending owner address in unstructured storage
-     * @dev Internal helper
-     * @param newPendingOwner New pending owner address to store
-     */
-    function _setPendingOwner(address newPendingOwner) private {
-        bytes32 slot = PENDING_OWNER_SLOT;
-        assembly {
-            sstore(slot, newPendingOwner)
-        }
-
-        emit PendingOwnerUpdated(newPendingOwner);
     }
 
     /// @dev Throws if called by any account other than the owner

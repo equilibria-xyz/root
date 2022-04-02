@@ -3,21 +3,16 @@ pragma solidity ^0.8.13;
 
 import "../control/unstructured/UInitializable.sol";
 
-abstract contract MockUInitializableBase {
+contract MockUInitializable is UInitializable {
     bytes32 private constant INITIALIZED_SLOT = keccak256("equilibria.root.UInitializable.initialized");
 
     event NoOp();
     event NoOpChild();
 
-    function __initialized() external view returns (bool result) {
-        bytes32 slot = INITIALIZED_SLOT;
-        assembly {
-            result := sload(slot)
-        }
+    function __initialized() external view returns (bool) {
+        return _readBool(INITIALIZED_SLOT);
     }
-}
 
-contract MockUInitializable is UInitializable, MockUInitializableBase {
     function initialize() public initializer {
         emit NoOp();
     }

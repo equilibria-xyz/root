@@ -12,11 +12,8 @@ contract MockUReentrancyGuard is UReentrancyGuard {
         super.__UReentrancyGuard__initialize();
     }
 
-    function __status() external view returns (uint256 result) {
-        bytes32 slot = STATUS_SLOT;
-        assembly {
-            result := sload(slot)
-        }
+    function __status() external view returns (uint256) {
+        return _readUint256(STATUS_SLOT);
     }
 
     function noReenter() public nonReentrant { emit NoOp(); }

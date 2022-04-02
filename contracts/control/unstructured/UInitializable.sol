@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/Address.sol";
+import "../../UStorage.sol";
 
 /**
  * @title UInitializable
@@ -11,16 +12,20 @@ import "@openzeppelin/contracts/utils/Address.sol";
  *      modifier to tag their internal initialization functions to ensure that they can only be called
  *      from a top-level `initializer` or a constructor.
  */
-abstract contract UInitializable {
+abstract contract UInitializable is UStorage {
     error UInitializableCalledFromConstructorError();
     error UInitializableAlreadyInitializedError();
     error UInitializableNotInitializingError();
 
-    /// @dev Unstructured storage slot for the initialized flag
+    /// @dev The initialized flag
     bytes32 private constant INITIALIZED_SLOT = keccak256("equilibria.root.UInitializable.initialized");
+    function _initialized() private view returns (bool) { return _readBool(INITIALIZED_SLOT); }
+    function _setInitialized(bool newInitialized) private { _write(INITIALIZED_SLOT, newInitialized); }
 
-    /// @dev Unstructured storage slot for the initializing flag
+    /// @dev The initializing flag
     bytes32 private constant INITIALIZING_SLOT = keccak256("equilibria.root.UInitializable.initializing");
+    function _initializing() private view returns (bool) { return _readBool(INITIALIZING_SLOT); }
+    function _setInitializing(bool newInitializing) private { _write(INITIALIZING_SLOT, newInitializing); }
 
     /// @dev Can only be called once, and cannot be called from another initializer or constructor
     modifier initializer() {
@@ -40,50 +45,6 @@ abstract contract UInitializable {
         if (!_constructing() && !_initializing())
             revert UInitializableNotInitializingError();
         _;
-    }
-
-    /**
-     * @notice Returns whether the contract has been initialized
-     * @return result Initialized flag
-     */
-    function _initialized() private view returns (bool result) {
-        bytes32 slot = INITIALIZED_SLOT;
-        assembly {
-            result := sload(slot)
-        }
-    }
-
-    /**
-     * @notice Returns whether the contract is currently being initialized
-     * @return result Initializing flag
-     */
-    function _initializing() private view returns (bool result) {
-        bytes32 slot = INITIALIZING_SLOT;
-        assembly {
-            result := sload(slot)
-        }
-    }
-
-    /**
-     * @notice Sets the initialized flag in unstructured storage
-     * @param newInitialized New initialized flag to store
-     */
-    function _setInitialized(bool newInitialized) private {
-        bytes32 slot = INITIALIZED_SLOT;
-        assembly {
-            sstore(slot, newInitialized)
-        }
-    }
-
-    /**
-     * @notice Sets the initializing flag in unstructured storage
-     * @param newInitializing New initializing flag to store
-     */
-    function _setInitializing(bool newInitializing) private {
-        bytes32 slot = INITIALIZING_SLOT;
-        assembly {
-            sstore(slot, newInitializing)
-        }
     }
 
     /**

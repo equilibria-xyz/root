@@ -26,17 +26,6 @@ import "./UInitializable.sol";
 abstract contract UReentrancyGuard is UInitializable {
     error UReentrancyGuardReentrantCallError();
 
-    // Booleans are more expensive than uint256 or any type that takes up a full
-    // word because each write operation emits an extra SLOAD to first read the
-    // slot's contents, replace the bits taken up by the boolean, and then write
-    // back. This is the compiler's defense against contract upgrades and
-    // pointer aliasing, and it cannot be disabled.
-
-    // The values being non-zero value makes deployment a bit more expensive,
-    // but in exchange the refund on every call to nonReentrant will be lower in
-    // amount. Since refunds are capped to a percentage of the total
-    // transaction's gas, it is best to keep them low in cases like this one, to
-    // increase the likelihood of the full refund coming into effect.
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
 
@@ -44,29 +33,14 @@ abstract contract UReentrancyGuard is UInitializable {
      * @dev unstructured storage slot for the reentrancy status
      */
     bytes32 private constant STATUS_SLOT = keccak256("equilibria.root.UReentrancyGuard.status");
+    function _status() private view returns (uint256) { return _readUint256(STATUS_SLOT); }
+    function _setStatus(uint256 newStatus) private { _write(STATUS_SLOT, newStatus); }
 
     /**
      * @dev Initializes the contract setting the status to _NOT_ENTERED.
      */
     function __UReentrancyGuard__initialize() internal onlyInitializer {
         _setStatus(_NOT_ENTERED);
-    }
-
-    /**
-     * @dev Returns the address of the current owner.
-     */
-    function _status() private view returns (uint256 result) {
-        bytes32 slot = STATUS_SLOT;
-        assembly {
-            result := sload(slot)
-        }
-    }
-
-    function _setStatus(uint256 newStatus) private {
-        bytes32 slot = STATUS_SLOT;
-        assembly {
-            sstore(slot, newStatus)
-        }
     }
 
     /**
