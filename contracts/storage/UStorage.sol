@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity 0.8.13;
 
-import "./number/types/UFixed18.sol";
+import "../number/types/UFixed18.sol";
 
-contract UStorage {
+abstract contract UStorage {
     function _readBool(bytes32 slot) internal view returns (bool result) {
         assembly {
             result := sload(slot)
