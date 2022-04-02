@@ -96,10 +96,25 @@ library UFixed18Lib {
      * @notice Divides unsigned fixed-decimal `a` by `b`
      * @param a Unsigned fixed-decimal to divide
      * @param b Unsigned fixed-decimal to divide by
-     * @return Resulting subtracted unsigned fixed-decimal
+     * @return Resulting divided unsigned fixed-decimal
      */
     function div(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
         return UFixed18.wrap(UFixed18.unwrap(a) * BASE / UFixed18.unwrap(b));
+    }
+
+    /**
+     * @notice Divides unsigned fixed-decimal `a` by `b`
+     * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0` and `MAX` for `n/0`.
+     * @param a Unsigned fixed-decimal to divide
+     * @param b Unsigned fixed-decimal to divide by
+     * @return Resulting divided unsigned fixed-decimal
+     */
+    function unsafeDiv(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
+        if (isZero(b)) {
+            return isZero(a) ? ONE : MAX;
+        } else {
+            return div(a, b);
+        }
     }
 
     /**

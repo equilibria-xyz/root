@@ -48,6 +48,10 @@ contract MockUFixed18 {
         return UFixed18Lib.div(a, b);
     }
 
+    function unsafeDiv(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
+        return UFixed18Lib.unsafeDiv(a, b);
+    }
+
     function eq(UFixed18 a, UFixed18 b) external pure returns (bool) {
         return UFixed18Lib.eq(a, b);
     }
