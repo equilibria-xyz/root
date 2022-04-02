@@ -99,6 +99,32 @@ describe('UFixed18', () => {
     it('divs and floors', async () => {
       expect(await uFixed18.div(21, utils.parseEther('10'))).to.equal(2)
     })
+
+    it('reverts', async () => {
+      await expect(uFixed18.div(0, 0)).to.revertedWith('0x12')
+    })
+
+    it('reverts', async () => {
+      await expect(uFixed18.div(utils.parseEther('20'), 0)).to.revertedWith('0x12')
+    })
+  })
+
+  describe('#unsafeDiv', async () => {
+    it('divs', async () => {
+      expect(await uFixed18.unsafeDiv(utils.parseEther('20'), utils.parseEther('10'))).to.equal(utils.parseEther('2'))
+    })
+
+    it('divs and floors', async () => {
+      expect(await uFixed18.unsafeDiv(21, utils.parseEther('10'))).to.equal(2)
+    })
+
+    it('divs (ONE)', async () => {
+      expect(await uFixed18.unsafeDiv(0, 0)).to.equal(utils.parseEther('1'))
+    })
+
+    it('divs (MAX)', async () => {
+      expect(await uFixed18.unsafeDiv(utils.parseEther('20'), 0)).to.equal(ethers.constants.MaxUint256)
+    })
   })
 
   describe('#eq', async () => {

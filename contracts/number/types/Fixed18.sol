@@ -112,10 +112,27 @@ library Fixed18Lib {
      * @notice Divides signed fixed-decimal `a` by `b`
      * @param a Signed fixed-decimal to divide
      * @param b Signed fixed-decimal to divide by
-     * @return Resulting subtracted signed fixed-decimal
+     * @return Resulting divided signed fixed-decimal
      */
     function div(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
         return Fixed18.wrap(Fixed18.unwrap(a) * BASE / Fixed18.unwrap(b));
+    }
+
+    /**
+     * @notice Divides unsigned fixed-decimal `a` by `b`
+     * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0`, `MAX` for `n/0`, and `MIN` for `-n/0`.
+     * @param a Unsigned fixed-decimal to divide
+     * @param b Unsigned fixed-decimal to divide by
+     * @return Resulting divided unsigned fixed-decimal
+     */
+    function unsafeDiv(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
+        if (isZero(b)) {
+            if (gt(a, ZERO)) return MAX;
+            if (lt(a, ZERO)) return MIN;
+            return ONE;
+        } else {
+            return div(a, b);
+        }
     }
 
     /**
