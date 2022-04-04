@@ -15,6 +15,8 @@ const CURVE_2 = {
   maxRate: ethers.utils.parseEther('0.10'),
 }
 
+const SLOT = ethers.utils.keccak256(Buffer.from('equilibria.root.JumpRateUtilizationCurve.testSlot'))
+
 describe('linearUtilizationCurve', () => {
   let user: SignerWithAddress
   let linearUtilizationCurve: MockLinearUtilizationCurve
@@ -75,6 +77,16 @@ describe('linearUtilizationCurve', () => {
           ethers.utils.parseEther('0.10'),
         )
       })
+    })
+  })
+
+  describe('#store(LinearUtilizationCurve)', async () => {
+    it('sets value', async () => {
+      await linearUtilizationCurve.store(SLOT, CURVE_1)
+
+      const storedCurve = await linearUtilizationCurve.read(SLOT)
+      expect(storedCurve.minRate).to.equal(CURVE_1.minRate)
+      expect(storedCurve.maxRate).to.equal(CURVE_1.maxRate)
     })
   })
 })

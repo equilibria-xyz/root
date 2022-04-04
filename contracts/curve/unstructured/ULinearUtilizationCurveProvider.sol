@@ -12,14 +12,12 @@ import "../../control/unstructured/UOwnable.sol";
  *      be safely used with upgradeable contracts.
  */
 abstract contract ULinearUtilizationCurveProvider is UtilizationCurveProvider, UInitializable, UOwnable {
-    event LinearUtilizationCurveUpdated(
-        Fixed18 minRate,
-        Fixed18 maxRate
-    );
+    event LinearUtilizationCurveUpdated(Fixed18 minRate, Fixed18 maxRate);
 
     /// @dev Unstructured storage slot for the LinearUtilizationCurve struct
-    bytes32 private constant UTILIZATION_CURVE_SLOT =
-        keccak256("equilibria.root.ULinearUtilizationCurveProvider.utilizationCurve");
+    LinearUtilizationCurveStorage private constant _utilizationCurve =
+        LinearUtilizationCurveStorage.wrap(keccak256("equilibria.root.ULinearUtilizationCurveProvider.utilizationCurve"));
+    function utilizationCurve() public view returns (LinearUtilizationCurve memory) { return _utilizationCurve.read(); }
 
     /**
      * @notice Initializes the contract state
@@ -27,23 +25,16 @@ abstract contract ULinearUtilizationCurveProvider is UtilizationCurveProvider, U
      */
     function __ULinearUtilizationCurveProvider__initialize(LinearUtilizationCurve memory initialUtilizationCurve)
     internal onlyInitializer {
-        _updateUtilizationCurve(initialUtilizationCurve);
+        updateUtilizationCurve(initialUtilizationCurve);
     }
 
     /**
      * @notice Allows the contract owner to update the curve parameters
      * @param newUtilizationCurve New curve parameter set
      */
-    function updateUtilizationCurve(LinearUtilizationCurve memory newUtilizationCurve) external onlyOwner {
-        _updateUtilizationCurve(newUtilizationCurve);
-    }
-
-    /**
-     * @notice Returns the utilization curve parameter set
-     * @return Current utilization curve parameter set
-     */
-    function utilizationCurve() external view returns (LinearUtilizationCurve memory) {
-        return _storedUtilizationCurve();
+    function updateUtilizationCurve(LinearUtilizationCurve memory newUtilizationCurve) public onlyOwner {
+        _utilizationCurve.store(newUtilizationCurve);
+        emit LinearUtilizationCurveUpdated(newUtilizationCurve.minRate.unpack(), newUtilizationCurve.maxRate.unpack());
     }
 
     /**
@@ -52,31 +43,6 @@ abstract contract ULinearUtilizationCurveProvider is UtilizationCurveProvider, U
      * @return Corresponding rate
      */
     function _computeRate(UFixed18 utilization) internal override view returns (Fixed18) {
-        return _storedUtilizationCurve().compute(utilization);
-    }
-
-    /**
-     * @notice Returns the internal storage pointer for the curve parameter struct
-     * @return storedUtilizationCurve Storage pointer for the curve parameter struct
-     */
-    function _storedUtilizationCurve() private pure returns (LinearUtilizationCurve storage storedUtilizationCurve) {
-        bytes32 slot = UTILIZATION_CURVE_SLOT;
-        assembly { storedUtilizationCurve.slot := slot }
-    }
-
-    /**
-     * @notice Updates the curve parameters to `newUtilizationCurve` in storage
-     * @param newUtilizationCurve New curve parameter set
-     */
-    function _updateUtilizationCurve(LinearUtilizationCurve memory newUtilizationCurve) private {
-        LinearUtilizationCurve storage storedUtilizationCurve = _storedUtilizationCurve();
-
-        storedUtilizationCurve.minRate = newUtilizationCurve.minRate;
-        storedUtilizationCurve.maxRate = newUtilizationCurve.maxRate;
-
-        emit LinearUtilizationCurveUpdated(
-            newUtilizationCurve.minRate.unpack(),
-            newUtilizationCurve.maxRate.unpack()
-        );
+        return utilizationCurve().compute(utilization);
     }
 }
