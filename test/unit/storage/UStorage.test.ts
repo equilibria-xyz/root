@@ -18,52 +18,38 @@ describe('UStorage', () => {
     uStorage = await new MockUStorage__factory(user).deploy()
   })
 
-  describe('#write(bool)', async () => {
+  describe('#store(bool)', async () => {
     it('sets value', async () => {
-      await uStorage['write(bytes32,bool)'](SLOT, true)
+      await uStorage.storeBool(SLOT, true)
       expect(await uStorage.readBool(SLOT)).to.equal(true)
     })
   })
 
-  describe('#write(uint256)', async () => {
+  describe('#store(uint256)', async () => {
     it('sets value', async () => {
-      await uStorage['write(bytes32,uint256)'](SLOT, ethers.utils.parseEther('1'))
+      await uStorage.storeUint256(SLOT, ethers.utils.parseEther('1'))
       expect(await uStorage.readUint256(SLOT)).to.equal(ethers.utils.parseEther('1'))
     })
   })
 
-  describe('#write(int256)', async () => {
+  describe('#store(int256)', async () => {
     it('sets value', async () => {
-      await uStorage['write(bytes32,int256)'](SLOT, ethers.utils.parseEther('-1'))
+      await uStorage.storeInt256(SLOT, ethers.utils.parseEther('-1'))
       expect(await uStorage.readInt256(SLOT)).to.equal(ethers.utils.parseEther('-1'))
     })
   })
 
-  describe('#write(address)', async () => {
+  describe('#store(address)', async () => {
     it('sets value', async () => {
-      await uStorage['write(bytes32,address)'](SLOT, value.address)
+      await uStorage.storeAddress(SLOT, value.address)
       expect(await uStorage.readAddress(SLOT)).to.equal(value.address)
     })
   })
 
-  describe('#write(bytes)', async () => {
+  describe('#store(bytes)', async () => {
     it('sets value', async () => {
-      await uStorage['write(bytes32,bytes32)'](SLOT, SLOT)
+      await uStorage.storeBytes32(SLOT, SLOT)
       expect(await uStorage.readBytes32(SLOT)).to.equal(SLOT)
-    })
-  })
-
-  describe('#write(UFixed18)', async () => {
-    it('sets value', async () => {
-      await uStorage.writeUFixed18(SLOT, ethers.utils.parseEther('1'))
-      expect(await uStorage.readUFixed18(SLOT)).to.equal(ethers.utils.parseEther('1'))
-    })
-  })
-
-  describe('#write(Fixed18)', async () => {
-    it('sets value', async () => {
-      await uStorage.writeFixed18(SLOT, ethers.utils.parseEther('-1'))
-      expect(await uStorage.readFixed18(SLOT)).to.equal(ethers.utils.parseEther('-1'))
     })
   })
 })

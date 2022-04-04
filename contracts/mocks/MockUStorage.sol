@@ -3,60 +3,44 @@ pragma solidity ^0.8.13;
 
 import "../storage/UStorage.sol";
 
-contract MockUStorage is UStorage {
-    function readBool(bytes32 slot) external view returns (bool) {
-        return _readBool(slot);
+contract MockUStorage {
+    function readBool(BoolStorage slot) external view returns (bool) {
+        return slot.read();
     }
 
-    function write(bytes32 slot, bool value) external {
-        _write(slot, value);
+    function storeBool(BoolStorage slot, bool value) external {
+        slot.store(value);
     }
 
-    function readUint256(bytes32 slot) external view returns (uint256) {
-        return _readUint256(slot);
+    function readUint256(Uint256Storage slot) external view returns (uint256) {
+        return slot.read();
     }
 
-    function write(bytes32 slot, uint256 value) external {
-        _write(slot, value);
+    function storeUint256(Uint256Storage slot, uint256 value) external {
+        slot.store(value);
     }
 
-    function readInt256(bytes32 slot) external view returns (int256) {
-        return _readInt256(slot);
+    function readInt256(Int256Storage slot) external view returns (int256) {
+        return slot.read();
     }
 
-    function write(bytes32 slot, int256 value) external {
-        _write(slot, value);
+    function storeInt256(Int256Storage slot, int256 value) external {
+        slot.store(value);
     }
 
-    function readAddress(bytes32 slot) external view returns (address) {
-        return _readAddress(slot);
+    function readAddress(AddressStorage slot) external view returns (address) {
+        return slot.read();
     }
 
-    function write(bytes32 slot, address value) external {
-        _write(slot, value);
+    function storeAddress(AddressStorage slot, address value) external {
+        slot.store(value);
     }
 
-    function readBytes32(bytes32 slot) external view returns (bytes32) {
-        return _readBytes32(slot);
+    function readBytes32(Bytes32Storage slot) external view returns (bytes32) {
+        return slot.read();
     }
 
-    function write(bytes32 slot, bytes32 value) external {
-        _write(slot, value);
-    }
-
-    function readUFixed18(bytes32 slot) external view returns (UFixed18) {
-        return _readUFixed18(slot);
-    }
-
-    function writeUFixed18(bytes32 slot, UFixed18 value) external {
-        _write(slot, value);
-    }
-
-    function readFixed18(bytes32 slot) external view returns (Fixed18) {
-        return _readFixed18(slot);
-    }
-
-    function writeFixed18(bytes32 slot, Fixed18 value) external {
-        _write(slot, value);
+    function storeBytes32(Bytes32Storage slot, bytes32 value) external {
+        slot.store(value);
     }
 }

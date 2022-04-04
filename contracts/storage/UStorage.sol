@@ -3,88 +3,83 @@ pragma solidity 0.8.13;
 
 import "../number/types/UFixed18.sol";
 
-abstract contract UStorage {
-    function _readBool(bytes32 slot) internal view returns (bool result) {
+type BoolStorage is bytes32;
+using BoolStorageLib for BoolStorage global;
+type Uint256Storage is bytes32;
+using Uint256StorageLib for Uint256Storage global;
+type Int256Storage is bytes32;
+using Int256StorageLib for Int256Storage global;
+type AddressStorage is bytes32;
+using AddressStorageLib for AddressStorage global;
+type Bytes32Storage is bytes32;
+using Bytes32StorageLib for Bytes32Storage global;
+
+library BoolStorageLib {
+    function read(BoolStorage self) internal view returns (bool value) {
         assembly {
-            result := sload(slot)
+            value := sload(self)
         }
     }
 
-    function _write(bytes32 slot, bool value) internal {
+    function store(BoolStorage self, bool value) internal {
         assembly {
-            sstore(slot, value)
+            sstore(self, value)
+        }
+    }
+}
+
+library Uint256StorageLib {
+    function read(Uint256Storage self) internal view returns (uint256 value) {
+        assembly {
+            value := sload(self)
         }
     }
 
-    function _readUint256(bytes32 slot) internal view returns (uint256 result) {
+    function store(Uint256Storage self, uint256 value) internal {
         assembly {
-            result := sload(slot)
+            sstore(self, value)
+        }
+    }
+}
+
+library Int256StorageLib {
+    function read(Int256Storage self) internal view returns (int256 value) {
+        assembly {
+            value := sload(self)
         }
     }
 
-    function _write(bytes32 slot, uint256 value) internal {
+    function store(Int256Storage self, int256 value) internal {
         assembly {
-            sstore(slot, value)
+            sstore(self, value)
+        }
+    }
+}
+
+library AddressStorageLib {
+    function read(AddressStorage self) internal view returns (address value) {
+        assembly {
+            value := sload(self)
         }
     }
 
-    function _readInt256(bytes32 slot) internal view returns (int256 result) {
+    function store(AddressStorage self, address value) internal {
         assembly {
-            result := sload(slot)
+            sstore(self, value)
+        }
+    }
+}
+
+library Bytes32StorageLib {
+    function read(Bytes32Storage self) internal view returns (bytes32 value) {
+        assembly {
+            value := sload(self)
         }
     }
 
-    function _write(bytes32 slot, int256 value) internal {
+    function store(Bytes32Storage self, bytes32 value) internal {
         assembly {
-            sstore(slot, value)
-        }
-    }
-
-    function _readAddress(bytes32 slot) internal view returns (address result) {
-        assembly {
-            result := sload(slot)
-        }
-    }
-
-    function _write(bytes32 slot, address value) internal {
-        assembly {
-            sstore(slot, value)
-        }
-    }
-
-    function _readBytes32(bytes32 slot) internal view returns (bytes32 result) {
-        assembly {
-            result := sload(slot)
-        }
-    }
-
-    function _write(bytes32 slot, bytes32 value) internal {
-        assembly {
-            sstore(slot, value)
-        }
-    }
-
-    function _readUFixed18(bytes32 slot) internal view returns (UFixed18 result) {
-        assembly {
-            result := sload(slot)
-        }
-    }
-
-    function _write(bytes32 slot, UFixed18 value) internal {
-        assembly {
-            sstore(slot, value)
-        }
-    }
-
-    function _readFixed18(bytes32 slot) internal view returns (Fixed18 result) {
-        assembly {
-            result := sload(slot)
-        }
-    }
-
-    function _write(bytes32 slot, Fixed18 value) internal {
-        assembly {
-            sstore(slot, value)
+            sstore(self, value)
         }
     }
 }

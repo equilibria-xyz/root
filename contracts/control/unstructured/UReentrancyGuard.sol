@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./UInitializable.sol";
+import "../../storage/UStorage.sol";
 
 /**
  * @dev Contract module that helps prevent reentrant calls to a function.
@@ -32,15 +33,13 @@ abstract contract UReentrancyGuard is UInitializable {
     /**
      * @dev unstructured storage slot for the reentrancy status
      */
-    bytes32 private constant STATUS_SLOT = keccak256("equilibria.root.UReentrancyGuard.status");
-    function _status() private view returns (uint256) { return _readUint256(STATUS_SLOT); }
-    function _setStatus(uint256 newStatus) private { _write(STATUS_SLOT, newStatus); }
+    Uint256Storage private constant _status = Uint256Storage.wrap(keccak256("equilibria.root.UReentrancyGuard.status"));
 
     /**
      * @dev Initializes the contract setting the status to _NOT_ENTERED.
      */
     function __UReentrancyGuard__initialize() internal onlyInitializer {
-        _setStatus(_NOT_ENTERED);
+        _status.store(_NOT_ENTERED);
     }
 
     /**
@@ -52,15 +51,15 @@ abstract contract UReentrancyGuard is UInitializable {
      */
     modifier nonReentrant() {
         // On the first call to nonReentrant, _notEntered will be true
-        if (_status() == _ENTERED) revert UReentrancyGuardReentrantCallError();
+        if (_status.read() == _ENTERED) revert UReentrancyGuardReentrantCallError();
 
         // Any calls to nonReentrant after this point will fail
-        _setStatus(_ENTERED);
+        _status.store(_ENTERED);
 
         _;
 
         // By storing the original value once again, a refund is triggered (see
         // https://eips.ethereum.org/EIPS/eip-2200)
-        _setStatus(_NOT_ENTERED);
+        _status.store(_NOT_ENTERED);
     }
 }

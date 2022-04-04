@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./UInitializable.sol";
+import "../../storage/UStorage.sol";
 
 /**
  * @title UOwnable
@@ -10,7 +11,7 @@ import "./UInitializable.sol";
  *      unstructured storage pattern so that it can be safely mixed in with upgradeable
  *      contracts without affecting their storage patterns through inheritance.
  */
-abstract contract UOwnable is UStorage, UInitializable {
+abstract contract UOwnable is UInitializable {
     event OwnerUpdated(address indexed newOwner);
     event PendingOwnerUpdated(address indexed newPendingOwner);
 
@@ -18,14 +19,12 @@ abstract contract UOwnable is UStorage, UInitializable {
     error UOwnableNotPendingOwnerError(address sender);
 
     /// @dev The owner address
-    bytes32 private constant OWNER_SLOT = keccak256("equilibria.root.UOwnable.owner");
-    function owner() public view returns (address) { return _readAddress(OWNER_SLOT); }
-    function _setOwner(address newOwner) private { _write(OWNER_SLOT, newOwner); }
+    AddressStorage private constant _owner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.owner"));
+    function owner() public view returns (address) { return _owner.read(); }
 
     /// @dev The pending owner address
-    bytes32 private constant PENDING_OWNER_SLOT = keccak256("equilibria.root.UOwnable.pendingOwner");
-    function pendingOwner() public view returns (address) { return _readAddress(PENDING_OWNER_SLOT); }
-    function _setPendingOwner(address newPendingOwner) private { _write(PENDING_OWNER_SLOT, newPendingOwner); }
+    AddressStorage private constant _pendingOwner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.pendingOwner"));
+    function pendingOwner() public view returns (address) { return _pendingOwner.read(); }
 
     /**
      * @notice Initializes the contract setting `msg.sender` as the initial owner
@@ -41,7 +40,7 @@ abstract contract UOwnable is UStorage, UInitializable {
      * @param newPendingOwner New pending owner address
      */
     function updatePendingOwner(address newPendingOwner) public onlyOwner {
-        _setPendingOwner(newPendingOwner);
+        _pendingOwner.store(newPendingOwner);
         emit PendingOwnerUpdated(newPendingOwner);
     }
 
@@ -61,7 +60,7 @@ abstract contract UOwnable is UStorage, UInitializable {
      * @param newOwner New owner address
      */
     function _updateOwner(address newOwner) private {
-        _setOwner(newOwner);
+        _owner.store(newOwner);
         emit OwnerUpdated(newOwner);
     }
 

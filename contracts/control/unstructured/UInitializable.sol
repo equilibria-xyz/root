@@ -12,37 +12,33 @@ import "../../storage/UStorage.sol";
  *      modifier to tag their internal initialization functions to ensure that they can only be called
  *      from a top-level `initializer` or a constructor.
  */
-abstract contract UInitializable is UStorage {
+abstract contract UInitializable {
     error UInitializableCalledFromConstructorError();
     error UInitializableAlreadyInitializedError();
     error UInitializableNotInitializingError();
 
     /// @dev The initialized flag
-    bytes32 private constant INITIALIZED_SLOT = keccak256("equilibria.root.UInitializable.initialized");
-    function _initialized() private view returns (bool) { return _readBool(INITIALIZED_SLOT); }
-    function _setInitialized(bool newInitialized) private { _write(INITIALIZED_SLOT, newInitialized); }
+    BoolStorage private constant _initialized = BoolStorage.wrap(keccak256("equilibria.root.UInitializable.initialized"));
 
     /// @dev The initializing flag
-    bytes32 private constant INITIALIZING_SLOT = keccak256("equilibria.root.UInitializable.initializing");
-    function _initializing() private view returns (bool) { return _readBool(INITIALIZING_SLOT); }
-    function _setInitializing(bool newInitializing) private { _write(INITIALIZING_SLOT, newInitializing); }
+    BoolStorage private constant _initializing = BoolStorage.wrap(keccak256("equilibria.root.UInitializable.initializing"));
 
     /// @dev Can only be called once, and cannot be called from another initializer or constructor
     modifier initializer() {
         if (_constructing()) revert UInitializableCalledFromConstructorError();
-        if (_initialized()) revert UInitializableAlreadyInitializedError();
+        if (_initialized.read()) revert UInitializableAlreadyInitializedError();
 
-        _setInitializing(true);
-        _setInitialized(true);
+        _initializing.store(true);
+        _initialized.store(true);
 
         _;
 
-        _setInitializing(false);
+        _initializing.store(false);
     }
 
     /// @dev Can only be called from an initializer or constructor
     modifier onlyInitializer() {
-        if (!_constructing() && !_initializing())
+        if (!_constructing() && !_initializing.read())
             revert UInitializableNotInitializingError();
         _;
     }
