@@ -10,6 +10,8 @@ import "../../number/types/UFixed18.sol";
 /// @dev Token6
 type Token6 is address;
 using Token6Lib for Token6 global;
+type Token6Storage is bytes32;
+using Token6StorageLib for Token6Storage global;
 
 /**
  * @title Token6Lib
@@ -197,5 +199,19 @@ library Token6Lib {
      */
     function fromTokenAmount(uint256 amount) private pure returns (UFixed18) {
         return UFixed18.wrap(amount * OFFSET);
+    }
+}
+
+library Token6StorageLib {
+    function read(Token6Storage self) internal view returns (Token6 value) {
+        assembly {
+            value := sload(self)
+        }
+    }
+
+    function store(Token6Storage self, Token6 value) internal {
+        assembly {
+            sstore(self, value)
+        }
     }
 }

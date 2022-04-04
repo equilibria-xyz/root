@@ -5,9 +5,6 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Fixed18.sol";
 import "./PackedUFixed18.sol";
 
-//TODO: test storage
-//TODO: add storage to token types
-
 /// @dev UFixed18 type
 type UFixed18 is uint256;
 using UFixed18Lib for UFixed18 global;

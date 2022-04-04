@@ -72,5 +72,13 @@ contract MockToken {
         return TokenLib.balanceOf(self, account);
     }
 
+    function read(TokenStorage slot) external view returns (Token) {
+        return slot.read();
+    }
+
+    function store(TokenStorage slot, Token value) external {
+        slot.store(value);
+    }
+
     receive() external payable { }
 }

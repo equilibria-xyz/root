@@ -47,4 +47,12 @@ contract MockToken18 {
     function balanceOf(Token18 self, address account) external view returns (UFixed18) {
         return Token18Lib.balanceOf(self, account);
     }
+
+    function read(Token18Storage slot) external view returns (Token18) {
+        return slot.read();
+    }
+
+    function store(Token18Storage slot, Token18 value) external {
+        slot.store(value);
+    }
 }

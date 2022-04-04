@@ -9,6 +9,8 @@ import "../../number/types/UFixed18.sol";
 /// @dev Token18
 type Token18 is address;
 using Token18Lib for Token18 global;
+type Token18Storage is bytes32;
+using Token18StorageLib for Token18Storage global;
 
 /**
  * @title Token18Lib
@@ -124,5 +126,19 @@ library Token18Lib {
      */
     function balanceOf(Token18 self, address account) internal view returns (UFixed18) {
         return UFixed18.wrap(IERC20(Token18.unwrap(self)).balanceOf(account));
+    }
+}
+
+library Token18StorageLib {
+    function read(Token18Storage self) internal view returns (Token18 value) {
+        assembly {
+            value := sload(self)
+        }
+    }
+
+    function store(Token18Storage self, Token18 value) internal {
+        assembly {
+            sstore(self, value)
+        }
     }
 }
