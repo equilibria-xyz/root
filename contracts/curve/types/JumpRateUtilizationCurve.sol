@@ -13,6 +13,8 @@ struct JumpRateUtilizationCurve {
     PackedUFixed18 targetUtilization;
 }
 using JumpRateUtilizationCurveLib for JumpRateUtilizationCurve global;
+type JumpRateUtilizationCurveStorage is bytes32;
+using JumpRateUtilizationCurveStorageLib for JumpRateUtilizationCurveStorage global;
 
 /**
  * @title JumpRateUtilizationCurveLib
@@ -45,5 +47,25 @@ library JumpRateUtilizationCurveLib {
             );
         }
         return self.maxRate.unpack();
+    }
+}
+
+library JumpRateUtilizationCurveStorageLib {
+    function read(JumpRateUtilizationCurveStorage self) internal view returns (JumpRateUtilizationCurve memory) {
+        return _storagePointer(self);
+    }
+
+    function store(JumpRateUtilizationCurveStorage self, JumpRateUtilizationCurve memory value) internal {
+        JumpRateUtilizationCurve storage storagePointer = _storagePointer(self);
+
+        storagePointer.minRate = value.minRate;
+        storagePointer.maxRate = value.maxRate;
+        storagePointer.targetRate = value.targetRate;
+        storagePointer.targetUtilization = value.targetUtilization;
+    }
+
+    function _storagePointer(JumpRateUtilizationCurveStorage self)
+    private pure returns (JumpRateUtilizationCurve storage pointer) {
+        assembly { pointer.slot := self }
     }
 }

@@ -8,6 +8,8 @@ import "./PackedUFixed18.sol";
 /// @dev UFixed18 type
 type UFixed18 is uint256;
 using UFixed18Lib for UFixed18 global;
+type UFixed18Storage is bytes32;
+using UFixed18StorageLib for UFixed18Storage global;
 
 /**
  * @title UFixed18Lib
@@ -220,5 +222,19 @@ library UFixed18Lib {
      */
     function truncate(UFixed18 a) internal pure returns (uint256) {
         return UFixed18.unwrap(a) / BASE;
+    }
+}
+
+library UFixed18StorageLib {
+    function read(UFixed18Storage self) internal view returns (UFixed18 value) {
+        assembly {
+            value := sload(self)
+        }
+    }
+
+    function store(UFixed18Storage self, UFixed18 value) internal {
+        assembly {
+            sstore(self, value)
+        }
     }
 }

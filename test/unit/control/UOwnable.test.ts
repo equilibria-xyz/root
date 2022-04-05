@@ -33,7 +33,7 @@ describe('UOwnable', () => {
     })
 
     it('set pending owner', async () => {
-      await expect(uOwnable.connect(owner).setPendingOwner(user.address))
+      await expect(uOwnable.connect(owner).updatePendingOwner(user.address))
         .to.emit(uOwnable, 'PendingOwnerUpdated')
         .withArgs(user.address)
 
@@ -42,13 +42,13 @@ describe('UOwnable', () => {
     })
 
     it('reverts if not owner', async () => {
-      await expect(uOwnable.connect(user).setPendingOwner(user.address)).to.be.revertedWith(
+      await expect(uOwnable.connect(user).updatePendingOwner(user.address)).to.be.revertedWith(
         `UOwnableNotOwnerError("${user.address}")`,
       )
     })
 
     it('reset', async () => {
-      await expect(uOwnable.connect(owner).setPendingOwner(ethers.constants.AddressZero))
+      await expect(uOwnable.connect(owner).updatePendingOwner(ethers.constants.AddressZero))
         .to.emit(uOwnable, 'PendingOwnerUpdated')
         .withArgs(ethers.constants.AddressZero)
 
@@ -60,7 +60,7 @@ describe('UOwnable', () => {
   describe('#acceptOwner', async () => {
     beforeEach(async () => {
       await uOwnable.connect(owner).__initialize()
-      await uOwnable.connect(owner).setPendingOwner(user.address)
+      await uOwnable.connect(owner).updatePendingOwner(user.address)
     })
 
     it('transfers owner', async () => {

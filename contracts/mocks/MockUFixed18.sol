@@ -91,4 +91,12 @@ contract MockUFixed18 {
     function truncate(UFixed18 a) external pure returns (uint256) {
         return UFixed18Lib.truncate(a);
     }
+
+    function read(UFixed18Storage slot) external view returns (UFixed18) {
+        return slot.read();
+    }
+
+    function store(UFixed18Storage slot, UFixed18 value) external {
+        slot.store(value);
+    }
 }

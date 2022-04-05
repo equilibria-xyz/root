@@ -10,6 +10,8 @@ struct LinearUtilizationCurve {
     PackedFixed18 maxRate;
 }
 using LinearUtilizationCurveLib for LinearUtilizationCurve global;
+type LinearUtilizationCurveStorage is bytes32;
+using LinearUtilizationCurveStorageLib for LinearUtilizationCurveStorage global;
 
 /**
  * @title LinearUtilizationCurveLib
@@ -32,5 +34,23 @@ library LinearUtilizationCurveLib {
             );
         }
         return self.maxRate.unpack();
+    }
+}
+
+library LinearUtilizationCurveStorageLib {
+    function read(LinearUtilizationCurveStorage self) internal view returns (LinearUtilizationCurve memory) {
+        return _storagePointer(self);
+    }
+
+    function store(LinearUtilizationCurveStorage self, LinearUtilizationCurve memory value) internal {
+        LinearUtilizationCurve storage storagePointer = _storagePointer(self);
+
+        storagePointer.minRate = value.minRate;
+        storagePointer.maxRate = value.maxRate;
+    }
+
+    function _storagePointer(LinearUtilizationCurveStorage self)
+    private pure returns (LinearUtilizationCurve storage pointer) {
+        assembly { pointer.slot := self }
     }
 }

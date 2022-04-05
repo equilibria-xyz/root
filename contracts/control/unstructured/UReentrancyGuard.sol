@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./UInitializable.sol";
+import "../../storage/UStorage.sol";
 
 /**
  * @dev Contract module that helps prevent reentrant calls to a function.
@@ -26,47 +27,19 @@ import "./UInitializable.sol";
 abstract contract UReentrancyGuard is UInitializable {
     error UReentrancyGuardReentrantCallError();
 
-    // Booleans are more expensive than uint256 or any type that takes up a full
-    // word because each write operation emits an extra SLOAD to first read the
-    // slot's contents, replace the bits taken up by the boolean, and then write
-    // back. This is the compiler's defense against contract upgrades and
-    // pointer aliasing, and it cannot be disabled.
-
-    // The values being non-zero value makes deployment a bit more expensive,
-    // but in exchange the refund on every call to nonReentrant will be lower in
-    // amount. Since refunds are capped to a percentage of the total
-    // transaction's gas, it is best to keep them low in cases like this one, to
-    // increase the likelihood of the full refund coming into effect.
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
 
     /**
      * @dev unstructured storage slot for the reentrancy status
      */
-    bytes32 private constant STATUS_SLOT = keccak256("equilibria.root.UReentrancyGuard.status");
+    Uint256Storage private constant _status = Uint256Storage.wrap(keccak256("equilibria.root.UReentrancyGuard.status"));
 
     /**
      * @dev Initializes the contract setting the status to _NOT_ENTERED.
      */
     function __UReentrancyGuard__initialize() internal onlyInitializer {
-        _setStatus(_NOT_ENTERED);
-    }
-
-    /**
-     * @dev Returns the address of the current owner.
-     */
-    function _status() private view returns (uint256 result) {
-        bytes32 slot = STATUS_SLOT;
-        assembly {
-            result := sload(slot)
-        }
-    }
-
-    function _setStatus(uint256 newStatus) private {
-        bytes32 slot = STATUS_SLOT;
-        assembly {
-            sstore(slot, newStatus)
-        }
+        _status.store(_NOT_ENTERED);
     }
 
     /**
@@ -78,15 +51,15 @@ abstract contract UReentrancyGuard is UInitializable {
      */
     modifier nonReentrant() {
         // On the first call to nonReentrant, _notEntered will be true
-        if (_status() == _ENTERED) revert UReentrancyGuardReentrantCallError();
+        if (_status.read() == _ENTERED) revert UReentrancyGuardReentrantCallError();
 
         // Any calls to nonReentrant after this point will fail
-        _setStatus(_ENTERED);
+        _status.store(_ENTERED);
 
         _;
 
         // By storing the original value once again, a refund is triggered (see
         // https://eips.ethereum.org/EIPS/eip-2200)
-        _setStatus(_NOT_ENTERED);
+        _status.store(_NOT_ENTERED);
     }
 }

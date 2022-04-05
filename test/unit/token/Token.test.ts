@@ -9,6 +9,7 @@ import { MockContract } from '@ethereum-waffle/mock-contract'
 const { ethers } = HRE
 
 const ETHER = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+const SLOT = ethers.utils.keccak256(Buffer.from('equilibria.root.Token.testSlot'))
 
 describe('Token', () => {
   let user: SignerWithAddress
@@ -1084,6 +1085,13 @@ describe('Token', () => {
     it('returns balanceOf (ether)', async () => {
       await user.sendTransaction({ to: token.address, value: ethers.utils.parseEther('100') })
       expect(await token.connect(user)['balanceOf(address)'](ETHER)).to.equal(utils.parseEther('100'))
+    })
+  })
+
+  describe('#store(Token)', async () => {
+    it('sets value', async () => {
+      await token.store(SLOT, erc20.address)
+      expect(await token.read(SLOT)).to.equal(erc20.address)
     })
   })
 })

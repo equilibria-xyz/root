@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "../control/unstructured/UReentrancyGuard.sol";
 
 contract MockUReentrancyGuard is UReentrancyGuard {
-    bytes32 private constant STATUS_SLOT = keccak256("equilibria.root.UReentrancyGuard.status");
+    Uint256Storage private constant _status = Uint256Storage.wrap(keccak256("equilibria.root.UReentrancyGuard.status"));
 
     event NoOp();
 
@@ -12,11 +12,8 @@ contract MockUReentrancyGuard is UReentrancyGuard {
         super.__UReentrancyGuard__initialize();
     }
 
-    function __status() external view returns (uint256 result) {
-        bytes32 slot = STATUS_SLOT;
-        assembly {
-            result := sload(slot)
-        }
+    function __status() external view returns (uint256) {
+        return _status.read();
     }
 
     function noReenter() public nonReentrant { emit NoOp(); }

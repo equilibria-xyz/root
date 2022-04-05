@@ -7,6 +7,8 @@ import { MockFixed18, MockFixed18__factory } from '../../../types/generated'
 
 const { ethers } = HRE
 
+const SLOT = ethers.utils.keccak256(Buffer.from('equilibria.root.Fixed18.testSlot'))
+
 describe('Fixed18', () => {
   let user: SignerWithAddress
   let fixed18: MockFixed18
@@ -380,6 +382,13 @@ describe('Fixed18', () => {
     })
     it('is negative', async () => {
       expect(await fixed18.abs(-12)).to.equal(12)
+    })
+  })
+
+  describe('#store(Fixed18)', async () => {
+    it('sets value', async () => {
+      await fixed18.store(SLOT, -12)
+      expect(await fixed18.read(SLOT)).to.equal(-12)
     })
   })
 })

@@ -111,4 +111,12 @@ contract MockFixed18 {
     function abs(Fixed18 a) external pure returns (UFixed18) {
         return Fixed18Lib.abs(a);
     }
+
+    function read(Fixed18Storage slot) external view returns (Fixed18) {
+        return slot.read();
+    }
+
+    function store(Fixed18Storage slot, Fixed18 value) external {
+        slot.store(value);
+    }
 }

@@ -20,8 +20,9 @@ abstract contract UJumpRateUtilizationCurveProvider is UtilizationCurveProvider,
     );
 
     /// @dev Unstructured storage slot for the JumpRateUtilizationCurve struct
-    bytes32 private constant UTILIZATION_CURVE_SLOT =
-        keccak256("equilibria.root.UJumpRateUtilizationCurveProvider.utilizationCurve");
+    JumpRateUtilizationCurveStorage private constant _utilizationCurve =
+        JumpRateUtilizationCurveStorage.wrap(keccak256("equilibria.root.UJumpRateUtilizationCurveProvider.utilizationCurve"));
+    function utilizationCurve() public view returns (JumpRateUtilizationCurve memory) {return _utilizationCurve.read(); }
 
     /**
      * @notice Initializes the contract state
@@ -29,23 +30,22 @@ abstract contract UJumpRateUtilizationCurveProvider is UtilizationCurveProvider,
      */
     function __UJumpRateUtilizationCurveProvider__initialize(JumpRateUtilizationCurve memory initialUtilizationCurve)
     internal onlyInitializer {
-        _updateUtilizationCurve(initialUtilizationCurve);
+        updateUtilizationCurve(initialUtilizationCurve);
     }
 
     /**
      * @notice Allows the contract owner to update the curve parameters
      * @param newUtilizationCurve New curve parameter set
      */
-    function updateUtilizationCurve(JumpRateUtilizationCurve memory newUtilizationCurve) external onlyOwner {
-        _updateUtilizationCurve(newUtilizationCurve);
-    }
+    function updateUtilizationCurve(JumpRateUtilizationCurve memory newUtilizationCurve) public onlyOwner {
+        _utilizationCurve.store(newUtilizationCurve);
 
-    /**
-     * @notice Returns the utilization curve parameter set
-     * @return Current utilization curve parameter set
-     */
-    function utilizationCurve() external view returns (JumpRateUtilizationCurve memory) {
-        return _storedUtilizationCurve();
+        emit JumpRateUtilizationCurveUpdated(
+            newUtilizationCurve.minRate.unpack(),
+            newUtilizationCurve.maxRate.unpack(),
+            newUtilizationCurve.targetRate.unpack(),
+            newUtilizationCurve.targetUtilization.unpack()
+        );
     }
 
     /**
@@ -54,35 +54,6 @@ abstract contract UJumpRateUtilizationCurveProvider is UtilizationCurveProvider,
      * @return Corresponding rate
      */
     function _computeRate(UFixed18 utilization) internal override view returns (Fixed18) {
-        return _storedUtilizationCurve().compute(utilization);
-    }
-
-    /**
-     * @notice Returns the internal storage pointer for the curve parameter struct
-     * @return storedUtilizationCurve Storage pointer for the curve parameter struct
-     */
-    function _storedUtilizationCurve() private pure returns (JumpRateUtilizationCurve storage storedUtilizationCurve) {
-        bytes32 slot = UTILIZATION_CURVE_SLOT;
-        assembly { storedUtilizationCurve.slot := slot }
-    }
-
-    /**
-     * @notice Updates the curve parameters to `newUtilizationCurve` in storage
-     * @param newUtilizationCurve New curve parameter set
-     */
-    function _updateUtilizationCurve(JumpRateUtilizationCurve memory newUtilizationCurve) private {
-        JumpRateUtilizationCurve storage storedUtilizationCurve = _storedUtilizationCurve();
-
-        storedUtilizationCurve.minRate = newUtilizationCurve.minRate;
-        storedUtilizationCurve.maxRate = newUtilizationCurve.maxRate;
-        storedUtilizationCurve.targetRate = newUtilizationCurve.targetRate;
-        storedUtilizationCurve.targetUtilization = newUtilizationCurve.targetUtilization;
-
-        emit JumpRateUtilizationCurveUpdated(
-            newUtilizationCurve.minRate.unpack(),
-            newUtilizationCurve.maxRate.unpack(),
-            newUtilizationCurve.targetRate.unpack(),
-            newUtilizationCurve.targetUtilization.unpack()
-        );
+        return utilizationCurve().compute(utilization);
     }
 }

@@ -8,6 +8,8 @@ import "./PackedFixed18.sol";
 /// @dev Fixed18 type
 type Fixed18 is int256;
 using Fixed18Lib for Fixed18 global;
+type Fixed18Storage is bytes32;
+using Fixed18StorageLib for Fixed18Storage global;
 
 /**
  * @title Fixed18Lib
@@ -261,5 +263,19 @@ library Fixed18Lib {
      */
     function abs(Fixed18 a) internal pure returns (UFixed18) {
         return UFixed18.wrap(SignedMath.abs(Fixed18.unwrap(a)));
+    }
+}
+
+library Fixed18StorageLib {
+    function read(Fixed18Storage self) internal view returns (Fixed18 value) {
+        assembly {
+            value := sload(self)
+        }
+    }
+
+    function store(Fixed18Storage self, Fixed18 value) internal {
+        assembly {
+            sstore(self, value)
+        }
     }
 }

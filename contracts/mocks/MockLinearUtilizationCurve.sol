@@ -7,4 +7,12 @@ contract MockLinearUtilizationCurve {
     function compute(LinearUtilizationCurve memory self, UFixed18 utilization) external pure returns (Fixed18) {
         return LinearUtilizationCurveLib.compute(self, utilization);
     }
+
+    function read(LinearUtilizationCurveStorage slot) external view returns (LinearUtilizationCurve memory) {
+        return slot.read();
+    }
+
+    function store(LinearUtilizationCurveStorage slot, LinearUtilizationCurve memory value) external {
+        slot.store(value);
+    }
 }

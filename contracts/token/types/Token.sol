@@ -11,6 +11,8 @@ import "../../number/types/UFixed18.sol";
 /// @dev Token
 type Token is address;
 using TokenLib for Token global;
+type TokenStorage is bytes32;
+using TokenStorageLib for TokenStorage global;
 
 /**
  * @title TokenLib
@@ -233,5 +235,19 @@ library TokenLib {
     function fromTokenAmount(Token self, uint256 amount) private view returns (UFixed18) {
         UFixed18 conversion = UFixed18Lib.ratio(BASE, 10 ** uint256(decimals(self)));
         return UFixed18.wrap(amount).mul(conversion);
+    }
+}
+
+library TokenStorageLib {
+    function read(TokenStorage self) internal view returns (Token value) {
+        assembly {
+            value := sload(self)
+        }
+    }
+
+    function store(TokenStorage self, Token value) internal {
+        assembly {
+            sstore(self, value)
+        }
     }
 }
