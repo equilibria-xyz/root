@@ -6,19 +6,16 @@ import {
   MockUInitializable,
   MockUInitializable__factory,
   MockUInitializableConstructor1__factory,
-  MockUInitializableConstructor2__factory,
   MockUInitializableConstructor3__factory,
-  MockUInitializableConstructor4__factory,
   MockUInitializableConstructor5__factory,
   MockUInitializableConstructor6__factory,
-  MockUInitializableConstructor7__factory,
   MockUInitializableConstructor8__factory,
-  MockUInitializableConstructor9__factory,
+  MockUInitializableMulti__factory,
 } from '../../../types/generated'
 
 const { ethers } = HRE
 
-describe('UInitializer', () => {
+describe.only('UInitializer', () => {
   let owner: SignerWithAddress
   let uInitializable: MockUInitializable
 
@@ -29,12 +26,12 @@ describe('UInitializer', () => {
   describe('#initalizer', async () => {
     beforeEach(async () => {
       uInitializable = await new MockUInitializable__factory(owner).deploy()
-      expect(await uInitializable.__initialized()).to.equal(false)
+      expect(await uInitializable.__version()).to.equal(0)
     })
 
     it('successfully initializes', async () => {
       await expect(uInitializable.initialize()).to.emit(uInitializable, 'NoOp').withArgs()
-      expect(await uInitializable.__initialized()).to.equal(true)
+      expect(await uInitializable.__version()).to.equal(1)
     })
 
     it('successfully initializes with children', async () => {
@@ -43,85 +40,99 @@ describe('UInitializer', () => {
         .withArgs()
         .to.emit(uInitializable, 'NoOpChild')
         .withArgs()
-      expect(await uInitializable.__initialized()).to.equal(true)
+      expect(await uInitializable.__version()).to.equal(1)
     })
 
     it('successfully initializes when constructor calls onlyInitializer (1)', async () => {
       const uInitializableConstructor1 = await new MockUInitializableConstructor1__factory(owner).deploy()
-      expect(await uInitializableConstructor1.__initialized()).to.equal(false)
+      expect(await uInitializableConstructor1.__version()).to.equal(0)
     })
 
-    it('reverts when constructor calls initializer (2)', async () => {
-      await expect(new MockUInitializableConstructor2__factory(owner).deploy()).to.be.revertedWith(
-        `UInitializableCalledFromConstructorError()`,
-      )
-    })
-
-    it('reverts when constructor has initializer modifier (3)', async () => {
-      await expect(new MockUInitializableConstructor3__factory(owner).deploy()).to.be.revertedWith(
-        `UInitializableCalledFromConstructorError()`,
-      )
-    })
-
-    it('reverts when constructor calls initializer with children (4)', async () => {
-      await expect(new MockUInitializableConstructor4__factory(owner).deploy()).to.be.revertedWith(
-        `UInitializableCalledFromConstructorError()`,
-      )
+    it('successfully initializes when constructor has initializer modifier (3)', async () => {
+      const uInitializableConstructor3 = await new MockUInitializableConstructor3__factory(owner).deploy()
+      expect(await uInitializableConstructor3.__version()).to.equal(1)
     })
 
     it('successfully initializes when inherited constructor calls onlyInitializer (5)', async () => {
       const uInitializableConstructor5 = await new MockUInitializableConstructor5__factory(owner).deploy()
-      expect(await uInitializableConstructor5.__initialized()).to.equal(false)
+      expect(await uInitializableConstructor5.__version()).to.equal(0)
     })
 
     it('successfully initializes when constructor and inherited constructor calls onlyInitializer (6)', async () => {
       const uInitializableConstructor6 = await new MockUInitializableConstructor6__factory(owner).deploy()
-      expect(await uInitializableConstructor6.__initialized()).to.equal(false)
+      expect(await uInitializableConstructor6.__version()).to.equal(0)
     })
 
-    it('reverts when inherited constructor calls initializer (7)', async () => {
-      await expect(new MockUInitializableConstructor7__factory(owner).deploy()).to.be.revertedWith(
-        `UInitializableCalledFromConstructorError()`,
-      )
-    })
-
-    it('reverts when inherited constructor has initializer modifier (8)', async () => {
-      await expect(new MockUInitializableConstructor8__factory(owner).deploy()).to.be.revertedWith(
-        `UInitializableCalledFromConstructorError()`,
-      )
-    })
-
-    it('reverts when inherited constructor calls initializer with children (9)', async () => {
-      await expect(new MockUInitializableConstructor9__factory(owner).deploy()).to.be.revertedWith(
-        `UInitializableCalledFromConstructorError()`,
-      )
+    it('successfully initializes when inherited constructor has initializer modifier (8)', async () => {
+      const uInitializableConstructor8 = await new MockUInitializableConstructor8__factory(owner).deploy()
+      expect(await uInitializableConstructor8.__version()).to.equal(1)
     })
 
     it('reverts if initialized twice', async () => {
       await expect(uInitializable.initialize()).to.emit(uInitializable, 'NoOp').withArgs()
-      await expect(uInitializable.initialize()).to.be.revertedWith(`UInitializableAlreadyInitializedError()`)
+      await expect(uInitializable.initialize()).to.be.revertedWith(`UInitializableAlreadyInitializedError(1)`)
     })
 
     it('reverts if double initialized', async () => {
-      await expect(uInitializable.doubleInitialize()).to.be.revertedWith(`UInitializableAlreadyInitializedError()`)
+      await expect(uInitializable.doubleInitialize()).to.be.revertedWith(`UInitializableAlreadyInitializedError(1)`)
+    })
+
+    it('successfully initializes new version', async () => {
+      const uInitializableMulti = await new MockUInitializableMulti__factory(owner).deploy()
+      await uInitializableMulti.initialize1()
+
+      await expect(uInitializableMulti.initialize2()).to.emit(uInitializableMulti, 'NoOp').withArgs(2)
+      expect(await uInitializableMulti.__version()).to.equal(2)
+    })
+
+    it('successfully initializes new version way ahead', async () => {
+      const uInitializableMulti = await new MockUInitializableMulti__factory(owner).deploy()
+      await uInitializableMulti.initialize1()
+
+      await expect(uInitializableMulti.initialize17()).to.emit(uInitializableMulti, 'NoOp').withArgs(17)
+      expect(await uInitializableMulti.__version()).to.equal(17)
+    })
+
+    it('successfully initializes new version max', async () => {
+      const uInitializableMulti = await new MockUInitializableMulti__factory(owner).deploy()
+      await uInitializableMulti.initialize1()
+
+      await expect(uInitializableMulti.initializeMax())
+        .to.emit(uInitializableMulti, 'NoOp')
+        .withArgs(ethers.constants.MaxUint256)
+      expect(await uInitializableMulti.__version()).to.equal(ethers.constants.MaxUint256)
+    })
+
+    it('reverts if same version', async () => {
+      const uInitializableMulti = await new MockUInitializableMulti__factory(owner).deploy()
+      await uInitializableMulti.initialize17()
+
+      await expect(uInitializableMulti.initialize17()).to.be.revertedWith(`UInitializableAlreadyInitializedError(17)`)
+    })
+
+    it('reverts if lesser version', async () => {
+      const uInitializableMulti = await new MockUInitializableMulti__factory(owner).deploy()
+      await uInitializableMulti.initialize17()
+
+      await expect(uInitializableMulti.initialize2()).to.be.revertedWith(`UInitializableAlreadyInitializedError(2)`)
     })
   })
 
   describe('#onlyInitializing', async () => {
     beforeEach(async () => {
       uInitializable = await new MockUInitializable__factory(owner).deploy()
-      expect(await uInitializable.__initialized()).to.equal(false)
+      expect(await uInitializable.__version()).to.equal(0)
     })
 
     it('reverts if initialized twice', async () => {
       await expect(uInitializable.initialize()).to.emit(uInitializable, 'NoOp').withArgs()
-      await expect(uInitializable.initialize()).to.be.revertedWith(`UInitializableAlreadyInitializedError()`)
+      await expect(uInitializable.initialize()).to.be.revertedWith(`UInitializableAlreadyInitializedError(1)`)
     })
 
     it('reverts if initialized twice with children', async () => {
       await expect(uInitializable.initializeWithChildren()).to.emit(uInitializable, 'NoOp').withArgs()
       await expect(uInitializable.initializeWithChildren()).to.be.revertedWith(
-        `UInitializableAlreadyInitializedError()`,
+        `UInitializableAlreadyInitializedError(1)`,
       )
     })
 

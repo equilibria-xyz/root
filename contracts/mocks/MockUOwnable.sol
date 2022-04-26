@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "../control/unstructured/UOwnable.sol";
 
 contract MockUOwnable is UOwnable {
-    function __initialize() external initializer {
+    function __initialize() external initializer(1) {
         super.__UOwnable__initialize();
     }
 }

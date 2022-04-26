@@ -8,7 +8,7 @@ contract MockUReentrancyGuard is UReentrancyGuard {
 
     event NoOp();
 
-    function __initialize() external initializer {
+    function __initialize() external initializer(1) {
         super.__UReentrancyGuard__initialize();
     }
 

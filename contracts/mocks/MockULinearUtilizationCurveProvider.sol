@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "../curve/unstructured/ULinearUtilizationCurveProvider.sol";
 
 contract MockULinearUtilizationCurveProvider is ULinearUtilizationCurveProvider {
-    function __initialize(LinearUtilizationCurve memory initialUtilizationCurve) external initializer {
+    function __initialize(LinearUtilizationCurve memory initialUtilizationCurve) external initializer(1) {
         super.__UOwnable__initialize();
         super.__ULinearUtilizationCurveProvider__initialize(initialUtilizationCurve);
     }

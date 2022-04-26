@@ -13,23 +13,23 @@ import "../../storage/UStorage.sol";
  *      from a top-level `initializer` or a constructor.
  */
 abstract contract UInitializable {
-    error UInitializableCalledFromConstructorError();
-    error UInitializableAlreadyInitializedError();
+    error UInitializableZeroVersionError();
+    error UInitializableAlreadyInitializedError(uint256 version);
     error UInitializableNotInitializingError();
 
     /// @dev The initialized flag
-    BoolStorage private constant _initialized = BoolStorage.wrap(keccak256("equilibria.root.UInitializable.initialized"));
+    Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.UInitializable.version"));
 
     /// @dev The initializing flag
     BoolStorage private constant _initializing = BoolStorage.wrap(keccak256("equilibria.root.UInitializable.initializing"));
 
-    /// @dev Can only be called once, and cannot be called from another initializer or constructor
-    modifier initializer() {
-        if (_constructing()) revert UInitializableCalledFromConstructorError();
-        if (_initialized.read()) revert UInitializableAlreadyInitializedError();
+    /// @dev Can only be called once per version, `version` is 1-indexed
+    modifier initializer(uint256 version) {
+        if (version == 0) revert UInitializableZeroVersionError();
+        if (_version.read() >= version) revert UInitializableAlreadyInitializedError(version);
 
+        _version.store(version);
         _initializing.store(true);
-        _initialized.store(true);
 
         _;
 
@@ -38,8 +38,7 @@ abstract contract UInitializable {
 
     /// @dev Can only be called from an initializer or constructor
     modifier onlyInitializer() {
-        if (!_constructing() && !_initializing.read())
-            revert UInitializableNotInitializingError();
+        if (!_constructing() && !_initializing.read()) revert UInitializableNotInitializingError();
         _;
     }
 
