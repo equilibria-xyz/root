@@ -1,7 +1,7 @@
 {
   "name": "@equilibria/root",
   "description": "Core library for DeFi",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "files": [
     "**/*.sol",
     "!/mocks/**/*"
@@ -19,5 +19,8 @@
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/equilibria-xyz/root/issues"
+  },
+  "peerDependencies": {
+    "@openzeppelin/contracts": "4.5.0"
   }
 }

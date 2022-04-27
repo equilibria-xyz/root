@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "../curve/unstructured/UJumpRateUtilizationCurveProvider.sol";
 
 contract MockUJumpRateUtilizationCurveProvider is UJumpRateUtilizationCurveProvider {
-    function __initialize(JumpRateUtilizationCurve memory initialUtilizationCurve) external initializer {
+    function __initialize(JumpRateUtilizationCurve memory initialUtilizationCurve) external initializer(1) {
         super.__UOwnable__initialize();
         super.__UJumpRateUtilizationCurveProvider__initialize(initialUtilizationCurve);
     }
