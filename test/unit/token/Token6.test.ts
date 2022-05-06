@@ -22,6 +22,22 @@ describe('Token6', () => {
     erc20 = await waffle.deployMockContract(user, IERC20Metadata__factory.abi)
   })
 
+  describe('#zero', async () => {
+    it('returns zero', async () => {
+      expect(await token6.zero()).to.equal(ethers.constants.AddressZero)
+    })
+  })
+
+  describe('#eq', async () => {
+    it('returns true', async () => {
+      expect(await token6.eq(erc20.address, erc20.address)).to.equal(true)
+    })
+
+    it('returns false', async () => {
+      expect(await token6.eq(erc20.address, ethers.constants.AddressZero)).to.equal(false)
+    })
+  })
+
   describe('#approve', async () => {
     it('approves tokens', async () => {
       await erc20.mock.allowance.withArgs(token6.address, recipient.address).returns(0)
@@ -256,12 +272,6 @@ describe('Token6', () => {
     it('returns symbol', async () => {
       await erc20.mock.symbol.withArgs().returns('TN')
       expect(await token6.connect(user).symbol(erc20.address)).to.equal('TN')
-    })
-  })
-
-  describe('#decimals', async () => {
-    it('returns decimals', async () => {
-      expect(await token6.connect(user).decimals(erc20.address)).to.equal(6)
     })
   })
 

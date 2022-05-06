@@ -15,7 +15,7 @@ import {
 
 const { ethers } = HRE
 
-describe.only('UInitializer', () => {
+describe('UInitializer', () => {
   let owner: SignerWithAddress
   let uInitializable: MockUInitializable
 

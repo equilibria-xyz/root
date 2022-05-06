@@ -4,6 +4,14 @@ pragma solidity ^0.8.13;
 import "../token/types/Token18.sol";
 
 contract MockToken18 {
+    function zero() external pure returns (Token18) {
+        return Token18Lib.ZERO;
+    }
+
+    function eq(Token18 a, Token18 b) external pure returns (bool) {
+        return Token18Lib.eq(a, b);
+    }
+
     function approve(Token18 self, address grantee) external {
         Token18Lib.approve(self, grantee);
     }
@@ -34,10 +42,6 @@ contract MockToken18 {
 
     function symbol(Token18 self) external view returns (string memory) {
         return Token18Lib.symbol(self);
-    }
-
-    function decimals(Token18 self) external pure returns (uint256) {
-        return Token18Lib.decimals(self);
     }
 
     function balanceOf(Token18 self) external view returns (UFixed18) {

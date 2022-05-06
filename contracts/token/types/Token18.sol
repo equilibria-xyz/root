@@ -20,7 +20,17 @@ using Token18StorageLib for Token18Storage global;
 library Token18Lib {
     using SafeERC20 for IERC20;
 
-    uint256 private constant DECIMALS = 18;
+    Token18 public constant ZERO = Token18.wrap(address(0));
+
+    /**
+     * @notice Returns whether the two tokens are equal
+     * @param a First token to compare
+     * @param b Second token to compare
+     * @return Whether the two tokens are equal
+     */
+    function eq(Token18 a, Token18 b) internal pure returns (bool) {
+        return Token18.unwrap(a) ==  Token18.unwrap(b);
+    }
 
     /**
      * @notice Approves `grantee` to spend infinite tokens from the caller
@@ -99,14 +109,6 @@ library Token18Lib {
      */
     function symbol(Token18 self) internal view returns (string memory) {
         return IERC20Metadata(Token18.unwrap(self)).symbol();
-    }
-
-    /**
-     * @notice Returns the decimals of the token
-     * @return Token decimals
-     */
-    function decimals(Token18) internal pure returns (uint256) {
-        return DECIMALS;
     }
 
     /**

@@ -21,8 +21,19 @@ using Token6StorageLib for Token6Storage global;
 library Token6Lib {
     using SafeERC20 for IERC20;
 
-    uint256 private constant DECIMALS = 6;
+    Token6 public constant ZERO = Token6.wrap(address(0));
+
     uint256 private constant OFFSET = 1e12;
+
+    /**
+     * @notice Returns whether the two tokens are equal
+     * @param a First token to compare
+     * @param b Second token to compare
+     * @return Whether the two tokens are equal
+     */
+    function eq(Token6 a, Token6 b) internal pure returns (bool) {
+        return Token6.unwrap(a) ==  Token6.unwrap(b);
+    }
 
     /**
      * @notice Approves `grantee` to spend infinite tokens from the caller
@@ -148,14 +159,6 @@ library Token6Lib {
      */
     function symbol(Token6 self) internal view returns (string memory) {
         return IERC20Metadata(Token6.unwrap(self)).symbol();
-    }
-
-    /**
-     * @notice Returns the decimals of the token
-     * @return Token decimals
-     */
-    function decimals(Token6) internal pure returns (uint256) {
-        return DECIMALS;
     }
 
     /**
