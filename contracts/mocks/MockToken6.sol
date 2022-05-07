@@ -8,6 +8,10 @@ contract MockToken6 {
         return Token6Lib.ZERO;
     }
 
+    function isZero(Token6 token) external pure returns (bool) {
+        return Token6Lib.isZero(token);
+    }
+
     function eq(Token6 a, Token6 b) external pure returns (bool) {
         return Token6Lib.eq(a, b);
     }

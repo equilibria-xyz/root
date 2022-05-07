@@ -32,6 +32,24 @@ library TokenOrEther18Lib {
     TokenOrEther18 public constant ETHER = TokenOrEther18.wrap(address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE));
 
     /**
+     * @notice Returns whether a token is the Ether address
+     * @param self Token to check for
+     * @return Whether the token is Ether
+     */
+    function isEther(TokenOrEther18 self) internal pure returns (bool) {
+        return TokenOrEther18.unwrap(self) == TokenOrEther18.unwrap(ETHER);
+    }
+
+    /**
+     * @notice Returns whether a token is the zero address
+     * @param self Token to check for
+     * @return Whether the token is the zero address
+     */
+    function isZero(TokenOrEther18 self) internal pure returns (bool) {
+        return TokenOrEther18.unwrap(self) == TokenOrEther18.unwrap(ZERO);
+    }
+
+    /**
      * @notice Returns whether the two tokens are equal
      * @param a First token to compare
      * @param b Second token to compare
@@ -39,15 +57,6 @@ library TokenOrEther18Lib {
      */
     function eq(TokenOrEther18 a, TokenOrEther18 b) internal pure returns (bool) {
         return TokenOrEther18.unwrap(a) ==  TokenOrEther18.unwrap(b);
-    }
-
-    /**
-     * @notice Returns whether a token is the Ether address
-     * @param self TokenOrEther18 to check for
-     * @return Whether the token is Ether
-     */
-    function isEther(TokenOrEther18 self) internal pure returns (bool) {
-        return TokenOrEther18.unwrap(self) == TokenOrEther18.unwrap(ETHER);
     }
 
     /**

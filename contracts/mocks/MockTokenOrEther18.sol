@@ -8,16 +8,20 @@ contract MockTokenOrEther18 {
         return TokenOrEther18Lib.ZERO;
     }
 
-    function eq(TokenOrEther18 a, TokenOrEther18 b) external pure returns (bool) {
-        return TokenOrEther18Lib.eq(a, b);
-    }
-
     function etherToken() external pure returns (TokenOrEther18) {
         return TokenOrEther18Lib.ETHER;
     }
 
+    function isZero(TokenOrEther18 token) external pure returns (bool) {
+        return TokenOrEther18Lib.isZero(token);
+    }
+
     function isEther(TokenOrEther18 token) external pure returns (bool) {
         return TokenOrEther18Lib.isEther(token);
+    }
+
+    function eq(TokenOrEther18 a, TokenOrEther18 b) external pure returns (bool) {
+        return TokenOrEther18Lib.eq(a, b);
     }
 
     function approve(TokenOrEther18 self, address grantee) external {

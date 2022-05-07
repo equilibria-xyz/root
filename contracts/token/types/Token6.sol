@@ -26,6 +26,15 @@ library Token6Lib {
     uint256 private constant OFFSET = 1e12;
 
     /**
+     * @notice Returns whether a token is the zero address
+     * @param self Token to check for
+     * @return Whether the token is the zero address
+     */
+    function isZero(Token6 self) internal pure returns (bool) {
+        return Token6.unwrap(self) == Token6.unwrap(ZERO);
+    }
+
+    /**
      * @notice Returns whether the two tokens are equal
      * @param a First token to compare
      * @param b Second token to compare

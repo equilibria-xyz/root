@@ -28,6 +28,16 @@ describe('Token18', () => {
     })
   })
 
+  describe('#isZero', async () => {
+    it('returns true', async () => {
+      expect(await token18.isZero(ethers.constants.AddressZero)).to.equal(true)
+    })
+
+    it('returns false', async () => {
+      expect(await token18.isZero(erc20.address)).to.equal(false)
+    })
+  })
+
   describe('#eq', async () => {
     it('returns true', async () => {
       expect(await token18.eq(erc20.address, erc20.address)).to.equal(true)

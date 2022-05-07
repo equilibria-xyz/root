@@ -35,13 +35,13 @@ describe('TokenOrEther18', () => {
     })
   })
 
-  describe('#eq', async () => {
+  describe('#isZero', async () => {
     it('returns true', async () => {
-      expect(await tokenOrEther18.eq(erc20.address, erc20.address)).to.equal(true)
+      expect(await tokenOrEther18.isZero(ethers.constants.AddressZero)).to.equal(true)
     })
 
     it('returns false', async () => {
-      expect(await tokenOrEther18.eq(erc20.address, ethers.constants.AddressZero)).to.equal(false)
+      expect(await tokenOrEther18.isZero(ETHER)).to.equal(false)
     })
   })
 
@@ -52,6 +52,16 @@ describe('TokenOrEther18', () => {
 
     it('returns false', async () => {
       expect(await tokenOrEther18.isEther(erc20.address)).to.equal(false)
+    })
+  })
+
+  describe('#eq', async () => {
+    it('returns true', async () => {
+      expect(await tokenOrEther18.eq(erc20.address, erc20.address)).to.equal(true)
+    })
+
+    it('returns false', async () => {
+      expect(await tokenOrEther18.eq(erc20.address, ethers.constants.AddressZero)).to.equal(false)
     })
   })
 
