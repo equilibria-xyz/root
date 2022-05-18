@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "scripts": {
     "build": "yarn compile",
     "compile": "hardhat compile",
@@ -54,7 +54,7 @@
     "typescript": "^4.3.2"
   },
   "resolutions": {
-    "@solidity-parser/parser": "0.14.0"
+    "@solidity-parser/parser": "npm:@equilibria/parser"
   },
   "lint-staged": {
     "*.{ts,.js}": [
