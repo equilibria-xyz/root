@@ -64,6 +64,14 @@ contract MockFixed18 {
         return Fixed18Lib.unsafeDiv(a, b);
     }
 
+    function muldiv1(Fixed18 a, int256 b, int256 c) external pure returns (Fixed18) {
+        return Fixed18Lib.muldiv(a, b, c);
+    }
+
+    function muldiv2(Fixed18 a, Fixed18 b, Fixed18 c) external pure returns (Fixed18) {
+        return Fixed18Lib.muldiv(a, b, c);
+    }
+
     function eq(Fixed18 a, Fixed18 b) external pure returns (bool) {
         return Fixed18Lib.eq(a, b);
     }

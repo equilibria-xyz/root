@@ -138,6 +138,28 @@ library Fixed18Lib {
     }
 
     /**
+     * @notice Computes a * b / c without loss of precision due to BASE conversion
+     * @param a First signed fixed-decimal
+     * @param b Signed number to multiply by
+     * @param b Signed number to divide by
+     * @return Resulting computation
+     */
+    function muldiv(Fixed18 a, int256 b, int256 c) internal pure returns (Fixed18) {
+        return muldiv(a, Fixed18.wrap(b), Fixed18.wrap(c));
+    }
+
+    /**
+     * @notice Computes a * b / c without loss of precision due to BASE conversion
+     * @param a First signed fixed-decimal
+     * @param b Signed fixed-decimal to multiply by
+     * @param b Signed fixed-decimal to divide by
+     * @return Resulting computation
+     */
+    function muldiv(Fixed18 a, Fixed18 b, Fixed18 c) internal pure returns (Fixed18) {
+        return Fixed18.wrap(Fixed18.unwrap(a) * Fixed18.unwrap(b) / Fixed18.unwrap(c));
+    }
+
+    /**
      * @notice Returns whether signed fixed-decimal `a` is equal to `b`
      * @param a First signed fixed-decimal
      * @param b Second signed fixed-decimal

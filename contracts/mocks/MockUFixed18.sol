@@ -52,6 +52,14 @@ contract MockUFixed18 {
         return UFixed18Lib.unsafeDiv(a, b);
     }
 
+    function muldiv1(UFixed18 a, uint256 b, uint256 c) external pure returns (UFixed18) {
+        return UFixed18Lib.muldiv(a, b, c);
+    }
+
+    function muldiv2(UFixed18 a, UFixed18 b, UFixed18 c) external pure returns (UFixed18) {
+        return UFixed18Lib.muldiv(a, b, c);
+    }
+
     function eq(UFixed18 a, UFixed18 b) external pure returns (bool) {
         return UFixed18Lib.eq(a, b);
     }
