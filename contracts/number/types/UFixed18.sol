@@ -123,7 +123,7 @@ library UFixed18Lib {
      * @notice Computes a * b / c without loss of precision due to BASE conversion
      * @param a First unsigned fixed-decimal
      * @param b Unsigned number to multiply by
-     * @param b Unsigned number to divide by
+     * @param c Unsigned number to divide by
      * @return Resulting computation
      */
     function muldiv(UFixed18 a, uint256 b, uint256 c) internal pure returns (UFixed18) {
@@ -134,7 +134,7 @@ library UFixed18Lib {
      * @notice Computes a * b / c without loss of precision due to BASE conversion
      * @param a First unsigned fixed-decimal
      * @param b Unsigned fixed-decimal to multiply by
-     * @param b Unsigned fixed-decimal to divide by
+     * @param c Unsigned fixed-decimal to divide by
      * @return Resulting computation
      */
     function muldiv(UFixed18 a, UFixed18 b, UFixed18 c) internal pure returns (UFixed18) {

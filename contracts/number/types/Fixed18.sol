@@ -141,7 +141,7 @@ library Fixed18Lib {
      * @notice Computes a * b / c without loss of precision due to BASE conversion
      * @param a First signed fixed-decimal
      * @param b Signed number to multiply by
-     * @param b Signed number to divide by
+     * @param c Signed number to divide by
      * @return Resulting computation
      */
     function muldiv(Fixed18 a, int256 b, int256 c) internal pure returns (Fixed18) {
@@ -152,7 +152,7 @@ library Fixed18Lib {
      * @notice Computes a * b / c without loss of precision due to BASE conversion
      * @param a First signed fixed-decimal
      * @param b Signed fixed-decimal to multiply by
-     * @param b Signed fixed-decimal to divide by
+     * @param c Signed fixed-decimal to divide by
      * @return Resulting computation
      */
     function muldiv(Fixed18 a, Fixed18 b, Fixed18 c) internal pure returns (Fixed18) {
