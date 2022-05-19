@@ -77,6 +77,14 @@ describe('UInitializer', () => {
       await expect(uInitializable.doubleInitialize()).to.be.revertedWith(`UInitializableAlreadyInitializedError(1)`)
     })
 
+    it('reverts if invalid version', async () => {
+      await expect(uInitializable.customInitializer(0)).to.be.revertedWith(`UInitializableZeroVersionError()`)
+    })
+
+    it('doesnt revert for valid version', async () => {
+      await uInitializable.customInitializer(1)
+    })
+
     it('successfully initializes new version', async () => {
       const uInitializableMulti = await new MockUInitializableMulti__factory(owner).deploy()
       await uInitializableMulti.initialize1()

@@ -29,6 +29,10 @@ contract MockUInitializable is UInitializable {
     function childInitializer() public onlyInitializer {
         emit NoOpChild();
     }
+
+    function customInitializer(uint256 version) public initializer(version) {
+        emit NoOp();
+    }
 }
 
 contract MockUInitializableConstructor1 is MockUInitializable {
