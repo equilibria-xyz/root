@@ -187,6 +187,60 @@ describe('Fixed18', () => {
     })
   })
 
+  describe('#muldiv', async () => {
+    it('muldivs', async () => {
+      expect(await fixed18.muldiv1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('2'))).to.equal(
+        utils.parseEther('100'),
+      )
+    })
+
+    it('muldivs', async () => {
+      expect(await fixed18.muldiv2(utils.parseEther('20'), 10, 2)).to.equal(utils.parseEther('100'))
+    })
+
+    it('muldivs', async () => {
+      expect(await fixed18.muldiv1(utils.parseEther('-20'), utils.parseEther('10'), utils.parseEther('2'))).to.equal(
+        utils.parseEther('-100'),
+      )
+    })
+
+    it('muldivs', async () => {
+      expect(await fixed18.muldiv2(utils.parseEther('-20'), 10, 2)).to.equal(utils.parseEther('-100'))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await fixed18.muldiv1(
+          utils.parseEther('1.111111111111111111'),
+          utils.parseEther('0.333333333333333333'),
+          utils.parseEther('0.333333333333333333'),
+        ),
+      ).to.equal(utils.parseEther('1.111111111111111111'))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await fixed18.muldiv2(
+          utils.parseEther('1.111111111111111111'),
+          utils.parseEther('0.333333333333333333'),
+          utils.parseEther('0.333333333333333333'),
+        ),
+      ).to.equal(utils.parseEther('1.111111111111111111'))
+    })
+
+    it('reverts', async () => {
+      await expect(
+        fixed18.muldiv1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.revertedWith('0x12')
+    })
+
+    it('reverts', async () => {
+      await expect(
+        fixed18.muldiv2(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.revertedWith('0x12')
+    })
+  })
+
   describe('#eq', async () => {
     it('returns true', async () => {
       expect(await fixed18.eq(12, 12)).to.equal(true)
