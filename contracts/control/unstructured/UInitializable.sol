@@ -17,6 +17,8 @@ abstract contract UInitializable {
     error UInitializableAlreadyInitializedError(uint256 version);
     error UInitializableNotInitializingError();
 
+    event Initialized(uint256 version);
+
     /// @dev The initialized flag
     Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.UInitializable.version"));
 
@@ -34,6 +36,7 @@ abstract contract UInitializable {
         _;
 
         _initializing.store(false);
+        emit Initialized(version);
     }
 
     /// @dev Can only be called from an initializer or constructor
