@@ -91,6 +91,8 @@ library TokenOrEther18Lib {
 
     /**
      * @notice Transfers `amount` tokens from the caller to the `recipient`
+     * @dev IMPORTANT: When transfering ETH, control is transferred to `recipient`, care must
+     *      be taken to not create reentrancy vulnerabilities.
      * @param self Token to transfer
      * @param recipient Address to transfer tokens to
      * @param amount Amount of tokens to transfer
