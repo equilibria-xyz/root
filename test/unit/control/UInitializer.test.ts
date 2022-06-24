@@ -30,7 +30,11 @@ describe('UInitializer', () => {
     })
 
     it('successfully initializes', async () => {
-      await expect(uInitializable.initialize()).to.emit(uInitializable, 'NoOp').withArgs()
+      await expect(uInitializable.initialize())
+        .to.emit(uInitializable, 'NoOp')
+        .withArgs()
+        .to.emit(uInitializable, 'Initialized')
+        .withArgs(1)
       expect(await uInitializable.__version()).to.equal(1)
     })
 
@@ -40,6 +44,8 @@ describe('UInitializer', () => {
         .withArgs()
         .to.emit(uInitializable, 'NoOpChild')
         .withArgs()
+        .to.emit(uInitializable, 'Initialized')
+        .withArgs(1)
       expect(await uInitializable.__version()).to.equal(1)
     })
 
@@ -89,7 +95,11 @@ describe('UInitializer', () => {
       const uInitializableMulti = await new MockUInitializableMulti__factory(owner).deploy()
       await uInitializableMulti.initialize1()
 
-      await expect(uInitializableMulti.initialize2()).to.emit(uInitializableMulti, 'NoOp').withArgs(2)
+      await expect(uInitializableMulti.initialize2())
+        .to.emit(uInitializableMulti, 'NoOp')
+        .withArgs(2)
+        .to.emit(uInitializableMulti, 'Initialized')
+        .withArgs(2)
       expect(await uInitializableMulti.__version()).to.equal(2)
     })
 
@@ -97,7 +107,11 @@ describe('UInitializer', () => {
       const uInitializableMulti = await new MockUInitializableMulti__factory(owner).deploy()
       await uInitializableMulti.initialize1()
 
-      await expect(uInitializableMulti.initialize17()).to.emit(uInitializableMulti, 'NoOp').withArgs(17)
+      await expect(uInitializableMulti.initialize17())
+        .to.emit(uInitializableMulti, 'NoOp')
+        .withArgs(17)
+        .to.emit(uInitializableMulti, 'Initialized')
+        .withArgs(17)
       expect(await uInitializableMulti.__version()).to.equal(17)
     })
 
@@ -107,6 +121,8 @@ describe('UInitializer', () => {
 
       await expect(uInitializableMulti.initializeMax())
         .to.emit(uInitializableMulti, 'NoOp')
+        .withArgs(ethers.constants.MaxUint256)
+        .to.emit(uInitializableMulti, 'Initialized')
         .withArgs(ethers.constants.MaxUint256)
       expect(await uInitializableMulti.__version()).to.equal(ethers.constants.MaxUint256)
     })
