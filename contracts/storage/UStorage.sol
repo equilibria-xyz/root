@@ -7,19 +7,19 @@ import "../number/types/UFixed18.sol";
 type BoolStorage is bytes32;
 using BoolStorageLib for BoolStorage global;
 
-/// @dev Stored Uint256 slot
+/// @dev Stored uint256 slot
 type Uint256Storage is bytes32;
 using Uint256StorageLib for Uint256Storage global;
 
-/// @dev Stored Int256 slot
+/// @dev Stored int256 slot
 type Int256Storage is bytes32;
 using Int256StorageLib for Int256Storage global;
 
-/// @dev Stored Address slot
+/// @dev Stored address slot
 type AddressStorage is bytes32;
 using AddressStorageLib for AddressStorage global;
 
-/// @dev Stored Bytes32 slot
+/// @dev Stored bytes32 slot
 type Bytes32Storage is bytes32;
 using Bytes32StorageLib for Bytes32Storage global;
 
