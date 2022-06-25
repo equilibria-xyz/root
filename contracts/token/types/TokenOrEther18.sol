@@ -71,6 +71,9 @@ library TokenOrEther18Lib {
 
     /**
      * @notice Approves `grantee` to spend `amount` tokens from the caller
+     * @dev There are important race conditions to be aware of when using this function
+            with values other than 0. This will revert if moving from non-zero to non-zero amounts
+            See https://github.com/OpenZeppelin/openzeppelin-contracts/blob/a55b7d13722e7ce850b626da2313f3e66ca1d101/contracts/token/ERC20/IERC20.sol#L57
      * @param self Token to transfer
      * @param grantee Address to allow spending
      * @param amount Amount of tokens to approve to spend
