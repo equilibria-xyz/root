@@ -17,9 +17,9 @@ library PackedUFixed18Lib {
     PackedUFixed18 public constant MAX = PackedUFixed18.wrap(type(uint128).max);
 
     /**
-     * @notice Creates a signed fixed-decimal from a sign and an unsigned fixed-decimal
-     * @param self Sign
-     * @return New signed fixed-decimal
+     * @notice Creates an unpacked unsigned fixed-decimal from a packed unsigned fixed-decimal
+     * @param self packed unsigned fixed-decimal
+     * @return New unpacked unsigned fixed-decimal
      */
     function unpack(PackedUFixed18 self) internal pure returns (UFixed18) {
         return UFixed18.wrap(uint256(PackedUFixed18.unwrap(self)));

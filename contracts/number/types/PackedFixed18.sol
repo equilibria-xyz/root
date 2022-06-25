@@ -18,9 +18,9 @@ library PackedFixed18Lib {
     PackedFixed18 public constant MIN = PackedFixed18.wrap(type(int128).min);
 
     /**
-     * @notice Creates a signed fixed-decimal from a sign and an unsigned fixed-decimal
-     * @param self Sign
-     * @return New signed fixed-decimal
+     * @notice Creates an unpacked signed fixed-decimal from a packed signed fixed-decimal
+     * @param self packed signed fixed-decimal
+     * @return New unpacked signed fixed-decimal
      */
     function unpack(PackedFixed18 self) internal pure returns (Fixed18) {
         return Fixed18.wrap(int256(PackedFixed18.unwrap(self)));

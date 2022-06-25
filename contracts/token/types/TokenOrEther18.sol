@@ -8,8 +8,6 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../../number/types/UFixed18.sol";
 
-//TODO: add .eq()
-
 /// @dev TokenOrEther18
 type TokenOrEther18 is address;
 using TokenOrEther18Lib for TokenOrEther18 global;
