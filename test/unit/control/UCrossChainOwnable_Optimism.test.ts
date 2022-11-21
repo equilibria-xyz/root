@@ -30,10 +30,14 @@ describe('UCrossChainOwnable_Optimism', () => {
   })
 
   describe('#UOwnable__initialize', async () => {
+    beforeEach(async () => {
+      crossDomainMessenger.xDomainMessageSender.returns(xChainOwner.address)
+    })
+
     it('initializes owner', async () => {
       expect(await uOwnable.owner()).to.equal(ethers.constants.AddressZero)
 
-      await expect(uOwnable.connect(crossDomainMessenger.wallet).__initialize(xChainOwner.address))
+      await expect(uOwnable.connect(crossDomainMessenger.wallet).__initialize())
         .to.emit(uOwnable, 'OwnerUpdated')
         .withArgs(xChainOwner.address)
 
@@ -41,16 +45,14 @@ describe('UCrossChainOwnable_Optimism', () => {
     })
 
     it('reverts if not cross chain', async () => {
-      await expect(uOwnable.connect(owner).__initialize(xChainOwner.address)).to.be.revertedWith(
-        'UCrossChainOwnableNotCrossChain()',
-      )
+      await expect(uOwnable.connect(owner).__initialize()).to.be.revertedWith('NotCrossChainCall()')
     })
   })
 
   describe('#setPendingOwner', async () => {
     beforeEach(async () => {
       crossDomainMessenger.xDomainMessageSender.returns(xChainOwner.address)
-      await uOwnable.connect(crossDomainMessenger.wallet).__initialize(xChainOwner.address)
+      await uOwnable.connect(crossDomainMessenger.wallet).__initialize()
     })
 
     it('sets pending owner', async () => {
@@ -66,7 +68,7 @@ describe('UCrossChainOwnable_Optimism', () => {
       crossDomainMessenger.xDomainMessageSender.reset()
       crossDomainMessenger.xDomainMessageSender.returns(user.address)
       await expect(uOwnable.connect(crossDomainMessenger.wallet).updatePendingOwner(user.address)).to.be.revertedWith(
-        `UCrossChainOwnableNotOwnerError("${user.address}")`,
+        `UOwnableNotOwnerError("${user.address}")`,
       )
     })
 
@@ -83,7 +85,7 @@ describe('UCrossChainOwnable_Optimism', () => {
   describe('#acceptOwner', async () => {
     beforeEach(async () => {
       crossDomainMessenger.xDomainMessageSender.returns(xChainOwner.address)
-      await uOwnable.connect(crossDomainMessenger.wallet).__initialize(xChainOwner.address)
+      await uOwnable.connect(crossDomainMessenger.wallet).__initialize()
       await uOwnable.connect(crossDomainMessenger.wallet).updatePendingOwner(user.address)
     })
 
@@ -100,7 +102,7 @@ describe('UCrossChainOwnable_Optimism', () => {
 
     it('reverts if owner not pending owner', async () => {
       await expect(uOwnable.connect(crossDomainMessenger.wallet).acceptOwner()).to.be.revertedWith(
-        `UCrossChainOwnableNotPendingOwnerError("${xChainOwner.address}")`,
+        `UOwnableNotPendingOwnerError("${xChainOwner.address}")`,
       )
     })
 
@@ -108,20 +110,20 @@ describe('UCrossChainOwnable_Optimism', () => {
       crossDomainMessenger.xDomainMessageSender.reset()
       crossDomainMessenger.xDomainMessageSender.returns(unrelated.address)
       await expect(uOwnable.connect(crossDomainMessenger.wallet).acceptOwner()).to.be.revertedWith(
-        `UCrossChainOwnableNotPendingOwnerError("${unrelated.address}")`,
+        `UOwnableNotPendingOwnerError("${unrelated.address}")`,
       )
     })
   })
 
   describe('onlyOwner modifier', async () => {
     beforeEach(async () => {
-      await uOwnable.connect(crossDomainMessenger.wallet).__initialize(xChainOwner.address)
+      await uOwnable.connect(crossDomainMessenger.wallet).__initialize()
     })
 
     it('reverts if not owner', async () => {
       crossDomainMessenger.xDomainMessageSender.returns(user.address)
       await expect(uOwnable.connect(crossDomainMessenger.wallet).mustOwner()).to.be.revertedWith(
-        `UCrossChainOwnableNotOwnerError("${user.address}")`,
+        `UOwnableNotOwnerError("${user.address}")`,
       )
     })
   })

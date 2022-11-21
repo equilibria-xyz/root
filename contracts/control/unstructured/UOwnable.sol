@@ -19,18 +19,18 @@ abstract contract UOwnable is UInitializable {
     error UOwnableNotPendingOwnerError(address sender);
 
     /// @dev The owner address
-    AddressStorage private constant _owner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.owner"));
+    AddressStorage internal constant _owner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.owner"));
     function owner() public view returns (address) { return _owner.read(); }
 
     /// @dev The pending owner address
-    AddressStorage private constant _pendingOwner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.pendingOwner"));
+    AddressStorage internal constant _pendingOwner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.pendingOwner"));
     function pendingOwner() public view returns (address) { return _pendingOwner.read(); }
 
     /**
      * @notice Initializes the contract setting `msg.sender` as the initial owner
      */
     function __UOwnable__initialize() internal onlyInitializer {
-        _updateOwner(msg.sender);
+        _updateOwner(_sender());
     }
 
     /**
@@ -48,9 +48,7 @@ abstract contract UOwnable is UInitializable {
      * @notice Accepts and transfers the ownership of the contract to the pending owner
      * @dev Can only be called by the pending owner to ensure correctness
      */
-    function acceptOwner() external {
-        if (msg.sender != pendingOwner()) revert UOwnableNotPendingOwnerError(msg.sender);
-
+    function acceptOwner() external onlyPendingOwner {
         _updateOwner(pendingOwner());
         updatePendingOwner(address(0));
     }
@@ -59,14 +57,24 @@ abstract contract UOwnable is UInitializable {
      * @notice Updates the owner address
      * @param newOwner New owner address
      */
-    function _updateOwner(address newOwner) private {
+    function _updateOwner(address newOwner) internal {
         _owner.store(newOwner);
         emit OwnerUpdated(newOwner);
     }
 
+    function _sender() internal view virtual returns (address) {
+        return msg.sender;
+    }
+
     /// @dev Throws if called by any account other than the owner
     modifier onlyOwner() {
-        if (owner() != msg.sender) revert UOwnableNotOwnerError(msg.sender);
+        if (owner() != _sender()) revert UOwnableNotOwnerError(_sender());
+        _;
+    }
+
+    /// @dev Throws if called by any account other than the pending owner
+    modifier onlyPendingOwner() {
+        if (pendingOwner() != _sender()) revert UOwnableNotPendingOwnerError(_sender());
         _;
     }
 }
