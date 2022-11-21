@@ -19,11 +19,11 @@ abstract contract UOwnable is UInitializable {
     error UOwnableNotPendingOwnerError(address sender);
 
     /// @dev The owner address
-    AddressStorage internal constant _owner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.owner"));
+    AddressStorage private constant _owner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.owner"));
     function owner() public view returns (address) { return _owner.read(); }
 
     /// @dev The pending owner address
-    AddressStorage internal constant _pendingOwner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.pendingOwner"));
+    AddressStorage private constant _pendingOwner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.pendingOwner"));
     function pendingOwner() public view returns (address) { return _pendingOwner.read(); }
 
     /**
@@ -57,7 +57,7 @@ abstract contract UOwnable is UInitializable {
      * @notice Updates the owner address
      * @param newOwner New owner address
      */
-    function _updateOwner(address newOwner) internal {
+    function _updateOwner(address newOwner) private {
         _owner.store(newOwner);
         emit OwnerUpdated(newOwner);
     }
