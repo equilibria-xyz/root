@@ -48,7 +48,9 @@ abstract contract UOwnable is UInitializable {
      * @notice Accepts and transfers the ownership of the contract to the pending owner
      * @dev Can only be called by the pending owner to ensure correctness
      */
-    function acceptOwner() external onlyPendingOwner {
+    function acceptOwner() external {
+        if (_sender() != pendingOwner()) revert UOwnableNotPendingOwnerError(_sender());
+
         _updateOwner(pendingOwner());
         updatePendingOwner(address(0));
     }
@@ -69,12 +71,6 @@ abstract contract UOwnable is UInitializable {
     /// @dev Throws if called by any account other than the owner
     modifier onlyOwner() {
         if (owner() != _sender()) revert UOwnableNotOwnerError(_sender());
-        _;
-    }
-
-    /// @dev Throws if called by any account other than the pending owner
-    modifier onlyPendingOwner() {
-        if (pendingOwner() != _sender()) revert UOwnableNotPendingOwnerError(_sender());
         _;
     }
 }
