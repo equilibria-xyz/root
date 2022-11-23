@@ -23,9 +23,13 @@ using AddressStorageLib for AddressStorage global;
 type Bytes32Storage is bytes32;
 using Bytes32StorageLib for Bytes32Storage global;
 
+/// @dev Stored string slot
+type StringStorage is bytes32;
+using StringStorageLib for StringStorage global;
+
 /**
  * @title BoolStorageLib
- * @notice Library to manage storage and retrival of a boolean at a fixed storage slot
+ * @notice Library to manage storage and retrieval of a boolean at a fixed storage slot
  */
 library BoolStorageLib {
     /**
@@ -53,7 +57,7 @@ library BoolStorageLib {
 
 /**
  * @title Uint256StorageLib
- * @notice Library to manage storage and retrival of an uint256 at a fixed storage slot
+ * @notice Library to manage storage and retrieval of an uint256 at a fixed storage slot
  */
 library Uint256StorageLib {
     /**
@@ -81,7 +85,7 @@ library Uint256StorageLib {
 
 /**
  * @title Int256StorageLib
- * @notice Library to manage storage and retrival of an int256 at a fixed storage slot
+ * @notice Library to manage storage and retrieval of an int256 at a fixed storage slot
  */
 library Int256StorageLib {
     /**
@@ -109,7 +113,7 @@ library Int256StorageLib {
 
 /**
  * @title AddressStorageLib
- * @notice Library to manage storage and retrival of an address at a fixed storage slot
+ * @notice Library to manage storage and retrieval of an address at a fixed storage slot
  */
 library AddressStorageLib {
     /**
@@ -137,7 +141,7 @@ library AddressStorageLib {
 
 /**
  * @title Bytes32StorageLib
- * @notice Library to manage storage and retrival of a bytes32 at a fixed storage slot
+ * @notice Library to manage storage and retrieval of a bytes32 at a fixed storage slot
  */
 library Bytes32StorageLib {
     /**
@@ -160,5 +164,37 @@ library Bytes32StorageLib {
         assembly {
             sstore(self, value)
         }
+    }
+}
+
+/**
+ * @title StringStorageLib
+ * @notice Library to manage storage and retrieval of a string at a fixed storage slot
+ */
+library StringStorageLib {
+    struct StringStoragePointer {
+        string value;
+    }
+
+    /**
+     * @notice Retrieves the stored value
+     * @param self Storage slot
+     * @return value Stored bytes32 value
+     */
+    function read(StringStorage self) internal view returns (string memory) {
+        return _pointer(self).value;
+    }
+
+    /**
+     * @notice Stores the value at the specific slot
+     * @param self Storage slot
+     * @param value bytes32 value to store
+     */
+    function store(StringStorage self, string memory value) internal {
+        _pointer(self).value = value;
+    }
+
+    function _pointer(StringStorage self) private pure returns (StringStoragePointer storage pointer) {
+        assembly { pointer.slot := self }
     }
 }
