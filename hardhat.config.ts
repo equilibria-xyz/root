@@ -125,7 +125,10 @@ const config: HardhatUserConfig = {
     strict: false,
   },
   dependencyCompiler: {
-    paths: ['@openzeppelin/contracts/vendor/optimism/ICrossDomainMessenger.sol'],
+    paths: [
+      '@openzeppelin/contracts/vendor/optimism/ICrossDomainMessenger.sol',
+      '@openzeppelin/contracts/vendor/arbitrum/IArbSys.sol',
+    ],
   },
 }
 
