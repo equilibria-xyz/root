@@ -13,7 +13,16 @@ import "../../../storage/UStorage.sol";
  *      contracts without affecting their storage patterns through inheritance.
  */
 abstract contract UCrossChainOwnable is UOwnable, CrossChainEnabled {
+    BoolStorage private constant _crossChainRestricted = BoolStorage.wrap(keccak256("equilibria.root.UCrossChainOwnable.crossChainRestricted"));
+    function crossChainRestricted() public view returns (bool) { return _crossChainRestricted.read(); }
+
+    function acceptOwner() public override {
+        _crossChainRestricted.store(true);
+        super.acceptOwner();
+    }
+
     function _sender() internal view override returns (address) {
-        return _crossChainSender();
+        if (crossChainRestricted()) return _crossChainSender();
+        return msg.sender;
     }
 }
