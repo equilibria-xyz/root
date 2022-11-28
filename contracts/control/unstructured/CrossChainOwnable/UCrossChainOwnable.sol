@@ -16,9 +16,8 @@ abstract contract UCrossChainOwnable is UOwnable, CrossChainEnabled {
     BoolStorage private constant _crossChainRestricted = BoolStorage.wrap(keccak256("equilibria.root.UCrossChainOwnable.crossChainRestricted"));
     function crossChainRestricted() public view returns (bool) { return _crossChainRestricted.read(); }
 
-    function acceptOwner() public override {
-        _crossChainRestricted.store(true);
-        super.acceptOwner();
+    function _beforeAcceptOwner() internal override {
+        if (!crossChainRestricted()) _crossChainRestricted.store(true);
     }
 
     function _sender() internal view override returns (address) {

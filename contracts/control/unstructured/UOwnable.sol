@@ -46,14 +46,21 @@ abstract contract UOwnable is UInitializable {
 
     /**
      * @notice Accepts and transfers the ownership of the contract to the pending owner
-     * @dev Can only be called by the pending owner to ensure correctness
+     * @dev Can only be called by the pending owner to ensure correctness. Calls to the `_beforeAcceptOwner` hook
+     *      to perform logic before updating ownership.
      */
-    function acceptOwner() public virtual {
+    function acceptOwner() public {
+        _beforeAcceptOwner();
+
         if (_sender() != pendingOwner()) revert UOwnableNotPendingOwnerError(_sender());
 
         _updateOwner(pendingOwner());
         updatePendingOwner(address(0));
     }
+
+
+    /// @dev Hook for inheriting contracts to perform logic before accepting ownership
+    function _beforeAcceptOwner() internal virtual {}
 
     /**
      * @notice Updates the owner address
