@@ -11,6 +11,8 @@ import "./UCrossChainOwnable.sol";
  *      unstructured storage pattern so that it can be safely mixed in with upgradeable
  *      contracts without affecting their storage patterns through inheritance. This contract
  *      is specific to the Optimism L2-side and should not be used on other chains.
+ *
+ *      See {UCrossChainOwnable} for initialization and update usage.
  */
 abstract contract UCrossChainOwnable_Optimism is CrossChainEnabledOptimism, UCrossChainOwnable {
     /// @dev System address for the CrossDomainMessenger. This address is ONLY valid on the L2 side
