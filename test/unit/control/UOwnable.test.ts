@@ -70,6 +70,14 @@ describe('UOwnable', () => {
       expect(await uOwnable.pendingOwner()).to.equal(ethers.constants.AddressZero)
     })
 
+    it('calls the _beforeAcceptOwner hook', async () => {
+      expect(await uOwnable.beforeCalled()).to.equal(false)
+
+      await expect(uOwnable.connect(user).acceptOwner()).to.emit(uOwnable, 'OwnerUpdated').withArgs(user.address)
+
+      expect(await uOwnable.beforeCalled()).to.equal(true)
+    })
+
     it('reverts if owner not pending owner', async () => {
       await expect(uOwnable.connect(owner).acceptOwner()).to.be.revertedWith(
         `UOwnableNotPendingOwnerError("${owner.address}")`,
