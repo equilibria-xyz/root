@@ -18,7 +18,7 @@ abstract contract UCrossChainOwner is UCrossChainOwnable {
     function send(
         address payable to,
         uint256 value
-    ) payable external onlyOwner() {
+    ) payable external onlyOwner {
         Address.sendValue(to, value);
     }
 
@@ -26,7 +26,7 @@ abstract contract UCrossChainOwner is UCrossChainOwnable {
         address to,
         bytes memory data,
         uint256 value
-    ) external onlyOwner() returns (bytes memory) {
+    ) external onlyOwner returns (bytes memory) {
         return Address.functionCallWithValue(to, data, value);
     }
 }
