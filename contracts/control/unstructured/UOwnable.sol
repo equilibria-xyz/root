@@ -30,7 +30,7 @@ abstract contract UOwnable is UInitializable {
      * @notice Initializes the contract setting `msg.sender` as the initial owner
      */
     function __UOwnable__initialize() internal onlyInitializer {
-        _updateOwner(msg.sender);
+        _updateOwner(_sender());
     }
 
     /**
@@ -46,14 +46,21 @@ abstract contract UOwnable is UInitializable {
 
     /**
      * @notice Accepts and transfers the ownership of the contract to the pending owner
-     * @dev Can only be called by the pending owner to ensure correctness
+     * @dev Can only be called by the pending owner to ensure correctness. Calls to the `_beforeAcceptOwner` hook
+     *      to perform logic before updating ownership.
      */
-    function acceptOwner() external {
-        if (msg.sender != pendingOwner()) revert UOwnableNotPendingOwnerError(msg.sender);
+    function acceptOwner() public {
+        _beforeAcceptOwner();
+
+        if (_sender() != pendingOwner()) revert UOwnableNotPendingOwnerError(_sender());
 
         _updateOwner(pendingOwner());
         updatePendingOwner(address(0));
     }
+
+
+    /// @dev Hook for inheriting contracts to perform logic before accepting ownership
+    function _beforeAcceptOwner() internal virtual {}
 
     /**
      * @notice Updates the owner address
@@ -64,9 +71,13 @@ abstract contract UOwnable is UInitializable {
         emit OwnerUpdated(newOwner);
     }
 
+    function _sender() internal view virtual returns (address) {
+        return msg.sender;
+    }
+
     /// @dev Throws if called by any account other than the owner
-    modifier onlyOwner() {
-        if (owner() != msg.sender) revert UOwnableNotOwnerError(msg.sender);
+    modifier onlyOwner {
+        if (owner() != _sender()) revert UOwnableNotOwnerError(_sender());
         _;
     }
 }

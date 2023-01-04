@@ -15,6 +15,7 @@ import 'solidity-coverage'
 import 'hardhat-gas-reporter'
 import 'hardhat-deploy'
 import 'hardhat-contract-sizer'
+import 'hardhat-dependency-compiler'
 
 const chainIds = {
   ganache: 1337,
@@ -63,9 +64,6 @@ const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
-      accounts: {
-        mnemonic: MNEMONIC,
-      },
       forking: {
         url: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
         enabled: FORK_ENABLED,
@@ -125,6 +123,13 @@ const config: HardhatUserConfig = {
     disambiguatePaths: false,
     runOnCompile: true,
     strict: false,
+  },
+  dependencyCompiler: {
+    paths: [
+      '@openzeppelin/contracts/vendor/optimism/ICrossDomainMessenger.sol',
+      '@openzeppelin/contracts/vendor/arbitrum/IArbSys.sol',
+      '@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol',
+    ],
   },
 }
 
