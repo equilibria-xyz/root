@@ -4,3 +4,5 @@ node_modules
 types/generated
 yarn.lock
 .prettierignore
+coverage
+coverage.json
