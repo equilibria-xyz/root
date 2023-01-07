@@ -115,6 +115,26 @@ describe('TokenOrEther18', () => {
         tokenOrEther18.connect(user)['approve(address,address)'](ETHER, recipient.address),
       ).to.be.revertedWith('TokenOrEther18ApproveEtherError()')
     })
+
+    describe('with prior allowance', () => {
+      beforeEach(async () => {
+        await erc20.mock.allowance.withArgs(tokenOrEther18.address, recipient.address).returns(utils.parseEther('1'))
+      })
+
+      it('reverts when approving for a specific amount', async () => {
+        await expect(
+          tokenOrEther18
+            .connect(user)
+            ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100')),
+        ).to.be.reverted
+      })
+
+      it('approves tokens all', async () => {
+        await erc20.mock.approve.withArgs(recipient.address, ethers.constants.MaxUint256).returns(true)
+
+        await tokenOrEther18.connect(user)['approve(address,address)'](erc20.address, recipient.address)
+      })
+    })
   })
 
   describe('#push', async () => {
