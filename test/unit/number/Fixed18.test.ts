@@ -52,9 +52,14 @@ describe('Fixed18', () => {
     it('creates new', async () => {
       expect(await fixed18['from(int256)'](10)).to.equal(utils.parseEther('10'))
     })
+
+    it('reverts if too large', async () => {
+      const TOO_LARGE = ethers.constants.MaxInt256.sub(10)
+      await expect(fixed18['from(int256)'](TOO_LARGE)).to.be.reverted
+    })
   })
 
-  describe('#from(Fixed18)', async () => {
+  describe('#from(int256,UFixed18)', async () => {
     it('creates positive', async () => {
       expect(await fixed18['from(int256,uint256)'](1, utils.parseEther('10'))).to.equal(utils.parseEther('10'))
     })
@@ -65,6 +70,16 @@ describe('Fixed18', () => {
 
     it('creates negative', async () => {
       expect(await fixed18['from(int256,uint256)'](-1, utils.parseEther('10'))).to.equal(utils.parseEther('-10'))
+    })
+
+    it('reverts if too large or small', async () => {
+      const TOO_LARGE = ethers.BigNumber.from(2).pow(256).sub(10)
+      await expect(fixed18['from(int256,uint256)'](1, TOO_LARGE)).to.be.revertedWith(
+        `Fixed18OverflowError(${TOO_LARGE})`,
+      )
+      await expect(fixed18['from(int256,uint256)'](-1, TOO_LARGE)).to.be.revertedWith(
+        `Fixed18OverflowError(${TOO_LARGE})`,
+      )
     })
   })
 

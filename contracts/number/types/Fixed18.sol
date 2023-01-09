@@ -46,7 +46,12 @@ library Fixed18Lib {
      */
     function from(int256 s, UFixed18 m) internal pure returns (Fixed18) {
         if (s > 0) return from(m);
-        if (s < 0) return Fixed18.wrap(-1 * Fixed18.unwrap(from(m)));
+        if (s < 0) {
+            // Since from(m) multiplies m by BASE, from(m) cannot be type(int256).min
+            // which is the only value that would overflow when negated. Therefore,
+            // we can safely negate from(m) without checking for overflow.
+            unchecked { return Fixed18.wrap(-1 * Fixed18.unwrap(from(m))); }
+        }
         return ZERO;
     }
 
