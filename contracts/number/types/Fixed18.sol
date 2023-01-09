@@ -290,13 +290,13 @@ library Fixed18Lib {
 
 library Fixed18StorageLib {
     function read(Fixed18Storage self) internal view returns (Fixed18 value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
 
     function store(Fixed18Storage self, Fixed18 value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }

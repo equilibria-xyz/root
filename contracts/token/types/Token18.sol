@@ -145,13 +145,13 @@ library Token18Lib {
 
 library Token18StorageLib {
     function read(Token18Storage self) internal view returns (Token18 value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
 
     function store(Token18Storage self, Token18 value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }

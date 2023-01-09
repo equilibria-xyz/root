@@ -222,13 +222,13 @@ library Token6Lib {
 
 library Token6StorageLib {
     function read(Token6Storage self) internal view returns (Token6 value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
 
     function store(Token6Storage self, Token6 value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }

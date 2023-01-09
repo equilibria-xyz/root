@@ -249,13 +249,13 @@ library UFixed18Lib {
 
 library UFixed18StorageLib {
     function read(UFixed18Storage self) internal view returns (UFixed18 value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
 
     function store(UFixed18Storage self, UFixed18 value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }
