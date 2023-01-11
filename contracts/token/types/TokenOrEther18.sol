@@ -173,13 +173,13 @@ library TokenOrEther18Lib {
 
 library TokenOrEther18StorageLib {
     function read(TokenOrEther18Storage self) internal view returns (TokenOrEther18 value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
 
     function store(TokenOrEther18Storage self, TokenOrEther18 value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }

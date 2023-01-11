@@ -66,6 +66,6 @@ library JumpRateUtilizationCurveStorageLib {
 
     function _storagePointer(JumpRateUtilizationCurveStorage self)
     private pure returns (JumpRateUtilizationCurve storage pointer) {
-        assembly { pointer.slot := self }
+        assembly ("memory-safe") { pointer.slot := self }
     }
 }

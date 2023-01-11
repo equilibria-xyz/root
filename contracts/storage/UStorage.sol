@@ -34,7 +34,7 @@ library BoolStorageLib {
      * @return value Stored bool value
      */
     function read(BoolStorage self) internal view returns (bool value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
@@ -45,7 +45,7 @@ library BoolStorageLib {
      * @param value boolean value to store
      */
     function store(BoolStorage self, bool value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }
@@ -62,7 +62,7 @@ library Uint256StorageLib {
      * @return value Stored uint256 value
      */
     function read(Uint256Storage self) internal view returns (uint256 value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
@@ -73,7 +73,7 @@ library Uint256StorageLib {
      * @param value uint256 value to store
      */
     function store(Uint256Storage self, uint256 value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }
@@ -90,7 +90,7 @@ library Int256StorageLib {
      * @return value Stored int256 value
      */
     function read(Int256Storage self) internal view returns (int256 value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
@@ -101,7 +101,7 @@ library Int256StorageLib {
      * @param value int256 value to store
      */
     function store(Int256Storage self, int256 value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }
@@ -118,7 +118,7 @@ library AddressStorageLib {
      * @return value Stored address value
      */
     function read(AddressStorage self) internal view returns (address value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
@@ -129,7 +129,7 @@ library AddressStorageLib {
      * @param value address value to store
      */
     function store(AddressStorage self, address value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }
@@ -146,7 +146,7 @@ library Bytes32StorageLib {
      * @return value Stored bytes32 value
      */
     function read(Bytes32Storage self) internal view returns (bytes32 value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
@@ -157,7 +157,7 @@ library Bytes32StorageLib {
      * @param value bytes32 value to store
      */
     function store(Bytes32Storage self, bytes32 value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }

@@ -51,6 +51,6 @@ library LinearUtilizationCurveStorageLib {
 
     function _storagePointer(LinearUtilizationCurveStorage self)
     private pure returns (LinearUtilizationCurve storage pointer) {
-        assembly { pointer.slot := self }
+        assembly ("memory-safe") { pointer.slot := self }
     }
 }
