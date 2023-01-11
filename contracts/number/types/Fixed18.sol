@@ -121,6 +121,22 @@ library Fixed18Lib {
     }
 
     /**
+     * @notice Divides signed fixed-decimal `a` by `b`
+     * @param a Signed fixed-decimal to divide
+     * @param b Signed fixed-decimal to divide by
+     * @param roundOutwards Whether to round away from zero
+     * @return Resulting divided signed fixed-decimal
+     */
+    function div(Fixed18 a, Fixed18 b, bool roundOutwards) internal pure returns (Fixed18) {
+        if (!roundOutwards) return div(a, b);
+        if (isZero(a) && !isZero(b)) return ZERO;
+
+        int256 numerator = Fixed18.unwrap(a) * BASE;
+        int256 hasRemainder = (numerator % Fixed18.unwrap(b) != 0) ? int256(1) : int256(0);
+        return Fixed18.wrap(numerator / Fixed18.unwrap(b) + hasRemainder * sign(a) * sign(b));
+    }
+
+    /**
      * @notice Divides unsigned fixed-decimal `a` by `b`
      * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0`, `MAX` for `n/0`, and `MIN` for `-n/0`.
      * @param a Unsigned fixed-decimal to divide

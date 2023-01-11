@@ -106,6 +106,20 @@ library UFixed18Lib {
 
     /**
      * @notice Divides unsigned fixed-decimal `a` by `b`
+     * @param a Unsigned fixed-decimal to divide
+     * @param b Unsigned fixed-decimal to divide by
+     * @param roundUp Whether to round result up to the next integer
+     * @return Resulting divided unsigned fixed-decimal
+     */
+    function div(UFixed18 a, UFixed18 b, bool roundUp) internal pure returns (UFixed18) {
+        if (!roundUp) return div(a, b);
+        if (isZero(a) && !isZero(b)) return ZERO;
+
+        return UFixed18.wrap((UFixed18.unwrap(a) * BASE - 1) / UFixed18.unwrap(b) + 1);
+    }
+
+    /**
+     * @notice Divides unsigned fixed-decimal `a` by `b`
      * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0` and `MAX` for `n/0`.
      * @param a Unsigned fixed-decimal to divide
      * @param b Unsigned fixed-decimal to divide by

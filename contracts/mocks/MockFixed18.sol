@@ -60,6 +60,10 @@ contract MockFixed18 {
         return Fixed18Lib.div(a, b);
     }
 
+    function div(Fixed18 a, Fixed18 b, bool roundOutwards) external pure returns (Fixed18) {
+        return Fixed18Lib.div(a, b, roundOutwards);
+    }
+
     function unsafeDiv(Fixed18 a, Fixed18 b) external pure returns (Fixed18) {
         return Fixed18Lib.unsafeDiv(a, b);
     }

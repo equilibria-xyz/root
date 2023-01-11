@@ -93,21 +93,54 @@ describe('UFixed18', () => {
     })
   })
 
-  describe('#div', async () => {
+  describe('#div floor', async () => {
     it('divs', async () => {
-      expect(await uFixed18.div(utils.parseEther('20'), utils.parseEther('10'))).to.equal(utils.parseEther('2'))
+      expect(await uFixed18['div(uint256,uint256)'](utils.parseEther('20'), utils.parseEther('10'))).to.equal(
+        utils.parseEther('2'),
+      )
+      expect(
+        await uFixed18['div(uint256,uint256,bool)'](utils.parseEther('20'), utils.parseEther('10'), false),
+      ).to.equal(utils.parseEther('2'))
     })
 
     it('divs and floors', async () => {
-      expect(await uFixed18.div(21, utils.parseEther('10'))).to.equal(2)
+      expect(await uFixed18['div(uint256,uint256)'](21, utils.parseEther('10'))).to.equal(2)
+      expect(await uFixed18['div(uint256,uint256,bool)'](21, utils.parseEther('10'), false)).to.equal(2)
     })
 
     it('reverts', async () => {
-      await expect(uFixed18.div(0, 0)).to.revertedWith('0x12')
+      await expect(uFixed18['div(uint256,uint256)'](0, 0)).to.revertedWith('0x12')
+      await expect(uFixed18['div(uint256,uint256,bool)'](0, 0, false)).to.revertedWith('0x12')
     })
 
     it('reverts', async () => {
-      await expect(uFixed18.div(utils.parseEther('20'), 0)).to.revertedWith('0x12')
+      await expect(uFixed18['div(uint256,uint256)'](utils.parseEther('20'), 0)).to.revertedWith('0x12')
+      await expect(uFixed18['div(uint256,uint256,bool)'](utils.parseEther('20'), 0, false)).to.revertedWith('0x12')
+    })
+  })
+
+  describe('#div ceil', async () => {
+    it('divs without rounding', async () => {
+      expect(
+        await uFixed18['div(uint256,uint256,bool)'](utils.parseEther('20'), utils.parseEther('10'), true),
+      ).to.equal(utils.parseEther('2'))
+    })
+
+    it('divs and rounds up', async () => {
+      expect(await uFixed18['div(uint256,uint256,bool)'](21, utils.parseEther('10'), true)).to.equal(3)
+    })
+
+    it('divides 0', async () => {
+      expect(await uFixed18['div(uint256,uint256,bool)'](0, utils.parseEther('10'), true)).to.equal(0)
+    })
+
+    it('reverts', async () => {
+      // We get an overflow/underflow error because we subtract 1 from 0.
+      await expect(uFixed18['div(uint256,uint256,bool)'](0, 0, true)).to.revertedWith('0x11')
+    })
+
+    it('reverts', async () => {
+      await expect(uFixed18['div(uint256,uint256,bool)'](utils.parseEther('20'), 0, true)).to.revertedWith('0x12')
     })
   })
 
