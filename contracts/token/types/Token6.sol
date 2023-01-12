@@ -46,11 +46,14 @@ library Token6Lib {
 
     /**
      * @notice Approves `grantee` to spend infinite tokens from the caller
-     * @param self Token to transfer
+     * @dev Uses `approve` rather than `safeApprove` since the race condition
+     *      in safeApprove does not apply when going to an infinite approval
+     * @param self Token to grant approval
+     * @param self Token to grant approval
      * @param grantee Address to allow spending
      */
     function approve(Token6 self, address grantee) internal {
-        IERC20(Token6.unwrap(self)).safeApprove(grantee, type(uint256).max);
+        IERC20(Token6.unwrap(self)).approve(grantee, type(uint256).max);
     }
 
     /**
@@ -58,7 +61,8 @@ library Token6Lib {
      * @dev There are important race conditions to be aware of when using this function
             with values other than 0. This will revert if moving from non-zero to non-zero amounts
             See https://github.com/OpenZeppelin/openzeppelin-contracts/blob/a55b7d13722e7ce850b626da2313f3e66ca1d101/contracts/token/ERC20/IERC20.sol#L57
-     * @param self Token to transfer
+     * @param self Token to grant approval
+     * @param self Token to grant approval
      * @param grantee Address to allow spending
      * @param amount Amount of tokens to approve to spend
      */
@@ -71,7 +75,8 @@ library Token6Lib {
      * @dev There are important race conditions to be aware of when using this function
             with values other than 0. This will revert if moving from non-zero to non-zero amounts
             See https://github.com/OpenZeppelin/openzeppelin-contracts/blob/a55b7d13722e7ce850b626da2313f3e66ca1d101/contracts/token/ERC20/IERC20.sol#L57
-     * @param self Token to transfer
+     * @param self Token to grant approval
+     * @param self Token to grant approval
      * @param grantee Address to allow spending
      * @param amount Amount of tokens to approve to spend
      * @param roundUp Whether to round decimal token amount up to the next unit
