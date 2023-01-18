@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
+import { Math as ExtraMath } from "../Math.sol";
 import "./UFixed18.sol";
 import "./PackedFixed18.sol";
 
@@ -111,6 +112,16 @@ library Fixed18Lib {
     }
 
     /**
+     * @notice Multiplies two signed fixed-decimals `a` and `b` together, rounding the result away from zero if there is a remainder
+     * @param a First signed fixed-decimal
+     * @param b Second signed fixed-decimal
+     * @return Resulting multiplied signed fixed-decimal
+     */
+    function mulOut(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
+        return Fixed18.wrap(ExtraMath.divOut(Fixed18.unwrap(a) * Fixed18.unwrap(b), BASE));
+    }
+
+    /**
      * @notice Divides signed fixed-decimal `a` by `b`
      * @param a Signed fixed-decimal to divide
      * @param b Signed fixed-decimal to divide by
@@ -121,19 +132,13 @@ library Fixed18Lib {
     }
 
     /**
-     * @notice Divides signed fixed-decimal `a` by `b`
+     * @notice Divides signed fixed-decimal `a` by `b`, rounding the result away from zero if there is a remainder
      * @param a Signed fixed-decimal to divide
      * @param b Signed fixed-decimal to divide by
-     * @param roundOutwards Whether to round away from zero
      * @return Resulting divided signed fixed-decimal
      */
-    function div(Fixed18 a, Fixed18 b, bool roundOutwards) internal pure returns (Fixed18) {
-        if (!roundOutwards) return div(a, b);
-        if (isZero(a) && !isZero(b)) return ZERO;
-
-        int256 numerator = Fixed18.unwrap(a) * BASE;
-        int256 hasRemainder = (numerator % Fixed18.unwrap(b) != 0) ? int256(1) : int256(0);
-        return Fixed18.wrap(numerator / Fixed18.unwrap(b) + hasRemainder * sign(a) * sign(b));
+    function divOut(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
+        return Fixed18Lib.from(sign(a) * sign(b), a.abs().divOut(b.abs()));
     }
 
     /**
@@ -154,6 +159,23 @@ library Fixed18Lib {
     }
 
     /**
+     * @notice Divides unsigned fixed-decimal `a` by `b`, rounding the result away from zero if there is a remainder
+     * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0`, `MAX` for `n/0`, and `MIN` for `-n/0`.
+     * @param a Unsigned fixed-decimal to divide
+     * @param b Unsigned fixed-decimal to divide by
+     * @return Resulting divided unsigned fixed-decimal
+     */
+    function unsafeDivOut(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
+        if (isZero(b)) {
+            if (gt(a, ZERO)) return MAX;
+            if (lt(a, ZERO)) return MIN;
+            return ONE;
+        } else {
+            return divOut(a, b);
+        }
+    }
+
+    /**
      * @notice Computes a * b / c without loss of precision due to BASE conversion
      * @param a First signed fixed-decimal
      * @param b Signed number to multiply by
@@ -165,6 +187,17 @@ library Fixed18Lib {
     }
 
     /**
+     * @notice Computes a * b / c without loss of precision due to BASE conversion, rounding the result up to the next integer if there is a remainder
+     * @param a First signed fixed-decimal
+     * @param b Signed number to multiply by
+     * @param c Signed number to divide by
+     * @return Resulting computation
+     */
+    function muldivOut(Fixed18 a, int256 b, int256 c) internal pure returns (Fixed18) {
+        return muldivOut(a, Fixed18.wrap(b), Fixed18.wrap(c));
+    }
+
+    /**
      * @notice Computes a * b / c without loss of precision due to BASE conversion
      * @param a First signed fixed-decimal
      * @param b Signed fixed-decimal to multiply by
@@ -173,6 +206,17 @@ library Fixed18Lib {
      */
     function muldiv(Fixed18 a, Fixed18 b, Fixed18 c) internal pure returns (Fixed18) {
         return Fixed18.wrap(Fixed18.unwrap(a) * Fixed18.unwrap(b) / Fixed18.unwrap(c));
+    }
+
+    /**
+     * @notice Computes a * b / c without loss of precision due to BASE conversion, rounding the result up to the next integer if there is a remainder
+     * @param a First signed fixed-decimal
+     * @param b Signed fixed-decimal to multiply by
+     * @param c Signed fixed-decimal to divide by
+     * @return Resulting computation
+     */
+    function muldivOut(Fixed18 a, Fixed18 b, Fixed18 c) internal pure returns (Fixed18) {
+        return Fixed18.wrap(ExtraMath.divOut(Fixed18.unwrap(a) * Fixed18.unwrap(b), Fixed18.unwrap(c)));
     }
 
     /**

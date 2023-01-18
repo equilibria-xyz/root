@@ -56,24 +56,40 @@ contract MockFixed18 {
         return Fixed18Lib.mul(a, b);
     }
 
+    function mulOut(Fixed18 a, Fixed18 b) external pure returns (Fixed18) {
+        return Fixed18Lib.mulOut(a, b);
+    }
+
     function div(Fixed18 a, Fixed18 b) external pure returns (Fixed18) {
         return Fixed18Lib.div(a, b);
     }
 
-    function div(Fixed18 a, Fixed18 b, bool roundOutwards) external pure returns (Fixed18) {
-        return Fixed18Lib.div(a, b, roundOutwards);
+    function divOut(Fixed18 a, Fixed18 b) external pure returns (Fixed18) {
+        return Fixed18Lib.divOut(a, b);
     }
 
     function unsafeDiv(Fixed18 a, Fixed18 b) external pure returns (Fixed18) {
         return Fixed18Lib.unsafeDiv(a, b);
     }
 
+    function unsafeDivOut(Fixed18 a, Fixed18 b) external pure returns (Fixed18) {
+        return Fixed18Lib.unsafeDivOut(a, b);
+    }
+
     function muldiv1(Fixed18 a, int256 b, int256 c) external pure returns (Fixed18) {
         return Fixed18Lib.muldiv(a, b, c);
     }
 
+    function muldivOut1(Fixed18 a, int256 b, int256 c) external pure returns (Fixed18) {
+        return Fixed18Lib.muldivOut(a, b, c);
+    }
+
     function muldiv2(Fixed18 a, Fixed18 b, Fixed18 c) external pure returns (Fixed18) {
         return Fixed18Lib.muldiv(a, b, c);
+    }
+
+    function muldivOut2(Fixed18 a, Fixed18 b, Fixed18 c) external pure returns (Fixed18) {
+        return Fixed18Lib.muldivOut(a, b, c);
     }
 
     function eq(Fixed18 a, Fixed18 b) external pure returns (bool) {
