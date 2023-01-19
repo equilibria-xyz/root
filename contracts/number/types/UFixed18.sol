@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/math/Math.sol";
-import "./Fixed18.sol";
 import "../NumberMath.sol";
+import "./Fixed18.sol";
 import "./PackedUFixed18.sol";
 
 /// @dev UFixed18 type
