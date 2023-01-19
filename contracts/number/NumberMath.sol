@@ -4,10 +4,10 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
 
 /**
- * @title Math
+ * @title NumberMath
  * @notice Library for additional math functions that are not included in the OpenZeppelin libraries.
  */
-library Math {
+library NumberMath {
     /**
      * @notice Divides `a` by `b`, rounding the result away from zero if there is a remainder
      * @param a Dividend

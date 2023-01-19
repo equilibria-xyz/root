@@ -1,19 +1,18 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
-import { utils } from 'ethers'
 import { expect } from 'chai'
 import HRE from 'hardhat'
 
-import { MockMath, MockMath__factory } from '../../../types/generated'
+import { MockNumberMath, MockNumberMath__factory } from '../../../types/generated'
 
 const { ethers } = HRE
 
-describe('Math', () => {
+describe('NumberMath', () => {
   let user: SignerWithAddress
-  let math: MockMath
+  let math: MockNumberMath
 
   beforeEach(async () => {
     ;[user] = await ethers.getSigners()
-    math = await new MockMath__factory(user).deploy()
+    math = await new MockNumberMath__factory(user).deploy()
   })
 
   describe('#divOut (unsigned)', async () => {

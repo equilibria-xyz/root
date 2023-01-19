@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
-import { Math as ExtraMath } from "../Math.sol";
+import "../NumberMath.sol";
 import "./UFixed18.sol";
 import "./PackedFixed18.sol";
 
@@ -118,7 +118,7 @@ library Fixed18Lib {
      * @return Resulting multiplied signed fixed-decimal
      */
     function mulOut(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(ExtraMath.divOut(Fixed18.unwrap(a) * Fixed18.unwrap(b), BASE));
+        return Fixed18.wrap(NumberMath.divOut(Fixed18.unwrap(a) * Fixed18.unwrap(b), BASE));
     }
 
     /**
@@ -216,7 +216,7 @@ library Fixed18Lib {
      * @return Resulting computation
      */
     function muldivOut(Fixed18 a, Fixed18 b, Fixed18 c) internal pure returns (Fixed18) {
-        return Fixed18.wrap(ExtraMath.divOut(Fixed18.unwrap(a) * Fixed18.unwrap(b), Fixed18.unwrap(c)));
+        return Fixed18.wrap(NumberMath.divOut(Fixed18.unwrap(a) * Fixed18.unwrap(b), Fixed18.unwrap(c)));
     }
 
     /**

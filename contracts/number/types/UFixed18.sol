@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./Fixed18.sol";
-import { Math as ExtraMath } from "../Math.sol";
+import "../NumberMath.sol";
 import "./PackedUFixed18.sol";
 
 /// @dev UFixed18 type
@@ -102,7 +102,7 @@ library UFixed18Lib {
      * @return Resulting multiplied unsigned fixed-decimal
      */
     function mulOut(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(Math.ceilDiv(UFixed18.unwrap(a) * UFixed18.unwrap(b), BASE));
+        return UFixed18.wrap(NumberMath.divOut(UFixed18.unwrap(a) * UFixed18.unwrap(b), BASE));
     }
 
     /**
@@ -122,8 +122,7 @@ library UFixed18Lib {
      * @return Resulting divided unsigned fixed-decimal
      */
     function divOut(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        if (isZero(a) && !isZero(b)) return ZERO;
-        return UFixed18.wrap(ExtraMath.divOut(UFixed18.unwrap(a) * BASE, UFixed18.unwrap(b)));
+        return UFixed18.wrap(NumberMath.divOut(UFixed18.unwrap(a) * BASE, UFixed18.unwrap(b)));
     }
 
     /**
@@ -198,7 +197,7 @@ library UFixed18Lib {
      * @return Resulting computation
      */
     function muldivOut(UFixed18 a, UFixed18 b, UFixed18 c) internal pure returns (UFixed18) {
-        return UFixed18.wrap(Math.ceilDiv(UFixed18.unwrap(a) * UFixed18.unwrap(b), UFixed18.unwrap(c)));
+        return UFixed18.wrap(NumberMath.divOut(UFixed18.unwrap(a) * UFixed18.unwrap(b), UFixed18.unwrap(c)));
     }
 
     /**
