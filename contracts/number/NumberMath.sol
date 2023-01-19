@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
 
 /**
@@ -8,6 +9,8 @@ import "@openzeppelin/contracts/utils/math/SignedMath.sol";
  * @notice Library for additional math functions that are not included in the OpenZeppelin libraries.
  */
 library NumberMath {
+    error DivisionByZero();
+
     /**
      * @notice Divides `a` by `b`, rounding the result away from zero if there is a remainder
      * @param a Dividend
@@ -15,8 +18,8 @@ library NumberMath {
      * @return Resulting quotient
      */
     function divOut(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a == 0 && b != 0) return 0;
-        return (a - 1) / b + 1;
+        if (b == 0) revert DivisionByZero();
+        return Math.ceilDiv(a, b);
     }
 
     /**

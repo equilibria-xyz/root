@@ -30,11 +30,11 @@ describe('NumberMath', () => {
 
     it('reverts', async () => {
       // We get an overflow/underflow error because we subtract 1 from 0.
-      await expect(math['divOut(uint256,uint256)'](0, 0)).to.be.revertedWith('0x11')
+      await expect(math['divOut(uint256,uint256)'](0, 0)).to.be.revertedWith('DivisionByZero()')
     })
 
     it('reverts', async () => {
-      await expect(math['divOut(uint256,uint256)'](20, 0)).to.be.revertedWith('0x12')
+      await expect(math['divOut(uint256,uint256)'](20, 0)).to.be.revertedWith('DivisionByZero()')
     })
   })
 
@@ -54,16 +54,15 @@ describe('NumberMath', () => {
     })
 
     it('reverts', async () => {
-      // We get an overflow/underflow error because we subtract 1 from 0 in the signed version of divOut.
-      await expect(math['divOut(int256,int256)'](0, 0)).to.revertedWith('0x11')
+      await expect(math['divOut(int256,int256)'](0, 0)).to.revertedWith('DivisionByZero()')
     })
 
     it('reverts', async () => {
-      await expect(math['divOut(int256,int256)'](20, 0)).to.revertedWith('0x12')
+      await expect(math['divOut(int256,int256)'](20, 0)).to.revertedWith('DivisionByZero()')
     })
 
     it('reverts', async () => {
-      await expect(math['divOut(int256,int256)'](-20, 0)).to.revertedWith('0x12')
+      await expect(math['divOut(int256,int256)'](-20, 0)).to.revertedWith('DivisionByZero()')
     })
   })
 

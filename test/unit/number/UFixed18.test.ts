@@ -139,12 +139,11 @@ describe('UFixed18', () => {
     })
 
     it('reverts', async () => {
-      // We get an overflow/underflow error because we subtract 1 from 0.
-      await expect(uFixed18.divOut(0, 0)).to.revertedWith('0x11')
+      await expect(uFixed18.divOut(0, 0)).to.revertedWith('DivisionByZero()')
     })
 
     it('reverts', async () => {
-      await expect(uFixed18.divOut(utils.parseEther('20'), 0)).to.revertedWith('0x12')
+      await expect(uFixed18.divOut(utils.parseEther('20'), 0)).to.revertedWith('DivisionByZero()')
     })
   })
 
@@ -274,13 +273,13 @@ describe('UFixed18', () => {
     it('reverts', async () => {
       await expect(
         uFixed18.muldivOut1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
-      ).to.revertedWith('0x12')
+      ).to.revertedWith('DivisionByZero()')
     })
 
     it('reverts', async () => {
       await expect(
         uFixed18.muldivOut2(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
-      ).to.revertedWith('0x12')
+      ).to.revertedWith('DivisionByZero()')
     })
   })
 
