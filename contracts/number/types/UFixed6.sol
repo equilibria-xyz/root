@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../NumberMath.sol";
 import "./Fixed6.sol";
+import "./UFixed18.sol";
 
 /// @dev UFixed6 type
 type UFixed6 is uint256;
@@ -42,6 +43,25 @@ library UFixed6Lib {
      */
     function from(uint256 a) internal pure returns (UFixed6) {
         return UFixed6.wrap(a * BASE);
+    }
+
+    /**
+     * @notice Creates an unsigned fixed-decimal from a base-18 unsigned fixed-decimal
+     * @param a Base-18 unsigned fixed-decimal
+     * @return New unsigned fixed-decimal
+     */
+    function from(UFixed18 a) internal pure returns (UFixed6) {
+        return UFixed6.wrap(UFixed18.unwrap(a) / 1e12);
+    }
+
+    /**
+     * @notice Creates an unsigned fixed-decimal from a base-18 unsigned fixed-decimal
+     * @param a Base-18 unsigned fixed-decimal
+     * @param roundOut Whether to round the result away from zero if there is a remainder
+     * @return New unsigned fixed-decimal
+     */
+    function from(UFixed18 a, bool roundOut) internal pure returns (UFixed6) {
+        return roundOut ? UFixed6.wrap(NumberMath.divOut(UFixed18.unwrap(a), 1e12)): from(a);
     }
 
     /**

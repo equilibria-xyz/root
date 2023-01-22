@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
 import "../NumberMath.sol";
+import "./Fixed18.sol";
 import "./UFixed6.sol";
 
 /// @dev Fixed6 type
@@ -62,6 +63,25 @@ library Fixed6Lib {
      */
     function from(int256 a) internal pure returns (Fixed6) {
         return Fixed6.wrap(a * BASE);
+    }
+
+    /**
+     * @notice Creates a signed fixed-decimal from a base-18 signed fixed-decimal
+     * @param a Base-18 signed fixed-decimal
+     * @return New signed fixed-decimal
+     */
+    function from(Fixed18 a) internal pure returns (Fixed6) {
+        return Fixed6.wrap(Fixed18.unwrap(a) / 1e12);
+    }
+
+    /**
+     * @notice Creates a signed fixed-decimal from a base-18 signed fixed-decimal
+     * @param a Base-18 signed fixed-decimal
+     * @param roundOut Whether to round the result away from zero if there is a remainder
+     * @return New signed fixed-decimal
+     */
+    function from(Fixed18 a, bool roundOut) internal pure returns (Fixed6) {
+        return roundOut ? Fixed6.wrap(NumberMath.divOut(Fixed18.unwrap(a), 1e12)): from(a);
     }
 
     /**

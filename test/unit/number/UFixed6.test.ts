@@ -1,4 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
+import { utils } from 'ethers'
 import { expect } from 'chai'
 import HRE from 'hardhat'
 
@@ -50,6 +51,28 @@ describe('UFixed6', () => {
     it('reverts if negative', async () => {
       await expect(uFixed6['from(int256)'](parseBase6('-10'))).to.be.revertedWith(
         `UFixed6UnderflowError(${parseBase6('-10')})`,
+      )
+    })
+  })
+
+  describe('#from(UFixed18)', async () => {
+    it('creates new (no rounding)', async () => {
+      expect(await uFixed6['fromBase18(uint256)'](utils.parseEther('10.1'))).to.equal(parseBase6('10.1'))
+      expect(await uFixed6['fromBase18(uint256,bool)'](utils.parseEther('10.1'), true)).to.equal(parseBase6('10.1'))
+      expect(await uFixed6['fromBase18(uint256,bool)'](utils.parseEther('10.1'), false)).to.equal(parseBase6('10.1'))
+    })
+
+    it('creates new (round towards 0 implicit)', async () => {
+      expect(await uFixed6['fromBase18(uint256)'](utils.parseEther('10').add(1))).to.equal(parseBase6('10'))
+    })
+
+    it('creates new (round towards 0 explicit)', async () => {
+      expect(await uFixed6['fromBase18(uint256,bool)'](utils.parseEther('10').add(1), false)).to.equal(parseBase6('10'))
+    })
+
+    it('creates new (round away from 0)', async () => {
+      expect(await uFixed6['fromBase18(uint256,bool)'](utils.parseEther('10').add(1), true)).to.equal(
+        parseBase6('10').add(1),
       )
     })
   })

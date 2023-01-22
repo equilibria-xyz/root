@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../NumberMath.sol";
 import "./Fixed18.sol";
 import "./PackedUFixed18.sol";
+import "./UFixed6.sol";
 
 /// @dev UFixed18 type
 type UFixed18 is uint256;
@@ -43,6 +44,15 @@ library UFixed18Lib {
      */
     function from(uint256 a) internal pure returns (UFixed18) {
         return UFixed18.wrap(a * BASE);
+    }
+
+    /**
+     * @notice Creates a signed fixed-decimal from a base-6 signed fixed-decimal
+     * @param a Base-6 signed fixed-decimal
+     * @return New signed fixed-decimal
+     */
+    function from(UFixed6 a) internal pure returns (UFixed18) {
+        return UFixed18.wrap(UFixed6.unwrap(a) * 1e12);
     }
 
     /**

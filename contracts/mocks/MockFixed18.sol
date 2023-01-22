@@ -36,6 +36,10 @@ contract MockFixed18 {
         return Fixed18Lib.from(a);
     }
 
+    function fromFixed6(Fixed6 a) external pure returns (Fixed18) {
+        return Fixed18Lib.from(a);
+    }
+
     function pack(Fixed18 a) external pure returns (PackedFixed18) {
         return Fixed18Lib.pack(a);
     }

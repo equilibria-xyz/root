@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "../number/types/UFixed18.sol";
+import "../number/types/UFixed6.sol";
 
 contract MockUFixed18 {
     function ZERO() external pure returns (UFixed18) {
@@ -21,6 +22,10 @@ contract MockUFixed18 {
     }
 
     function from(uint256 a) external pure returns (UFixed18) {
+        return UFixed18Lib.from(a);
+    }
+
+    function fromUFixed6(UFixed6 a) external pure returns (UFixed18) {
         return UFixed18Lib.from(a);
     }
 

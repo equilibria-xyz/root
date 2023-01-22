@@ -24,6 +24,14 @@ contract MockUFixed6 {
         return UFixed6Lib.from(a);
     }
 
+    function fromBase18(UFixed18 a) external pure returns (UFixed6) {
+        return UFixed6Lib.from(a);
+    }
+
+    function fromBase18(UFixed18 a, bool roundOut) external pure returns (UFixed6) {
+        return UFixed6Lib.from(a, roundOut);
+    }
+
     function isZero(UFixed6 a) external pure returns (bool) {
         return UFixed6Lib.isZero(a);
     }

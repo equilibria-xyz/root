@@ -1,4 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
+import { utils } from 'ethers'
 import { expect } from 'chai'
 import HRE from 'hardhat'
 
@@ -89,6 +90,37 @@ describe('Fixed6', () => {
     it('reverts if too large', async () => {
       const TOO_LARGE = ethers.BigNumber.from(2).pow(256).sub(10)
       await expect(fixed6['from(uint256)'](TOO_LARGE)).to.be.revertedWith(`Fixed6OverflowError(${TOO_LARGE})`)
+    })
+  })
+
+  describe('#from(UFixed18)', async () => {
+    it('creates new (no rounding)', async () => {
+      expect(await fixed6['fromBase18(int256)'](utils.parseEther('10.1'))).to.equal(parseBase6('10.1'))
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10.1'), true)).to.equal(parseBase6('10.1'))
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10.1'), false)).to.equal(parseBase6('10.1'))
+
+      expect(await fixed6['fromBase18(int256)'](utils.parseEther('-10.1'))).to.equal(parseBase6('-10.1'))
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10.1'), true)).to.equal(parseBase6('-10.1'))
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10.1'), false)).to.equal(parseBase6('-10.1'))
+    })
+
+    it('creates new (round towards 0 implicit)', async () => {
+      expect(await fixed6['fromBase18(int256)'](utils.parseEther('10').add(1))).to.equal(parseBase6('10'))
+      expect(await fixed6['fromBase18(int256)'](utils.parseEther('-10').sub(1))).to.equal(parseBase6('-10'))
+    })
+
+    it('creates new (round towards 0 explicit)', async () => {
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10').add(1), false)).to.equal(parseBase6('10'))
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10').sub(1), false)).to.equal(parseBase6('-10'))
+    })
+
+    it('creates new (round away from 0)', async () => {
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10').add(1), true)).to.equal(
+        parseBase6('10').add(1),
+      )
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10').sub(1), true)).to.equal(
+        parseBase6('-10').sub(1),
+      )
     })
   })
 

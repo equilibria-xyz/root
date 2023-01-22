@@ -36,6 +36,14 @@ contract MockFixed6 {
         return Fixed6Lib.from(a);
     }
 
+    function fromBase18(Fixed18 a) external pure returns (Fixed6) {
+        return Fixed6Lib.from(a);
+    }
+
+    function fromBase18(Fixed18 a, bool roundOut) external pure returns (Fixed6) {
+        return Fixed6Lib.from(a, roundOut);
+    }
+
     function isZero(Fixed6 a) external pure returns (bool) {
         return Fixed6Lib.isZero(a);
     }
