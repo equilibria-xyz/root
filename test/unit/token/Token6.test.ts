@@ -1,10 +1,10 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
+import { utils } from 'ethers'
 import { expect } from 'chai'
 import HRE, { waffle } from 'hardhat'
 
 import { IERC20Metadata__factory, MockToken6, MockToken6__factory } from '../../../types/generated'
 import { MockContract } from '@ethereum-waffle/mock-contract'
-import { parseBase6 } from '../../testutil/number'
 
 const { ethers } = HRE
 
@@ -55,7 +55,7 @@ describe('Token6', () => {
 
       await token6
         .connect(user)
-        ['approve(address,address,uint256)'](erc20.address, recipient.address, parseBase6('100'))
+        ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseUnits('100', 6))
     })
 
     it('approves tokens all', async () => {
@@ -67,12 +67,14 @@ describe('Token6', () => {
 
     describe('with prior allowance', () => {
       beforeEach(async () => {
-        await erc20.mock.allowance.withArgs(token6.address, recipient.address).returns(parseBase6('1'))
+        await erc20.mock.allowance.withArgs(token6.address, recipient.address).returns(utils.parseUnits('1', 6))
       })
 
       it('reverts when approving for a specific amount', async () => {
         await expect(
-          token6.connect(user)['approve(address,address,uint256)'](erc20.address, recipient.address, parseBase6('100')),
+          token6
+            .connect(user)
+            ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseUnits('100', 6)),
         ).to.be.reverted
       })
 
@@ -88,7 +90,9 @@ describe('Token6', () => {
     it('transfers tokens', async () => {
       await erc20.mock.transfer.withArgs(recipient.address, 100_000_000).returns(true)
 
-      await token6.connect(user)['push(address,address,uint256)'](erc20.address, recipient.address, parseBase6('100'))
+      await token6
+        .connect(user)
+        ['push(address,address,uint256)'](erc20.address, recipient.address, utils.parseUnits('100', 6))
     })
 
     it('transfers tokens all', async () => {
@@ -103,7 +107,7 @@ describe('Token6', () => {
     it('transfers tokens', async () => {
       await erc20.mock.transferFrom.withArgs(user.address, token6.address, 100_000_000).returns(true)
 
-      await token6.connect(user).pull(erc20.address, user.address, parseBase6('100'))
+      await token6.connect(user).pull(erc20.address, user.address, utils.parseUnits('100', 6))
     })
   })
 
@@ -111,7 +115,7 @@ describe('Token6', () => {
     it('transfers tokens', async () => {
       await erc20.mock.transferFrom.withArgs(user.address, recipient.address, 100_000_000).returns(true)
 
-      await token6.connect(user).pullTo(erc20.address, user.address, recipient.address, parseBase6('100'))
+      await token6.connect(user).pullTo(erc20.address, user.address, recipient.address, utils.parseUnits('100', 6))
     })
   })
 
@@ -133,13 +137,13 @@ describe('Token6', () => {
     it('returns balance', async () => {
       await erc20.mock.balanceOf.withArgs(user.address).returns(100_000_000)
       expect(await token6.connect(user)['balanceOf(address,address)'](erc20.address, user.address)).to.equal(
-        parseBase6('100'),
+        utils.parseUnits('100', 6),
       )
     })
 
     it('returns balance all', async () => {
       await erc20.mock.balanceOf.withArgs(token6.address).returns(100_000_000)
-      expect(await token6.connect(user)['balanceOf(address)'](erc20.address)).to.equal(parseBase6('100'))
+      expect(await token6.connect(user)['balanceOf(address)'](erc20.address)).to.equal(utils.parseUnits('100', 6))
     })
   })
 

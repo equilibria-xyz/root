@@ -4,7 +4,6 @@ import { expect } from 'chai'
 import HRE from 'hardhat'
 
 import { MockFixed6, MockFixed6__factory } from '../../../types/generated'
-import { parseBase6 } from '../../testutil/number'
 
 const { ethers } = HRE
 
@@ -27,13 +26,13 @@ describe('Fixed6', () => {
 
   describe('#ONE', async () => {
     it('returns one', async () => {
-      expect(await fixed6.ONE()).to.equal(parseBase6('1'))
+      expect(await fixed6.ONE()).to.equal(utils.parseUnits('1', 6))
     })
   })
 
   describe('#NEG_ONE', async () => {
     it('returns negative one', async () => {
-      expect(await fixed6.NEG_ONE()).to.equal(parseBase6('-1'))
+      expect(await fixed6.NEG_ONE()).to.equal(utils.parseUnits('-1', 6))
     })
   })
 
@@ -51,7 +50,7 @@ describe('Fixed6', () => {
 
   describe('#from(int256)', async () => {
     it('creates new', async () => {
-      expect(await fixed6['from(int256)'](10)).to.equal(parseBase6('10'))
+      expect(await fixed6['from(int256)'](10)).to.equal(utils.parseUnits('10', 6))
     })
 
     it('reverts if too large', async () => {
@@ -62,15 +61,15 @@ describe('Fixed6', () => {
 
   describe('#from(int256,UFixed6)', async () => {
     it('creates positive', async () => {
-      expect(await fixed6['from(int256,uint256)'](1, parseBase6('10'))).to.equal(parseBase6('10'))
+      expect(await fixed6['from(int256,uint256)'](1, utils.parseUnits('10', 6))).to.equal(utils.parseUnits('10', 6))
     })
 
     it('creates zero', async () => {
-      expect(await fixed6['from(int256,uint256)'](0, parseBase6('10'))).to.equal(0)
+      expect(await fixed6['from(int256,uint256)'](0, utils.parseUnits('10', 6))).to.equal(0)
     })
 
     it('creates negative', async () => {
-      expect(await fixed6['from(int256,uint256)'](-1, parseBase6('10'))).to.equal(parseBase6('-10'))
+      expect(await fixed6['from(int256,uint256)'](-1, utils.parseUnits('10', 6))).to.equal(utils.parseUnits('-10', 6))
     })
 
     it('reverts if too large or small', async () => {
@@ -84,7 +83,7 @@ describe('Fixed6', () => {
 
   describe('#from(UFixed6)', async () => {
     it('creates new', async () => {
-      expect(await fixed6['from(uint256)'](parseBase6('10'))).to.equal(parseBase6('10'))
+      expect(await fixed6['from(uint256)'](utils.parseUnits('10', 6))).to.equal(utils.parseUnits('10', 6))
     })
 
     it('reverts if too large', async () => {
@@ -95,31 +94,43 @@ describe('Fixed6', () => {
 
   describe('#from(UFixed18)', async () => {
     it('creates new (no rounding)', async () => {
-      expect(await fixed6['fromBase18(int256)'](utils.parseEther('10.1'))).to.equal(parseBase6('10.1'))
-      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10.1'), true)).to.equal(parseBase6('10.1'))
-      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10.1'), false)).to.equal(parseBase6('10.1'))
+      expect(await fixed6['fromBase18(int256)'](utils.parseEther('10.1'))).to.equal(utils.parseUnits('10.1', 6))
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10.1'), true)).to.equal(
+        utils.parseUnits('10.1', 6),
+      )
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10.1'), false)).to.equal(
+        utils.parseUnits('10.1', 6),
+      )
 
-      expect(await fixed6['fromBase18(int256)'](utils.parseEther('-10.1'))).to.equal(parseBase6('-10.1'))
-      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10.1'), true)).to.equal(parseBase6('-10.1'))
-      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10.1'), false)).to.equal(parseBase6('-10.1'))
+      expect(await fixed6['fromBase18(int256)'](utils.parseEther('-10.1'))).to.equal(utils.parseUnits('-10.1', 6))
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10.1'), true)).to.equal(
+        utils.parseUnits('-10.1', 6),
+      )
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10.1'), false)).to.equal(
+        utils.parseUnits('-10.1', 6),
+      )
     })
 
     it('creates new (round towards 0 implicit)', async () => {
-      expect(await fixed6['fromBase18(int256)'](utils.parseEther('10').add(1))).to.equal(parseBase6('10'))
-      expect(await fixed6['fromBase18(int256)'](utils.parseEther('-10').sub(1))).to.equal(parseBase6('-10'))
+      expect(await fixed6['fromBase18(int256)'](utils.parseEther('10').add(1))).to.equal(utils.parseUnits('10', 6))
+      expect(await fixed6['fromBase18(int256)'](utils.parseEther('-10').sub(1))).to.equal(utils.parseUnits('-10', 6))
     })
 
     it('creates new (round towards 0 explicit)', async () => {
-      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10').add(1), false)).to.equal(parseBase6('10'))
-      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10').sub(1), false)).to.equal(parseBase6('-10'))
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10').add(1), false)).to.equal(
+        utils.parseUnits('10', 6),
+      )
+      expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10').sub(1), false)).to.equal(
+        utils.parseUnits('-10', 6),
+      )
     })
 
     it('creates new (round away from 0)', async () => {
       expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('10').add(1), true)).to.equal(
-        parseBase6('10').add(1),
+        utils.parseUnits('10', 6).add(1),
       )
       expect(await fixed6['fromBase18(int256,bool)'](utils.parseEther('-10').sub(1), true)).to.equal(
-        parseBase6('-10').sub(1),
+        utils.parseUnits('-10', 6).sub(1),
       )
     })
   })
@@ -156,10 +167,18 @@ describe('Fixed6', () => {
 
   describe('#mul', async () => {
     it('muls', async () => {
-      expect(await fixed6.mul(parseBase6('20'), parseBase6('10'))).to.equal(parseBase6('200'))
-      expect(await fixed6.mul(parseBase6('-20'), parseBase6('10'))).to.equal(parseBase6('-200'))
-      expect(await fixed6.mul(parseBase6('20'), parseBase6('-10'))).to.equal(parseBase6('-200'))
-      expect(await fixed6.mul(parseBase6('-20'), parseBase6('-10'))).to.equal(parseBase6('200'))
+      expect(await fixed6.mul(utils.parseUnits('20', 6), utils.parseUnits('10', 6))).to.equal(
+        utils.parseUnits('200', 6),
+      )
+      expect(await fixed6.mul(utils.parseUnits('-20', 6), utils.parseUnits('10', 6))).to.equal(
+        utils.parseUnits('-200', 6),
+      )
+      expect(await fixed6.mul(utils.parseUnits('20', 6), utils.parseUnits('-10', 6))).to.equal(
+        utils.parseUnits('-200', 6),
+      )
+      expect(await fixed6.mul(utils.parseUnits('-20', 6), utils.parseUnits('-10', 6))).to.equal(
+        utils.parseUnits('200', 6),
+      )
     })
 
     it('muls and rounds towards zero', async () => {
@@ -172,10 +191,18 @@ describe('Fixed6', () => {
 
   describe('#mulOut', async () => {
     it('muls', async () => {
-      expect(await fixed6.mulOut(parseBase6('20'), parseBase6('10'))).to.equal(parseBase6('200'))
-      expect(await fixed6.mulOut(parseBase6('-20'), parseBase6('10'))).to.equal(parseBase6('-200'))
-      expect(await fixed6.mulOut(parseBase6('20'), parseBase6('-10'))).to.equal(parseBase6('-200'))
-      expect(await fixed6.mulOut(parseBase6('-20'), parseBase6('-10'))).to.equal(parseBase6('200'))
+      expect(await fixed6.mulOut(utils.parseUnits('20', 6), utils.parseUnits('10', 6))).to.equal(
+        utils.parseUnits('200', 6),
+      )
+      expect(await fixed6.mulOut(utils.parseUnits('-20', 6), utils.parseUnits('10', 6))).to.equal(
+        utils.parseUnits('-200', 6),
+      )
+      expect(await fixed6.mulOut(utils.parseUnits('20', 6), utils.parseUnits('-10', 6))).to.equal(
+        utils.parseUnits('-200', 6),
+      )
+      expect(await fixed6.mulOut(utils.parseUnits('-20', 6), utils.parseUnits('-10', 6))).to.equal(
+        utils.parseUnits('200', 6),
+      )
     })
 
     it('muls and rounds away from zero', async () => {
@@ -188,16 +215,18 @@ describe('Fixed6', () => {
 
   describe('#div', async () => {
     it('divs', async () => {
-      expect(await fixed6.div(parseBase6('20'), parseBase6('10'))).to.equal(parseBase6('2'))
+      expect(await fixed6.div(utils.parseUnits('20', 6), utils.parseUnits('10', 6))).to.equal(utils.parseUnits('2', 6))
     })
 
     it('divs', async () => {
-      expect(await fixed6.div(parseBase6('-20'), parseBase6('-10'))).to.equal(parseBase6('2'))
+      expect(await fixed6.div(utils.parseUnits('-20', 6), utils.parseUnits('-10', 6))).to.equal(
+        utils.parseUnits('2', 6),
+      )
     })
 
     it('divs and rounds towards zero', async () => {
-      expect(await fixed6.div(21, parseBase6('10'))).to.equal(2)
-      expect(await fixed6.div(-21, parseBase6('10'))).to.equal(-2)
+      expect(await fixed6.div(21, utils.parseUnits('10', 6))).to.equal(2)
+      expect(await fixed6.div(-21, utils.parseUnits('10', 6))).to.equal(-2)
     })
 
     it('reverts', async () => {
@@ -205,27 +234,35 @@ describe('Fixed6', () => {
     })
 
     it('reverts', async () => {
-      await expect(fixed6.div(parseBase6('20'), 0)).to.revertedWith('0x12')
+      await expect(fixed6.div(utils.parseUnits('20', 6), 0)).to.revertedWith('0x12')
     })
 
     it('reverts', async () => {
-      await expect(fixed6.div(parseBase6('-20'), 0)).to.revertedWith('0x12')
+      await expect(fixed6.div(utils.parseUnits('-20', 6), 0)).to.revertedWith('0x12')
     })
   })
 
   describe('#divOut', async () => {
     it('divs without rounding', async () => {
-      expect(await fixed6.divOut(parseBase6('20'), parseBase6('10'))).to.equal(parseBase6('2'))
-      expect(await fixed6.divOut(parseBase6('-20'), parseBase6('-10'))).to.equal(parseBase6('2'))
-      expect(await fixed6.divOut(parseBase6('20'), parseBase6('-10'))).to.equal(parseBase6('-2'))
-      expect(await fixed6.divOut(parseBase6('-20'), parseBase6('10'))).to.equal(parseBase6('-2'))
+      expect(await fixed6.divOut(utils.parseUnits('20', 6), utils.parseUnits('10', 6))).to.equal(
+        utils.parseUnits('2', 6),
+      )
+      expect(await fixed6.divOut(utils.parseUnits('-20', 6), utils.parseUnits('-10', 6))).to.equal(
+        utils.parseUnits('2', 6),
+      )
+      expect(await fixed6.divOut(utils.parseUnits('20', 6), utils.parseUnits('-10', 6))).to.equal(
+        utils.parseUnits('-2', 6),
+      )
+      expect(await fixed6.divOut(utils.parseUnits('-20', 6), utils.parseUnits('10', 6))).to.equal(
+        utils.parseUnits('-2', 6),
+      )
     })
 
     it('divs and rounds away from zero', async () => {
-      expect(await fixed6.divOut(21, parseBase6('10'))).to.equal(3)
-      expect(await fixed6.divOut(-21, parseBase6('10'))).to.equal(-3)
-      expect(await fixed6.divOut(21, parseBase6('-10'))).to.equal(-3)
-      expect(await fixed6.divOut(-21, parseBase6('-10'))).to.equal(3)
+      expect(await fixed6.divOut(21, utils.parseUnits('10', 6))).to.equal(3)
+      expect(await fixed6.divOut(-21, utils.parseUnits('10', 6))).to.equal(-3)
+      expect(await fixed6.divOut(21, utils.parseUnits('-10', 6))).to.equal(-3)
+      expect(await fixed6.divOut(-21, utils.parseUnits('-10', 6))).to.equal(3)
     })
 
     it('reverts', async () => {
@@ -233,93 +270,113 @@ describe('Fixed6', () => {
     })
 
     it('reverts', async () => {
-      await expect(fixed6.divOut(parseBase6('20'), 0)).to.revertedWith('DivisionByZero()')
+      await expect(fixed6.divOut(utils.parseUnits('20', 6), 0)).to.revertedWith('DivisionByZero()')
     })
 
     it('reverts', async () => {
-      await expect(fixed6.divOut(parseBase6('-20'), 0)).to.revertedWith('DivisionByZero()')
+      await expect(fixed6.divOut(utils.parseUnits('-20', 6), 0)).to.revertedWith('DivisionByZero()')
     })
   })
 
   describe('#unsafeDiv', async () => {
     it('divs', async () => {
-      expect(await fixed6.unsafeDiv(parseBase6('20'), parseBase6('10'))).to.equal(parseBase6('2'))
+      expect(await fixed6.unsafeDiv(utils.parseUnits('20', 6), utils.parseUnits('10', 6))).to.equal(
+        utils.parseUnits('2', 6),
+      )
     })
 
     it('divs', async () => {
-      expect(await fixed6.unsafeDiv(parseBase6('-20'), parseBase6('-10'))).to.equal(parseBase6('2'))
+      expect(await fixed6.unsafeDiv(utils.parseUnits('-20', 6), utils.parseUnits('-10', 6))).to.equal(
+        utils.parseUnits('2', 6),
+      )
     })
 
     it('divs and floors', async () => {
-      expect(await fixed6.unsafeDiv(21, parseBase6('10'))).to.equal(2)
+      expect(await fixed6.unsafeDiv(21, utils.parseUnits('10', 6))).to.equal(2)
     })
 
     it('divs (ONE)', async () => {
-      expect(await fixed6.unsafeDiv(0, 0)).to.equal(parseBase6('1'))
+      expect(await fixed6.unsafeDiv(0, 0)).to.equal(utils.parseUnits('1', 6))
     })
 
     it('divs (MAX)', async () => {
-      expect(await fixed6.unsafeDiv(parseBase6('20'), 0)).to.equal(ethers.constants.MaxInt256)
+      expect(await fixed6.unsafeDiv(utils.parseUnits('20', 6), 0)).to.equal(ethers.constants.MaxInt256)
     })
 
     it('divs (MIN)', async () => {
-      expect(await fixed6.unsafeDiv(parseBase6('-20'), 0)).to.equal(ethers.constants.MinInt256)
+      expect(await fixed6.unsafeDiv(utils.parseUnits('-20', 6), 0)).to.equal(ethers.constants.MinInt256)
     })
   })
 
   describe('#unsafeDivOut', async () => {
     it('divs', async () => {
-      expect(await fixed6.unsafeDivOut(parseBase6('20'), parseBase6('10'))).to.equal(parseBase6('2'))
+      expect(await fixed6.unsafeDivOut(utils.parseUnits('20', 6), utils.parseUnits('10', 6))).to.equal(
+        utils.parseUnits('2', 6),
+      )
     })
 
     it('divs', async () => {
-      expect(await fixed6.unsafeDivOut(parseBase6('-20'), parseBase6('-10'))).to.equal(parseBase6('2'))
+      expect(await fixed6.unsafeDivOut(utils.parseUnits('-20', 6), utils.parseUnits('-10', 6))).to.equal(
+        utils.parseUnits('2', 6),
+      )
     })
 
     it('divs and ceils', async () => {
-      expect(await fixed6.unsafeDivOut(21, parseBase6('10'))).to.equal(3)
+      expect(await fixed6.unsafeDivOut(21, utils.parseUnits('10', 6))).to.equal(3)
     })
 
     it('divs (ONE)', async () => {
-      expect(await fixed6.unsafeDivOut(0, 0)).to.equal(parseBase6('1'))
+      expect(await fixed6.unsafeDivOut(0, 0)).to.equal(utils.parseUnits('1', 6))
     })
 
     it('divs (MAX)', async () => {
-      expect(await fixed6.unsafeDivOut(parseBase6('20'), 0)).to.equal(ethers.constants.MaxInt256)
+      expect(await fixed6.unsafeDivOut(utils.parseUnits('20', 6), 0)).to.equal(ethers.constants.MaxInt256)
     })
 
     it('divs (MIN)', async () => {
-      expect(await fixed6.unsafeDivOut(parseBase6('-20'), 0)).to.equal(ethers.constants.MinInt256)
+      expect(await fixed6.unsafeDivOut(utils.parseUnits('-20', 6), 0)).to.equal(ethers.constants.MinInt256)
     })
   })
 
   describe('#muldiv', async () => {
     it('muldivs', async () => {
-      expect(await fixed6.muldiv1(parseBase6('20'), parseBase6('10'), parseBase6('2'))).to.equal(parseBase6('100'))
+      expect(
+        await fixed6.muldiv1(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('2', 6)),
+      ).to.equal(utils.parseUnits('100', 6))
     })
 
     it('muldivs', async () => {
-      expect(await fixed6.muldiv2(parseBase6('20'), 10, 2)).to.equal(parseBase6('100'))
+      expect(await fixed6.muldiv2(utils.parseUnits('20', 6), 10, 2)).to.equal(utils.parseUnits('100', 6))
     })
 
     it('muldivs', async () => {
-      expect(await fixed6.muldiv1(parseBase6('-20'), parseBase6('10'), parseBase6('2'))).to.equal(parseBase6('-100'))
+      expect(
+        await fixed6.muldiv1(utils.parseUnits('-20', 6), utils.parseUnits('10', 6), utils.parseUnits('2', 6)),
+      ).to.equal(utils.parseUnits('-100', 6))
     })
 
     it('muldivs', async () => {
-      expect(await fixed6.muldiv2(parseBase6('-20'), 10, 2)).to.equal(parseBase6('-100'))
+      expect(await fixed6.muldiv2(utils.parseUnits('-20', 6), 10, 2)).to.equal(utils.parseUnits('-100', 6))
     })
 
     it('muldivs (precision)', async () => {
-      expect(await fixed6.muldiv1(parseBase6('1.111111'), parseBase6('0.333333'), parseBase6('0.333333'))).to.equal(
-        parseBase6('1.111111'),
-      )
+      expect(
+        await fixed6.muldiv1(
+          utils.parseUnits('1.111111', 6),
+          utils.parseUnits('0.333333', 6),
+          utils.parseUnits('0.333333', 6),
+        ),
+      ).to.equal(utils.parseUnits('1.111111', 6))
     })
 
     it('muldivs (precision)', async () => {
-      expect(await fixed6.muldiv2(parseBase6('1.111111'), parseBase6('0.333333'), parseBase6('0.333333'))).to.equal(
-        parseBase6('1.111111'),
-      )
+      expect(
+        await fixed6.muldiv2(
+          utils.parseUnits('1.111111', 6),
+          utils.parseUnits('0.333333', 6),
+          utils.parseUnits('0.333333', 6),
+        ),
+      ).to.equal(utils.parseUnits('1.111111', 6))
     })
 
     it('muldivs (rounds towards zero)', async () => {
@@ -335,41 +392,57 @@ describe('Fixed6', () => {
     })
 
     it('reverts', async () => {
-      await expect(fixed6.muldiv1(parseBase6('20'), parseBase6('10'), parseBase6('0'))).to.revertedWith('0x12')
+      await expect(
+        fixed6.muldiv1(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.revertedWith('0x12')
     })
 
     it('reverts', async () => {
-      await expect(fixed6.muldiv2(parseBase6('20'), parseBase6('10'), parseBase6('0'))).to.revertedWith('0x12')
+      await expect(
+        fixed6.muldiv2(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.revertedWith('0x12')
     })
   })
 
   describe('#muldivOut', async () => {
     it('muldivs', async () => {
-      expect(await fixed6.muldivOut1(parseBase6('20'), parseBase6('10'), parseBase6('2'))).to.equal(parseBase6('100'))
+      expect(
+        await fixed6.muldivOut1(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('2', 6)),
+      ).to.equal(utils.parseUnits('100', 6))
     })
 
     it('muldivs', async () => {
-      expect(await fixed6.muldivOut2(parseBase6('20'), 10, 2)).to.equal(parseBase6('100'))
+      expect(await fixed6.muldivOut2(utils.parseUnits('20', 6), 10, 2)).to.equal(utils.parseUnits('100', 6))
     })
 
     it('muldivs', async () => {
-      expect(await fixed6.muldivOut1(parseBase6('-20'), parseBase6('10'), parseBase6('2'))).to.equal(parseBase6('-100'))
+      expect(
+        await fixed6.muldivOut1(utils.parseUnits('-20', 6), utils.parseUnits('10', 6), utils.parseUnits('2', 6)),
+      ).to.equal(utils.parseUnits('-100', 6))
     })
 
     it('muldivs', async () => {
-      expect(await fixed6.muldivOut2(parseBase6('-20'), 10, 2)).to.equal(parseBase6('-100'))
+      expect(await fixed6.muldivOut2(utils.parseUnits('-20', 6), 10, 2)).to.equal(utils.parseUnits('-100', 6))
     })
 
     it('muldivs (precision)', async () => {
-      expect(await fixed6.muldivOut1(parseBase6('1.111111'), parseBase6('0.333333'), parseBase6('0.333333'))).to.equal(
-        parseBase6('1.111111'),
-      )
+      expect(
+        await fixed6.muldivOut1(
+          utils.parseUnits('1.111111', 6),
+          utils.parseUnits('0.333333', 6),
+          utils.parseUnits('0.333333', 6),
+        ),
+      ).to.equal(utils.parseUnits('1.111111', 6))
     })
 
     it('muldivs (precision)', async () => {
-      expect(await fixed6.muldivOut2(parseBase6('1.111111'), parseBase6('0.333333'), parseBase6('0.333333'))).to.equal(
-        parseBase6('1.111111'),
-      )
+      expect(
+        await fixed6.muldivOut2(
+          utils.parseUnits('1.111111', 6),
+          utils.parseUnits('0.333333', 6),
+          utils.parseUnits('0.333333', 6),
+        ),
+      ).to.equal(utils.parseUnits('1.111111', 6))
     })
 
     it('muldivs (rounds away from zero)', async () => {
@@ -385,15 +458,15 @@ describe('Fixed6', () => {
     })
 
     it('reverts', async () => {
-      await expect(fixed6.muldivOut1(parseBase6('20'), parseBase6('10'), parseBase6('0'))).to.revertedWith(
-        'DivisionByZero()',
-      )
+      await expect(
+        fixed6.muldivOut1(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.revertedWith('DivisionByZero()')
     })
 
     it('reverts', async () => {
-      await expect(fixed6.muldivOut2(parseBase6('20'), parseBase6('10'), parseBase6('0'))).to.revertedWith(
-        'DivisionByZero()',
-      )
+      await expect(
+        fixed6.muldivOut2(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.revertedWith('DivisionByZero()')
     })
   })
 
@@ -515,11 +588,11 @@ describe('Fixed6', () => {
 
   describe('#ratio', async () => {
     it('returns ratio', async () => {
-      expect(await fixed6.ratio(2000, 100)).to.equal(parseBase6('20'))
+      expect(await fixed6.ratio(2000, 100)).to.equal(utils.parseUnits('20', 6))
     })
 
     it('returns ratio', async () => {
-      expect(await fixed6.ratio(-2000, -100)).to.equal(parseBase6('20'))
+      expect(await fixed6.ratio(-2000, -100)).to.equal(utils.parseUnits('20', 6))
     })
   })
 
@@ -561,11 +634,11 @@ describe('Fixed6', () => {
 
   describe('#truncate', async () => {
     it('returns floor', async () => {
-      expect(await fixed6.truncate(parseBase6('123.456'))).to.equal(123)
+      expect(await fixed6.truncate(utils.parseUnits('123.456', 6))).to.equal(123)
     })
 
     it('returns floor', async () => {
-      expect(await fixed6.truncate(parseBase6('-123.456'))).to.equal(-123)
+      expect(await fixed6.truncate(utils.parseUnits('-123.456', 6))).to.equal(-123)
     })
   })
 
