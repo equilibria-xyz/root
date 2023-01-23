@@ -94,6 +94,17 @@ describe('Fixed18', () => {
     })
   })
 
+  describe('#from(Fixed6)', async () => {
+    it('creates new', async () => {
+      expect(await fixed18.fromFixed6(utils.parseUnits('10', 6))).to.equal(utils.parseEther('10'))
+    })
+
+    it('reverts if too large', async () => {
+      const TOO_LARGE = ethers.constants.MaxInt256.sub(10)
+      await expect(fixed18.fromFixed6(TOO_LARGE)).to.be.reverted
+    })
+  })
+
   describe('#pack', async () => {
     it('creates new', async () => {
       expect(await fixed18.pack(utils.parseEther('10'))).to.equal(utils.parseEther('10'))

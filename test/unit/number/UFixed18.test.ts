@@ -54,6 +54,17 @@ describe('UFixed18', () => {
     })
   })
 
+  describe('#from(UFixed6)', async () => {
+    it('creates new', async () => {
+      expect(await uFixed18.fromUFixed6(utils.parseUnits('10', 6))).to.equal(utils.parseEther('10'))
+    })
+
+    it('reverts if too large', async () => {
+      const TOO_LARGE = ethers.constants.MaxUint256.sub(10)
+      await expect(uFixed18.fromUFixed6(TOO_LARGE)).to.be.reverted
+    })
+  })
+
   describe('#pack', async () => {
     it('creates new', async () => {
       expect(await uFixed18.pack(utils.parseEther('10'))).to.equal(utils.parseEther('10'))

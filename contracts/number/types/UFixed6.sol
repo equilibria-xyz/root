@@ -3,38 +3,37 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../NumberMath.sol";
-import "./Fixed18.sol";
-import "./PackedUFixed18.sol";
-import "./UFixed6.sol";
+import "./Fixed6.sol";
+import "./UFixed18.sol";
 
-/// @dev UFixed18 type
-type UFixed18 is uint256;
-using UFixed18Lib for UFixed18 global;
-type UFixed18Storage is bytes32;
-using UFixed18StorageLib for UFixed18Storage global;
+/// @dev UFixed6 type
+type UFixed6 is uint256;
+using UFixed6Lib for UFixed6 global;
+type UFixed6Storage is bytes32;
+using UFixed6StorageLib for UFixed6Storage global;
 
 /**
- * @title UFixed18Lib
+ * @title UFixed6Lib
  * @notice Library for the unsigned fixed-decimal type.
  */
-library UFixed18Lib {
-    error UFixed18UnderflowError(int256 value);
-    error UFixed18PackingOverflowError(uint256 value);
+library UFixed6Lib {
+    error UFixed6UnderflowError(int256 value);
+    error UFixed6PackingOverflowError(uint256 value);
 
-    uint256 private constant BASE = 1e18;
-    UFixed18 public constant ZERO = UFixed18.wrap(0);
-    UFixed18 public constant ONE = UFixed18.wrap(BASE);
-    UFixed18 public constant MAX = UFixed18.wrap(type(uint256).max);
+    uint256 private constant BASE = 1e6;
+    UFixed6 public constant ZERO = UFixed6.wrap(0);
+    UFixed6 public constant ONE = UFixed6.wrap(BASE);
+    UFixed6 public constant MAX = UFixed6.wrap(type(uint256).max);
 
     /**
      * @notice Creates a unsigned fixed-decimal from a signed fixed-decimal
      * @param a Signed fixed-decimal
      * @return New unsigned fixed-decimal
      */
-    function from(Fixed18 a) internal pure returns (UFixed18) {
-        int256 value = Fixed18.unwrap(a);
-        if (value < 0) revert UFixed18UnderflowError(value);
-        return UFixed18.wrap(uint256(value));
+    function from(Fixed6 a) internal pure returns (UFixed6) {
+        int256 value = Fixed6.unwrap(a);
+        if (value < 0) revert UFixed6UnderflowError(value);
+        return UFixed6.wrap(uint256(value));
     }
 
     /**
@@ -42,28 +41,27 @@ library UFixed18Lib {
      * @param a Unsigned number
      * @return New unsigned fixed-decimal
      */
-    function from(uint256 a) internal pure returns (UFixed18) {
-        return UFixed18.wrap(a * BASE);
+    function from(uint256 a) internal pure returns (UFixed6) {
+        return UFixed6.wrap(a * BASE);
     }
 
     /**
-     * @notice Creates a signed fixed-decimal from a base-6 signed fixed-decimal
-     * @param a Base-6 signed fixed-decimal
-     * @return New signed fixed-decimal
+     * @notice Creates an unsigned fixed-decimal from a base-18 unsigned fixed-decimal
+     * @param a Base-18 unsigned fixed-decimal
+     * @return New unsigned fixed-decimal
      */
-    function from(UFixed6 a) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed6.unwrap(a) * 1e12);
+    function from(UFixed18 a) internal pure returns (UFixed6) {
+        return UFixed6.wrap(UFixed18.unwrap(a) / 1e12);
     }
 
     /**
-     * @notice Creates a packed unsigned fixed-decimal from an unsigned fixed-decimal
-     * @param a unsigned fixed-decimal
-     * @return New packed unsigned fixed-decimal
+     * @notice Creates an unsigned fixed-decimal from a base-18 unsigned fixed-decimal
+     * @param a Base-18 unsigned fixed-decimal
+     * @param roundOut Whether to round the result away from zero if there is a remainder
+     * @return New unsigned fixed-decimal
      */
-    function pack(UFixed18 a) internal pure returns (PackedUFixed18) {
-        uint256 value = UFixed18.unwrap(a);
-        if (value > type(uint128).max) revert UFixed18PackingOverflowError(value);
-        return PackedUFixed18.wrap(uint128(value));
+    function from(UFixed18 a, bool roundOut) internal pure returns (UFixed6) {
+        return roundOut ? UFixed6.wrap(NumberMath.divOut(UFixed18.unwrap(a), 1e12)): from(a);
     }
 
     /**
@@ -71,8 +69,8 @@ library UFixed18Lib {
      * @param a Unsigned fixed-decimal
      * @return Whether the unsigned fixed-decimal is zero.
      */
-    function isZero(UFixed18 a) internal pure returns (bool) {
-        return UFixed18.unwrap(a) == 0;
+    function isZero(UFixed6 a) internal pure returns (bool) {
+        return UFixed6.unwrap(a) == 0;
     }
 
     /**
@@ -81,8 +79,8 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Resulting summed unsigned fixed-decimal
      */
-    function add(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) + UFixed18.unwrap(b));
+    function add(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
+        return UFixed6.wrap(UFixed6.unwrap(a) + UFixed6.unwrap(b));
     }
 
     /**
@@ -91,8 +89,8 @@ library UFixed18Lib {
      * @param b Unsigned fixed-decimal to subtract
      * @return Resulting subtracted unsigned fixed-decimal
      */
-    function sub(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) - UFixed18.unwrap(b));
+    function sub(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
+        return UFixed6.wrap(UFixed6.unwrap(a) - UFixed6.unwrap(b));
     }
 
     /**
@@ -101,8 +99,8 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Resulting multiplied unsigned fixed-decimal
      */
-    function mul(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) * UFixed18.unwrap(b) / BASE);
+    function mul(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
+        return UFixed6.wrap(UFixed6.unwrap(a) * UFixed6.unwrap(b) / BASE);
     }
 
     /**
@@ -111,8 +109,8 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Resulting multiplied unsigned fixed-decimal
      */
-    function mulOut(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(NumberMath.divOut(UFixed18.unwrap(a) * UFixed18.unwrap(b), BASE));
+    function mulOut(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
+        return UFixed6.wrap(NumberMath.divOut(UFixed6.unwrap(a) * UFixed6.unwrap(b), BASE));
     }
 
     /**
@@ -121,8 +119,8 @@ library UFixed18Lib {
      * @param b Unsigned fixed-decimal to divide by
      * @return Resulting divided unsigned fixed-decimal
      */
-    function div(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) * BASE / UFixed18.unwrap(b));
+    function div(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
+        return UFixed6.wrap(UFixed6.unwrap(a) * BASE / UFixed6.unwrap(b));
     }
 
     /**
@@ -131,8 +129,8 @@ library UFixed18Lib {
      * @param b Unsigned fixed-decimal to divide by
      * @return Resulting divided unsigned fixed-decimal
      */
-    function divOut(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(NumberMath.divOut(UFixed18.unwrap(a) * BASE, UFixed18.unwrap(b)));
+    function divOut(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
+        return UFixed6.wrap(NumberMath.divOut(UFixed6.unwrap(a) * BASE, UFixed6.unwrap(b)));
     }
 
     /**
@@ -142,7 +140,7 @@ library UFixed18Lib {
      * @param b Unsigned fixed-decimal to divide by
      * @return Resulting divided unsigned fixed-decimal
      */
-    function unsafeDiv(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
+    function unsafeDiv(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
         if (isZero(b)) {
             return isZero(a) ? ONE : MAX;
         } else {
@@ -157,7 +155,7 @@ library UFixed18Lib {
      * @param b Unsigned fixed-decimal to divide by
      * @return Resulting divided unsigned fixed-decimal
      */
-    function unsafeDivOut(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
+    function unsafeDivOut(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
         if (isZero(b)) {
             return isZero(a) ? ONE : MAX;
         } else {
@@ -172,8 +170,8 @@ library UFixed18Lib {
      * @param c Unsigned number to divide by
      * @return Resulting computation
      */
-    function muldiv(UFixed18 a, uint256 b, uint256 c) internal pure returns (UFixed18) {
-        return muldiv(a, UFixed18.wrap(b), UFixed18.wrap(c));
+    function muldiv(UFixed6 a, uint256 b, uint256 c) internal pure returns (UFixed6) {
+        return muldiv(a, UFixed6.wrap(b), UFixed6.wrap(c));
     }
 
     /**
@@ -183,8 +181,8 @@ library UFixed18Lib {
      * @param c Unsigned number to divide by
      * @return Resulting computation
      */
-    function muldivOut(UFixed18 a, uint256 b, uint256 c) internal pure returns (UFixed18) {
-        return muldivOut(a, UFixed18.wrap(b), UFixed18.wrap(c));
+    function muldivOut(UFixed6 a, uint256 b, uint256 c) internal pure returns (UFixed6) {
+        return muldivOut(a, UFixed6.wrap(b), UFixed6.wrap(c));
     }
 
 
@@ -195,8 +193,8 @@ library UFixed18Lib {
      * @param c Unsigned fixed-decimal to divide by
      * @return Resulting computation
      */
-    function muldiv(UFixed18 a, UFixed18 b, UFixed18 c) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) * UFixed18.unwrap(b) / UFixed18.unwrap(c));
+    function muldiv(UFixed6 a, UFixed6 b, UFixed6 c) internal pure returns (UFixed6) {
+        return UFixed6.wrap(UFixed6.unwrap(a) * UFixed6.unwrap(b) / UFixed6.unwrap(c));
     }
 
     /**
@@ -206,8 +204,8 @@ library UFixed18Lib {
      * @param c Unsigned fixed-decimal to divide by
      * @return Resulting computation
      */
-    function muldivOut(UFixed18 a, UFixed18 b, UFixed18 c) internal pure returns (UFixed18) {
-        return UFixed18.wrap(NumberMath.divOut(UFixed18.unwrap(a) * UFixed18.unwrap(b), UFixed18.unwrap(c)));
+    function muldivOut(UFixed6 a, UFixed6 b, UFixed6 c) internal pure returns (UFixed6) {
+        return UFixed6.wrap(NumberMath.divOut(UFixed6.unwrap(a) * UFixed6.unwrap(b), UFixed6.unwrap(c)));
     }
 
     /**
@@ -216,7 +214,7 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Whether `a` is equal to `b`
      */
-    function eq(UFixed18 a, UFixed18 b) internal pure returns (bool) {
+    function eq(UFixed6 a, UFixed6 b) internal pure returns (bool) {
         return compare(a, b) == 1;
     }
 
@@ -226,7 +224,7 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Whether `a` is greater than `b`
      */
-    function gt(UFixed18 a, UFixed18 b) internal pure returns (bool) {
+    function gt(UFixed6 a, UFixed6 b) internal pure returns (bool) {
         return compare(a, b) == 2;
     }
 
@@ -236,7 +234,7 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Whether `a` is less than `b`
      */
-    function lt(UFixed18 a, UFixed18 b) internal pure returns (bool) {
+    function lt(UFixed6 a, UFixed6 b) internal pure returns (bool) {
         return compare(a, b) == 0;
     }
 
@@ -246,7 +244,7 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Whether `a` is greater than or equal to `b`
      */
-    function gte(UFixed18 a, UFixed18 b) internal pure returns (bool) {
+    function gte(UFixed6 a, UFixed6 b) internal pure returns (bool) {
         return gt(a, b) || eq(a, b);
     }
 
@@ -256,7 +254,7 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Whether `a` is less than or equal to `b`
      */
-    function lte(UFixed18 a, UFixed18 b) internal pure returns (bool) {
+    function lte(UFixed6 a, UFixed6 b) internal pure returns (bool) {
         return lt(a, b) || eq(a, b);
     }
 
@@ -269,8 +267,8 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Compare result of `a` and `b`
      */
-    function compare(UFixed18 a, UFixed18 b) internal pure returns (uint256) {
-        (uint256 au, uint256 bu) = (UFixed18.unwrap(a), UFixed18.unwrap(b));
+    function compare(UFixed6 a, UFixed6 b) internal pure returns (uint256) {
+        (uint256 au, uint256 bu) = (UFixed6.unwrap(a), UFixed6.unwrap(b));
         if (au > bu) return 2;
         if (au < bu) return 0;
         return 1;
@@ -282,8 +280,8 @@ library UFixed18Lib {
      * @param b Second unsigned number
      * @return Ratio of `a` over `b`
      */
-    function ratio(uint256 a, uint256 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(a * BASE / b);
+    function ratio(uint256 a, uint256 b) internal pure returns (UFixed6) {
+        return UFixed6.wrap(a * BASE / b);
     }
 
     /**
@@ -292,8 +290,8 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Minimum of `a` and `b`
      */
-    function min(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(Math.min(UFixed18.unwrap(a), UFixed18.unwrap(b)));
+    function min(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
+        return UFixed6.wrap(Math.min(UFixed6.unwrap(a), UFixed6.unwrap(b)));
     }
 
     /**
@@ -302,8 +300,8 @@ library UFixed18Lib {
      * @param b Second unsigned fixed-decimal
      * @return Maximum of `a` and `b`
      */
-    function max(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(Math.max(UFixed18.unwrap(a), UFixed18.unwrap(b)));
+    function max(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
+        return UFixed6.wrap(Math.max(UFixed6.unwrap(a), UFixed6.unwrap(b)));
     }
 
     /**
@@ -311,19 +309,19 @@ library UFixed18Lib {
      * @param a Unsigned fixed-decimal
      * @return Truncated unsigned number
      */
-    function truncate(UFixed18 a) internal pure returns (uint256) {
-        return UFixed18.unwrap(a) / BASE;
+    function truncate(UFixed6 a) internal pure returns (uint256) {
+        return UFixed6.unwrap(a) / BASE;
     }
 }
 
-library UFixed18StorageLib {
-    function read(UFixed18Storage self) internal view returns (UFixed18 value) {
+library UFixed6StorageLib {
+    function read(UFixed6Storage self) internal view returns (UFixed6 value) {
         assembly ("memory-safe") {
             value := sload(self)
         }
     }
 
-    function store(UFixed18Storage self, UFixed18 value) internal {
+    function store(UFixed6Storage self, UFixed6 value) internal {
         assembly ("memory-safe") {
             sstore(self, value)
         }
