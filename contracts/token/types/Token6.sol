@@ -23,8 +23,6 @@ library Token6Lib {
 
     Token6 public constant ZERO = Token6.wrap(address(0));
 
-    uint256 private constant OFFSET = 1e12;
-
     /**
      * @notice Returns whether a token is the zero address
      * @param self Token to check for
@@ -147,16 +145,6 @@ library Token6Lib {
      */
     function balanceOf(Token6 self, address account) internal view returns (UFixed6) {
         return UFixed6.wrap(IERC20(Token6.unwrap(self)).balanceOf(account));
-    }
-
-    /**
-     * @notice Converts the token amount into the unsigned fixed-decimal amount according to
-     *         it's defined decimals
-     * @param amount Token amount to convert
-     * @return Normalized unsigned fixed-decimal amount
-     */
-    function fromTokenAmount(uint256 amount) private pure returns (UFixed18) {
-        return UFixed18.wrap(amount * OFFSET);
     }
 }
 
