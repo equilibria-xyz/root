@@ -52,17 +52,11 @@ library Accumulator6Lib {
     }
 
     function _div(Fixed6 amount, UFixed6 total) private pure returns (Fixed6) {
-        if (amount.sign() == -1) {
-            return Fixed6Lib.from(-1, amount.abs().divOut(total));
-        }
-        return amount.div(Fixed6Lib.from(total));
+        return amount.sign() == -1 ? amount.divOut(Fixed6Lib.from(total)) : amount.div(Fixed6Lib.from(total));
     }
 
     function _mul(Fixed6 amount, UFixed6 total) private pure returns (Fixed6) {
-        if (amount.sign() == -1) {
-            return Fixed6Lib.from(-1, amount.abs().mulOut(total));
-        }
-        return amount.mul(Fixed6Lib.from(total));
+        return amount.sign() == -1 ? amount.mulOut(Fixed6Lib.from(total)) : amount.mul(Fixed6Lib.from(total));
     }
 }
 

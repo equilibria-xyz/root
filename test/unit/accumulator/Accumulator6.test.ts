@@ -7,7 +7,7 @@ import { MockAccumulator6, MockAccumulator6__factory } from '../../../types/gene
 
 const { ethers } = HRE
 
-describe.only('Accumulator6', () => {
+describe('Accumulator6', () => {
   let user: SignerWithAddress
   let accumulator6: MockAccumulator6
 
