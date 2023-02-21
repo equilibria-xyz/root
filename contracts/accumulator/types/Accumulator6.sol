@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 
 import "../../number/types/Fixed6.sol";
 import "../../number/types/UFixed6.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
 
 /// @dev Accumulator6 type
 struct Accumulator6 {
