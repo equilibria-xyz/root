@@ -20,10 +20,17 @@ using Accumulator6StorageLib for Accumulator6Storage global;
 /**
  * @title Accumulator6Lib
  * @notice Library that surfaces math operations for the signed Accumulator type.
- * @dev TODO
+ * @dev This accumulator tracks cumulative changes to a value over time. Using the `accumulated` function, one
+ * can determine how much a value has changed between two points in time. The `increment` and `decrement` functions
+ * can be used to update the accumulator.
  */
 library Accumulator6Lib {
-    // TODO: Natspec
+    /**
+     * Returns how much has been accumulated between two accumulators
+     * @param self The current point of the accumulation to compare with `from`
+     * @param from The starting point of the accumulation
+     * @param total Demoninator of the ratio (see `increment` and `decrement` functions)
+     */
     function accumulated(Accumulator6 memory self, Accumulator6 memory from, UFixed6 total) internal pure returns (Fixed6) {
         return _mul(self._value.sub(from._value), total);
     }

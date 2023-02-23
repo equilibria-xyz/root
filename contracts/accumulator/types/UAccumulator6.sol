@@ -18,11 +18,17 @@ using UAccumulator6StorageLib for UAccumulator6Storage global;
 
 /**
  * @title UAccumulator6Lib
- * @notice Library that surfaces math operations for the signed Accumulator type.
- * @dev TODO
+ * @notice Library that surfaces math operations for the unsigned Accumulator type.
+ * @dev This accumulator tracks cumulative changes to a monotonically increasing value over time. Using the `accumulated` function, one
+ * can determine how much a value has changed between two points in time. The `increment` function can be used to update the accumulator.
  */
 library UAccumulator6Lib {
-    // TODO: Natspec
+    /**
+     * Returns how much has been accumulated between two accumulators
+     * @param self The current point of the accumulation to compare with `from`
+     * @param from The starting point of the accumulation
+     * @param total Demoninator of the ratio (see `increment` function)
+     */
     function accumulated(UAccumulator6 memory self, UAccumulator6 memory from, UFixed6 total) internal pure returns (UFixed6) {
         return self._value.sub(from._value).mul(total);
     }
