@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../number/types/UFixed18.sol";
-import "../number/types/Fixed18.sol";
+import "../number/types/UFixed6.sol";
+import "../number/types/Fixed6.sol";
 
 /**
- * @title CurveMath
+ * @title CurveMath6
  * @notice Library for managing math operations for utilization curves.
  */
-library CurveMath {
-    error CurveMathOutOfBoundsError();
+library CurveMath6 {
+    error CurveMath6OutOfBoundsError();
 
     /**
      * @notice Computes a linear interpolation between two points
@@ -21,18 +21,18 @@ library CurveMath {
      * @return y-coordinate for `targetX` along the line from (`startX`, `startY`) -> (`endX`, `endY`)
      */
     function linearInterpolation(
-        UFixed18 startX,
-        Fixed18 startY,
-        UFixed18 endX,
-        Fixed18 endY,
-        UFixed18 targetX
-    ) internal pure returns (Fixed18) {
-        if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMathOutOfBoundsError();
+        UFixed6 startX,
+        Fixed6 startY,
+        UFixed6 endX,
+        Fixed6 endY,
+        UFixed6 targetX
+    ) internal pure returns (Fixed6) {
+        if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMath6OutOfBoundsError();
 
-        UFixed18 xRange = endX.sub(startX);
-        Fixed18 yRange = endY.sub(startY);
-        UFixed18 xRatio = targetX.sub(startX).div(xRange);
-        return yRange.mul(Fixed18Lib.from(xRatio)).add(startY);
+        UFixed6 xRange = endX.sub(startX);
+        Fixed6 yRange = endY.sub(startY);
+        UFixed6 xRatio = targetX.sub(startX).div(xRange);
+        return yRange.mul(Fixed6Lib.from(xRatio)).add(startY);
     }
 
     /**
@@ -45,17 +45,17 @@ library CurveMath {
      * @return y-coordinate for `targetX` along the line from (`startX`, `startY`) -> (`endX`, `endY`)
      */
     function linearInterpolation(
-        UFixed18 startX,
-        UFixed18 startY,
-        UFixed18 endX,
-        UFixed18 endY,
-        UFixed18 targetX
-    ) internal pure returns (UFixed18) {
-        if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMathOutOfBoundsError();
+        UFixed6 startX,
+        UFixed6 startY,
+        UFixed6 endX,
+        UFixed6 endY,
+        UFixed6 targetX
+    ) internal pure returns (UFixed6) {
+        if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMath6OutOfBoundsError();
 
-        UFixed18 xRange = endX.sub(startX);
-        UFixed18 yRange = endY.sub(startY);
-        UFixed18 xRatio = targetX.sub(startX).div(xRange);
+        UFixed6 xRange = endX.sub(startX);
+        UFixed6 yRange = endY.sub(startY);
+        UFixed6 xRatio = targetX.sub(startX).div(xRange);
         return yRange.mul(xRatio).add(startY);
     }
 }
