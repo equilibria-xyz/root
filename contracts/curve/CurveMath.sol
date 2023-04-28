@@ -58,8 +58,7 @@ library CurveMath {
         UFixed18 xRatio = targetX.sub(startX).div(xRange);
         if (addToStartY) {
             return startY.add(yRange.mul(xRatio));
-        } else {
-            return startY.sub(yRange.mul(xRatio));
         }
+        return startY.sub(yRange.mul(xRatio));
     }
 }

@@ -58,8 +58,7 @@ library CurveMath6 {
         UFixed6 xRatio = targetX.sub(startX).div(xRange);
         if (addToStartY) {
             return startY.add(yRange.mul(xRatio));
-        } else {
-            return startY.sub(yRange.mul(xRatio));
         }
+        return startY.sub(yRange.mul(xRatio));
     }
 }
