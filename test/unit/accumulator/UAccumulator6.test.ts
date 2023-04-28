@@ -20,7 +20,7 @@ describe('Accumulator6', () => {
     accumulator6 = await new MockUAccumulator6__factory(user).deploy()
   })
 
-  describe.only('#increment', async () => {
+  describe('#increment', async () => {
     it('increments (no rounding)', async () => {
       await accumulator6.increment(utils.parseUnits('2', 6), utils.parseUnits('1', 6))
       expect(await value(accumulator6)).to.equal(utils.parseUnits('2', 6))
