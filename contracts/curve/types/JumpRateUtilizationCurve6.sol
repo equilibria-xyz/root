@@ -26,19 +26,18 @@ library JumpRateUtilizationCurve6Lib {
      * @return The corresponding rate
      */
     function compute(JumpRateUtilizationCurve6 memory self, UFixed6 utilization) internal pure returns (Fixed6) {
-        UFixed6 targetUtilization = self.targetUtilization;
-        if (utilization.lt(targetUtilization)) {
+        if (utilization.lt(self.targetUtilization)) {
             return CurveMath6.linearInterpolation(
                 UFixed6Lib.ZERO,
                 self.minRate,
-                targetUtilization,
+                self.targetUtilization,
                 self.targetRate,
                 utilization
             );
         }
         if (utilization.lt(UFixed6Lib.ONE)) {
             return CurveMath6.linearInterpolation(
-                targetUtilization,
+                self.targetUtilization,
                 self.targetRate,
                 UFixed6Lib.ONE,
                 self.maxRate,

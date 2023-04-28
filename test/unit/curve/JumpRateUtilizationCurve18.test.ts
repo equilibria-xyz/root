@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import HRE from 'hardhat'
-import { MockJumpRateUtilizationCurve, MockJumpRateUtilizationCurve__factory } from '../../../types/generated'
+import { MockJumpRateUtilizationCurve18, MockJumpRateUtilizationCurve18__factory } from '../../../types/generated'
 
 const { ethers } = HRE
 
@@ -33,15 +33,15 @@ const CURVE_4 = {
   targetUtilization: ethers.utils.parseEther('0.80'),
 }
 
-const SLOT = ethers.utils.keccak256(Buffer.from('equilibria.root.JumpRateUtilizationCurve.testSlot'))
+const SLOT = ethers.utils.keccak256(Buffer.from('equilibria.root.JumpRateUtilizationCurve18.testSlot'))
 
-describe('JumpRateUtilizationCurve', () => {
+describe('JumpRateUtilizationCurve18', () => {
   let user: SignerWithAddress
-  let jumpRateUtilizationCurve: MockJumpRateUtilizationCurve
+  let jumpRateUtilizationCurve: MockJumpRateUtilizationCurve18
 
   beforeEach(async () => {
     ;[user] = await ethers.getSigners()
-    jumpRateUtilizationCurve = await new MockJumpRateUtilizationCurve__factory(user).deploy()
+    jumpRateUtilizationCurve = await new MockJumpRateUtilizationCurve18__factory(user).deploy()
   })
 
   describe('#compute', async () => {
@@ -198,7 +198,7 @@ describe('JumpRateUtilizationCurve', () => {
     })
   })
 
-  describe('#store(JumpRateUtilizationCurve)', async () => {
+  describe('#store(JumpRateUtilizationCurve18)', async () => {
     it('sets value', async () => {
       await jumpRateUtilizationCurve.store(SLOT, CURVE_1)
 

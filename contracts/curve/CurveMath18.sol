@@ -5,11 +5,11 @@ import "../number/types/UFixed18.sol";
 import "../number/types/Fixed18.sol";
 
 /**
- * @title CurveMath
+ * @title CurveMath18
  * @notice Library for managing math operations for utilization curves.
  */
-library CurveMath {
-    error CurveMathOutOfBoundsError();
+library CurveMath18 {
+    error CurveMath18OutOfBoundsError();
 
     /**
      * @notice Computes a linear interpolation between two points
@@ -27,7 +27,7 @@ library CurveMath {
         Fixed18 endY,
         UFixed18 targetX
     ) internal pure returns (Fixed18) {
-        if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMathOutOfBoundsError();
+        if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMath18OutOfBoundsError();
 
         UFixed18 xRange = endX.sub(startX);
         Fixed18 yRange = endY.sub(startY);
@@ -51,14 +51,6 @@ library CurveMath {
         UFixed18 endY,
         UFixed18 targetX
     ) internal pure returns (UFixed18) {
-        if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMathOutOfBoundsError();
-
-        UFixed18 xRange = endX.sub(startX);
-        (UFixed18 yRange, bool addToStartY) = endY.gte(startY) ? (endY.sub(startY), true) : (startY.sub(endY), false);
-        UFixed18 xRatio = targetX.sub(startX).div(xRange);
-        if (addToStartY) {
-            return startY.add(yRange.mul(xRatio));
-        }
-        return startY.sub(yRange.mul(xRatio));
+        return UFixed18Lib.from(linearInterpolation(startX, Fixed18Lib.from(startY), endX, Fixed18Lib.from(endY), targetX));
     }
 }

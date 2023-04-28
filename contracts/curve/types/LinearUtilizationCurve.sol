@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../CurveMath.sol";
+import "../CurveMath18.sol";
 import "../../number/types/PackedFixed18.sol";
 
 /// @dev LinearUtilizationCurve type
@@ -25,7 +25,7 @@ library LinearUtilizationCurveLib {
      */
     function compute(LinearUtilizationCurve memory self, UFixed18 utilization) internal pure returns (Fixed18) {
         if (utilization.lt(UFixed18Lib.ONE)) {
-            return CurveMath.linearInterpolation(
+            return CurveMath18.linearInterpolation(
                 UFixed18Lib.ZERO,
                 self.minRate.unpack(),
                 UFixed18Lib.ONE,

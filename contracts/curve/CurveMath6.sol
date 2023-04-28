@@ -51,14 +51,6 @@ library CurveMath6 {
         UFixed6 endY,
         UFixed6 targetX
     ) internal pure returns (UFixed6) {
-        if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMath6OutOfBoundsError();
-
-        UFixed6 xRange = endX.sub(startX);
-        (UFixed6 yRange, bool addToStartY) = endY.gte(startY) ? (endY.sub(startY), true) : (startY.sub(endY), false);
-        UFixed6 xRatio = targetX.sub(startX).div(xRange);
-        if (addToStartY) {
-            return startY.add(yRange.mul(xRatio));
-        }
-        return startY.sub(yRange.mul(xRatio));
+        return UFixed6Lib.from(linearInterpolation(startX, Fixed6Lib.from(startY), endX, Fixed6Lib.from(endY), targetX));
     }
 }
