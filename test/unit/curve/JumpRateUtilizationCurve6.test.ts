@@ -197,16 +197,4 @@ describe('JumpRateUtilizationCurve6', () => {
       })
     })
   })
-
-  describe('#store(JumpRateUtilizationCurve6)', async () => {
-    it('sets value', async () => {
-      await jumpRateUtilizationCurve.store(SLOT, CURVE_1)
-
-      const storedCurve = await jumpRateUtilizationCurve.read(SLOT)
-      expect(storedCurve.minRate).to.equal(CURVE_1.minRate)
-      expect(storedCurve.maxRate).to.equal(CURVE_1.maxRate)
-      expect(storedCurve.targetRate).to.equal(CURVE_1.targetRate)
-      expect(storedCurve.targetUtilization).to.equal(CURVE_1.targetUtilization)
-    })
-  })
 })

@@ -79,14 +79,4 @@ describe('linearUtilizationCurve', () => {
       })
     })
   })
-
-  describe('#store(LinearUtilizationCurve)', async () => {
-    it('sets value', async () => {
-      await linearUtilizationCurve.store(SLOT, CURVE_1)
-
-      const storedCurve = await linearUtilizationCurve.read(SLOT)
-      expect(storedCurve.minRate).to.equal(CURVE_1.minRate)
-      expect(storedCurve.maxRate).to.equal(CURVE_1.maxRate)
-    })
-  })
 })

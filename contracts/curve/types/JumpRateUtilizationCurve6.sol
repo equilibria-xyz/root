@@ -12,8 +12,6 @@ struct JumpRateUtilizationCurve6 {
     UFixed6 targetUtilization;
 }
 using JumpRateUtilizationCurve6Lib for JumpRateUtilizationCurve6 global;
-type JumpRateUtilizationCurve6Storage is bytes32;
-using JumpRateUtilizationCurve6StorageLib for JumpRateUtilizationCurve6Storage global;
 
 /**
  * @title JumpRateUtilizationCurve6Lib
@@ -58,25 +56,5 @@ library JumpRateUtilizationCurve6Lib {
             .mul(Fixed6Lib.from(int256(toTimestamp - fromTimestamp)))
             .mul(Fixed6Lib.from(notional))
             .div(Fixed6Lib.from(365 days));
-    }
-}
-
-library JumpRateUtilizationCurve6StorageLib {
-    function read(JumpRateUtilizationCurve6Storage self) internal view returns (JumpRateUtilizationCurve6 memory) {
-        return _storagePointer(self);
-    }
-
-    function store(JumpRateUtilizationCurve6Storage self, JumpRateUtilizationCurve6 memory value) internal {
-        JumpRateUtilizationCurve6 storage storagePointer = _storagePointer(self);
-
-        storagePointer.minRate = value.minRate;
-        storagePointer.maxRate = value.maxRate;
-        storagePointer.targetRate = value.targetRate;
-        storagePointer.targetUtilization = value.targetUtilization;
-    }
-
-    function _storagePointer(JumpRateUtilizationCurve6Storage self)
-    private pure returns (JumpRateUtilizationCurve6 storage pointer) {
-        assembly ("memory-safe") { pointer.slot := self }
     }
 }
