@@ -54,8 +54,12 @@ library CurveMath {
         if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMathOutOfBoundsError();
 
         UFixed18 xRange = endX.sub(startX);
-        UFixed18 yRange = endY.sub(startY);
+        (UFixed18 yRange, bool addToStartY) = endY.gte(startY) ? (endY.sub(startY), true) : (startY.sub(endY), false);
         UFixed18 xRatio = targetX.sub(startX).div(xRange);
-        return yRange.mul(xRatio).add(startY);
+        if (addToStartY) {
+            return startY.add(yRange.mul(xRatio));
+        } else {
+            return startY.sub(yRange.mul(xRatio));
+        }
     }
 }

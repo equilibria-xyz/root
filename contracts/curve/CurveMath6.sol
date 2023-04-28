@@ -54,8 +54,12 @@ library CurveMath6 {
         if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMath6OutOfBoundsError();
 
         UFixed6 xRange = endX.sub(startX);
-        UFixed6 yRange = endY.sub(startY);
+        (UFixed6 yRange, bool addToStartY) = endY.gte(startY) ? (endY.sub(startY), true) : (startY.sub(endY), false);
         UFixed6 xRatio = targetX.sub(startX).div(xRange);
-        return yRange.mul(xRatio).add(startY);
+        if (addToStartY) {
+            return startY.add(yRange.mul(xRatio));
+        } else {
+            return startY.sub(yRange.mul(xRatio));
+        }
     }
 }
