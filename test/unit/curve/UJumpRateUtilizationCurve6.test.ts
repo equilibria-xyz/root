@@ -33,8 +33,6 @@ const CURVE_4 = {
   targetUtilization: ethers.utils.parseUnits('0.80', 6),
 }
 
-const SLOT = ethers.utils.keccak256(Buffer.from('equilibria.root.UJumpRateUtilizationCurve6.testSlot'))
-
 describe('UJumpRateUtilizationCurve6', () => {
   let user: SignerWithAddress
   let jumpRateUtilizationCurve: MockUJumpRateUtilizationCurve6
