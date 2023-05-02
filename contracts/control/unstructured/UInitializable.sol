@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/Address.sol";
+import "../interfaces/IInitializable.sol";
 import "../../storage/UStorage.sol";
 
 /**
@@ -12,13 +13,7 @@ import "../../storage/UStorage.sol";
  *      modifier to tag their internal initialization functions to ensure that they can only be called
  *      from a top-level `initializer` or a constructor.
  */
-abstract contract UInitializable {
-    error UInitializableZeroVersionError();
-    error UInitializableAlreadyInitializedError(uint256 version);
-    error UInitializableNotInitializingError();
-
-    event Initialized(uint256 version);
-
+abstract contract UInitializable is IInitializable {
     /// @dev The initialized flag
     Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.UInitializable.version"));
 

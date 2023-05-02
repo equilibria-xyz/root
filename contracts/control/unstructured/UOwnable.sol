@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./UInitializable.sol";
+import "../interfaces/IOwnable.sol";
 import "../../storage/UStorage.sol";
 
 /**
@@ -11,13 +12,7 @@ import "../../storage/UStorage.sol";
  *      unstructured storage pattern so that it can be safely mixed in with upgradeable
  *      contracts without affecting their storage patterns through inheritance.
  */
-abstract contract UOwnable is UInitializable {
-    event OwnerUpdated(address indexed newOwner);
-    event PendingOwnerUpdated(address indexed newPendingOwner);
-
-    error UOwnableNotOwnerError(address sender);
-    error UOwnableNotPendingOwnerError(address sender);
-
+abstract contract UOwnable is IOwnable, UInitializable {
     /// @dev The owner address
     AddressStorage private constant _owner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.owner"));
     function owner() public view returns (address) { return _owner.read(); }
