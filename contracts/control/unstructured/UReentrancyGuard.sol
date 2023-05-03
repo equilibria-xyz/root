@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./UInitializable.sol";
+import "../interfaces/IReentrancyGuard.sol";
 import "../../storage/UStorage.sol";
 
 /**
@@ -24,9 +25,7 @@ import "../../storage/UStorage.sol";
  *       unstructured storage pattern, so that it can be safely mixed in with upgradeable
  *       contracts without affecting their storage patterns through inheritance.
  */
-abstract contract UReentrancyGuard is UInitializable {
-    error UReentrancyGuardReentrantCallError();
-
+abstract contract UReentrancyGuard is IReentrancyGuard, UInitializable {
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
 
