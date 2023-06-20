@@ -9,7 +9,7 @@
     "coverage": "hardhat coverage --testfiles './test/unit/**/*'",
     "lint": "eslint --fix --ext '.ts,.js' ./ && solhint 'contracts/**/*.sol' --fix",
     "format": "prettier -w .",
-    "prepack": "yarn build",
+    "postinstall": "yarn build",
     "prepare": "husky install",
     "clean": "rm -rf cache artifacts types/generated"
   },

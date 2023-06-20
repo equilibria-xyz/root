@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../../number/types/UFixed18.sol";
+import "../../number/types/UFixed6.sol";
 
 /// @dev Token6
 type Token6 is address;
@@ -16,14 +17,11 @@ using Token6StorageLib for Token6Storage global;
 /**
  * @title Token6Lib
  * @notice Library to manage 6-decimal ERC20s that is compliant with the fixed-decimal types.
- * @dev Automatically converts from Base-6 token amounts to Base-18 UFixed18 amounts, with optional rounding
  */
 library Token6Lib {
     using SafeERC20 for IERC20;
 
     Token6 public constant ZERO = Token6.wrap(address(0));
-
-    uint256 private constant OFFSET = 1e12;
 
     /**
      * @notice Returns whether a token is the zero address
@@ -66,23 +64,8 @@ library Token6Lib {
      * @param grantee Address to allow spending
      * @param amount Amount of tokens to approve to spend
      */
-    function approve(Token6 self, address grantee, UFixed18 amount) internal {
-        IERC20(Token6.unwrap(self)).safeApprove(grantee, toTokenAmount(amount, false));
-    }
-
-    /**
-     * @notice Approves `grantee` to spend `amount` tokens from the caller
-     * @dev There are important race conditions to be aware of when using this function
-            with values other than 0. This will revert if moving from non-zero to non-zero amounts
-            See https://github.com/OpenZeppelin/openzeppelin-contracts/blob/a55b7d13722e7ce850b626da2313f3e66ca1d101/contracts/token/ERC20/IERC20.sol#L57
-     * @param self Token to grant approval
-     * @param self Token to grant approval
-     * @param grantee Address to allow spending
-     * @param amount Amount of tokens to approve to spend
-     * @param roundUp Whether to round decimal token amount up to the next unit
-     */
-    function approve(Token6 self, address grantee, UFixed18 amount, bool roundUp) internal {
-        IERC20(Token6.unwrap(self)).safeApprove(grantee, toTokenAmount(amount, roundUp));
+    function approve(Token6 self, address grantee, UFixed6 amount) internal {
+        IERC20(Token6.unwrap(self)).safeApprove(grantee, UFixed6.unwrap(amount));
     }
 
     /**
@@ -100,19 +83,8 @@ library Token6Lib {
      * @param recipient Address to transfer tokens to
      * @param amount Amount of tokens to transfer
      */
-    function push(Token6 self, address recipient, UFixed18 amount) internal {
-        IERC20(Token6.unwrap(self)).safeTransfer(recipient, toTokenAmount(amount, false));
-    }
-
-    /**
-     * @notice Transfers `amount` tokens from the caller to the `recipient`
-     * @param self Token to transfer
-     * @param recipient Address to transfer tokens to
-     * @param amount Amount of tokens to transfer
-     * @param roundUp Whether to round decimal token amount up to the next unit
-     */
-    function push(Token6 self, address recipient, UFixed18 amount, bool roundUp) internal {
-        IERC20(Token6.unwrap(self)).safeTransfer(recipient, toTokenAmount(amount, roundUp));
+    function push(Token6 self, address recipient, UFixed6 amount) internal {
+        IERC20(Token6.unwrap(self)).safeTransfer(recipient, UFixed6.unwrap(amount));
     }
 
     /**
@@ -122,20 +94,8 @@ library Token6Lib {
      * @param benefactor Address to transfer tokens from
      * @param amount Amount of tokens to transfer
      */
-    function pull(Token6 self, address benefactor, UFixed18 amount) internal {
-        IERC20(Token6.unwrap(self)).safeTransferFrom(benefactor, address(this), toTokenAmount(amount, false));
-    }
-
-    /**
-     * @notice Transfers `amount` tokens from the `benefactor` to the caller
-     * @dev Reverts if trying to pull Ether
-     * @param self Token to transfer
-     * @param benefactor Address to transfer tokens from
-     * @param amount Amount of tokens to transfer
-     * @param roundUp Whether to round decimal token amount up to the next unit
-     */
-    function pull(Token6 self, address benefactor, UFixed18 amount, bool roundUp) internal {
-        IERC20(Token6.unwrap(self)).safeTransferFrom(benefactor, address(this), toTokenAmount(amount, roundUp));
+    function pull(Token6 self, address benefactor, UFixed6 amount) internal {
+        IERC20(Token6.unwrap(self)).safeTransferFrom(benefactor, address(this), UFixed6.unwrap(amount));
     }
 
     /**
@@ -146,21 +106,8 @@ library Token6Lib {
      * @param recipient Address to transfer tokens to
      * @param amount Amount of tokens to transfer
      */
-    function pullTo(Token6 self, address benefactor, address recipient, UFixed18 amount) internal {
-        IERC20(Token6.unwrap(self)).safeTransferFrom(benefactor, recipient, toTokenAmount(amount, false));
-    }
-
-    /**
-     * @notice Transfers `amount` tokens from the `benefactor` to `recipient`
-     * @dev Reverts if trying to pull Ether
-     * @param self Token to transfer
-     * @param benefactor Address to transfer tokens from
-     * @param recipient Address to transfer tokens to
-     * @param amount Amount of tokens to transfer
-     * @param roundUp Whether to round decimal token amount up to the next unit
-     */
-    function pullTo(Token6 self, address benefactor, address recipient, UFixed18 amount, bool roundUp) internal {
-        IERC20(Token6.unwrap(self)).safeTransferFrom(benefactor, recipient, toTokenAmount(amount, roundUp));
+    function pullTo(Token6 self, address benefactor, address recipient, UFixed6 amount) internal {
+        IERC20(Token6.unwrap(self)).safeTransferFrom(benefactor, recipient, UFixed6.unwrap(amount));
     }
 
     /**
@@ -186,7 +133,7 @@ library Token6Lib {
      * @param self Token to check for
      * @return Token balance of the caller
      */
-    function balanceOf(Token6 self) internal view returns (UFixed18) {
+    function balanceOf(Token6 self) internal view returns (UFixed6) {
         return balanceOf(self, address(this));
     }
 
@@ -196,32 +143,8 @@ library Token6Lib {
      * @param account Account to check
      * @return Token balance of the account
      */
-    function balanceOf(Token6 self, address account) internal view returns (UFixed18) {
-        return fromTokenAmount(IERC20(Token6.unwrap(self)).balanceOf(account));
-    }
-
-    /**
-     * @notice Converts the unsigned fixed-decimal amount into the token amount according to
-     *         it's defined decimals
-     * @dev Provides the ability to "round up" the token amount which is useful in situations where
-     *      are swapping one token for another and don't want to give away "free" units due to rounding
-     *      errors in the favor of the user.
-     * @param amount Amount to convert
-     * @param roundUp Whether to round decimal token amount up to the next unit
-     * @return Normalized token amount
-     */
-    function toTokenAmount(UFixed18 amount, bool roundUp) private pure returns (uint256) {
-        return roundUp ? Math.ceilDiv(UFixed18.unwrap(amount), OFFSET) : UFixed18.unwrap(amount) / OFFSET;
-    }
-
-    /**
-     * @notice Converts the token amount into the unsigned fixed-decimal amount according to
-     *         it's defined decimals
-     * @param amount Token amount to convert
-     * @return Normalized unsigned fixed-decimal amount
-     */
-    function fromTokenAmount(uint256 amount) private pure returns (UFixed18) {
-        return UFixed18.wrap(amount * OFFSET);
+    function balanceOf(Token6 self, address account) internal view returns (UFixed6) {
+        return UFixed6.wrap(IERC20(Token6.unwrap(self)).balanceOf(account));
     }
 }
 

@@ -55,53 +55,7 @@ describe('Token6', () => {
 
       await token6
         .connect(user)
-        ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100'))
-    })
-
-    it('approves tokens (round down implicit)', async () => {
-      await erc20.mock.allowance.withArgs(token6.address, recipient.address).returns(0)
-      await erc20.mock.approve.withArgs(recipient.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100').add(1))
-    })
-
-    it('approves tokens (round down explicit)', async () => {
-      await erc20.mock.allowance.withArgs(token6.address, recipient.address).returns(0)
-      await erc20.mock.approve.withArgs(recipient.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['approve(address,address,uint256,bool)'](
-          erc20.address,
-          recipient.address,
-          utils.parseEther('100').add(1),
-          false,
-        )
-    })
-
-    it('approves tokens (round up)', async () => {
-      await erc20.mock.allowance.withArgs(token6.address, recipient.address).returns(0)
-      await erc20.mock.approve.withArgs(recipient.address, 100_000_001).returns(true)
-
-      await token6
-        .connect(user)
-        ['approve(address,address,uint256,bool)'](
-          erc20.address,
-          recipient.address,
-          utils.parseEther('100').add(1),
-          true,
-        )
-    })
-
-    it('approves tokens (round up when no decimal)', async () => {
-      await erc20.mock.allowance.withArgs(token6.address, recipient.address).returns(0)
-      await erc20.mock.approve.withArgs(recipient.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['approve(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100'), true)
+        ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseUnits('100', 6))
     })
 
     it('approves tokens all', async () => {
@@ -113,14 +67,14 @@ describe('Token6', () => {
 
     describe('with prior allowance', () => {
       beforeEach(async () => {
-        await erc20.mock.allowance.withArgs(token6.address, recipient.address).returns(utils.parseEther('1'))
+        await erc20.mock.allowance.withArgs(token6.address, recipient.address).returns(utils.parseUnits('1', 6))
       })
 
       it('reverts when approving for a specific amount', async () => {
         await expect(
           token6
             .connect(user)
-            ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100')),
+            ['approve(address,address,uint256)'](erc20.address, recipient.address, utils.parseUnits('100', 6)),
         ).to.be.reverted
       })
 
@@ -138,39 +92,7 @@ describe('Token6', () => {
 
       await token6
         .connect(user)
-        ['push(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100'))
-    })
-
-    it('transfers tokens (round down implicit)', async () => {
-      await erc20.mock.transfer.withArgs(recipient.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['push(address,address,uint256)'](erc20.address, recipient.address, utils.parseEther('100').add(1))
-    })
-
-    it('transfers tokens (round down explicit)', async () => {
-      await erc20.mock.transfer.withArgs(recipient.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100').add(1), false)
-    })
-
-    it('transfers tokens (round up)', async () => {
-      await erc20.mock.transfer.withArgs(recipient.address, 100_000_001).returns(true)
-
-      await token6
-        .connect(user)
-        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100').add(1), true)
-    })
-
-    it('transfers tokens (round up when no decimal)', async () => {
-      await erc20.mock.transfer.withArgs(recipient.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['push(address,address,uint256,bool)'](erc20.address, recipient.address, utils.parseEther('100'), true)
+        ['push(address,address,uint256)'](erc20.address, recipient.address, utils.parseUnits('100', 6))
     })
 
     it('transfers tokens all', async () => {
@@ -185,39 +107,7 @@ describe('Token6', () => {
     it('transfers tokens', async () => {
       await erc20.mock.transferFrom.withArgs(user.address, token6.address, 100_000_000).returns(true)
 
-      await token6.connect(user)['pull(address,address,uint256)'](erc20.address, user.address, utils.parseEther('100'))
-    })
-
-    it('transfers tokens (round down implicit)', async () => {
-      await erc20.mock.transferFrom.withArgs(user.address, token6.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['pull(address,address,uint256)'](erc20.address, user.address, utils.parseEther('100').add(1))
-    })
-
-    it('transfers tokens (round down explicit)', async () => {
-      await erc20.mock.transferFrom.withArgs(user.address, token6.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100').add(1), false)
-    })
-
-    it('transfers tokens (round up)', async () => {
-      await erc20.mock.transferFrom.withArgs(user.address, token6.address, 100_000_001).returns(true)
-
-      await token6
-        .connect(user)
-        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100').add(1), true)
-    })
-
-    it('transfers tokens (round up when no decimal)', async () => {
-      await erc20.mock.transferFrom.withArgs(user.address, token6.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['pull(address,address,uint256,bool)'](erc20.address, user.address, utils.parseEther('100'), true)
+      await token6.connect(user).pull(erc20.address, user.address, utils.parseUnits('100', 6))
     })
   })
 
@@ -225,69 +115,7 @@ describe('Token6', () => {
     it('transfers tokens', async () => {
       await erc20.mock.transferFrom.withArgs(user.address, recipient.address, 100_000_000).returns(true)
 
-      await token6
-        .connect(user)
-        ['pullTo(address,address,address,uint256)'](
-          erc20.address,
-          user.address,
-          recipient.address,
-          utils.parseEther('100'),
-        )
-    })
-
-    it('transfers tokens (round down implicit)', async () => {
-      await erc20.mock.transferFrom.withArgs(user.address, recipient.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['pullTo(address,address,address,uint256)'](
-          erc20.address,
-          user.address,
-          recipient.address,
-          utils.parseEther('100').add(1),
-        )
-    })
-
-    it('transfers tokens (round down explicit)', async () => {
-      await erc20.mock.transferFrom.withArgs(user.address, recipient.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['pullTo(address,address,address,uint256,bool)'](
-          erc20.address,
-          user.address,
-          recipient.address,
-          utils.parseEther('100').add(1),
-          false,
-        )
-    })
-
-    it('transfers tokens (round up)', async () => {
-      await erc20.mock.transferFrom.withArgs(user.address, recipient.address, 100_000_001).returns(true)
-
-      await token6
-        .connect(user)
-        ['pullTo(address,address,address,uint256,bool)'](
-          erc20.address,
-          user.address,
-          recipient.address,
-          utils.parseEther('100').add(1),
-          true,
-        )
-    })
-
-    it('transfers tokens (round up when no decimal)', async () => {
-      await erc20.mock.transferFrom.withArgs(user.address, recipient.address, 100_000_000).returns(true)
-
-      await token6
-        .connect(user)
-        ['pullTo(address,address,address,uint256,bool)'](
-          erc20.address,
-          user.address,
-          recipient.address,
-          utils.parseEther('100'),
-          true,
-        )
+      await token6.connect(user).pullTo(erc20.address, user.address, recipient.address, utils.parseUnits('100', 6))
     })
   })
 
@@ -309,13 +137,13 @@ describe('Token6', () => {
     it('returns balance', async () => {
       await erc20.mock.balanceOf.withArgs(user.address).returns(100_000_000)
       expect(await token6.connect(user)['balanceOf(address,address)'](erc20.address, user.address)).to.equal(
-        utils.parseEther('100'),
+        utils.parseUnits('100', 6),
       )
     })
 
     it('returns balance all', async () => {
       await erc20.mock.balanceOf.withArgs(token6.address).returns(100_000_000)
-      expect(await token6.connect(user)['balanceOf(address)'](erc20.address)).to.equal(utils.parseEther('100'))
+      expect(await token6.connect(user)['balanceOf(address)'](erc20.address)).to.equal(utils.parseUnits('100', 6))
     })
   })
 
