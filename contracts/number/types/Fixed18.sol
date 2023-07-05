@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/utils/math/SignedMath.sol";
 import "../NumberMath.sol";
 import "./Fixed6.sol";
 import "./UFixed18.sol";
-import "./PackedFixed18.sol";
 
 /// @dev Fixed18 type
 type Fixed18 is int256;
@@ -19,8 +18,6 @@ using Fixed18StorageLib for Fixed18Storage global;
  */
 library Fixed18Lib {
     error Fixed18OverflowError(uint256 value);
-    error Fixed18PackingOverflowError(int256 value);
-    error Fixed18PackingUnderflowError(int256 value);
 
     int256 private constant BASE = 1e18;
     Fixed18 public constant ZERO = Fixed18.wrap(0);
@@ -73,18 +70,6 @@ library Fixed18Lib {
      */
     function from(Fixed6 a) internal pure returns (Fixed18) {
         return Fixed18.wrap(Fixed6.unwrap(a) * 1e12);
-    }
-
-    /**
-     * @notice Creates a packed signed fixed-decimal from an signed fixed-decimal
-     * @param a signed fixed-decimal
-     * @return New packed signed fixed-decimal
-     */
-    function pack(Fixed18 a) internal pure returns (PackedFixed18) {
-        int256 value = Fixed18.unwrap(a);
-        if (value > type(int128).max) revert Fixed18PackingOverflowError(value);
-        if (value < type(int128).min) revert Fixed18PackingUnderflowError(value);
-        return PackedFixed18.wrap(int128(value));
     }
 
     /**
