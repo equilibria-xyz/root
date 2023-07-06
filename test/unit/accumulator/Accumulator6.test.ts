@@ -36,6 +36,20 @@ describe('Accumulator6', () => {
       await accumulator6.increment(-1, utils.parseUnits('2', 6))
       expect(await value(accumulator6)).to.equal(-1)
     })
+
+    it('zero amount / non-zero total', async () => {
+      await accumulator6.increment(utils.parseUnits('0', 6), utils.parseUnits('1', 6))
+      expect(await value(accumulator6)).to.equal(utils.parseUnits('0', 6))
+    })
+
+    it('zero amount / zero total', async () => {
+      await accumulator6.increment(utils.parseUnits('0', 6), utils.parseUnits('0', 6))
+      expect(await value(accumulator6)).to.equal(utils.parseUnits('0', 6))
+    })
+
+    it('non-zero amount / zero total (reverts)', async () => {
+      await expect(accumulator6.increment(utils.parseUnits('1', 6), utils.parseUnits('0', 6))).to.revertedWith('0x12')
+    })
   })
 
   describe('#decrement', async () => {
@@ -53,6 +67,22 @@ describe('Accumulator6', () => {
 
       await accumulator6.decrement(1, utils.parseUnits('2', 6))
       expect(await value(accumulator6)).to.equal(-1)
+    })
+
+    it('zero amount / non-zero total', async () => {
+      await accumulator6.decrement(utils.parseUnits('0', 6), utils.parseUnits('1', 6))
+      expect(await value(accumulator6)).to.equal(utils.parseUnits('0', 6))
+    })
+
+    it('zero amount / zero total', async () => {
+      await accumulator6.decrement(utils.parseUnits('0', 6), utils.parseUnits('0', 6))
+      expect(await value(accumulator6)).to.equal(utils.parseUnits('0', 6))
+    })
+
+    it('non-zero amount / zero total (reverts)', async () => {
+      await expect(accumulator6.decrement(utils.parseUnits('1', 6), utils.parseUnits('0', 6))).to.revertedWith(
+        'DivisionByZero()',
+      )
     })
   })
 

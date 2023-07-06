@@ -41,6 +41,7 @@ library UAccumulator6Lib {
      * @param total Denominator of the ratio
      */
     function increment(UAccumulator6 memory self, UFixed6 amount, UFixed6 total) internal pure {
+        if (amount.isZero()) return;
         self._value = self._value.add(amount.div(total));
     }
 }
