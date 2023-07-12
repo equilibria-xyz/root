@@ -6,14 +6,14 @@ import { MockUPausable, MockUPausable__factory } from '../../../types/generated'
 
 const { ethers } = HRE
 
-describe.only('UPausable', () => {
+describe('UPausable', () => {
   let owner: SignerWithAddress
-  let newOwner: SignerWithAddress
+  let newPauser: SignerWithAddress
   let user: SignerWithAddress
   let uPausable: MockUPausable
 
   beforeEach(async () => {
-    ;[owner, newOwner, user] = await ethers.getSigners()
+    ;[owner, newPauser, user] = await ethers.getSigners()
     uPausable = await new MockUPausable__factory(owner).deploy()
   })
 
@@ -34,16 +34,21 @@ describe.only('UPausable', () => {
     })
 
     it('updates pauser', async () => {
-      await expect(uPausable.connect(owner).updatePauser(newOwner.address))
+      await expect(uPausable.connect(owner).updatePauser(newPauser.address))
         .to.emit(uPausable, 'PauserUpdated')
-        .withArgs(newOwner.address)
+        .withArgs(newPauser.address)
 
-      expect(await uPausable.pauser()).to.equal(newOwner.address)
+      expect(await uPausable.pauser()).to.equal(newPauser.address)
     })
 
-    it('only pauser can update pauser', async () => {
-      await expect(uPausable.connect(user).updatePauser(newOwner.address)).to.be.revertedWith(
+    it('only owner can update pauser', async () => {
+      await expect(uPausable.connect(user).updatePauser(user.address)).to.be.revertedWith(
         `UOwnableNotOwnerError("${user.address}")`,
+      )
+
+      await uPausable.connect(owner).updatePauser(newPauser.address)
+      await expect(uPausable.connect(newPauser).updatePauser(user.address)).to.be.revertedWith(
+        `UOwnableNotOwnerError("${newPauser.address}")`,
       )
     })
   })
@@ -53,13 +58,13 @@ describe.only('UPausable', () => {
       await uPausable.connect(owner).__initialize()
     })
 
-    it('pauses', async () => {
+    async function testPause(pauser: SignerWithAddress) {
       const initialValue = await uPausable.counter()
       await uPausable.increment()
       const secondValue = await uPausable.counter()
       expect(secondValue).to.equal(initialValue.add(1))
 
-      await expect(uPausable.connect(owner).pause()).to.emit(uPausable, 'Paused')
+      await expect(uPausable.connect(pauser).pause()).to.emit(uPausable, 'Paused')
 
       expect(await uPausable.paused()).to.equal(true)
       await expect(uPausable.increment()).to.be.revertedWith(`UPausablePausedError()`)
@@ -67,9 +72,19 @@ describe.only('UPausable', () => {
       // We should still be able to call incrementNoModifier
       await uPausable.incrementNoModifier()
       expect(await uPausable.counter()).to.equal(secondValue.add(1))
+    }
+
+    it('pauser can pause', async () => {
+      await uPausable.connect(owner).updatePauser(newPauser.address)
+      await testPause(newPauser)
     })
 
-    it('only pauser can pause', async () => {
+    it('owner can pause', async () => {
+      await uPausable.connect(owner).updatePauser(newPauser.address)
+      await testPause(owner)
+    })
+
+    it('other users cannot pause', async () => {
       await expect(uPausable.connect(user).pause()).to.be.revertedWith(`UPausableNotPauserError("${user.address}")`)
     })
   })
@@ -79,20 +94,30 @@ describe.only('UPausable', () => {
       await uPausable.connect(owner).__initialize()
     })
 
-    it('unpauses', async () => {
-      await uPausable.connect(owner).pause()
+    async function testUnpause(unpauser: SignerWithAddress) {
+      await uPausable.connect(unpauser).pause()
       expect(await uPausable.paused()).to.equal(true)
 
-      await expect(uPausable.connect(owner).unpause()).to.emit(uPausable, 'Unpaused')
+      await expect(uPausable.connect(unpauser).unpause()).to.emit(uPausable, 'Unpaused')
 
       expect(await uPausable.paused()).to.equal(false)
 
       const initialValue = await uPausable.counter()
       await uPausable.increment()
       expect(await uPausable.counter()).to.equal(initialValue.add(1))
+    }
+
+    it('pauser can unpause', async () => {
+      await uPausable.connect(owner).updatePauser(newPauser.address)
+      await testUnpause(newPauser)
     })
 
-    it('only pauser can unpause', async () => {
+    it('owner can unpause', async () => {
+      await uPausable.connect(owner).updatePauser(newPauser.address)
+      await testUnpause(owner)
+    })
+
+    it('other users cannot unpause', async () => {
       await uPausable.connect(owner).pause()
       expect(await uPausable.paused()).to.equal(true)
 
