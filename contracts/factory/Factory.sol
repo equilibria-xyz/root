@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 import "./IFactory.sol";
 import "../control/unstructured/UPausable.sol";
 import "./IInstance.sol";
@@ -12,9 +11,10 @@ import "./IInstance.sol";
  * @notice
  * @dev
  */
-abstract contract Factory is IBeacon, IFactory, UOwnable, UPausable {
+abstract contract Factory is IFactory, UOwnable, UPausable {
     bytes32 private constant INSTANCE_MAP_SLOT = keccak256("equilibria.root.Factory.instances");
 
+    /// @dev Satisfies the IBeacon interface
     address public immutable implementation;
 
     constructor(address implementation_) { implementation = implementation_; }
