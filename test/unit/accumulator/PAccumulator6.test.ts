@@ -47,7 +47,17 @@ describe('PAccumulator6', () => {
 
     it('no accumulation (0 skew)', async () => {
       expect(
-        await pAccumulator6.accumulate(ACCUMULATOR, CONTROLLER, 0, FROM_TIMESTAMP, TO_TIMESTAMP, NOTIONAL),
+        await pAccumulator6.accumulate(
+          {
+            _value: 0,
+            _skew: 0,
+          },
+          CONTROLLER,
+          utils.parseUnits('10', 6),
+          FROM_TIMESTAMP,
+          TO_TIMESTAMP,
+          NOTIONAL,
+        ),
       ).to.equal(0)
     })
 
