@@ -22,7 +22,7 @@ const FROM_TIMESTAMP = 1626156000
 const TO_TIMESTAMP = 1626159000
 const NOTIONAL = utils.parseUnits('500', 6)
 
-describe.only('PAccumulator6', () => {
+describe('PAccumulator6', () => {
   let user: SignerWithAddress
   let pAccumulator6: MockPAccumulator6
 
