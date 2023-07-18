@@ -6,7 +6,7 @@ import { MockFactory, MockFactory__factory, MockInstance, MockInstance__factory 
 
 const { ethers } = HRE
 
-describe.only('Factory', () => {
+describe('Factory', () => {
   let owner: SignerWithAddress
   let pauser: SignerWithAddress
   let user: SignerWithAddress
