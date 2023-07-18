@@ -33,7 +33,7 @@ describe('PController6', () => {
 
   describe('#compute', async () => {
     it('computes new value, capped value, and intercept timestamp correctly', async () => {
-      const [newValue, newValueCapped, interceptTimestamp] = await pController6.compute(
+      const [newValue, interceptTimestamp] = await pController6.compute(
         CONTROLLER,
         VALUE,
         SKEW,
@@ -42,13 +42,11 @@ describe('PController6', () => {
       )
 
       expect(newValue).to.equal(utils.parseUnits('800', 6))
-      expect(newValue).to.equal(newValueCapped)
-
       expect(interceptTimestamp).to.equal(utils.parseUnits('1626158000', 6))
     })
 
     it('computes new value, capped value, and intercept timestamp correctly (negative starting value)', async () => {
-      const [newValue, newValueCapped, interceptTimestamp] = await pController6.compute(
+      const [newValue, interceptTimestamp] = await pController6.compute(
         CONTROLLER,
         VALUE.mul(-1),
         SKEW,
@@ -57,13 +55,11 @@ describe('PController6', () => {
       )
 
       expect(newValue).to.equal(utils.parseUnits('-200', 6))
-      expect(newValue).to.equal(newValueCapped)
-
       expect(interceptTimestamp).to.equal(utils.parseUnits('1626168000', 6))
     })
 
     it('clamps to max if newValue is too large', async () => {
-      const [newValue, newValueCapped, interceptTimestamp] = await pController6.compute(
+      const [newValue, interceptTimestamp] = await pController6.compute(
         CONTROLLER_LOW_MAX,
         VALUE,
         SKEW,
@@ -71,13 +67,12 @@ describe('PController6', () => {
         TO_TIMESTAMP,
       )
 
-      expect(newValue).to.equal(utils.parseUnits('800', 6))
-      expect(newValueCapped).to.equal(CONTROLLER_LOW_MAX.max)
+      expect(newValue).to.equal(CONTROLLER_LOW_MAX.max)
       expect(interceptTimestamp).to.equal(utils.parseUnits('1626163000', 6))
     })
 
     it('clamps to max if newValue is too large (negative newValue)', async () => {
-      const [newValue, newValueCapped, interceptTimestamp] = await pController6.compute(
+      const [newValue, interceptTimestamp] = await pController6.compute(
         CONTROLLER_LOW_MAX,
         VALUE.mul(-1),
         SKEW,
@@ -85,13 +80,12 @@ describe('PController6', () => {
         TO_TIMESTAMP,
       )
 
-      expect(newValue).to.equal(utils.parseUnits('-200', 6))
-      expect(newValueCapped).to.equal(CONTROLLER_LOW_MAX.max.mul(-1))
+      expect(newValue).to.equal(CONTROLLER_LOW_MAX.max.mul(-1))
       expect(interceptTimestamp).to.equal(utils.parseUnits('1626159000', 6))
     })
 
     it('negative range', async () => {
-      const [newValue, newValueCapped, interceptTimestamp] = await pController6.compute(
+      const [newValue, interceptTimestamp] = await pController6.compute(
         CONTROLLER,
         VALUE,
         SKEW.mul(-1),
@@ -100,12 +94,11 @@ describe('PController6', () => {
       )
 
       expect(newValue).to.equal(utils.parseUnits('200', 6))
-      expect(newValue).to.equal(newValueCapped)
       expect(interceptTimestamp).to.equal(utils.parseUnits('1626168000', 6))
     })
 
     it('negative range, clamps to max', async () => {
-      const [newValue, newValueCapped, interceptTimestamp] = await pController6.compute(
+      const [newValue, interceptTimestamp] = await pController6.compute(
         CONTROLLER_LOW_MAX,
         VALUE,
         SKEW.mul(-1),
@@ -113,13 +106,12 @@ describe('PController6', () => {
         TO_TIMESTAMP,
       )
 
-      expect(newValue).to.equal(utils.parseUnits('200', 6))
-      expect(newValueCapped).to.equal(CONTROLLER_LOW_MAX.max)
+      expect(newValue).to.equal(CONTROLLER_LOW_MAX.max)
       expect(interceptTimestamp).to.equal(utils.parseUnits('1626159000', 6))
     })
 
     it('zero range (no skew)', async () => {
-      const [newValue, newValueCapped, interceptTimestamp] = await pController6.compute(
+      const [newValue, interceptTimestamp] = await pController6.compute(
         CONTROLLER,
         VALUE,
         0,
@@ -128,12 +120,11 @@ describe('PController6', () => {
       )
 
       expect(newValue).to.equal(VALUE)
-      expect(newValueCapped).to.equal(VALUE)
       expect(interceptTimestamp).to.equal(BigNumber.from(2).pow(256).sub(1))
     })
 
     it('zero range (no time difference)', async () => {
-      const [newValue, newValueCapped, interceptTimestamp] = await pController6.compute(
+      const [newValue, interceptTimestamp] = await pController6.compute(
         CONTROLLER,
         VALUE,
         SKEW,
@@ -142,12 +133,11 @@ describe('PController6', () => {
       )
 
       expect(newValue).to.equal(VALUE)
-      expect(newValueCapped).to.equal(VALUE)
       expect(interceptTimestamp).to.equal(BigNumber.from(2).pow(256).sub(1))
     })
 
     it('zero range, clamps to max', async () => {
-      const [newValue, newValueCapped, interceptTimestamp] = await pController6.compute(
+      const [newValue, interceptTimestamp] = await pController6.compute(
         CONTROLLER_LOW_MAX,
         VALUE,
         0,
@@ -155,8 +145,7 @@ describe('PController6', () => {
         TO_TIMESTAMP,
       )
 
-      expect(newValue).to.equal(VALUE)
-      expect(newValueCapped).to.equal(CONTROLLER_LOW_MAX.max)
+      expect(newValue).to.equal(CONTROLLER_LOW_MAX.max)
       expect(interceptTimestamp).to.equal(BigNumber.from(2).pow(256).sub(1))
     })
 

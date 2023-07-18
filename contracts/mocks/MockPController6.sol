@@ -10,7 +10,7 @@ contract MockPController6 {
         Fixed6 skew,
         uint256 fromTimestamp,
         uint256 toTimestamp
-    ) external pure returns (Fixed6 newValue, Fixed6 newValueCapped, UFixed6 interceptTimestamp) {
+    ) external pure returns (Fixed6 newValue, UFixed6 interceptTimestamp) {
         return PController6Lib.compute(self, value, skew, fromTimestamp, toTimestamp);
     }
 }
