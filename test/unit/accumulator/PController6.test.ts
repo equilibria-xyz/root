@@ -1,5 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
-import { utils } from 'ethers'
+import { BigNumber, utils } from 'ethers'
 import { expect } from 'chai'
 import HRE from 'hardhat'
 
@@ -30,6 +30,16 @@ const TO_TIMESTAMP = 100
 const FROM_TIMESTAMP_UFIXED6 = utils.parseUnits(FROM_TIMESTAMP.toString(), 6)
 const TO_TIMESTAMP_UFIXED6 = utils.parseUnits(TO_TIMESTAMP.toString(), 6)
 
+function computeNewValue(value: BigNumber, skew: BigNumber, k: BigNumber): BigNumber {
+  // newValue = value + (toTimestamp - fromTimestamp) * skew / k
+  return value.add(
+    skew
+      .mul(TO_TIMESTAMP - FROM_TIMESTAMP)
+      .mul(1e6)
+      .div(k),
+  )
+}
+
 describe('PController6', () => {
   let user: SignerWithAddress
   let pController6: MockPController6
@@ -49,14 +59,7 @@ describe('PController6', () => {
         TO_TIMESTAMP,
       )
 
-      // newValue = VALUE + (TO_TIMESTAMP - FROM_TIMESTAMP) * SKEW / k
-      expect(newValue).to.equal(
-        VALUE.add(
-          SKEW.mul(TO_TIMESTAMP - FROM_TIMESTAMP)
-            .div(CONTROLLER.k)
-            .mul(10e5),
-        ),
-      )
+      expect(newValue).to.equal(computeNewValue(VALUE, SKEW, CONTROLLER.k))
       // Value will be max after TO_TIMESTAMP, so interceptTimestamp is clamped to TO_TIMESTAMP
       expect(interceptTimestamp).to.equal(TO_TIMESTAMP_UFIXED6)
     })
@@ -71,14 +74,7 @@ describe('PController6', () => {
         TO_TIMESTAMP,
       )
 
-      // newValue = VALUE + (TO_TIMESTAMP - FROM_TIMESTAMP) * SKEW / k
-      expect(newValue).to.equal(
-        negativeValue.add(
-          SKEW.mul(TO_TIMESTAMP - FROM_TIMESTAMP)
-            .div(CONTROLLER.k)
-            .mul(10e5),
-        ),
-      )
+      expect(newValue).to.equal(computeNewValue(negativeValue, SKEW, CONTROLLER.k))
       // Value will be max after TO_TIMESTAMP, so interceptTimestamp is clamped to TO_TIMESTAMP
       expect(interceptTimestamp).to.equal(TO_TIMESTAMP_UFIXED6)
     })
@@ -123,15 +119,7 @@ describe('PController6', () => {
         TO_TIMESTAMP,
       )
 
-      // newValue = VALUE + (TO_TIMESTAMP - FROM_TIMESTAMP) * SKEW / k
-      expect(newValue).to.equal(
-        VALUE.add(
-          negativeSkew
-            .mul(TO_TIMESTAMP - FROM_TIMESTAMP)
-            .div(CONTROLLER.k)
-            .mul(10e5),
-        ),
-      )
+      expect(newValue).to.equal(computeNewValue(VALUE, negativeSkew, CONTROLLER.k))
       // Value will be max after TO_TIMESTAMP, so interceptTimestamp is clamped to TO_TIMESTAMP
       expect(interceptTimestamp).to.equal(TO_TIMESTAMP_UFIXED6)
     })
