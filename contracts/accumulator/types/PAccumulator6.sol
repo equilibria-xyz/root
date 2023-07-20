@@ -44,7 +44,7 @@ library PAccumulator6Lib {
             UFixed6Lib.from(fromTimestamp),
             interceptTimestamp,
             notional
-        ).div(Fixed6Lib.from(2));
+        ).div(Fixed6Lib.from(2)); // rate = self._value + newValue / 2 -> divide here for added precision
 
         // accumulate rate outside of max
         accumulated = _accumulate(
