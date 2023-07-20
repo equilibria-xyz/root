@@ -16,6 +16,7 @@
   "author": "",
   "license": "APACHE-2.0",
   "devDependencies": {
+    "@chainlink/contracts": "^0.6.1",
     "@codechecks/client": "^0.1.10",
     "@defi-wonderland/smock": "^2.3.4",
     "@ethersproject/abi": "^5.3.1",
