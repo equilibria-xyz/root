@@ -18,6 +18,15 @@ contract MockUKept is UKept, UOwnable {
         keeperToken().pull(owner(), amount);
     }
 
-    // UFixed18 multiplier, uint256 buffer, address feeReceiver, bytes memory data
     function toBeKept(UFixed18 multiplier, uint256 buffer, address feeReceiver, bytes memory data) keep(multiplier, buffer, feeReceiver, data) external {}
+
+    /// @dev This function is used to figure out what gasUsed is. We can't hardcode this
+    /// @dev in tests because it depends on whether we're running coverage or not.
+    function instrumentGas() external returns (uint256) {
+        uint256 startGas = gasleft();
+        emptyFunc();
+        return startGas - gasleft() - 24;
+    }
+
+    function emptyFunc() internal {}
 }

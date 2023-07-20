@@ -21,6 +21,7 @@ describe.only('UKept', () => {
   let keeper: SignerWithAddress
   let keeperToken: MockERC20
   let ethTokenOracleFeed: FakeContract<AggregatorV3Interface>
+  let gasUsed: BigNumber
   let uKept: MockUKept
 
   async function computeAndAssertKeeperFee(
@@ -28,7 +29,6 @@ describe.only('UKept', () => {
     buffer: BigNumber,
     baseFee: number,
   ): Promise<BigNumber> {
-    const gasUsed = BigNumber.from(185) // The gas used by MockUKept.toBeKept
     const [, answer, , ,] = await ethTokenOracleFeed.latestRoundData()
     const ethPrice = answer.div(10 ** 8)
     const originalBenefactorBalance = await keeperToken.balanceOf(owner.address)
@@ -72,6 +72,8 @@ describe.only('UKept', () => {
     ethTokenOracleFeed = await smock.fake<AggregatorV3Interface>('AggregatorV3Interface')
     uKept = await new MockUKept__factory(owner).deploy()
     await uKept.connect(owner).initialize(ethTokenOracleFeed.address, keeperToken.address)
+
+    gasUsed = await uKept.callStatic.instrumentGas()
 
     setEthPrice(ETH_PRICE_USD)
 
