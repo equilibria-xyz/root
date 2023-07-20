@@ -28,7 +28,7 @@ describe.only('UKept', () => {
     buffer: BigNumber,
     baseFee: number,
   ): Promise<BigNumber> {
-    const gasUsed = BigNumber.from(10) // The gas used by MockUKept.toBeKept
+    const gasUsed = BigNumber.from(185) // The gas used by MockUKept.toBeKept
     const [, answer, , ,] = await ethTokenOracleFeed.latestRoundData()
     const ethPrice = answer.div(10 ** 8)
     const originalBenefactorBalance = await keeperToken.balanceOf(owner.address)
@@ -43,7 +43,7 @@ describe.only('UKept', () => {
       .add(buffer)
       .mul(ethPrice)
       .mul(baseFee)
-    await expect(uKept.toBeKept(multiplier, buffer, keeper.address, '0x'))
+    await expect(uKept.toBeKept(multiplier, buffer, keeper.address, '0x', { gasPrice: baseFee }))
       .to.emit(uKept, 'RaiseKeeperFeeCalled')
       .withArgs(expectedKeeperFee, '0x')
 
@@ -66,6 +66,8 @@ describe.only('UKept', () => {
 
   beforeEach(async () => {
     ;[owner, keeper] = await ethers.getSigners()
+    // Set baseFee to 0 to fix sc-coverage issue
+    await ethers.provider.send('hardhat_setNextBlockBaseFeePerGas', ['0x0'])
     keeperToken = await new MockERC20__factory(owner).deploy('dsu', 'DSU')
     ethTokenOracleFeed = await smock.fake<AggregatorV3Interface>('AggregatorV3Interface')
     uKept = await new MockUKept__factory(owner).deploy()
