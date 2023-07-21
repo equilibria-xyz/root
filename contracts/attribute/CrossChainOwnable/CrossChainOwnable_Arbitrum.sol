@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/crosschain/arbitrum/CrossChainEnabledArbitrumL2.
 import "./CrossChainOwnable.sol";
 
 /**
- * @title CrossChainOwnable_Arbitrum.sol
+ * @title CrossChainOwnable_Arbitrum
  * @notice Library to manage the cross-chain ownership lifecycle of Arbitrum upgradeable contracts.
  * @dev This contract has been extended from the Open Zeppelin library to include an
  *      unstructured storage pattern so that it can be safely mixed in with upgradeable

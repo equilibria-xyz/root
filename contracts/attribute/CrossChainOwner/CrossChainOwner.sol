@@ -5,12 +5,12 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "../CrossChainOwnable/CrossChainOwnable.sol";
 
 /**
- * @title UCrossChainOwner
+ * @title CrossChainOwner.sol
  * @notice Contract to act as an owner of other contracts
  * @dev This contract is designed to act as an owner of any Ownable contract, allowing
  *      Cross Chain Ownership without modification to the underlying ownable contract
  */
-abstract contract UCrossChainOwner is CrossChainOwnable {
+abstract contract CrossChainOwner is CrossChainOwnable {
     function initialize() external initializer(1) {
         super.__UOwnable__initialize();
     }

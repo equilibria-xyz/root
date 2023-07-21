@@ -4,8 +4,8 @@ import { expect } from 'chai'
 import HRE from 'hardhat'
 
 import {
-  UCrossChainOwnerArbitrum,
-  UCrossChainOwnerArbitrum__factory,
+  CrossChainOwnerArbitrum,
+  CrossChainOwnerArbitrum__factory,
   IArbSys,
   MockERC20__factory,
 } from '../../../types/generated'
@@ -13,11 +13,11 @@ import { impersonateWithBalance } from '../../testutil/impersonate'
 
 const { ethers } = HRE
 
-describe('UCrossChainOwner_Arbitrum', () => {
+describe('CrossChainOwner_Arbitrum', () => {
   let owner: SignerWithAddress
   let xChainOwner: SignerWithAddress
   let user: SignerWithAddress
-  let uOwner: UCrossChainOwnerArbitrum
+  let uOwner: CrossChainOwnerArbitrum
   let arbSys: FakeContract<IArbSys>
 
   beforeEach(async () => {
@@ -27,7 +27,7 @@ describe('UCrossChainOwner_Arbitrum', () => {
     })
     arbSys.wasMyCallersAddressAliased.returns(true)
     await impersonateWithBalance(arbSys.address, ethers.utils.parseEther('10'))
-    uOwner = await new UCrossChainOwnerArbitrum__factory(owner).deploy()
+    uOwner = await new CrossChainOwnerArbitrum__factory(owner).deploy()
   })
 
   describe('#execute', async () => {

@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/crosschain/optimism/CrossChainEnabledOptimism.so
 import "./CrossChainOwnable.sol";
 
 /**
- * @title CrossChainOwnable_Optimism.sol
+ * @title CrossChainOwnable_Optimism
  * @notice Library to manage the cross-chain ownership lifecycle of upgradeable contracts.
  * @dev This contract has been extended from the Open Zeppelin library to include an
  *      unstructured storage pattern so that it can be safely mixed in with upgradeable

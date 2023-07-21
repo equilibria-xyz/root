@@ -2,15 +2,15 @@
 pragma solidity ^0.8.13;
 
 import "../CrossChainOwnable/CrossChainOwnable_Optimism.sol";
-import "./UCrossChainOwner.sol";
+import "./CrossChainOwner.sol";
 
 /**
- * @title UCrossChainOwner_Arbitrum
+ * @title CrossChainOwner_Arbitrum
  * @notice Contract to act as an owner of other contracts
  * @dev This contract is designed to act as an owner of any Ownable contract, allowing
  *      Cross Chain Ownership without modification to the underlying ownable contract. This contract
  *      is specific to the Optimism L2-side and should not be used on other chains.
  *
- *      See {UCrossChainOwner} for initialization and usage.
+ *      See {CrossChainOwner.sol} for initialization and usage.
  */
-contract UCrossChainOwner_Optimism is UCrossChainOwner, CrossChainOwnable_Optimism { }
+contract CrossChainOwner_Optimism is CrossChainOwner, CrossChainOwnable_Optimism { }

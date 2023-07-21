@@ -4,8 +4,8 @@ import { expect } from 'chai'
 import HRE from 'hardhat'
 
 import {
-  UCrossChainOwnerOptimism,
-  UCrossChainOwnerOptimism__factory,
+  CrossChainOwnerOptimism,
+  CrossChainOwnerOptimism__factory,
   ICrossDomainMessenger,
   MockERC20__factory,
 } from '../../../types/generated'
@@ -13,11 +13,11 @@ import { impersonateWithBalance } from '../../testutil/impersonate'
 
 const { ethers } = HRE
 
-describe('UCrossChainOwner_Optimism', () => {
+describe('CrossChainOwner_Optimism', () => {
   let owner: SignerWithAddress
   let xChainOwner: SignerWithAddress
   let user: SignerWithAddress
-  let uOwner: UCrossChainOwnerOptimism
+  let uOwner: CrossChainOwnerOptimism
   let crossDomainMessenger: FakeContract<ICrossDomainMessenger>
 
   beforeEach(async () => {
@@ -26,7 +26,7 @@ describe('UCrossChainOwner_Optimism', () => {
       address: '0x4200000000000000000000000000000000000007',
     })
     await impersonateWithBalance(crossDomainMessenger.address, ethers.utils.parseEther('10'))
-    uOwner = await new UCrossChainOwnerOptimism__factory(owner).deploy()
+    uOwner = await new CrossChainOwnerOptimism__factory(owner).deploy()
   })
 
   describe('#execute', async () => {

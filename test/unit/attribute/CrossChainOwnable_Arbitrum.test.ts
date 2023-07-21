@@ -12,7 +12,7 @@ import { impersonateWithBalance } from '../../testutil/impersonate'
 
 const { ethers } = HRE
 
-describe('CrossChainOwnable_Arbitrum.sol', () => {
+describe('CrossChainOwnable_Arbitrum', () => {
   let owner: SignerWithAddress
   let xChainOwner: SignerWithAddress
   let user: SignerWithAddress
