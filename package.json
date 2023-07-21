@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "0.3.0-beta0",
+  "version": "2.0.0-rc0",
   "scripts": {
     "build": "yarn compile",
     "compile": "hardhat compile",
