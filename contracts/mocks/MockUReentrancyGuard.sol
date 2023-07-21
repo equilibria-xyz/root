@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../control/unstructured/UReentrancyGuard.sol";
+import "../attribute/unstructured/UReentrancyGuard.sol";
 
 contract MockUReentrancyGuard is UReentrancyGuard {
     Uint256Storage private constant _status = Uint256Storage.wrap(keccak256("equilibria.root.UReentrancyGuard.status"));

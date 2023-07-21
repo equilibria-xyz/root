@@ -70,7 +70,7 @@ describe('UKept', () => {
     await ethers.provider.send('hardhat_setNextBlockBaseFeePerGas', ['0x0'])
     keeperToken = await new MockERC20__factory(owner).deploy('dsu', 'DSU')
     ethTokenOracleFeed = await smock.fake<AggregatorV3Interface>('AggregatorV3Interface')
-    uKept = await new MockUKept__factory(owner).deploy()
+    uKept = await new MockUKept__factory(owner).deploy(owner.address)
     await uKept.connect(owner).initialize(ethTokenOracleFeed.address, keeperToken.address)
 
     gasUsed = await uKept.callStatic.instrumentGas()

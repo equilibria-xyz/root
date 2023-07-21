@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../accumulator/types/PController6.sol";
+import "../pid/types/PController6.sol";
 
 contract MockPController6 {
     function compute(

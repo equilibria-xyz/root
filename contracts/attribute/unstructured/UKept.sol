@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../storage/UStorage.sol";
-import "../control/unstructured/UInitializable.sol";
-import "./interfaces/IKept.sol";
+import "./UInitializable.sol";
+import "../interfaces/IKept.sol";
+import "../../storage/UStorage.sol";
+
 
 
 /// @title UKept

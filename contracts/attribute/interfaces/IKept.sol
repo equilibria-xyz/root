@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "../../control/interfaces/IInitializable.sol";
+import "../interfaces/IInitializable.sol";
 import "../../number/types/UFixed18.sol";
 import "../../token/types/Token18.sol";
 
