@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./UInitializable.sol";
+import "./Initializable.sol";
 import "../interfaces/IKept.sol";
-import "../../storage/UStorage.sol";
+import "../../storage/Storage.sol";
 
 
 
-/// @title UKept
+/// @title Kept.sol
 /// @notice Library to manage keeper incentivization.
 /// @dev Surfaces a keep() modifier that handles measuring job gas costs and paying out rewards the keeper.
-abstract contract UKept is IKept, UInitializable {
+abstract contract Kept is IKept, Initializable {
     /// @dev The legacy Chainlink feed that is used to convert price ETH relative to the keeper token
     AddressStorage private constant _ethTokenOracleFeed = AddressStorage.wrap(keccak256("equilibria.root.UKept.ethTokenOracleFeed"));
     function ethTokenOracleFeed() public view returns (AggregatorV3Interface) { return AggregatorV3Interface(_ethTokenOracleFeed.read()); }

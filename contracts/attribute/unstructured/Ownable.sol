@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./UInitializable.sol";
+import "./Initializable.sol";
 import "../interfaces/IOwnable.sol";
-import "../../storage/UStorage.sol";
+import "../../storage/Storage.sol";
 
 /**
- * @title UOwnable
+ * @title Ownable.sol
  * @notice Library to manage the ownership lifecycle of upgradeable contracts.
  * @dev This contract has been extended from the Open Zeppelin library to include an
  *      unstructured storage pattern so that it can be safely mixed in with upgradeable
  *      contracts without affecting their storage patterns through inheritance.
  */
-abstract contract UOwnable is IOwnable, UInitializable {
+abstract contract Ownable is IOwnable, Initializable {
     /// @dev The owner address
     AddressStorage private constant _owner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.owner"));
     function owner() public view returns (address) { return _owner.read(); }

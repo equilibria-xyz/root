@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/unstructured/CrossChainOwnable/UCrossChainOwnable_Arbitrum.sol";
+import "../attribute/unstructured/CrossChainOwnable/CrossChainOwnable_Arbitrum.sol";
 
-contract MockUCrossChainOwnable_Arbitrum is UCrossChainOwnable_Arbitrum {
+contract MockCrossChainOwnable_Arbitrum is CrossChainOwnable_Arbitrum {
     function __initialize() external initializer(1) {
         super.__UOwnable__initialize();
     }

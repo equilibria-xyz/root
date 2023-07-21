@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../CrossChainOwnable/UCrossChainOwnable_Optimism.sol";
+import "../CrossChainOwnable/CrossChainOwnable_Optimism.sol";
 import "./UCrossChainOwner.sol";
 
 /**
@@ -13,4 +13,4 @@ import "./UCrossChainOwner.sol";
  *
  *      See {UCrossChainOwner} for initialization and usage.
  */
-contract UCrossChainOwner_Optimism is UCrossChainOwner, UCrossChainOwnable_Optimism { }
+contract UCrossChainOwner_Optimism is UCrossChainOwner, CrossChainOwnable_Optimism { }

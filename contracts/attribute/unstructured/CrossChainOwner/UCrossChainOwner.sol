@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/Address.sol";
-import "../CrossChainOwnable/UCrossChainOwnable.sol";
+import "../CrossChainOwnable/CrossChainOwnable.sol";
 
 /**
  * @title UCrossChainOwner
@@ -10,7 +10,7 @@ import "../CrossChainOwnable/UCrossChainOwnable.sol";
  * @dev This contract is designed to act as an owner of any Ownable contract, allowing
  *      Cross Chain Ownership without modification to the underlying ownable contract
  */
-abstract contract UCrossChainOwner is UCrossChainOwnable {
+abstract contract UCrossChainOwner is CrossChainOwnable {
     function initialize() external initializer(1) {
         super.__UOwnable__initialize();
     }

@@ -7,8 +7,8 @@ import {
   AggregatorV3Interface,
   MockERC20,
   MockERC20__factory,
-  MockUKept,
-  MockUKept__factory,
+  MockKept,
+  MockKept__factory,
 } from '../../../types/generated'
 import { BigNumber } from 'ethers'
 
@@ -16,13 +16,13 @@ const { ethers } = HRE
 
 const ETH_PRICE_USD = 1000
 
-describe('UKept', () => {
+describe('Kept', () => {
   let owner: SignerWithAddress
   let keeper: SignerWithAddress
   let keeperToken: MockERC20
   let ethTokenOracleFeed: FakeContract<AggregatorV3Interface>
   let gasUsed: BigNumber
-  let uKept: MockUKept
+  let kept: MockKept
 
   async function computeAndAssertKeeperFee(
     multiplier: BigNumber,
@@ -43,11 +43,11 @@ describe('UKept', () => {
       .add(buffer)
       .mul(ethPrice)
       .mul(baseFee)
-    await expect(uKept.connect(keeper).toBeKept(multiplier, buffer, '0x', { gasPrice: baseFee }))
-      .to.emit(uKept, 'RaiseKeeperFeeCalled')
+    await expect(kept.connect(keeper).toBeKept(multiplier, buffer, '0x', { gasPrice: baseFee }))
+      .to.emit(kept, 'RaiseKeeperFeeCalled')
       .withArgs(expectedKeeperFee, '0x')
 
-    // Check that keeperFee is transferred from owner to uKept to keeper
+    // Check that keeperFee is transferred from owner to kept to keeper
     expect(await keeperToken.balanceOf(owner.address)).to.equal(originalBenefactorBalance.sub(expectedKeeperFee))
     expect(expectedKeeperFee).to.equal((await keeperToken.balanceOf(keeper.address)).sub(originalKeeperBalance))
 
@@ -70,28 +70,28 @@ describe('UKept', () => {
     await ethers.provider.send('hardhat_setNextBlockBaseFeePerGas', ['0x0'])
     keeperToken = await new MockERC20__factory(owner).deploy('dsu', 'DSU')
     ethTokenOracleFeed = await smock.fake<AggregatorV3Interface>('AggregatorV3Interface')
-    uKept = await new MockUKept__factory(owner).deploy(owner.address)
-    await uKept.connect(owner).initialize(ethTokenOracleFeed.address, keeperToken.address)
+    kept = await new MockKept__factory(owner).deploy(owner.address)
+    await kept.connect(owner).initialize(ethTokenOracleFeed.address, keeperToken.address)
 
-    gasUsed = await uKept.callStatic.instrumentGas()
+    gasUsed = await kept.callStatic.instrumentGas()
 
     setEthPrice(ETH_PRICE_USD)
 
     await keeperToken.mint(owner.address, ethers.utils.parseEther('1000'))
-    await keeperToken.connect(owner).approve(uKept.address, ethers.constants.MaxUint256)
+    await keeperToken.connect(owner).approve(kept.address, ethers.constants.MaxUint256)
   })
 
-  describe('#__UKept__initialize', async () => {
+  describe('#__Kept__initialize', async () => {
     it('initializes keeperToken and ethTokenOracleFeed', async () => {
-      expect(await uKept.keeperToken()).to.equal(keeperToken.address)
-      expect(await uKept.ethTokenOracleFeed()).to.equal(ethTokenOracleFeed.address)
+      expect(await kept.keeperToken()).to.equal(keeperToken.address)
+      expect(await kept.ethTokenOracleFeed()).to.equal(ethTokenOracleFeed.address)
     })
   })
 
   describe('#keep', async () => {
     it('passes `data` to _raiseKeeperFee', async () => {
       const data = '0xabcd'
-      await expect(uKept.toBeKept(0, 0, data)).to.emit(uKept, 'RaiseKeeperFeeCalled').withArgs(0, data)
+      await expect(kept.toBeKept(0, 0, data)).to.emit(kept, 'RaiseKeeperFeeCalled').withArgs(0, data)
     })
 
     it('keeperFee is directly proportional to multiplier (given 0 buffer)', async () => {

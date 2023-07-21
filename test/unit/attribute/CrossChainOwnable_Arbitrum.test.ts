@@ -4,37 +4,38 @@ import { expect } from 'chai'
 import HRE from 'hardhat'
 
 import {
-  MockUCrossChainOwnableOptimism,
-  MockUCrossChainOwnableOptimism__factory,
-  ICrossDomainMessenger,
+  MockCrossChainOwnableArbitrum,
+  MockCrossChainOwnableArbitrum__factory,
+  IArbSys,
 } from '../../../types/generated'
 import { impersonateWithBalance } from '../../testutil/impersonate'
 
 const { ethers } = HRE
 
-describe('UCrossChainOwnable_Optimism', () => {
+describe('CrossChainOwnable_Arbitrum.sol', () => {
   let owner: SignerWithAddress
   let xChainOwner: SignerWithAddress
   let user: SignerWithAddress
   let unrelated: SignerWithAddress
-  let uOwnable: MockUCrossChainOwnableOptimism
-  let crossDomainMessenger: FakeContract<ICrossDomainMessenger>
+  let uOwnable: MockCrossChainOwnableArbitrum
+  let arbSys: FakeContract<IArbSys>
 
   beforeEach(async () => {
     ;[owner, xChainOwner, user, unrelated] = await ethers.getSigners()
-    crossDomainMessenger = await smock.fake<ICrossDomainMessenger>('ICrossDomainMessenger', {
-      address: '0x4200000000000000000000000000000000000007',
+    arbSys = await smock.fake<IArbSys>('IArbSys', {
+      address: '0x0000000000000000000000000000000000000064',
     })
-    await impersonateWithBalance(crossDomainMessenger.address, ethers.utils.parseEther('10'))
-    uOwnable = await new MockUCrossChainOwnableOptimism__factory(owner).deploy()
+    arbSys.wasMyCallersAddressAliased.returns(true)
+    await impersonateWithBalance(arbSys.address, ethers.utils.parseEther('10'))
+    uOwnable = await new MockCrossChainOwnableArbitrum__factory(owner).deploy()
   })
 
   describe('#UOwnable__initialize', async () => {
     beforeEach(async () => {
-      crossDomainMessenger.xDomainMessageSender.returns(xChainOwner.address)
+      arbSys.myCallersAddressWithoutAliasing.returns(xChainOwner.address)
     })
 
-    it('initializes owner to msg.sender', async () => {
+    it('initializes owner as msg.sender', async () => {
       expect(await uOwnable.owner()).to.equal(ethers.constants.AddressZero)
 
       await expect(uOwnable.connect(user).__initialize()).to.emit(uOwnable, 'OwnerUpdated').withArgs(user.address)
@@ -58,6 +59,8 @@ describe('UCrossChainOwnable_Optimism', () => {
     })
 
     it('reverts if not owner', async () => {
+      arbSys.myCallersAddressWithoutAliasing.reset()
+      arbSys.myCallersAddressWithoutAliasing.returns(user.address)
       await expect(uOwnable.connect(unrelated).updatePendingOwner(unrelated.address)).to.be.revertedWith(
         `UOwnableNotOwnerError("${unrelated.address}")`,
       )
@@ -75,36 +78,38 @@ describe('UCrossChainOwnable_Optimism', () => {
 
   describe('#acceptOwner', async () => {
     beforeEach(async () => {
-      crossDomainMessenger.xDomainMessageSender.returns(xChainOwner.address)
+      arbSys.myCallersAddressWithoutAliasing.returns(xChainOwner.address)
       await uOwnable.connect(user).__initialize()
       await uOwnable.connect(user).updatePendingOwner(xChainOwner.address)
     })
 
     it('transfers owner', async () => {
-      await expect(uOwnable.connect(crossDomainMessenger.wallet).acceptOwner())
+      await expect(uOwnable.connect(arbSys.wallet).acceptOwner())
         .to.emit(uOwnable, 'OwnerUpdated')
         .withArgs(xChainOwner.address)
 
       expect(await uOwnable.owner()).to.equal(xChainOwner.address)
       expect(await uOwnable.pendingOwner()).to.equal(ethers.constants.AddressZero)
+      expect(await uOwnable.crossChainRestricted()).to.equal(true)
     })
 
     it('reverts if not cross chain', async () => {
+      arbSys.wasMyCallersAddressAliased.returns(false)
       await expect(uOwnable.connect(xChainOwner).acceptOwner()).to.be.revertedWith('NotCrossChainCall()')
     })
 
     it('reverts if owner not pending owner', async () => {
-      crossDomainMessenger.xDomainMessageSender.reset()
-      crossDomainMessenger.xDomainMessageSender.returns(user.address)
-      await expect(uOwnable.connect(crossDomainMessenger.wallet).acceptOwner()).to.be.revertedWith(
+      arbSys.myCallersAddressWithoutAliasing.reset()
+      arbSys.myCallersAddressWithoutAliasing.returns(user.address)
+      await expect(uOwnable.connect(arbSys.wallet).acceptOwner()).to.be.revertedWith(
         `UOwnableNotPendingOwnerError("${user.address}")`,
       )
     })
 
     it('reverts if unrelated not pending owner', async () => {
-      crossDomainMessenger.xDomainMessageSender.reset()
-      crossDomainMessenger.xDomainMessageSender.returns(unrelated.address)
-      await expect(uOwnable.connect(crossDomainMessenger.wallet).acceptOwner()).to.be.revertedWith(
+      arbSys.myCallersAddressWithoutAliasing.reset()
+      arbSys.myCallersAddressWithoutAliasing.returns(unrelated.address)
+      await expect(uOwnable.connect(arbSys.wallet).acceptOwner()).to.be.revertedWith(
         `UOwnableNotPendingOwnerError("${unrelated.address}")`,
       )
     })
@@ -114,13 +119,14 @@ describe('UCrossChainOwnable_Optimism', () => {
     beforeEach(async () => {
       await uOwnable.connect(user).__initialize()
       await uOwnable.connect(user).updatePendingOwner(xChainOwner.address)
-      crossDomainMessenger.xDomainMessageSender.returns(xChainOwner.address)
-      await uOwnable.connect(crossDomainMessenger.wallet).acceptOwner()
+
+      arbSys.myCallersAddressWithoutAliasing.returns(xChainOwner.address)
+      await uOwnable.connect(arbSys.wallet).acceptOwner()
     })
 
     it('reverts if not owner', async () => {
-      crossDomainMessenger.xDomainMessageSender.returns(user.address)
-      await expect(uOwnable.connect(crossDomainMessenger.wallet).mustOwner()).to.be.revertedWith(
+      arbSys.myCallersAddressWithoutAliasing.returns(user.address)
+      await expect(uOwnable.connect(arbSys.wallet).mustOwner()).to.be.revertedWith(
         `UOwnableNotOwnerError("${user.address}")`,
       )
     })

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../storage/UStorage.sol";
+import "../storage/Storage.sol";
 
-contract MockUStorage {
+contract MockStorage {
     function readBool(BoolStorage slot) external view returns (bool) {
         return slot.read();
     }

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/unstructured/UInitializable.sol";
+import "../attribute/unstructured/Initializable.sol";
 
-contract MockUInitializable is UInitializable {
+contract MockInitializable is Initializable {
     Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.UInitializable.version"));
 
     event NoOp();
@@ -35,13 +35,13 @@ contract MockUInitializable is UInitializable {
     }
 }
 
-contract MockUInitializableConstructor1 is MockUInitializable {
+contract MockUInitializableConstructor1 is MockInitializable {
     constructor() {
         childInitializer();
     }
 }
 
-contract MockUInitializableConstructor3 is MockUInitializable {
+contract MockUInitializableConstructor3 is MockInitializable {
     constructor() initializer(1) {
         childInitializer();
     }
@@ -63,7 +63,7 @@ contract MockUInitializableConstructor8 is MockUInitializableConstructor3 {
     constructor() MockUInitializableConstructor3() { }
 }
 
-contract MockUInitializableMulti is UInitializable {
+contract MockUInitializableMulti is Initializable {
     Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.UInitializable.version"));
 
     event NoOp(uint256 version);

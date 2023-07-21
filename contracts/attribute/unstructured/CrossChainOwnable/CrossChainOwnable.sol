@@ -2,11 +2,11 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/crosschain/CrossChainEnabled.sol";
-import "../UOwnable.sol";
-import "../../../storage/UStorage.sol";
+import "../Ownable.sol";
+import "../../../storage/Storage.sol";
 
 /**
- * @title UCrossChainOwnable
+ * @title CrossChainOwnable.sol
  * @notice Library to manage the cross-chain ownership lifecycle of upgradeable contracts.
  * @dev This contract has been extended from the Open Zeppelin library to include an
  *      unstructured storage pattern so that it can be safely mixed in with upgradeable
@@ -17,7 +17,7 @@ import "../../../storage/UStorage.sol";
  *      and `acceptedPending` owner methods. Upon accepting ownership via the cross-chain address,
  *      a fuse will be tripped, preventing same-chain ownership going forward.
  */
-abstract contract UCrossChainOwnable is UOwnable, CrossChainEnabled {
+abstract contract CrossChainOwnable is Ownable, CrossChainEnabled {
     BoolStorage private constant _crossChainRestricted = BoolStorage.wrap(keccak256("equilibria.root.UCrossChainOwnable.crossChainRestricted"));
     function crossChainRestricted() public view returns (bool) { return _crossChainRestricted.read(); }
 

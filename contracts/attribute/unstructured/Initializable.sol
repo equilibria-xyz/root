@@ -3,17 +3,17 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "../interfaces/IInitializable.sol";
-import "../../storage/UStorage.sol";
+import "../../storage/Storage.sol";
 
 /**
- * @title UInitializable
+ * @title Initializable.sol
  * @notice Library to manage the initialization lifecycle of upgradeable contracts
- * @dev `UInitializable` allows the creation of pseudo-constructors for upgradeable contracts. One
+ * @dev `Initializable.sol` allows the creation of pseudo-constructors for upgradeable contracts. One
  *      `initializer` should be declared per top-level contract. Child contracts can use the `onlyInitializer`
  *      modifier to tag their internal initialization functions to ensure that they can only be called
  *      from a top-level `initializer` or a constructor.
  */
-abstract contract UInitializable is IInitializable {
+abstract contract Initializable is IInitializable {
     /// @dev The initialized flag
     Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.UInitializable.version"));
 

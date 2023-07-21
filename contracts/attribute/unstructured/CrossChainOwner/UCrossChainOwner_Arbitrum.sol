@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../CrossChainOwnable/UCrossChainOwnable_Arbitrum.sol";
+import "../CrossChainOwnable/CrossChainOwnable_Arbitrum.sol";
 import "./UCrossChainOwner.sol";
 
 /**
@@ -13,4 +13,4 @@ import "./UCrossChainOwner.sol";
  *
  *      See {UCrossChainOwner} for initialization and usage.
  */
-contract UCrossChainOwner_Arbitrum is UCrossChainOwner, UCrossChainOwnable_Arbitrum { }
+contract UCrossChainOwner_Arbitrum is UCrossChainOwner, CrossChainOwnable_Arbitrum { }

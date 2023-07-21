@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./UInitializable.sol";
-import "./UOwnable.sol";
+import "./Initializable.sol";
+import "./Ownable.sol";
 import "../interfaces/IPausable.sol";
-import "../../storage/UStorage.sol";
+import "../../storage/Storage.sol";
 
 /**
- * @title UPausable
+ * @title Pausable.sol
  * @notice Library to allow for the emergency pausing and unpausing of contract functions
  *         by an authorized account.
  * @dev This contract has been extended from the Open Zeppelin library to include an
  *      unstructured storage pattern so that it can be safely mixed in with upgradeable
  *      contracts without affecting their storage patterns through inheritance.
  */
-abstract contract UPausable is IPausable, UOwnable {
+abstract contract Pausable is IPausable, Ownable {
     /// @dev The pauser address
     AddressStorage private constant _pauser = AddressStorage.wrap(keccak256("equilibria.root.UPausable.pauser"));
     function pauser() public view returns (address) { return _pauser.read(); }

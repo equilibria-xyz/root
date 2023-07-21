@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/unstructured/UKept.sol";
+import "../attribute/unstructured/Kept.sol";
 
-contract MockUKept is UKept {
+contract MockKept is Kept {
     address public benefactor;
 
     constructor(address benefactor_) {

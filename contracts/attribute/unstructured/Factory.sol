@@ -4,12 +4,12 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "../interfaces/IFactory.sol";
 import "../interfaces/IInstance.sol";
-import "./UPausable.sol";
+import "./Pausable.sol";
 
 /// @title Factory
 /// @notice An abstract factory that manages creates and manages instances
 /// @dev Ownable and Pausable, and satisfies the IBeacon interface by default.
-abstract contract Factory is IFactory, UOwnable, UPausable {
+abstract contract Factory is IFactory, Ownable, Pausable {
     /// @notice The instances mapping storage slot
     bytes32 private constant INSTANCE_MAP_SLOT = keccak256("equilibria.root.Factory.instances");
 

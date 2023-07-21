@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../../storage/UStorage.sol";
+import "../../storage/Storage.sol";
 import "../interfaces/IInstance.sol";
-import "./UInitializable.sol";
+import "./Initializable.sol";
 
 /// @title Instance
 /// @notice An abstract contract that is created and managed by a factory
-abstract contract Instance is IInstance, UInitializable {
+abstract contract Instance is IInstance, Initializable {
     /// @dev The factory address storage slot
     AddressStorage private constant _factory = AddressStorage.wrap(keccak256("equilibria.root.Instance.factory"));
 
