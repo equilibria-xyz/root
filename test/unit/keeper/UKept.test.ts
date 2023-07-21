@@ -16,7 +16,7 @@ const { ethers } = HRE
 
 const ETH_PRICE_USD = 1000
 
-describe.only('UKept', () => {
+describe('UKept', () => {
   let owner: SignerWithAddress
   let keeper: SignerWithAddress
   let keeperToken: MockERC20
@@ -43,7 +43,7 @@ describe.only('UKept', () => {
       .add(buffer)
       .mul(ethPrice)
       .mul(baseFee)
-    await expect(uKept.toBeKept(multiplier, buffer, keeper.address, '0x', { gasPrice: baseFee }))
+    await expect(uKept.connect(keeper).toBeKept(multiplier, buffer, '0x', { gasPrice: baseFee }))
       .to.emit(uKept, 'RaiseKeeperFeeCalled')
       .withArgs(expectedKeeperFee, '0x')
 
@@ -91,7 +91,7 @@ describe.only('UKept', () => {
   describe('#keep', async () => {
     it('passes `data` to _raiseKeeperFee', async () => {
       const data = '0xabcd'
-      await expect(uKept.toBeKept(0, 0, owner.address, data)).to.emit(uKept, 'RaiseKeeperFeeCalled').withArgs(0, data)
+      await expect(uKept.toBeKept(0, 0, data)).to.emit(uKept, 'RaiseKeeperFeeCalled').withArgs(0, data)
     })
 
     it('keeperFee is directly proportional to multiplier (given 0 buffer)', async () => {
