@@ -7,7 +7,7 @@ import "./interfaces/IPausable.sol";
 import "../storage/Storage.sol";
 
 /**
- * @title Pausable.sol
+ * @title Pausable
  * @notice Library to allow for the emergency pausing and unpausing of contract functions
  *         by an authorized account.
  * @dev This contract has been extended from the Open Zeppelin library to include an

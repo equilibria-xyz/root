@@ -6,7 +6,7 @@ import "./interfaces/IInitializable.sol";
 import "../storage/Storage.sol";
 
 /**
- * @title Initializable.sol
+ * @title Initializable
  * @notice Library to manage the initialization lifecycle of upgradeable contracts
  * @dev `Initializable.sol` allows the creation of pseudo-constructors for upgradeable contracts. One
  *      `initializer` should be declared per top-level contract. Child contracts can use the `onlyInitializer`

@@ -5,9 +5,7 @@ import "./Initializable.sol";
 import "./interfaces/IKept.sol";
 import "../storage/Storage.sol";
 
-
-
-/// @title Kept.sol
+/// @title Kept
 /// @notice Library to manage keeper incentivization.
 /// @dev Surfaces a keep() modifier that handles measuring job gas costs and paying out rewards the keeper.
 abstract contract Kept is IKept, Initializable {
