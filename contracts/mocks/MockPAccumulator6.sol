@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../accumulator/types/PAccumulator6.sol";
+import "../pid/types/PAccumulator6.sol";
 
 contract MockPAccumulator6 {
     PAccumulator6 public accumulator;
