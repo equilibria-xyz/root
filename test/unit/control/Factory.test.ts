@@ -33,7 +33,9 @@ describe('Factory', () => {
     it('creates instance', async () => {
       const instanceName = 'instance'
       const instanceAddress = await factory.connect(owner).callStatic.create(instanceName)
-      await factory.connect(owner).create(instanceName)
+      await expect(factory.connect(owner).create(instanceName))
+        .to.emit(factory, 'InstanceRegistered')
+        .withArgs(instanceAddress)
       const instance = MockInstance__factory.connect(instanceAddress, owner)
       expect(await instance.name()).to.equal(instanceName)
     })

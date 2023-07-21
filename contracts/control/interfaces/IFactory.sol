@@ -6,7 +6,7 @@ import "./IPausable.sol";
 import "./IInstance.sol";
 
 interface IFactory is IBeacon, IOwnable, IPausable {
-    event InstanceCreated(IInstance indexed instance);
+    event InstanceRegistered(IInstance indexed instance);
 
     error FactoryNotInstanceError();
 

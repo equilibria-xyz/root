@@ -38,8 +38,15 @@ abstract contract Factory is IFactory, UOwnable, UPausable {
     /// @return newInstance The new instance
     function _create(bytes memory data) internal returns (IInstance newInstance) {
         newInstance = IInstance(address(new BeaconProxy(address(this), data)));
+        _register(newInstance);
+    }
+
+    /// @notice Registers a new instance
+    /// @dev Called by _create automatically, or can be called manually in an extending implementation
+    /// @param newInstance The new instance
+    function _register(IInstance newInstance) internal {
         _instances()[newInstance] = true;
-        emit InstanceCreated(newInstance);
+        emit InstanceRegistered(newInstance);
     }
 
     /// @notice Returns the storage mapping for instances
