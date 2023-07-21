@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./IFactory.sol";
-import "../control/interfaces/IInitializable.sol";
+import "./IInitializable.sol";
 
 interface IInstance is IInitializable {
     error InstanceNotOwnerError(address sender);

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../factory/Instance.sol";
+import "../control/unstructured/Instance.sol";
 
 interface IMockFactory {
     function onlyCallableByInstance() external view;
