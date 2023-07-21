@@ -3,8 +3,8 @@ pragma solidity ^0.8.13;
 
 import "./Initializable.sol";
 import "./Ownable.sol";
-import "../interfaces/IPausable.sol";
-import "../../storage/Storage.sol";
+import "./interfaces/IPausable.sol";
+import "../storage/Storage.sol";
 
 /**
  * @title Pausable.sol

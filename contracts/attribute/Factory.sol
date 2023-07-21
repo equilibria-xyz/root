@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "../interfaces/IFactory.sol";
-import "../interfaces/IInstance.sol";
+import "./interfaces/IFactory.sol";
+import "./interfaces/IInstance.sol";
 import "./Pausable.sol";
 
 /// @title Factory

@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import "./Initializable.sol";
-import "../interfaces/IReentrancyGuard.sol";
-import "../../storage/Storage.sol";
+import "./interfaces/IReentrancyGuard.sol";
+import "../storage/Storage.sol";
 
 /**
  * @dev Contract module that helps prevent reentrant calls to a function.

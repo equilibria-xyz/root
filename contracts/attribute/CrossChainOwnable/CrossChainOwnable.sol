@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/crosschain/CrossChainEnabled.sol";
 import "../Ownable.sol";
-import "../../../storage/Storage.sol";
+import "../../storage/Storage.sol";
 
 /**
  * @title CrossChainOwnable.sol

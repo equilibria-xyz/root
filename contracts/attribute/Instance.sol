@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../../storage/Storage.sol";
-import "../interfaces/IInstance.sol";
+import "../storage/Storage.sol";
+import "./interfaces/IInstance.sol";
 import "./Initializable.sol";
 
 /// @title Instance

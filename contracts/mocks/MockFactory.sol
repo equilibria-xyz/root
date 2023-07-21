@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/unstructured/Factory.sol";
+import "../attribute/Factory.sol";
 import "./MockInstance.sol";
 
 contract MockFactory is Factory {

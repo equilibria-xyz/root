@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/unstructured/Initializable.sol";
+import "../attribute/Initializable.sol";
 
 contract MockInitializable is Initializable {
     Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.UInitializable.version"));

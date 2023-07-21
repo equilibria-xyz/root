@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import "./Initializable.sol";
-import "../interfaces/IKept.sol";
-import "../../storage/Storage.sol";
+import "./interfaces/IKept.sol";
+import "../storage/Storage.sol";
 
 
 

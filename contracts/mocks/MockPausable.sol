@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/unstructured/Pausable.sol";
+import "../attribute/Pausable.sol";
 
 contract MockPausable is Pausable {
     uint256 public counter;

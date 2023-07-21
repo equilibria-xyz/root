@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/Address.sol";
-import "../interfaces/IInitializable.sol";
-import "../../storage/Storage.sol";
+import "./interfaces/IInitializable.sol";
+import "../storage/Storage.sol";
 
 /**
  * @title Initializable.sol

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/unstructured/Ownable.sol";
+import "../attribute/Ownable.sol";
 
 contract MockOwnable is Ownable {
     bool public beforeCalled;

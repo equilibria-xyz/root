@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/unstructured/CrossChainOwnable/CrossChainOwnable_Optimism.sol";
+import "../attribute/CrossChainOwnable/CrossChainOwnable_Optimism.sol";
 
 contract MockCrossChainOwnable_Optimism is CrossChainOwnable_Optimism {
     function __initialize() external initializer(1) {
