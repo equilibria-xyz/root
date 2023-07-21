@@ -40,10 +40,6 @@ contract MockFixed18 {
         return Fixed18Lib.from(a);
     }
 
-    function pack(Fixed18 a) external pure returns (PackedFixed18) {
-        return Fixed18Lib.pack(a);
-    }
-
     function isZero(Fixed18 a) external pure returns (bool) {
         return Fixed18Lib.isZero(a);
     }

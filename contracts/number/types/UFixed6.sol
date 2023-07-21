@@ -18,7 +18,6 @@ using UFixed6StorageLib for UFixed6Storage global;
  */
 library UFixed6Lib {
     error UFixed6UnderflowError(int256 value);
-    error UFixed6PackingOverflowError(uint256 value);
 
     uint256 private constant BASE = 1e6;
     UFixed6 public constant ZERO = UFixed6.wrap(0);

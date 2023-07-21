@@ -18,8 +18,6 @@ using Fixed6StorageLib for Fixed6Storage global;
  */
 library Fixed6Lib {
     error Fixed6OverflowError(uint256 value);
-    error Fixed6PackingOverflowError(int256 value);
-    error Fixed6PackingUnderflowError(int256 value);
 
     int256 private constant BASE = 1e6;
     Fixed6 public constant ZERO = Fixed6.wrap(0);

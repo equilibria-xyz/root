@@ -43,6 +43,7 @@ library Accumulator6Lib {
      * @param total Denominator of the ratio
      */
     function increment(Accumulator6 memory self, Fixed6 amount, UFixed6 total) internal pure {
+        if (amount.isZero()) return;
         self._value = self._value.add(_div(amount, total));
     }
 
@@ -54,6 +55,7 @@ library Accumulator6Lib {
      * @param total Denominator of the ratio
      */
     function decrement(Accumulator6 memory self, Fixed6 amount, UFixed6 total) internal pure {
+        if (amount.isZero()) return;
         self._value = self._value.add(_div(amount.mul(Fixed6Lib.NEG_ONE), total));
     }
 
