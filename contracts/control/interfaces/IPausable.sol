@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "./IInitializable.sol";
 import "./IOwnable.sol";
 
-interface IPausable is IOwnable, IInitializable {
+interface IPausable is IInitializable, IOwnable {
     event PauserUpdated(address indexed newPauser);
     event Paused();
     event Unpaused();

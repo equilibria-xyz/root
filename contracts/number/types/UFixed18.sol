@@ -4,7 +4,6 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../NumberMath.sol";
 import "./Fixed18.sol";
-import "./PackedUFixed18.sol";
 import "./UFixed6.sol";
 
 /// @dev UFixed18 type
@@ -19,7 +18,6 @@ using UFixed18StorageLib for UFixed18Storage global;
  */
 library UFixed18Lib {
     error UFixed18UnderflowError(int256 value);
-    error UFixed18PackingOverflowError(uint256 value);
 
     uint256 private constant BASE = 1e18;
     UFixed18 public constant ZERO = UFixed18.wrap(0);
@@ -53,17 +51,6 @@ library UFixed18Lib {
      */
     function from(UFixed6 a) internal pure returns (UFixed18) {
         return UFixed18.wrap(UFixed6.unwrap(a) * 1e12);
-    }
-
-    /**
-     * @notice Creates a packed unsigned fixed-decimal from an unsigned fixed-decimal
-     * @param a unsigned fixed-decimal
-     * @return New packed unsigned fixed-decimal
-     */
-    function pack(UFixed18 a) internal pure returns (PackedUFixed18) {
-        uint256 value = UFixed18.unwrap(a);
-        if (value > type(uint128).max) revert UFixed18PackingOverflowError(value);
-        return PackedUFixed18.wrap(uint128(value));
     }
 
     /**
