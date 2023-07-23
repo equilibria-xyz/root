@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "../CrossChainOwnable/CrossChainOwnable.sol";
 
 /**
- * @title CrossChainOwner.sol
+ * @title CrossChainOwner
  * @notice Contract to act as an owner of other contracts
  * @dev This contract is designed to act as an owner of any Ownable contract, allowing
  *      Cross Chain Ownership without modification to the underlying ownable contract
