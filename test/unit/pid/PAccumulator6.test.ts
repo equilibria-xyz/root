@@ -131,7 +131,7 @@ describe('PAccumulator6', () => {
     })
 
     it('no accumulation (0 notional)', async () => {
-      expect(await accumulate(CONTROLLER, NEW_SKEW, FROM_TIMESTAMP, TO_TIMESTAMP, 0)).to.equal(0)
+      expect(await accumulate(CONTROLLER, NEW_SKEW, FROM_TIMESTAMP, TO_TIMESTAMP, BigNumber.from(0))).to.equal(0)
       expect((await pAccumulator6.accumulator())._value).to.equal(
         VALUE.add(
           SKEW.mul(TO_TIMESTAMP - FROM_TIMESTAMP)

@@ -25,7 +25,7 @@ using Bytes32StorageLib for Bytes32Storage global;
 
 /**
  * @title BoolStorageLib
- * @notice Library to manage storage and retrival of a boolean at a fixed storage slot
+ * @notice Library to manage storage and retrieval of a boolean at a fixed storage slot
  */
 library BoolStorageLib {
     /**
@@ -53,7 +53,7 @@ library BoolStorageLib {
 
 /**
  * @title Uint256StorageLib
- * @notice Library to manage storage and retrival of an uint256 at a fixed storage slot
+ * @notice Library to manage storage and retrieval of an uint256 at a fixed storage slot
  */
 library Uint256StorageLib {
     /**
@@ -81,7 +81,7 @@ library Uint256StorageLib {
 
 /**
  * @title Int256StorageLib
- * @notice Library to manage storage and retrival of an int256 at a fixed storage slot
+ * @notice Library to manage storage and retrieval of an int256 at a fixed storage slot
  */
 library Int256StorageLib {
     /**
@@ -109,7 +109,7 @@ library Int256StorageLib {
 
 /**
  * @title AddressStorageLib
- * @notice Library to manage storage and retrival of an address at a fixed storage slot
+ * @notice Library to manage storage and retrieval of an address at a fixed storage slot
  */
 library AddressStorageLib {
     /**
@@ -137,7 +137,7 @@ library AddressStorageLib {
 
 /**
  * @title Bytes32StorageLib
- * @notice Library to manage storage and retrival of a bytes32 at a fixed storage slot
+ * @notice Library to manage storage and retrieval of a bytes32 at a fixed storage slot
  */
 library Bytes32StorageLib {
     /**

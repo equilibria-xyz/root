@@ -7,7 +7,7 @@ import { MockUAccumulator6, MockUAccumulator6__factory } from '../../../types/ge
 
 const { ethers } = HRE
 
-describe('Accumulator6', () => {
+describe('UAccumulator6', () => {
   let user: SignerWithAddress
   let accumulator6: MockUAccumulator6
 
