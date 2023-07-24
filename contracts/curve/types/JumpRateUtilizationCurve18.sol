@@ -5,28 +5,26 @@ import "../CurveMath18.sol";
 import "../../number/types/UFixed18.sol";
 import "../../number/types/Fixed18.sol";
 
-/// @dev JumpRateUtilizationCurve type
-struct JumpRateUtilizationCurve {
+/// @dev JumpRateUtilizationCurve18 type
+struct JumpRateUtilizationCurve18 {
     Fixed18 minRate;
     Fixed18 maxRate;
     Fixed18 targetRate;
     UFixed18 targetUtilization;
 }
-using JumpRateUtilizationCurveLib for JumpRateUtilizationCurve global;
-type JumpRateUtilizationCurveStorage is bytes32;
-using JumpRateUtilizationCurveStorageLib for JumpRateUtilizationCurveStorage global;
+using JumpRateUtilizationCurve18Lib for JumpRateUtilizationCurve18 global;
 
 /**
- * @title JumpRateUtilizationCurveLib
+ * @title JumpRateUtilizationCurve18Lib
  * @notice Library for the Jump Rate utilization curve type
  */
-library JumpRateUtilizationCurveLib {
+library JumpRateUtilizationCurve18Lib {
     /**
      * @notice Computes the corresponding rate for a utilization ratio
      * @param utilization The utilization ratio
      * @return The corresponding rate
      */
-    function compute(JumpRateUtilizationCurve memory self, UFixed18 utilization) internal pure returns (Fixed18) {
+    function compute(JumpRateUtilizationCurve18 memory self, UFixed18 utilization) internal pure returns (Fixed18) {
         if (utilization.lt(self.targetUtilization)) {
             return CurveMath18.linearInterpolation(
                 UFixed18Lib.ZERO,
@@ -49,7 +47,7 @@ library JumpRateUtilizationCurveLib {
     }
 
     function accumulate(
-        JumpRateUtilizationCurve memory self,
+        JumpRateUtilizationCurve18 memory self,
         UFixed18 utilization,
         uint256 fromTimestamp,
         uint256 toTimestamp,
@@ -59,25 +57,5 @@ library JumpRateUtilizationCurveLib {
             .mul(Fixed18Lib.from(int256(toTimestamp - fromTimestamp)))
             .mul(Fixed18Lib.from(notional))
             .div(Fixed18Lib.from(365 days));
-    }
-}
-
-library JumpRateUtilizationCurveStorageLib {
-    function read(JumpRateUtilizationCurveStorage self) internal view returns (JumpRateUtilizationCurve memory) {
-        return _storagePointer(self);
-    }
-
-    function store(JumpRateUtilizationCurveStorage self, JumpRateUtilizationCurve memory value) internal {
-        JumpRateUtilizationCurve storage storagePointer = _storagePointer(self);
-
-        storagePointer.minRate = value.minRate;
-        storagePointer.maxRate = value.maxRate;
-        storagePointer.targetRate = value.targetRate;
-        storagePointer.targetUtilization = value.targetUtilization;
-    }
-
-    function _storagePointer(JumpRateUtilizationCurveStorage self)
-    private pure returns (JumpRateUtilizationCurve storage pointer) {
-        assembly ("memory-safe") { pointer.slot := self }
     }
 }

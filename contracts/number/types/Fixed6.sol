@@ -3,41 +3,40 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
 import "../NumberMath.sol";
-import "./Fixed6.sol";
-import "./UFixed18.sol";
-import "./PackedFixed18.sol";
+import "./Fixed18.sol";
+import "./UFixed6.sol";
 
-/// @dev Fixed18 type
-type Fixed18 is int256;
-using Fixed18Lib for Fixed18 global;
-type Fixed18Storage is bytes32;
-using Fixed18StorageLib for Fixed18Storage global;
+/// @dev Fixed6 type
+type Fixed6 is int256;
+using Fixed6Lib for Fixed6 global;
+type Fixed6Storage is bytes32;
+using Fixed6StorageLib for Fixed6Storage global;
 
 /**
- * @title Fixed18Lib
+ * @title Fixed6Lib
  * @notice Library for the signed fixed-decimal type.
  */
-library Fixed18Lib {
-    error Fixed18OverflowError(uint256 value);
-    error Fixed18PackingOverflowError(int256 value);
-    error Fixed18PackingUnderflowError(int256 value);
+library Fixed6Lib {
+    error Fixed6OverflowError(uint256 value);
+    error Fixed6PackingOverflowError(int256 value);
+    error Fixed6PackingUnderflowError(int256 value);
 
-    int256 private constant BASE = 1e18;
-    Fixed18 public constant ZERO = Fixed18.wrap(0);
-    Fixed18 public constant ONE = Fixed18.wrap(BASE);
-    Fixed18 public constant NEG_ONE = Fixed18.wrap(-1 * BASE);
-    Fixed18 public constant MAX = Fixed18.wrap(type(int256).max);
-    Fixed18 public constant MIN = Fixed18.wrap(type(int256).min);
+    int256 private constant BASE = 1e6;
+    Fixed6 public constant ZERO = Fixed6.wrap(0);
+    Fixed6 public constant ONE = Fixed6.wrap(BASE);
+    Fixed6 public constant NEG_ONE = Fixed6.wrap(-1 * BASE);
+    Fixed6 public constant MAX = Fixed6.wrap(type(int256).max);
+    Fixed6 public constant MIN = Fixed6.wrap(type(int256).min);
 
     /**
      * @notice Creates a signed fixed-decimal from an unsigned fixed-decimal
      * @param a Unsigned fixed-decimal
      * @return New signed fixed-decimal
      */
-    function from(UFixed18 a) internal pure returns (Fixed18) {
-        uint256 value = UFixed18.unwrap(a);
-        if (value > uint256(type(int256).max)) revert Fixed18OverflowError(value);
-        return Fixed18.wrap(int256(value));
+    function from(UFixed6 a) internal pure returns (Fixed6) {
+        uint256 value = UFixed6.unwrap(a);
+        if (value > uint256(type(int256).max)) revert Fixed6OverflowError(value);
+        return Fixed6.wrap(int256(value));
     }
 
     /**
@@ -46,13 +45,13 @@ library Fixed18Lib {
      * @param m Unsigned fixed-decimal magnitude
      * @return New signed fixed-decimal
      */
-    function from(int256 s, UFixed18 m) internal pure returns (Fixed18) {
+    function from(int256 s, UFixed6 m) internal pure returns (Fixed6) {
         if (s > 0) return from(m);
         if (s < 0) {
             // Since from(m) multiplies m by BASE, from(m) cannot be type(int256).min
             // which is the only value that would overflow when negated. Therefore,
             // we can safely negate from(m) without checking for overflow.
-            unchecked { return Fixed18.wrap(-1 * Fixed18.unwrap(from(m))); }
+            unchecked { return Fixed6.wrap(-1 * Fixed6.unwrap(from(m))); }
         }
         return ZERO;
     }
@@ -62,29 +61,27 @@ library Fixed18Lib {
      * @param a Signed number
      * @return New signed fixed-decimal
      */
-    function from(int256 a) internal pure returns (Fixed18) {
-        return Fixed18.wrap(a * BASE);
+    function from(int256 a) internal pure returns (Fixed6) {
+        return Fixed6.wrap(a * BASE);
     }
 
     /**
-     * @notice Creates a signed fixed-decimal from a base-6 signed fixed-decimal
-     * @param a Base-6 signed fixed-decimal
+     * @notice Creates a signed fixed-decimal from a base-18 signed fixed-decimal
+     * @param a Base-18 signed fixed-decimal
      * @return New signed fixed-decimal
      */
-    function from(Fixed6 a) internal pure returns (Fixed18) {
-        return Fixed18.wrap(Fixed6.unwrap(a) * 1e12);
+    function from(Fixed18 a) internal pure returns (Fixed6) {
+        return Fixed6.wrap(Fixed18.unwrap(a) / 1e12);
     }
 
     /**
-     * @notice Creates a packed signed fixed-decimal from an signed fixed-decimal
-     * @param a signed fixed-decimal
-     * @return New packed signed fixed-decimal
+     * @notice Creates a signed fixed-decimal from a base-18 signed fixed-decimal
+     * @param a Base-18 signed fixed-decimal
+     * @param roundOut Whether to round the result away from zero if there is a remainder
+     * @return New signed fixed-decimal
      */
-    function pack(Fixed18 a) internal pure returns (PackedFixed18) {
-        int256 value = Fixed18.unwrap(a);
-        if (value > type(int128).max) revert Fixed18PackingOverflowError(value);
-        if (value < type(int128).min) revert Fixed18PackingUnderflowError(value);
-        return PackedFixed18.wrap(int128(value));
+    function from(Fixed18 a, bool roundOut) internal pure returns (Fixed6) {
+        return roundOut ? Fixed6.wrap(NumberMath.divOut(Fixed18.unwrap(a), 1e12)): from(a);
     }
 
     /**
@@ -92,8 +89,8 @@ library Fixed18Lib {
      * @param a Signed fixed-decimal
      * @return Whether the signed fixed-decimal is zero.
      */
-    function isZero(Fixed18 a) internal pure returns (bool) {
-        return Fixed18.unwrap(a) == 0;
+    function isZero(Fixed6 a) internal pure returns (bool) {
+        return Fixed6.unwrap(a) == 0;
     }
 
     /**
@@ -102,8 +99,8 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Resulting summed signed fixed-decimal
      */
-    function add(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(Fixed18.unwrap(a) + Fixed18.unwrap(b));
+    function add(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
+        return Fixed6.wrap(Fixed6.unwrap(a) + Fixed6.unwrap(b));
     }
 
     /**
@@ -112,8 +109,8 @@ library Fixed18Lib {
      * @param b Signed fixed-decimal to subtract
      * @return Resulting subtracted signed fixed-decimal
      */
-    function sub(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(Fixed18.unwrap(a) - Fixed18.unwrap(b));
+    function sub(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
+        return Fixed6.wrap(Fixed6.unwrap(a) - Fixed6.unwrap(b));
     }
 
     /**
@@ -122,8 +119,8 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Resulting multiplied signed fixed-decimal
      */
-    function mul(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(Fixed18.unwrap(a) * Fixed18.unwrap(b) / BASE);
+    function mul(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
+        return Fixed6.wrap(Fixed6.unwrap(a) * Fixed6.unwrap(b) / BASE);
     }
 
     /**
@@ -132,8 +129,8 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Resulting multiplied signed fixed-decimal
      */
-    function mulOut(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(NumberMath.divOut(Fixed18.unwrap(a) * Fixed18.unwrap(b), BASE));
+    function mulOut(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
+        return Fixed6.wrap(NumberMath.divOut(Fixed6.unwrap(a) * Fixed6.unwrap(b), BASE));
     }
 
     /**
@@ -142,8 +139,8 @@ library Fixed18Lib {
      * @param b Signed fixed-decimal to divide by
      * @return Resulting divided signed fixed-decimal
      */
-    function div(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(Fixed18.unwrap(a) * BASE / Fixed18.unwrap(b));
+    function div(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
+        return Fixed6.wrap(Fixed6.unwrap(a) * BASE / Fixed6.unwrap(b));
     }
 
     /**
@@ -152,8 +149,8 @@ library Fixed18Lib {
      * @param b Signed fixed-decimal to divide by
      * @return Resulting divided signed fixed-decimal
      */
-    function divOut(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18Lib.from(sign(a) * sign(b), a.abs().divOut(b.abs()));
+    function divOut(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
+        return Fixed6Lib.from(sign(a) * sign(b), a.abs().divOut(b.abs()));
     }
 
     /**
@@ -163,7 +160,7 @@ library Fixed18Lib {
      * @param b Unsigned fixed-decimal to divide by
      * @return Resulting divided unsigned fixed-decimal
      */
-    function unsafeDiv(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
+    function unsafeDiv(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
         if (isZero(b)) {
             if (gt(a, ZERO)) return MAX;
             if (lt(a, ZERO)) return MIN;
@@ -180,7 +177,7 @@ library Fixed18Lib {
      * @param b Unsigned fixed-decimal to divide by
      * @return Resulting divided unsigned fixed-decimal
      */
-    function unsafeDivOut(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
+    function unsafeDivOut(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
         if (isZero(b)) {
             if (gt(a, ZERO)) return MAX;
             if (lt(a, ZERO)) return MIN;
@@ -197,8 +194,8 @@ library Fixed18Lib {
      * @param c Signed number to divide by
      * @return Resulting computation
      */
-    function muldiv(Fixed18 a, int256 b, int256 c) internal pure returns (Fixed18) {
-        return muldiv(a, Fixed18.wrap(b), Fixed18.wrap(c));
+    function muldiv(Fixed6 a, int256 b, int256 c) internal pure returns (Fixed6) {
+        return muldiv(a, Fixed6.wrap(b), Fixed6.wrap(c));
     }
 
     /**
@@ -208,8 +205,8 @@ library Fixed18Lib {
      * @param c Signed number to divide by
      * @return Resulting computation
      */
-    function muldivOut(Fixed18 a, int256 b, int256 c) internal pure returns (Fixed18) {
-        return muldivOut(a, Fixed18.wrap(b), Fixed18.wrap(c));
+    function muldivOut(Fixed6 a, int256 b, int256 c) internal pure returns (Fixed6) {
+        return muldivOut(a, Fixed6.wrap(b), Fixed6.wrap(c));
     }
 
     /**
@@ -219,8 +216,8 @@ library Fixed18Lib {
      * @param c Signed fixed-decimal to divide by
      * @return Resulting computation
      */
-    function muldiv(Fixed18 a, Fixed18 b, Fixed18 c) internal pure returns (Fixed18) {
-        return Fixed18.wrap(Fixed18.unwrap(a) * Fixed18.unwrap(b) / Fixed18.unwrap(c));
+    function muldiv(Fixed6 a, Fixed6 b, Fixed6 c) internal pure returns (Fixed6) {
+        return Fixed6.wrap(Fixed6.unwrap(a) * Fixed6.unwrap(b) / Fixed6.unwrap(c));
     }
 
     /**
@@ -230,8 +227,8 @@ library Fixed18Lib {
      * @param c Signed fixed-decimal to divide by
      * @return Resulting computation
      */
-    function muldivOut(Fixed18 a, Fixed18 b, Fixed18 c) internal pure returns (Fixed18) {
-        return Fixed18.wrap(NumberMath.divOut(Fixed18.unwrap(a) * Fixed18.unwrap(b), Fixed18.unwrap(c)));
+    function muldivOut(Fixed6 a, Fixed6 b, Fixed6 c) internal pure returns (Fixed6) {
+        return Fixed6.wrap(NumberMath.divOut(Fixed6.unwrap(a) * Fixed6.unwrap(b), Fixed6.unwrap(c)));
     }
 
     /**
@@ -240,7 +237,7 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Whether `a` is equal to `b`
      */
-    function eq(Fixed18 a, Fixed18 b) internal pure returns (bool) {
+    function eq(Fixed6 a, Fixed6 b) internal pure returns (bool) {
         return compare(a, b) == 1;
     }
 
@@ -250,7 +247,7 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Whether `a` is greater than `b`
      */
-    function gt(Fixed18 a, Fixed18 b) internal pure returns (bool) {
+    function gt(Fixed6 a, Fixed6 b) internal pure returns (bool) {
         return compare(a, b) == 2;
     }
 
@@ -260,7 +257,7 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Whether `a` is less than `b`
      */
-    function lt(Fixed18 a, Fixed18 b) internal pure returns (bool) {
+    function lt(Fixed6 a, Fixed6 b) internal pure returns (bool) {
         return compare(a, b) == 0;
     }
 
@@ -270,7 +267,7 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Whether `a` is greater than or equal to `b`
      */
-    function gte(Fixed18 a, Fixed18 b) internal pure returns (bool) {
+    function gte(Fixed6 a, Fixed6 b) internal pure returns (bool) {
         return gt(a, b) || eq(a, b);
     }
 
@@ -280,7 +277,7 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Whether `a` is less than or equal to `b`
      */
-    function lte(Fixed18 a, Fixed18 b) internal pure returns (bool) {
+    function lte(Fixed6 a, Fixed6 b) internal pure returns (bool) {
         return lt(a, b) || eq(a, b);
     }
 
@@ -293,8 +290,8 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Compare result of `a` and `b`
      */
-    function compare(Fixed18 a, Fixed18 b) internal pure returns (uint256) {
-        (int256 au, int256 bu) = (Fixed18.unwrap(a), Fixed18.unwrap(b));
+    function compare(Fixed6 a, Fixed6 b) internal pure returns (uint256) {
+        (int256 au, int256 bu) = (Fixed6.unwrap(a), Fixed6.unwrap(b));
         if (au > bu) return 2;
         if (au < bu) return 0;
         return 1;
@@ -306,8 +303,8 @@ library Fixed18Lib {
      * @param b Second signed number
      * @return Ratio of `a` over `b`
      */
-    function ratio(int256 a, int256 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(a * BASE / b);
+    function ratio(int256 a, int256 b) internal pure returns (Fixed6) {
+        return Fixed6.wrap(a * BASE / b);
     }
 
     /**
@@ -316,8 +313,8 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Minimum of `a` and `b`
      */
-    function min(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(SignedMath.min(Fixed18.unwrap(a), Fixed18.unwrap(b)));
+    function min(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
+        return Fixed6.wrap(SignedMath.min(Fixed6.unwrap(a), Fixed6.unwrap(b)));
     }
 
     /**
@@ -326,8 +323,8 @@ library Fixed18Lib {
      * @param b Second signed fixed-decimal
      * @return Maximum of `a` and `b`
      */
-    function max(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(SignedMath.max(Fixed18.unwrap(a), Fixed18.unwrap(b)));
+    function max(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
+        return Fixed6.wrap(SignedMath.max(Fixed6.unwrap(a), Fixed6.unwrap(b)));
     }
 
     /**
@@ -335,8 +332,8 @@ library Fixed18Lib {
      * @param a Signed fixed-decimal
      * @return Truncated signed number
      */
-    function truncate(Fixed18 a) internal pure returns (int256) {
-        return Fixed18.unwrap(a) / BASE;
+    function truncate(Fixed6 a) internal pure returns (int256) {
+        return Fixed6.unwrap(a) / BASE;
     }
 
     /**
@@ -347,9 +344,9 @@ library Fixed18Lib {
      * @param a Signed fixed-decimal
      * @return Sign of the signed fixed-decimal
      */
-    function sign(Fixed18 a) internal pure returns (int256) {
-        if (Fixed18.unwrap(a) > 0) return 1;
-        if (Fixed18.unwrap(a) < 0) return -1;
+    function sign(Fixed6 a) internal pure returns (int256) {
+        if (Fixed6.unwrap(a) > 0) return 1;
+        if (Fixed6.unwrap(a) < 0) return -1;
         return 0;
     }
 
@@ -358,19 +355,19 @@ library Fixed18Lib {
      * @param a Signed fixed-decimal
      * @return Absolute value of the signed fixed-decimal
      */
-    function abs(Fixed18 a) internal pure returns (UFixed18) {
-        return UFixed18.wrap(SignedMath.abs(Fixed18.unwrap(a)));
+    function abs(Fixed6 a) internal pure returns (UFixed6) {
+        return UFixed6.wrap(SignedMath.abs(Fixed6.unwrap(a)));
     }
 }
 
-library Fixed18StorageLib {
-    function read(Fixed18Storage self) internal view returns (Fixed18 value) {
+library Fixed6StorageLib {
+    function read(Fixed6Storage self) internal view returns (Fixed6 value) {
         assembly ("memory-safe") {
             value := sload(self)
         }
     }
 
-    function store(Fixed18Storage self, Fixed18 value) internal {
+    function store(Fixed6Storage self, Fixed6 value) internal {
         assembly ("memory-safe") {
             sstore(self, value)
         }

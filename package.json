@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "0.2.0",
+  "version": "0.3.0-beta0",
   "scripts": {
     "build": "yarn compile",
     "compile": "hardhat compile",
@@ -9,7 +9,7 @@
     "coverage": "hardhat coverage --testfiles './test/unit/**/*'",
     "lint": "eslint --fix --ext '.ts,.js' ./ && solhint 'contracts/**/*.sol' --fix",
     "format": "prettier -w .",
-    "postinstall": "yarn build",
+    "prepack": "yarn build",
     "prepare": "husky install",
     "clean": "rm -rf cache artifacts types/generated"
   },

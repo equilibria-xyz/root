@@ -54,6 +54,17 @@ describe('UFixed18', () => {
     })
   })
 
+  describe('#from(UFixed6)', async () => {
+    it('creates new', async () => {
+      expect(await uFixed18.fromUFixed6(utils.parseUnits('10', 6))).to.equal(utils.parseEther('10'))
+    })
+
+    it('reverts if too large', async () => {
+      const TOO_LARGE = ethers.constants.MaxUint256.sub(10)
+      await expect(uFixed18.fromUFixed6(TOO_LARGE)).to.be.reverted
+    })
+  })
+
   describe('#pack', async () => {
     it('creates new', async () => {
       expect(await uFixed18.pack(utils.parseEther('10'))).to.equal(utils.parseEther('10'))
@@ -91,6 +102,20 @@ describe('UFixed18', () => {
     it('muls', async () => {
       expect(await uFixed18.mul(utils.parseEther('20'), utils.parseEther('10'))).to.equal(utils.parseEther('200'))
     })
+
+    it('muls and rounds down', async () => {
+      expect(await uFixed18.mul(1, 2)).to.equal(0)
+    })
+  })
+
+  describe('#mulOut', async () => {
+    it('muls without rounding', async () => {
+      expect(await uFixed18.mul(utils.parseEther('20'), utils.parseEther('10'))).to.equal(utils.parseEther('200'))
+    })
+
+    it('muls and rounds up', async () => {
+      expect(await uFixed18.mulOut(1, 2)).to.equal(1)
+    })
   })
 
   describe('#div', async () => {
@@ -111,6 +136,28 @@ describe('UFixed18', () => {
     })
   })
 
+  describe('#divOut', async () => {
+    it('divs without rounding', async () => {
+      expect(await uFixed18.divOut(utils.parseEther('20'), utils.parseEther('10'))).to.equal(utils.parseEther('2'))
+    })
+
+    it('divs and rounds up', async () => {
+      expect(await uFixed18.divOut(21, utils.parseEther('10'))).to.equal(3)
+    })
+
+    it('divides 0', async () => {
+      expect(await uFixed18.divOut(0, utils.parseEther('10'))).to.equal(0)
+    })
+
+    it('reverts', async () => {
+      await expect(uFixed18.divOut(0, 0)).to.revertedWith('DivisionByZero()')
+    })
+
+    it('reverts', async () => {
+      await expect(uFixed18.divOut(utils.parseEther('20'), 0)).to.revertedWith('DivisionByZero()')
+    })
+  })
+
   describe('#unsafeDiv', async () => {
     it('divs', async () => {
       expect(await uFixed18.unsafeDiv(utils.parseEther('20'), utils.parseEther('10'))).to.equal(utils.parseEther('2'))
@@ -126,6 +173,26 @@ describe('UFixed18', () => {
 
     it('divs (MAX)', async () => {
       expect(await uFixed18.unsafeDiv(utils.parseEther('20'), 0)).to.equal(ethers.constants.MaxUint256)
+    })
+  })
+
+  describe('#unsafeDivOut', async () => {
+    it('divs', async () => {
+      expect(await uFixed18.unsafeDivOut(utils.parseEther('20'), utils.parseEther('10'))).to.equal(
+        utils.parseEther('2'),
+      )
+    })
+
+    it('divs and ceils', async () => {
+      expect(await uFixed18.unsafeDivOut(21, utils.parseEther('10'))).to.equal(3)
+    })
+
+    it('divs (ONE)', async () => {
+      expect(await uFixed18.unsafeDivOut(0, 0)).to.equal(utils.parseEther('1'))
+    })
+
+    it('divs (MAX)', async () => {
+      expect(await uFixed18.unsafeDivOut(utils.parseEther('20'), 0)).to.equal(ethers.constants.MaxUint256)
     })
   })
 
@@ -160,6 +227,11 @@ describe('UFixed18', () => {
       ).to.equal(utils.parseEther('1.111111111111111111'))
     })
 
+    it('muldivs (rounds down)', async () => {
+      expect(await uFixed18.muldiv1(1, 21, 10)).to.equal(2)
+      expect(await uFixed18.muldiv2(1, 21, 10)).to.equal(2)
+    })
+
     it('reverts', async () => {
       await expect(
         uFixed18.muldiv1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
@@ -170,6 +242,55 @@ describe('UFixed18', () => {
       await expect(
         uFixed18.muldiv2(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
       ).to.revertedWith('0x12')
+    })
+  })
+
+  describe('#muldivOut', async () => {
+    it('muldivs', async () => {
+      expect(await uFixed18.muldivOut1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('2'))).to.equal(
+        utils.parseEther('100'),
+      )
+    })
+
+    it('muldivs', async () => {
+      expect(await uFixed18.muldivOut2(utils.parseEther('20'), 10, 2)).to.equal(utils.parseEther('100'))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await uFixed18.muldivOut1(
+          utils.parseEther('1.111111111111111111'),
+          utils.parseEther('0.333333333333333333'),
+          utils.parseEther('0.333333333333333333'),
+        ),
+      ).to.equal(utils.parseEther('1.111111111111111111'))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await uFixed18.muldivOut2(
+          utils.parseEther('1.111111111111111111'),
+          utils.parseEther('0.333333333333333333'),
+          utils.parseEther('0.333333333333333333'),
+        ),
+      ).to.equal(utils.parseEther('1.111111111111111111'))
+    })
+
+    it('muldivs (rounds up)', async () => {
+      expect(await uFixed18.muldivOut1(1, 21, 10)).to.equal(3)
+      expect(await uFixed18.muldivOut2(1, 21, 10)).to.equal(3)
+    })
+
+    it('reverts', async () => {
+      await expect(
+        uFixed18.muldivOut1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.revertedWith('DivisionByZero()')
+    })
+
+    it('reverts', async () => {
+      await expect(
+        uFixed18.muldivOut2(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.revertedWith('DivisionByZero()')
     })
   })
 

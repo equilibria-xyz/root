@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "../number/types/UFixed18.sol";
+import "../number/types/UFixed6.sol";
 
 contract MockUFixed18 {
     function ZERO() external pure returns (UFixed18) {
@@ -21,6 +22,10 @@ contract MockUFixed18 {
     }
 
     function from(uint256 a) external pure returns (UFixed18) {
+        return UFixed18Lib.from(a);
+    }
+
+    function fromUFixed6(UFixed6 a) external pure returns (UFixed18) {
         return UFixed18Lib.from(a);
     }
 
@@ -44,20 +49,40 @@ contract MockUFixed18 {
         return UFixed18Lib.mul(a, b);
     }
 
+    function mulOut(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
+        return UFixed18Lib.mulOut(a, b);
+    }
+
     function div(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
         return UFixed18Lib.div(a, b);
+    }
+
+    function divOut(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
+        return UFixed18Lib.divOut(a, b);
     }
 
     function unsafeDiv(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
         return UFixed18Lib.unsafeDiv(a, b);
     }
 
+    function unsafeDivOut(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
+        return UFixed18Lib.unsafeDivOut(a, b);
+    }
+
     function muldiv1(UFixed18 a, uint256 b, uint256 c) external pure returns (UFixed18) {
         return UFixed18Lib.muldiv(a, b, c);
     }
 
+    function muldivOut1(UFixed18 a, uint256 b, uint256 c) external pure returns (UFixed18) {
+        return UFixed18Lib.muldivOut(a, b, c);
+    }
+
     function muldiv2(UFixed18 a, UFixed18 b, UFixed18 c) external pure returns (UFixed18) {
         return UFixed18Lib.muldiv(a, b, c);
+    }
+
+    function muldivOut2(UFixed18 a, UFixed18 b, UFixed18 c) external pure returns (UFixed18) {
+        return UFixed18Lib.muldivOut(a, b, c);
     }
 
     function eq(UFixed18 a, UFixed18 b) external pure returns (bool) {

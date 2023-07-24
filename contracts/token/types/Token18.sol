@@ -43,11 +43,13 @@ library Token18Lib {
 
     /**
      * @notice Approves `grantee` to spend infinite tokens from the caller
-     * @param self Token to transfer
+     * @dev Uses `approve` rather than `safeApprove` since the race condition
+     *      in safeApprove does not apply when going to an infinite approval
+     * @param self Token to grant approval
      * @param grantee Address to allow spending
      */
     function approve(Token18 self, address grantee) internal {
-        IERC20(Token18.unwrap(self)).safeApprove(grantee, type(uint256).max);
+        IERC20(Token18.unwrap(self)).approve(grantee, type(uint256).max);
     }
 
     /**
@@ -55,7 +57,7 @@ library Token18Lib {
      * @dev There are important race conditions to be aware of when using this function
             with values other than 0. This will revert if moving from non-zero to non-zero amounts
             See https://github.com/OpenZeppelin/openzeppelin-contracts/blob/a55b7d13722e7ce850b626da2313f3e66ca1d101/contracts/token/ERC20/IERC20.sol#L57
-     * @param self Token to transfer
+     * @param self Token to grant approval
      * @param grantee Address to allow spending
      * @param amount Amount of tokens to approve to spend
      */
@@ -145,13 +147,13 @@ library Token18Lib {
 
 library Token18StorageLib {
     function read(Token18Storage self) internal view returns (Token18 value) {
-        assembly {
+        assembly ("memory-safe") {
             value := sload(self)
         }
     }
 
     function store(Token18Storage self, Token18 value) internal {
-        assembly {
+        assembly ("memory-safe") {
             sstore(self, value)
         }
     }

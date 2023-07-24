@@ -2,24 +2,24 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import HRE from 'hardhat'
 
-import { MockCurveMath, MockCurveMath__factory } from '../../../types/generated'
+import { MockCurveMath6, MockCurveMath6__factory } from '../../../types/generated'
 
 const { ethers } = HRE
 
-describe('CurveMath', () => {
+describe('CurveMath6', () => {
   let user: SignerWithAddress
-  let curveMath: MockCurveMath
+  let curveMath: MockCurveMath6
 
   beforeEach(async () => {
     ;[user] = await ethers.getSigners()
-    curveMath = await new MockCurveMath__factory(user).deploy()
+    curveMath = await new MockCurveMath6__factory(user).deploy()
   })
 
   describe('#linearInterpolation', async () => {
     context('increasing', async () => {
       it('reverts before start', async () => {
         await expect(curveMath.linearInterpolation(100, 0, 200, 100, 0)).to.be.revertedWith(
-          'CurveMathOutOfBoundsError()',
+          'CurveMath6OutOfBoundsError()',
         )
       })
 
@@ -37,7 +37,7 @@ describe('CurveMath', () => {
 
       it('reverts after end', async () => {
         await expect(curveMath.linearInterpolation(100, 0, 200, 100, 300)).to.be.revertedWith(
-          'CurveMathOutOfBoundsError()',
+          'CurveMath6OutOfBoundsError()',
         )
       })
     })
@@ -45,7 +45,7 @@ describe('CurveMath', () => {
     context('decreasing', async () => {
       it('reverts before start', async () => {
         await expect(curveMath.linearInterpolation(100, 100, 200, 0, 0)).to.be.revertedWith(
-          'CurveMathOutOfBoundsError()',
+          'CurveMath6OutOfBoundsError()',
         )
       })
 
@@ -63,7 +63,7 @@ describe('CurveMath', () => {
 
       it('reverts after end', async () => {
         await expect(curveMath.linearInterpolation(100, 100, 200, 0, 300)).to.be.revertedWith(
-          'CurveMathOutOfBoundsError()',
+          'CurveMath6OutOfBoundsError()',
         )
       })
     })
@@ -71,7 +71,7 @@ describe('CurveMath', () => {
     context('horizontal', async () => {
       it('reverts before start', async () => {
         await expect(curveMath.linearInterpolation(100, 100, 200, 100, 0)).to.be.revertedWith(
-          'CurveMathOutOfBoundsError()',
+          'CurveMath6OutOfBoundsError()',
         )
       })
 
@@ -89,7 +89,7 @@ describe('CurveMath', () => {
 
       it('reverts after end', async () => {
         await expect(curveMath.linearInterpolation(100, 100, 200, 100, 300)).to.be.revertedWith(
-          'CurveMathOutOfBoundsError()',
+          'CurveMath6OutOfBoundsError()',
         )
       })
     })
@@ -97,7 +97,7 @@ describe('CurveMath', () => {
     context('vertical', async () => {
       it('reverts before start', async () => {
         await expect(curveMath.linearInterpolation(100, 0, 200, 100, 0)).to.be.revertedWith(
-          'CurveMathOutOfBoundsError()',
+          'CurveMath6OutOfBoundsError()',
         )
       })
 
@@ -107,7 +107,7 @@ describe('CurveMath', () => {
 
       it('reverts after end', async () => {
         await expect(curveMath.linearInterpolation(100, 0, 100, 100, 300)).to.be.revertedWith(
-          'CurveMathOutOfBoundsError()',
+          'CurveMath6OutOfBoundsError()',
         )
       })
     })
