@@ -7,7 +7,7 @@ contract MockPausable is Pausable {
     uint256 public counter;
 
     function __initialize() external initializer(1) {
-        super.__UPausable__initialize();
+        super.__Pausable__initialize();
     }
 
     function increment() external whenNotPaused {

@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "../attribute/Initializable.sol";
 
 contract MockInitializable is Initializable {
-    Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.UInitializable.version"));
+    Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.Initializable.version"));
 
     event NoOp();
     event NoOpChild();
@@ -35,36 +35,36 @@ contract MockInitializable is Initializable {
     }
 }
 
-contract MockUInitializableConstructor1 is MockInitializable {
+contract MockInitializableConstructor1 is MockInitializable {
     constructor() {
         childInitializer();
     }
 }
 
-contract MockUInitializableConstructor3 is MockInitializable {
+contract MockInitializableConstructor3 is MockInitializable {
     constructor() initializer(1) {
         childInitializer();
     }
 }
 
-contract MockUInitializableConstructor5 is MockUInitializableConstructor1 {
-    constructor() MockUInitializableConstructor1() { }
+contract MockInitializableConstructor5 is MockInitializableConstructor1 {
+    constructor() MockInitializableConstructor1() { }
 }
 
-contract MockUInitializableConstructor6 is MockUInitializableConstructor1 {
-    constructor() MockUInitializableConstructor1() {
+contract MockInitializableConstructor6 is MockInitializableConstructor1 {
+    constructor() MockInitializableConstructor1() {
         childInitializer6();
     }
 
     function childInitializer6() public onlyInitializer { }
 }
 
-contract MockUInitializableConstructor8 is MockUInitializableConstructor3 {
-    constructor() MockUInitializableConstructor3() { }
+contract MockInitializableConstructor8 is MockInitializableConstructor3 {
+    constructor() MockInitializableConstructor3() { }
 }
 
-contract MockUInitializableMulti is Initializable {
-    Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.UInitializable.version"));
+contract MockInitializableMulti is Initializable {
+    Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.Initializable.version"));
 
     event NoOp(uint256 version);
 

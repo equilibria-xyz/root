@@ -9,8 +9,8 @@ interface IPausable is IInitializable, IOwnable {
     event Paused();
     event Unpaused();
 
-    error UPausablePausedError();
-    error UPausableNotPauserError(address sender);
+    error PausablePausedError();
+    error PausableNotPauserError(address sender);
 
     function pauser() external view returns (address);
     function paused() external view returns (bool);

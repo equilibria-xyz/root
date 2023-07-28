@@ -43,12 +43,12 @@ describe('Pausable', () => {
 
     it('only owner can update pauser', async () => {
       await expect(pausable.connect(user).updatePauser(user.address)).to.be.revertedWith(
-        `UOwnableNotOwnerError("${user.address}")`,
+        `OwnableNotOwnerError("${user.address}")`,
       )
 
       await pausable.connect(owner).updatePauser(newPauser.address)
       await expect(pausable.connect(newPauser).updatePauser(user.address)).to.be.revertedWith(
-        `UOwnableNotOwnerError("${newPauser.address}")`,
+        `OwnableNotOwnerError("${newPauser.address}")`,
       )
     })
   })

@@ -14,17 +14,17 @@ import "../storage/Storage.sol";
  */
 abstract contract Ownable is IOwnable, Initializable {
     /// @dev The owner address
-    AddressStorage private constant _owner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.owner"));
+    AddressStorage private constant _owner = AddressStorage.wrap(keccak256("equilibria.root.Ownable.owner"));
     function owner() public view returns (address) { return _owner.read(); }
 
     /// @dev The pending owner address
-    AddressStorage private constant _pendingOwner = AddressStorage.wrap(keccak256("equilibria.root.UOwnable.pendingOwner"));
+    AddressStorage private constant _pendingOwner = AddressStorage.wrap(keccak256("equilibria.root.Ownable.pendingOwner"));
     function pendingOwner() public view returns (address) { return _pendingOwner.read(); }
 
     /**
      * @notice Initializes the contract setting `msg.sender` as the initial owner
      */
-    function __UOwnable__initialize() internal onlyInitializer {
+    function __Ownable__initialize() internal onlyInitializer {
         _updateOwner(_sender());
     }
 
@@ -47,7 +47,7 @@ abstract contract Ownable is IOwnable, Initializable {
     function acceptOwner() public {
         _beforeAcceptOwner();
 
-        if (_sender() != pendingOwner()) revert UOwnableNotPendingOwnerError(_sender());
+        if (_sender() != pendingOwner()) revert OwnableNotPendingOwnerError(_sender());
 
         _updateOwner(pendingOwner());
         updatePendingOwner(address(0));
@@ -72,7 +72,7 @@ abstract contract Ownable is IOwnable, Initializable {
 
     /// @dev Throws if called by any account other than the owner
     modifier onlyOwner {
-        if (owner() != _sender()) revert UOwnableNotOwnerError(_sender());
+        if (owner() != _sender()) revert OwnableNotOwnerError(_sender());
         _;
     }
 }

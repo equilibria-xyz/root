@@ -22,7 +22,7 @@ abstract contract Factory is IFactory, Ownable, Pausable {
 
     /// @notice Initializes the contract state
     function __Factory__initialize() internal onlyInitializer {
-        __UOwnable__initialize();
+        __Ownable__initialize();
     }
 
     /// @notice Returns whether the instance is valid

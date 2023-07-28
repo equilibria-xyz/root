@@ -16,18 +16,18 @@ import "../storage/Storage.sol";
  */
 abstract contract Pausable is IPausable, Ownable {
     /// @dev The pauser address
-    AddressStorage private constant _pauser = AddressStorage.wrap(keccak256("equilibria.root.UPausable.pauser"));
+    AddressStorage private constant _pauser = AddressStorage.wrap(keccak256("equilibria.root.Pausable.pauser"));
     function pauser() public view returns (address) { return _pauser.read(); }
 
     /// @dev Whether the contract is paused
-    BoolStorage private constant _paused = BoolStorage.wrap(keccak256("equilibria.root.UPausable.paused"));
+    BoolStorage private constant _paused = BoolStorage.wrap(keccak256("equilibria.root.Pausable.paused"));
     function paused() public view returns (bool) { return _paused.read(); }
 
     /**
      * @notice Initializes the contract setting `msg.sender` as the initial pauser
      */
-    function __UPausable__initialize() internal onlyInitializer {
-        __UOwnable__initialize();
+    function __Pausable__initialize() internal onlyInitializer {
+        __Ownable__initialize();
         updatePauser(_sender());
     }
 
@@ -61,13 +61,13 @@ abstract contract Pausable is IPausable, Ownable {
 
     /// @dev Throws if called by any account other than the pauser
     modifier onlyPauser {
-        if (_sender() != pauser() && _sender() != owner()) revert UPausableNotPauserError(_sender());
+        if (_sender() != pauser() && _sender() != owner()) revert PausableNotPauserError(_sender());
         _;
     }
 
     /// @dev Throws if called when the contract is paused
     modifier whenNotPaused {
-        if (paused()) revert UPausablePausedError();
+        if (paused()) revert PausablePausedError();
         _;
     }
 }

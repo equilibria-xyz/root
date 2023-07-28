@@ -4,5 +4,5 @@ pragma solidity ^0.8.13;
 import "./IInitializable.sol";
 
 interface IReentrancyGuard is IInitializable {
-    error UReentrancyGuardReentrantCallError();
+    error ReentrancyGuardReentrantCallError();
 }

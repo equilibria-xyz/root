@@ -78,7 +78,7 @@ describe('CrossChainOwner_Optimism', () => {
       crossDomainMessenger.xDomainMessageSender.returns(user.address)
       await expect(
         uOwner.connect(crossDomainMessenger.wallet).execute(ethers.constants.AddressZero, '0x', 0),
-      ).to.be.revertedWith(`UOwnableNotOwnerError("${user.address}")`)
+      ).to.be.revertedWith(`OwnableNotOwnerError("${user.address}")`)
     })
   })
 })

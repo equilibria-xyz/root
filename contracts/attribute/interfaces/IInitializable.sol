@@ -2,9 +2,9 @@
 pragma solidity ^0.8.13;
 
 interface IInitializable {
-    error UInitializableZeroVersionError();
-    error UInitializableAlreadyInitializedError(uint256 version);
-    error UInitializableNotInitializingError();
+    error InitializableZeroVersionError();
+    error InitializableAlreadyInitializedError(uint256 version);
+    error InitializableNotInitializingError();
 
     event Initialized(uint256 version);
 }

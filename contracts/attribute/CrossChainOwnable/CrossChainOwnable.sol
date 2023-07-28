@@ -18,7 +18,7 @@ import "../../storage/Storage.sol";
  *      a fuse will be tripped, preventing same-chain ownership going forward.
  */
 abstract contract CrossChainOwnable is Ownable, CrossChainEnabled {
-    BoolStorage private constant _crossChainRestricted = BoolStorage.wrap(keccak256("equilibria.root.UCrossChainOwnable.crossChainRestricted"));
+    BoolStorage private constant _crossChainRestricted = BoolStorage.wrap(keccak256("equilibria.root.CrossChainOwnable.crossChainRestricted"));
     function crossChainRestricted() public view returns (bool) { return _crossChainRestricted.read(); }
 
     function _beforeAcceptOwner() internal override {

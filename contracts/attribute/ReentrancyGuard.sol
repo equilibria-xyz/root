@@ -32,12 +32,12 @@ abstract contract ReentrancyGuard is IReentrancyGuard, Initializable {
     /**
      * @dev unstructured storage slot for the reentrancy status
      */
-    Uint256Storage private constant _status = Uint256Storage.wrap(keccak256("equilibria.root.UReentrancyGuard.status"));
+    Uint256Storage private constant _status = Uint256Storage.wrap(keccak256("equilibria.root.ReentrancyGuard.status"));
 
     /**
      * @dev Initializes the contract setting the status to _NOT_ENTERED.
      */
-    function __UReentrancyGuard__initialize() internal onlyInitializer {
+    function __ReentrancyGuard__initialize() internal onlyInitializer {
         _status.store(_NOT_ENTERED);
     }
 
@@ -50,7 +50,7 @@ abstract contract ReentrancyGuard is IReentrancyGuard, Initializable {
      */
     modifier nonReentrant() {
         // On the first call to nonReentrant, _notEntered will be true
-        if (_status.read() == _ENTERED) revert UReentrancyGuardReentrantCallError();
+        if (_status.read() == _ENTERED) revert ReentrancyGuardReentrantCallError();
 
         // Any calls to nonReentrant after this point will fail
         _status.store(_ENTERED);
