@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./Initializable.sol";
-import "./interfaces/IKept.sol";
-import "../storage/Storage.sol";
+import "../Initializable.sol";
+import "../interfaces/IKept.sol";
+import "../../storage/Storage.sol";
 
 /// @title Kept
 /// @notice Library to manage keeper incentivization.
@@ -33,22 +33,27 @@ abstract contract Kept is IKept, Initializable {
     /// @param data Arbitrary data passed in from the keep modifier
     function _raiseKeeperFee(UFixed18 amount, bytes memory data) internal virtual { }
 
+    /// @dev Hook for inheriting contracts to perform logic to calculate the dynamic fee
+    /// @param callData The calldata that will be used to price the dynamic fee
+    function _calculateDynamicFee(bytes memory callData) internal view virtual returns (UFixed18) { }
+
     /// @notice Placed on a functon to incentivize keepers to call it
     /// @param multiplier The multiplier to apply to the gas used
     /// @param buffer The fixed gas amount to add to the gas used
     /// @param data Arbitrary data to pass to the _raiseKeeperFee function
-    modifier keep(UFixed18 multiplier, uint256 buffer, bytes memory data) {
+    modifier keep(UFixed18 multiplier, uint256 buffer, bytes memory dynamicCalldata, bytes memory data) {
         uint256 startGas = gasleft();
 
         _;
+
 
         uint256 gasUsed = startGas - gasleft();
         UFixed18 keeperFee = UFixed18Lib.from(gasUsed)
             .mul(multiplier)
             .add(UFixed18Lib.from(buffer))
-            .mul(_etherPrice())
-            .mul(UFixed18.wrap(block.basefee));
-
+            .mul(UFixed18.wrap(block.basefee))
+            .add(_calculateDynamicFee(dynamicCalldata))
+            .mul(_etherPrice());
         _raiseKeeperFee(keeperFee, data);
 
         keeperToken().push(msg.sender, keeperFee);

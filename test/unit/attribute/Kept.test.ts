@@ -81,6 +81,10 @@ describe('Kept', () => {
     await keeperToken.connect(owner).approve(kept.address, ethers.constants.MaxUint256)
   })
 
+  after(async () => {
+    await ethers.provider.send('hardhat_setNextBlockBaseFeePerGas', ['0x1'])
+  })
+
   describe('#__Kept__initialize', async () => {
     it('initializes keeperToken and ethTokenOracleFeed', async () => {
       expect(await kept.keeperToken()).to.equal(keeperToken.address)
