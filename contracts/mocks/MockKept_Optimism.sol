@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/Kept/Kept.sol";
+import "../attribute/Kept/Kept_Optimism.sol";
 
-contract MockKept is Kept {
+contract MockKept_Optimism is Kept_Optimism {
     address public benefactor;
 
     constructor(address benefactor_) {
@@ -22,7 +22,12 @@ contract MockKept is Kept {
         keeperToken().pull(benefactor, amount);
     }
 
-    function toBeKept(UFixed18 multiplier, uint256 buffer, bytes memory data) keep(multiplier, buffer, "", data) external {}
+    function toBeKept(
+        UFixed18 multiplier,
+        uint256 buffer,
+        bytes memory payload,
+        bytes memory data
+    ) external keep(multiplier, buffer, payload, data) {}
 
     /// @dev This function is used to figure out what gasUsed is. We can't hardcode this
     /// @dev in tests because it depends on whether we're running coverage or not.
