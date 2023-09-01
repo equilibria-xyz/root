@@ -9,7 +9,8 @@ interface ArbGasInfo {
     function getL1BaseFeeEstimate() external view returns (uint256);
 }
 
-contract Kept_Arbitrum is Kept {
+/// @dev Arbitrum Kept implementation
+abstract contract Kept_Arbitrum is Kept {
     ArbGasInfo constant ARB_GAS = ArbGasInfo(0x000000000000000000000000000000000000006C);
     uint256 public constant ARB_GAS_MULTIPLIER = 16;
     uint256 public constant ARB_FIXED_OVERHEAD = 140;
@@ -17,8 +18,9 @@ contract Kept_Arbitrum is Kept {
     // https://docs.arbitrum.io/devs-how-tos/how-to-estimate-gas#breaking-down-the-formula
     // Tx Fee = block.baseFee * l2GasUsed + ArbGasInfo.getL1BaseFeeEstimate() * 16 * (calldataLength + fixedOverhead)
     // Dynamic buffer = (ArbGasInfo.getL1BaseFeeEstimate() * 16 * (calldataLength + fixedOverhead))
-    function _calculateDynamicFee(bytes memory callData) internal view override returns (UFixed18) {
-        return
-            UFixed18.wrap(ARB_GAS.getL1BaseFeeEstimate() * ARB_GAS_MULTIPLIER * (callData.length + ARB_FIXED_OVERHEAD));
+    function _calculateDynamicFee(bytes memory callData) internal view virtual override returns (UFixed18) {
+        return UFixed18.wrap(
+            ARB_GAS.getL1BaseFeeEstimate() * ARB_GAS_MULTIPLIER * (callData.length + ARB_FIXED_OVERHEAD)
+        );
     }
 }

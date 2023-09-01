@@ -46,7 +46,6 @@ abstract contract Kept is IKept, Initializable {
 
         _;
 
-
         uint256 gasUsed = startGas - gasleft();
         UFixed18 keeperFee = UFixed18Lib.from(gasUsed)
             .mul(multiplier)
