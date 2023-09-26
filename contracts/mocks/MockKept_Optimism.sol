@@ -14,7 +14,7 @@ contract MockKept_Optimism is Kept_Optimism {
     event RaiseKeeperFeeCalled(UFixed18 amount, bytes data);
 
     function initialize(AggregatorV3Interface ethTokenOracleFeed_, Token18 keeperToken_) external initializer(1) {
-        super.__UKept__initialize(ethTokenOracleFeed_, keeperToken_);
+        super.__Kept__initialize(ethTokenOracleFeed_, keeperToken_);
     }
 
     function _raiseKeeperFee(UFixed18 amount, bytes memory data) internal override {
