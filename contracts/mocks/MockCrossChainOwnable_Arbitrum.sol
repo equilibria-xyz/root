@@ -5,7 +5,7 @@ import "../attribute/CrossChainOwnable/CrossChainOwnable_Arbitrum.sol";
 
 contract MockCrossChainOwnable_Arbitrum is CrossChainOwnable_Arbitrum {
     function __initialize() external initializer(1) {
-        super.__UOwnable__initialize();
+        super.__Ownable__initialize();
     }
 
     function mustOwner() public view onlyOwner returns (bool) {

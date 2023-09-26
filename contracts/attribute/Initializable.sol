@@ -15,15 +15,15 @@ import "../storage/Storage.sol";
  */
 abstract contract Initializable is IInitializable {
     /// @dev The initialized flag
-    Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.UInitializable.version"));
+    Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.Initializable.version"));
 
     /// @dev The initializing flag
-    BoolStorage private constant _initializing = BoolStorage.wrap(keccak256("equilibria.root.UInitializable.initializing"));
+    BoolStorage private constant _initializing = BoolStorage.wrap(keccak256("equilibria.root.Initializable.initializing"));
 
     /// @dev Can only be called once per version, `version` is 1-indexed
     modifier initializer(uint256 version) {
-        if (version == 0) revert UInitializableZeroVersionError();
-        if (_version.read() >= version) revert UInitializableAlreadyInitializedError(version);
+        if (version == 0) revert InitializableZeroVersionError();
+        if (_version.read() >= version) revert InitializableAlreadyInitializedError(version);
 
         _version.store(version);
         _initializing.store(true);
@@ -36,7 +36,7 @@ abstract contract Initializable is IInitializable {
 
     /// @dev Can only be called from an initializer or constructor
     modifier onlyInitializer() {
-        if (!_constructing() && !_initializing.read()) revert UInitializableNotInitializingError();
+        if (!_constructing() && !_initializing.read()) revert InitializableNotInitializingError();
         _;
     }
 

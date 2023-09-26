@@ -12,7 +12,7 @@ import "../CrossChainOwnable/CrossChainOwnable.sol";
  */
 abstract contract CrossChainOwner is CrossChainOwnable {
     function initialize() external initializer(1) {
-        super.__UOwnable__initialize();
+        super.__Ownable__initialize();
     }
 
     function execute(

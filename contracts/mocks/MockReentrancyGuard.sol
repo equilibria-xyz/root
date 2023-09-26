@@ -4,12 +4,12 @@ pragma solidity ^0.8.13;
 import "../attribute/ReentrancyGuard.sol";
 
 contract MockReentrancyGuard is ReentrancyGuard {
-    Uint256Storage private constant _status = Uint256Storage.wrap(keccak256("equilibria.root.UReentrancyGuard.status"));
+    Uint256Storage private constant _status = Uint256Storage.wrap(keccak256("equilibria.root.ReentrancyGuard.status"));
 
     event NoOp();
 
     function __initialize() external initializer(1) {
-        super.__UReentrancyGuard__initialize();
+        super.__ReentrancyGuard__initialize();
     }
 
     function __status() external view returns (uint256) {

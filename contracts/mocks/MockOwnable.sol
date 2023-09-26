@@ -7,7 +7,7 @@ contract MockOwnable is Ownable {
     bool public beforeCalled;
 
     function __initialize() external initializer(1) {
-        super.__UOwnable__initialize();
+        super.__Ownable__initialize();
     }
 
     function _beforeAcceptOwner() internal override {

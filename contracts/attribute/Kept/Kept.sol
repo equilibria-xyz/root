@@ -10,17 +10,17 @@ import "../../storage/Storage.sol";
 /// @dev Surfaces a keep() modifier that handles measuring job gas costs and paying out rewards the keeper.
 abstract contract Kept is IKept, Initializable {
     /// @dev The legacy Chainlink feed that is used to convert price ETH relative to the keeper token
-    AddressStorage private constant _ethTokenOracleFeed = AddressStorage.wrap(keccak256("equilibria.root.UKept.ethTokenOracleFeed"));
+    AddressStorage private constant _ethTokenOracleFeed = AddressStorage.wrap(keccak256("equilibria.root.Kept.ethTokenOracleFeed"));
     function ethTokenOracleFeed() public view returns (AggregatorV3Interface) { return AggregatorV3Interface(_ethTokenOracleFeed.read()); }
 
     /// @dev The token that the keeper is paid in
-    Token18Storage private constant _keeperToken = Token18Storage.wrap(keccak256("equilibria.root.UKept.keeperToken"));
+    Token18Storage private constant _keeperToken = Token18Storage.wrap(keccak256("equilibria.root.Kept.keeperToken"));
     function keeperToken() public view returns (Token18) { return _keeperToken.read(); }
 
     /// @notice Initializes the contract
     /// @param ethTokenOracleFeed_ The legacy Chainlink feed that is used to convert price ETH relative to the keeper token
     /// @param keeperToken_ The token that the keeper is paid in
-    function __UKept__initialize(
+    function __Kept__initialize(
         AggregatorV3Interface ethTokenOracleFeed_,
         Token18 keeperToken_
     ) internal onlyInitializer {

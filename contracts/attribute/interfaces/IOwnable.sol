@@ -7,8 +7,8 @@ interface IOwnable is IInitializable {
     event OwnerUpdated(address indexed newOwner);
     event PendingOwnerUpdated(address indexed newPendingOwner);
 
-    error UOwnableNotOwnerError(address sender);
-    error UOwnableNotPendingOwnerError(address sender);
+    error OwnableNotOwnerError(address sender);
+    error OwnableNotPendingOwnerError(address sender);
 
     function owner() external view returns (address);
     function pendingOwner() external view returns (address);
