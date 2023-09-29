@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../curve/CurveMath6.sol";
+import "../utilization/CurveMath6.sol";
 
 contract MockCurveMath6 {
     function linearInterpolation(

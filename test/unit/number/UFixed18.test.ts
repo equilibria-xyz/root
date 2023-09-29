@@ -65,17 +65,6 @@ describe('UFixed18', () => {
     })
   })
 
-  describe('#pack', async () => {
-    it('creates new', async () => {
-      expect(await uFixed18.pack(utils.parseEther('10'))).to.equal(utils.parseEther('10'))
-    })
-
-    it('reverts if too large', async () => {
-      const TOO_LARGE = ethers.constants.MaxUint256
-      await expect(uFixed18.pack(TOO_LARGE)).to.be.revertedWith(`UFixed18PackingOverflowError(${TOO_LARGE})`)
-    })
-  })
-
   describe('#isZero', async () => {
     it('returns true', async () => {
       expect(await uFixed18.isZero(0)).to.equal(true)

@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "0.3.0-beta0",
+  "version": "2.0.0",
   "scripts": {
     "build": "yarn compile",
     "compile": "hardhat compile",
@@ -9,13 +9,14 @@
     "coverage": "hardhat coverage --testfiles './test/unit/**/*'",
     "lint": "eslint --fix --ext '.ts,.js' ./ && solhint 'contracts/**/*.sol' --fix",
     "format": "prettier -w .",
-    "prepack": "yarn build",
+    "postinstall": "yarn build",
     "prepare": "husky install",
     "clean": "rm -rf cache artifacts types/generated"
   },
   "author": "",
   "license": "APACHE-2.0",
   "devDependencies": {
+    "@chainlink/contracts": "^0.6.1",
     "@codechecks/client": "^0.1.10",
     "@defi-wonderland/smock": "^2.3.4",
     "@ethersproject/abi": "^5.3.1",

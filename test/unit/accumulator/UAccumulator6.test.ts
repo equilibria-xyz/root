@@ -7,7 +7,7 @@ import { MockUAccumulator6, MockUAccumulator6__factory } from '../../../types/ge
 
 const { ethers } = HRE
 
-describe('Accumulator6', () => {
+describe('UAccumulator6', () => {
   let user: SignerWithAddress
   let accumulator6: MockUAccumulator6
 
@@ -29,6 +29,20 @@ describe('Accumulator6', () => {
     it('increments (rounds down)', async () => {
       await accumulator6.increment(1, utils.parseUnits('2', 6))
       expect(await value(accumulator6)).to.equal(0)
+    })
+
+    it('zero amount / non-zero total', async () => {
+      await accumulator6.increment(utils.parseUnits('0', 6), utils.parseUnits('1', 6))
+      expect(await value(accumulator6)).to.equal(utils.parseUnits('0', 6))
+    })
+
+    it('zero amount / zero total', async () => {
+      await accumulator6.increment(utils.parseUnits('0', 6), utils.parseUnits('0', 6))
+      expect(await value(accumulator6)).to.equal(utils.parseUnits('0', 6))
+    })
+
+    it('non-zero amount / zero total (reverts)', async () => {
+      await expect(accumulator6.increment(utils.parseUnits('1', 6), utils.parseUnits('0', 6))).to.revertedWith('0x12')
     })
   })
 
