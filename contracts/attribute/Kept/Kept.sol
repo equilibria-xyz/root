@@ -33,31 +33,52 @@ abstract contract Kept is IKept, Initializable {
     /// @param data Arbitrary data passed in from the keep modifier
     function _raiseKeeperFee(UFixed18 amount, bytes memory data) internal virtual { }
 
+    // TODO
     /// @dev Hook for inheriting contracts to perform logic to calculate the dynamic fee
-    /// @param callData The calldata that will be used to price the dynamic fee
-    function _calculateDynamicFee(bytes memory callData) internal view virtual returns (UFixed18) { }
+    /// @param applicableCalldata The calldata that will be used to price the dynamic fee
+    function _calldataFee(
+        bytes calldata applicableCalldata,
+        UFixed18 multiplierCalldata,
+        uint256 bufferCalldata
+    ) internal view virtual returns (UFixed18) { return UFixed18Lib.ZERO; }
 
-    /// @notice Placed on a functon to incentivize keepers to call it
-    /// @param multiplier The multiplier to apply to the gas used
-    /// @param buffer The fixed gas amount to add to the gas used
+    // TODO
+    function _baseFee(
+        uint256 applicableGas,
+        UFixed18 multiplierBase,
+        uint256 bufferBase
+    ) internal view returns (UFixed18) {
+        return _fee(applicableGas, multiplierBase, bufferBase, block.basefee);
+    }
+
+    function _fee(uint256 gas, UFixed18 multiplier, uint256 buffer, uint256 baseFee) internal pure returns (UFixed18) {
+        return UFixed18Lib.from(gas).mul(multiplier).add(UFixed18Lib.from(buffer)).mul(UFixed18.wrap(baseFee));
+    }
+
+    /// @notice Placed on a function to incentivize keepers to call it
+    /// @param config The multiplier and buffer configuration to apply
     /// @param data Arbitrary data to pass to the _raiseKeeperFee function
-    modifier keep(UFixed18 multiplier, uint256 buffer, bytes memory dynamicCalldata, bytes memory data) {
+    modifier keep(
+        KeepConfig memory config,
+        bytes calldata applicableCalldata,
+        uint256 applicableValue,
+        bytes memory data
+    ) {
         uint256 startGas = gasleft();
 
         _;
 
-        uint256 gasUsed = startGas - gasleft();
-        UFixed18 keeperFee = UFixed18Lib.from(gasUsed)
-            .mul(multiplier)
-            .add(UFixed18Lib.from(buffer))
-            .mul(UFixed18.wrap(block.basefee))
-            .add(_calculateDynamicFee(dynamicCalldata))
-            .mul(_etherPrice());
-        _raiseKeeperFee(keeperFee, data);
+        uint256 applicableGas = startGas - gasleft();
+        (UFixed18 baseFee, UFixed18 calldataFee) = (
+            _baseFee(applicableGas, config.multiplierBase, config.bufferBase),
+            _calldataFee(applicableCalldata, config.multiplierCalldata, config.bufferCalldata)
+        );
 
+        UFixed18 keeperFee = UFixed18.wrap(applicableValue).add(baseFee).add(calldataFee).mul(_etherPrice());
+        _raiseKeeperFee(keeperFee, data);
         keeperToken().push(msg.sender, keeperFee);
 
-        emit KeeperCall(msg.sender, gasUsed, multiplier, buffer, keeperFee);
+        emit KeeperCall(msg.sender, applicableGas, applicableValue, baseFee, calldataFee, keeperFee);
     }
 
     /// @notice Returns the price of ETH in terms of the keeper token

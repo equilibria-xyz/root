@@ -23,11 +23,17 @@ contract MockKept_Arbitrum is Kept_Arbitrum {
     }
 
     function toBeKept(
-        UFixed18 multiplier,
-        uint256 buffer,
-        bytes memory payload,
+        UFixed18 multiplierBase,
+        uint256 bufferBase,
+        UFixed18 multiplierCalldata,
+        uint256 bufferCalldata,
+        bytes calldata applicableCalldata,
+        uint256 value,
         bytes memory data
-    ) external keep(multiplier, buffer, payload, data) {}
+    )
+        external
+        keep(KeepConfig(multiplierBase, bufferBase, multiplierCalldata, bufferCalldata), applicableCalldata, value, data)
+    { }
 
     /// @dev This function is used to figure out what gasUsed is. We can't hardcode this
     /// @dev in tests because it depends on whether we're running coverage or not.
