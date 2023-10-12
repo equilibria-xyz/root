@@ -33,16 +33,23 @@ abstract contract Kept is IKept, Initializable {
     /// @param data Arbitrary data passed in from the keep modifier
     function _raiseKeeperFee(UFixed18 amount, bytes memory data) internal virtual { }
 
-    // TODO
-    /// @dev Hook for inheriting contracts to perform logic to calculate the dynamic fee
-    /// @param applicableCalldata The calldata that will be used to price the dynamic fee
+    /// @notice Computes the calldata portion of the keeper fee
+    /// @dev Used for L2 implementation with significant calldata costs
+    /// @param applicableCalldata The applicable calldata
+    /// @param multiplierCalldata The multiplier to apply to the calldata cost
+    /// @param bufferCalldata The buffer to apply to the calldata cost
+    /// @return The calldata portion of the keeper fee
     function _calldataFee(
         bytes calldata applicableCalldata,
         UFixed18 multiplierCalldata,
         uint256 bufferCalldata
     ) internal view virtual returns (UFixed18) { return UFixed18Lib.ZERO; }
 
-    // TODO
+    /// @notice Computes the base gas portion of the keeper fee
+    /// @param applicableGas The applicable gas cost
+    /// @param multiplierBase The multiplier to apply to the gas cost
+    /// @param bufferBase The buffer to apply to the gas cost
+    /// @return The gas cost portion of the keeper fee
     function _baseFee(
         uint256 applicableGas,
         UFixed18 multiplierBase,
@@ -51,6 +58,12 @@ abstract contract Kept is IKept, Initializable {
         return _fee(applicableGas, multiplierBase, bufferBase, block.basefee);
     }
 
+    /// @notice Computes a generic keeper fee based on parameters
+    /// @dev Helper function to consolidate keeper fee computation logic
+    /// @param gas The gas cost
+    /// @param multiplier The multiplier to apply to the gas cost
+    /// @param buffer The buffer to apply to the gas cost
+    /// @return The resulting keeper fee
     function _fee(uint256 gas, UFixed18 multiplier, uint256 buffer, uint256 baseFee) internal pure returns (UFixed18) {
         return UFixed18Lib.from(gas).mul(multiplier).add(UFixed18Lib.from(buffer)).mul(UFixed18.wrap(baseFee));
     }
