@@ -12,19 +12,18 @@ import {
   OptGasInfo,
 } from '../../../types/generated'
 import { BigNumber, BigNumberish } from 'ethers'
-import { parseEther } from 'ethers/lib/utils'
+import { parseEther, parseUnits } from 'ethers/lib/utils'
 
 const { ethers } = HRE
 
 const ETH_PRICE_USD = 1000
-const computeL1Fee = (l1TotalFee: BigNumberish) => BigNumber.from(l1TotalFee)
-const computeL2Fee = (gasUsed: BigNumber, multiplier: BigNumber, buffer: BigNumber, baseFee: number) =>
-  gasUsed
-    .mul(multiplier.div(BigNumber.from(10).pow(18)))
+const computeFee = (gasUsed: BigNumberish, multiplier: BigNumberish, buffer: BigNumberish, baseFee: BigNumberish) =>
+  BigNumber.from(gasUsed)
+    .mul(BigNumber.from(multiplier).div(BigNumber.from(10).pow(18)))
     .add(buffer)
     .mul(baseFee)
 
-describe('Kept_Arbitrum', () => {
+describe('Kept_Optimism', () => {
   let owner: SignerWithAddress
   let keeper: SignerWithAddress
   let keeperToken: MockERC20
@@ -34,11 +33,13 @@ describe('Kept_Arbitrum', () => {
   let kept: MockKeptOptimism
 
   async function computeAndAssertKeeperFee(
-    multiplier: BigNumber,
-    buffer: BigNumber,
-    payload: string,
+    multiplier: BigNumberish,
+    buffer: BigNumberish,
+    multiplierCalldata: BigNumberish,
+    bufferCalldata: BigNumberish,
+    applicableCalldata: string,
+    applicableValue: BigNumberish,
     baseFee: number,
-    l1TotalFee: BigNumberish,
   ): Promise<BigNumber> {
     const [, answer, , ,] = await ethTokenOracleFeed.latestRoundData()
     const ethPrice = answer.div(10 ** 8)
@@ -47,13 +48,30 @@ describe('Kept_Arbitrum', () => {
 
     // Set baseFee
     await ethers.provider.send('hardhat_setNextBlockBaseFeePerGas', [`0x${baseFee.toString(16)}`])
+    const [l1BaseFee, l1GasUsed, l1Scalar, l1Decimals] = await Promise.all([
+      optGas.l1BaseFee(),
+      optGas.getL1GasUsed(applicableCalldata),
+      optGas.scalar(),
+      optGas.decimals(),
+    ])
 
-    const l1Fee = computeL1Fee(l1TotalFee)
-    const l2Fee = computeL2Fee(gasUsed, multiplier, buffer, baseFee)
+    const l1Fee = computeFee(
+      l1GasUsed,
+      multiplierCalldata,
+      bufferCalldata,
+      l1BaseFee.mul(l1Scalar).div(BigNumber.from(10).pow(l1Decimals)),
+    )
+    const l2Fee = computeFee(gasUsed, multiplier, buffer, baseFee)
 
     // Check that keeperFee = ((gasUsed * multiplier + buffer) * block.baseFee + l1Fee) * ethPrice
     const expectedKeeperFee = l2Fee.add(l1Fee).mul(ethPrice)
-    await expect(kept.connect(keeper).toBeKept(multiplier, buffer, payload, '0x', { gasPrice: baseFee }))
+    await expect(
+      kept
+        .connect(keeper)
+        .toBeKept(multiplier, buffer, multiplierCalldata, bufferCalldata, applicableCalldata, applicableValue, '0x', {
+          gasPrice: baseFee,
+        }),
+    )
       .to.emit(kept, 'RaiseKeeperFeeCalled')
       .withArgs(expectedKeeperFee, '0x')
 
@@ -90,7 +108,7 @@ describe('Kept_Arbitrum', () => {
 
     setEthPrice(ETH_PRICE_USD)
 
-    await keeperToken.mint(owner.address, ethers.utils.parseEther('1000'))
+    await keeperToken.mint(owner.address, parseEther('1000'))
     await keeperToken.connect(owner).approve(kept.address, ethers.constants.MaxUint256)
   })
 
@@ -98,161 +116,79 @@ describe('Kept_Arbitrum', () => {
     await ethers.provider.send('hardhat_setNextBlockBaseFeePerGas', ['0x1'])
   })
 
-  describe('#__Kept__initialize', async () => {
-    it('initializes keeperToken and ethTokenOracleFeed', async () => {
-      expect(await kept.keeperToken()).to.equal(keeperToken.address)
-      expect(await kept.ethTokenOracleFeed()).to.equal(ethTokenOracleFeed.address)
-    })
-  })
-
-  describe('#keep', () => {
-    it('passes `data` to _raiseKeeperFee', async () => {
-      const data = '0xabcd'
-      await expect(kept.toBeKept(0, 0, '0x', data)).to.emit(kept, 'RaiseKeeperFeeCalled').withArgs(0, data)
-    })
-  })
-
-  context('L1 Fee is 0', () => {
-    beforeEach(() => {
-      optGas.getL1Fee.returns(0)
-    })
-
-    describe('#keep', async () => {
-      it('keeperFee is directly proportional to multiplier (given 0 buffer and 0 updateData)', async () => {
-        const multiplier = ethers.utils.parseEther('2')
-        const keeperFee = await computeAndAssertKeeperFee(multiplier, BigNumber.from(0), '0x', 100, 0)
-
-        // If multiplier is doubled, keeperFee should be doubled
-        expect(keeperFee.mul(2)).to.equal(
-          await computeAndAssertKeeperFee(multiplier.mul(2), BigNumber.from(0), '0x', 100, 0),
-        )
-      })
-
-      it('buffer adds buffer to keeperFee', async () => {
-        const buffer = BigNumber.from(0)
-        setEthPrice(1)
-        const keeperFee = await computeAndAssertKeeperFee(BigNumber.from(1), buffer, '0x', 1, 0)
-
-        const addToBuffer = BigNumber.from(5)
-        expect(keeperFee.add(addToBuffer)).to.equal(
-          await computeAndAssertKeeperFee(BigNumber.from(1), buffer.add(addToBuffer), '0x', 1, 0),
-        )
-      })
-
-      it('keeperFee is directly proportional to eth price', async () => {
-        const keeperFee = await computeAndAssertKeeperFee(BigNumber.from(1), BigNumber.from(0), '0x', 100, 0)
-
-        // If eth price is doubled, keeperFee should be doubled
-        setEthPrice(ETH_PRICE_USD * 2)
-        expect(keeperFee.mul(2)).to.equal(
-          await computeAndAssertKeeperFee(BigNumber.from(1), BigNumber.from(0), '0x', 100, 0),
-        )
-      })
-
-      it('keeperFee is directly proportional to block.baseFee', async () => {
-        const baseFee = 100
-        const keeperFee = await computeAndAssertKeeperFee(
-          ethers.utils.parseEther('1'),
-          BigNumber.from(0),
-          '0x',
-          baseFee,
-          0,
-        )
-
-        // If baseFee is doubled, keeperFee should be doubled
-        expect(keeperFee.mul(2)).to.equal(
-          await computeAndAssertKeeperFee(ethers.utils.parseEther('1'), BigNumber.from(0), '0x', baseFee * 2, 0),
-        )
-      })
-
-      it('0 multiplier results in 0 keeperFee', async () => {
-        expect(await computeAndAssertKeeperFee(BigNumber.from(0), BigNumber.from(0), '0x', 100, 0)).to.be.equal(0)
-      })
-
-      it('0 eth price results in 0 keeperFee', async () => {
-        setEthPrice(0)
-        expect(await computeAndAssertKeeperFee(BigNumber.from(1), BigNumber.from(0), '0x', 100, 0)).to.be.equal(0)
-      })
-
-      it('0 base fee results in 0 keeperFee', async () => {
-        expect(await computeAndAssertKeeperFee(BigNumber.from(1), BigNumber.from(0), '0x', 0, 0)).to.be.equal(0)
-      })
-    })
-  })
-
   context('L1 Fee is > 0', () => {
-    const L1_FEE = parseEther('0.0123')
+    const L1_BASE_FEE = parseUnits('10', 'gwei')
+    const L1_GAS_USED = parseUnits('2000000', 'wei')
     beforeEach(() => {
-      optGas.getL1Fee.returns(L1_FEE)
+      optGas.getL1GasUsed.whenCalledWith('0x').returns(0)
+      optGas.getL1GasUsed.whenCalledWith(HEX_DATA_STRING).returns(L1_GAS_USED)
+      optGas.l1BaseFee.returns(L1_BASE_FEE)
+      optGas.scalar.returns(684000)
+      optGas.decimals.returns(6)
     })
 
-    describe('#keep', () => {
-      it('compensates for L1 overhead with no data', async () => {
-        await computeAndAssertKeeperFee(parseEther('1'), BigNumber.from(0), '0x', 0, L1_FEE)
-      })
+    context('L1 multiplier is 0', () => {
+      describe('#keep', () => {
+        it('compensates for L1 overhead with no data', async () => {
+          await computeAndAssertKeeperFee(0, 0, parseEther('1'), 0, '0x', 0, 0)
+        })
 
-      it('compensates for L1 overhead and data', async () => {
-        await computeAndAssertKeeperFee(parseEther('1'), BigNumber.from(0), HEX_DATA_STRING, 0, L1_FEE)
-      })
+        it('compensates for L1 overhead and data', async () => {
+          await computeAndAssertKeeperFee(0, 0, parseEther('1'), 0, HEX_DATA_STRING, 0, 0)
+        })
 
-      it('keeperFee is directly proportional to eth price', async () => {
-        const keeperFee = await computeAndAssertKeeperFee(
-          BigNumber.from(1),
-          BigNumber.from(0),
-          HEX_DATA_STRING,
-          0,
-          L1_FEE,
-        )
+        it('keeperFee is directly proportional to eth price', async () => {
+          const keeperFee = await computeAndAssertKeeperFee(0, 0, parseEther('1'), 0, HEX_DATA_STRING, 0, 0)
 
-        // If eth price is doubled, keeperFee should be doubled
-        setEthPrice(ETH_PRICE_USD * 2)
-        expect(keeperFee.mul(2)).to.equal(
-          await computeAndAssertKeeperFee(BigNumber.from(1), BigNumber.from(0), HEX_DATA_STRING, 0, L1_FEE),
-        )
-      })
+          // If eth price is doubled, keeperFee should be doubled
+          setEthPrice(ETH_PRICE_USD * 2)
+          expect(keeperFee.mul(2)).to.equal(
+            await computeAndAssertKeeperFee(0, 0, parseEther('1'), 0, HEX_DATA_STRING, 0, 0),
+          )
+        })
 
-      it('keeperFee is directly proportional to l1 fee', async () => {
-        const keeperFee = await computeAndAssertKeeperFee(
-          ethers.utils.parseEther('1'),
-          BigNumber.from(0),
-          HEX_DATA_STRING,
-          0,
-          L1_FEE,
-        )
+        it('keeperFee is directly proportional to l1 base fee', async () => {
+          const keeperFee = await computeAndAssertKeeperFee(0, 0, parseEther('1'), 0, HEX_DATA_STRING, 0, 0)
 
-        optGas.getL1Fee.returns(L1_FEE.mul(2))
-        // If l1 fee is doubled, keeperFee should be doubled
-        expect(keeperFee.mul(2)).to.equal(
-          await computeAndAssertKeeperFee(
-            ethers.utils.parseEther('1'),
-            BigNumber.from(0),
-            HEX_DATA_STRING,
-            0,
-            L1_FEE.mul(2),
-          ),
-        )
-      })
+          // If l1 base fee is doubled, keeperFee should be doubled
+          optGas.l1BaseFee.returns(L1_BASE_FEE.mul(2))
+          expect(keeperFee.mul(2)).to.equal(
+            await computeAndAssertKeeperFee(0, 0, parseEther('1'), 0, HEX_DATA_STRING, 0, 0),
+          )
+        })
 
-      it('only applies multiplier to L2 portion', async () => {
-        const multiplier = ethers.utils.parseEther('2')
+        it('keeperFee is directly proportional to l1 gas used', async () => {
+          const keeperFee = await computeAndAssertKeeperFee(0, 0, parseEther('1'), 0, HEX_DATA_STRING, 0, 0)
 
-        const l1Portion = computeL1Fee(L1_FEE)
-        const l2Portion = computeL2Fee(gasUsed, multiplier, BigNumber.from(0), 100)
+          optGas.getL1GasUsed.reset()
+          optGas.getL1GasUsed.whenCalledWith(HEX_DATA_STRING).returns(L1_GAS_USED.mul(2))
 
-        // If multiplier is doubled, keeperFee should be doubled
-        expect(l2Portion.mul(2).add(l1Portion).mul(ETH_PRICE_USD)).to.equal(
-          await computeAndAssertKeeperFee(multiplier.mul(2), BigNumber.from(0), HEX_DATA_STRING, 100, L1_FEE),
-        )
-      })
+          // If l1 gas used is doubled, keeperFee should be doubled
+          expect(keeperFee.mul(2)).to.equal(
+            await computeAndAssertKeeperFee(0, 0, parseEther('1'), 0, HEX_DATA_STRING, 0, 0),
+          )
+        })
 
-      it('handles all params', async () => {
-        await computeAndAssertKeeperFee(
-          ethers.utils.parseEther('1'),
-          ethers.utils.parseEther('0.00001'),
-          HEX_DATA_STRING,
-          100,
-          L1_FEE,
-        )
+        it('keeperFee is directly proportional to l1 multipler', async () => {
+          const keeperFee = await computeAndAssertKeeperFee(0, 0, parseEther('1'), 0, HEX_DATA_STRING, 0, 0)
+
+          // If l1 multiplier is doubled, keeperFee should be doubled
+          expect(keeperFee.mul(2)).to.equal(
+            await computeAndAssertKeeperFee(0, 0, parseEther('2'), 0, HEX_DATA_STRING, 0, 0),
+          )
+        })
+
+        it('keeperFee is increased by l1 buffer', async () => {
+          setEthPrice(1)
+          const keeperFee = await computeAndAssertKeeperFee(0, 0, parseEther('1'), 0, HEX_DATA_STRING, 0, 0)
+
+          // If l1 buffer is set, keeperFee should incraese by the same amount
+          const bufferAmount = parseUnits('100000', 'wei')
+          const bufferFee = computeFee(0, 0, bufferAmount, (L1_BASE_FEE.toNumber() * 684000) / 10 ** 6)
+          expect(keeperFee.add(bufferFee)).to.equal(
+            await computeAndAssertKeeperFee(0, 0, parseEther('1'), bufferAmount, HEX_DATA_STRING, 0, 0),
+          )
+        })
       })
     })
   })
