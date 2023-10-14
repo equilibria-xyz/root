@@ -6,6 +6,7 @@ import "./IInitializable.sol";
 
 interface IInstance is IInitializable {
     error InstanceNotOwnerError(address sender);
+    error InstanceNotFactoryError(address sender);
     error InstancePausedError();
 
     function factory() external view returns (IFactory);
