@@ -42,8 +42,7 @@ library UFixed6Lib {
      * @return New unsigned fixed-decimal
      */
     function unsafeFrom(Fixed6 a) internal pure returns (UFixed6) {
-        int256 value = Fixed6.unwrap(a);
-        return (value < 0) ? ZERO : UFixed6.wrap(uint256(value));
+        return a.lt(Fixed6Lib.ZERO) ? ZERO : from(a);
     }
 
     /**
