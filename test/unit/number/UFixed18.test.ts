@@ -54,6 +54,16 @@ describe('UFixed18', () => {
     })
   })
 
+  describe('#unsafeFrom(Fixed18)', async () => {
+    it('creates positive', async () => {
+      expect(await uFixed18.unsafeFrom(utils.parseEther('10'))).to.equal(utils.parseEther('10'))
+    })
+
+    it('reverts if negative', async () => {
+      expect(await uFixed18.unsafeFrom(utils.parseEther('-10'))).to.equal(utils.parseEther('0'))
+    })
+  })
+
   describe('#from(UFixed6)', async () => {
     it('creates new', async () => {
       expect(await uFixed18.fromUFixed6(utils.parseUnits('10', 6))).to.equal(utils.parseEther('10'))
@@ -84,6 +94,16 @@ describe('UFixed18', () => {
   describe('#sub', async () => {
     it('subs', async () => {
       expect(await uFixed18.sub(20, 10)).to.equal(10)
+    })
+  })
+
+  describe('#unsafeSub', async () => {
+    it('subs', async () => {
+      expect(await uFixed18.unsafeSub(20, 10)).to.equal(10)
+    })
+
+    it('zero if underflow', async () => {
+      expect(await uFixed18.unsafeSub(10, 20)).to.equal(0)
     })
   })
 
