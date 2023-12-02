@@ -22,7 +22,10 @@ contract MockKept is Kept {
         keeperToken().pull(benefactor, amount);
     }
 
-    function toBeKept(UFixed18 multiplier, uint256 buffer, bytes memory data) keep(multiplier, buffer, "", data) external {}
+    function toBeKept(UFixed18 multiplier, uint256 buffer, uint256 value, bytes memory data)
+        external
+        keep(KeepConfig(multiplier, buffer, UFixed18Lib.ZERO, 0), msg.data[0:0], value, data)
+    { }
 
     /// @dev This function is used to figure out what gasUsed is. We can't hardcode this
     /// @dev in tests because it depends on whether we're running coverage or not.
@@ -32,5 +35,5 @@ contract MockKept is Kept {
         return startGas - gasleft() - 24;
     }
 
-    function emptyFunc() internal {}
+    function emptyFunc() internal { }
 }

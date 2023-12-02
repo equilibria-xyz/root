@@ -18,9 +18,16 @@ abstract contract Kept_Arbitrum is Kept {
     // https://docs.arbitrum.io/devs-how-tos/how-to-estimate-gas#breaking-down-the-formula
     // Tx Fee = block.baseFee * l2GasUsed + ArbGasInfo.getL1BaseFeeEstimate() * 16 * (calldataLength + fixedOverhead)
     // Dynamic buffer = (ArbGasInfo.getL1BaseFeeEstimate() * 16 * (calldataLength + fixedOverhead))
-    function _calculateDynamicFee(bytes memory callData) internal view virtual override returns (UFixed18) {
-        return UFixed18.wrap(
-            ARB_GAS.getL1BaseFeeEstimate() * ARB_GAS_MULTIPLIER * (callData.length + ARB_FIXED_OVERHEAD)
+    function _calldataFee(
+        bytes calldata applicableCalldata,
+        UFixed18 multiplierCalldata,
+        uint256 bufferCalldata
+    ) internal view virtual override returns (UFixed18) {
+        return _fee(
+            ARB_GAS_MULTIPLIER * (applicableCalldata.length + ARB_FIXED_OVERHEAD),
+            multiplierCalldata,
+            bufferCalldata,
+            ARB_GAS.getL1BaseFeeEstimate()
         );
     }
 }

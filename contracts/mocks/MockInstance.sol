@@ -20,6 +20,12 @@ contract MockInstance is Instance {
         IMockFactory(address(factory())).onlyCallableByInstance();
     }
 
-    /// @dev This function can only be called by the factory owner and when the factory is not paused
-    function protectedFunction() external view onlyOwner whenNotPaused {}
+    /// @dev This function can only be called by the factory owner
+    function protectedFunctionOwner() external view onlyOwner { }
+
+    /// @dev This function can only be called by the factory
+    function protectedFunctionFactory() external view onlyFactory { }
+
+    /// @dev This function can only be called when the factory is not paused
+    function protectedFunctionPaused() external view whenNotPaused { }
 }

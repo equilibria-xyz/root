@@ -26,6 +26,12 @@ abstract contract Instance is IInstance, Initializable {
         _;
     }
 
+    /// @notice Only allow the factory to call the function
+    modifier onlyFactory {
+        if (msg.sender != address(factory())) revert InstanceNotFactoryError(msg.sender);
+        _;
+    }
+
     /// @notice Only allow the function to be called when the factory is not paused
     modifier whenNotPaused {
         if (factory().paused()) revert InstancePausedError();
