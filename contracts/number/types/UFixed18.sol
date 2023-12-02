@@ -36,6 +36,17 @@ library UFixed18Lib {
     }
 
     /**
+     * @notice Creates a unsigned fixed-decimal from a signed fixed-decimal
+     * @dev Does not revert on underflow, instead returns `ZERO`
+     * @param a Signed fixed-decimal
+     * @return New unsigned fixed-decimal
+     */
+    function unsafeFrom(Fixed18 a) internal pure returns (UFixed18) {
+        int256 value = Fixed18.unwrap(a);
+        return (value < 0) ? ZERO : UFixed18.wrap(uint256(value));
+    }
+
+    /**
      * @notice Creates a unsigned fixed-decimal from a unsigned integer
      * @param a Unsigned number
      * @return New unsigned fixed-decimal
@@ -80,6 +91,17 @@ library UFixed18Lib {
      */
     function sub(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
         return UFixed18.wrap(UFixed18.unwrap(a) - UFixed18.unwrap(b));
+    }
+
+    /**
+     * @notice Subtracts unsigned fixed-decimal `a` by `b`
+     * @dev Does not revert on underflow, instead returns `ZERO`
+     * @param a Unsigned fixed-decimal to subtract from
+     * @param b Unsigned fixed-decimal to subtract
+     * @return Resulting subtracted unsigned fixed-decimal
+     */
+    function unsafeSub(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
+        return gt(b, a) ? ZERO : sub(a, b);
     }
 
     /**

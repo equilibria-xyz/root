@@ -20,6 +20,10 @@ contract MockUFixed6 {
         return UFixed6Lib.from(a);
     }
 
+    function unsafeFrom(Fixed6 a) external pure returns (UFixed6) {
+        return UFixed6Lib.unsafeFrom(a);
+    }
+
     function from(uint256 a) external pure returns (UFixed6) {
         return UFixed6Lib.from(a);
     }
@@ -42,6 +46,10 @@ contract MockUFixed6 {
 
     function sub(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {
         return UFixed6Lib.sub(a, b);
+    }
+
+    function unsafeSub(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {
+        return UFixed6Lib.unsafeSub(a, b);
     }
 
     function mul(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {
