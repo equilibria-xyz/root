@@ -219,6 +219,62 @@ library UFixed18Lib {
     }
 
     /**
+     * @notice Computes a * b / c without loss of precision due to BASE conversion
+     * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0` and `MAX` for `n/0`.
+     * @param a First unsigned fixed-decimal
+     * @param b Unsigned number to multiply by
+     * @param c Unsigned number to divide by
+     * @return Resulting computation
+     */
+    function unsafeMuldiv(UFixed18 a, uint256 b, uint256 c) internal pure returns (UFixed18) {
+        return unsafeMuldiv(a, UFixed18.wrap(b), UFixed18.wrap(c));
+    }
+
+    /**
+     * @notice Computes a * b / c without loss of precision due to BASE conversion, rounding the result up to the next integer if there is a remainder
+     * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0` and `MAX` for `n/0`.
+     * @param a First unsigned fixed-decimal
+     * @param b Unsigned number to multiply by
+     * @param c Unsigned number to divide by
+     * @return Resulting computation
+     */
+    function unsafeMuldivOut(UFixed18 a, uint256 b, uint256 c) internal pure returns (UFixed18) {
+        return unsafeMuldivOut(a, UFixed18.wrap(b), UFixed18.wrap(c));
+    }
+
+    /**
+     * @notice Computes a * b / c without loss of precision due to BASE conversion
+     * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0` and `MAX` for `n/0`.
+     * @param a First unsigned fixed-decimal
+     * @param b Unsigned fixed-decimal to multiply by
+     * @param c Unsigned fixed-decimal to divide by
+     * @return Resulting computation
+     */
+    function unsafeMuldiv(UFixed18 a, UFixed18 b, UFixed18 c) internal pure returns (UFixed18) {
+        if (isZero(c)) {
+            return (isZero(a) || isZero(b)) ? ONE : MAX;
+        } else {
+            return muldiv(a, b, c);
+        }
+    }
+
+    /**
+     * @notice Computes a * b / c without loss of precision due to BASE conversion, rounding the result up to the next integer if there is a remainder
+     * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0` and `MAX` for `n/0`.
+     * @param a First unsigned fixed-decimal
+     * @param b Unsigned fixed-decimal to multiply by
+     * @param c Unsigned fixed-decimal to divide by
+     * @return Resulting computation
+     */
+    function unsafeMuldivOut(UFixed18 a, UFixed18 b, UFixed18 c) internal pure returns (UFixed18) {
+        if (isZero(c)) {
+            return (isZero(a) || isZero(b)) ? ONE : MAX;
+        } else {
+            return muldivOut(a, b, c);
+        }
+    }
+
+    /**
      * @notice Returns whether unsigned fixed-decimal `a` is equal to `b`
      * @param a First unsigned fixed-decimal
      * @param b Second unsigned fixed-decimal

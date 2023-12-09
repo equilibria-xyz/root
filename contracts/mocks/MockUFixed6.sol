@@ -92,6 +92,22 @@ contract MockUFixed6 {
         return UFixed6Lib.muldivOut(a, b, c);
     }
 
+    function unsafeMuldiv1(UFixed6 a, uint256 b, uint256 c) external pure returns (UFixed6) {
+        return UFixed6Lib.unsafeMuldiv(a, b, c);
+    }
+
+    function unsafeMuldivOut1(UFixed6 a, uint256 b, uint256 c) external pure returns (UFixed6) {
+        return UFixed6Lib.unsafeMuldivOut(a, b, c);
+    }
+
+    function unsafeMuldiv2(UFixed6 a, UFixed6 b, UFixed6 c) external pure returns (UFixed6) {
+        return UFixed6Lib.unsafeMuldiv(a, b, c);
+    }
+
+    function unsafeMuldivOut2(UFixed6 a, UFixed6 b, UFixed6 c) external pure returns (UFixed6) {
+        return UFixed6Lib.unsafeMuldivOut(a, b, c);
+    }
+
     function eq(UFixed6 a, UFixed6 b) external pure returns (bool) {
         return UFixed6Lib.eq(a, b);
     }

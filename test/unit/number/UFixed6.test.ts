@@ -328,6 +328,152 @@ describe('UFixed6', () => {
     })
   })
 
+  describe('#unsafeMuldiv', async () => {
+    it('muldivs', async () => {
+      expect(
+        await uFixed6.unsafeMuldiv1(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('2', 6)),
+      ).to.equal(utils.parseUnits('100', 6))
+    })
+
+    it('muldivs', async () => {
+      expect(await uFixed6.unsafeMuldiv2(utils.parseUnits('20', 6), 10, 2)).to.equal(utils.parseUnits('100', 6))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await uFixed6.unsafeMuldiv1(
+          utils.parseUnits('1.111111', 6),
+          utils.parseUnits('0.333333', 6),
+          utils.parseUnits('0.333333', 6),
+        ),
+      ).to.equal(utils.parseUnits('1.111111', 6))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await uFixed6.unsafeMuldiv2(
+          utils.parseUnits('1.111111', 6),
+          utils.parseUnits('0.333333', 6),
+          utils.parseUnits('0.333333', 6),
+        ),
+      ).to.equal(utils.parseUnits('1.111111', 6))
+    })
+
+    it('muldivs (rounds down)', async () => {
+      expect(await uFixed6.unsafeMuldiv1(1, 21, 10)).to.equal(2)
+      expect(await uFixed6.unsafeMuldiv2(1, 21, 10)).to.equal(2)
+    })
+
+    it('returns max on n/0', async () => {
+      expect(
+        await uFixed6.unsafeMuldiv1(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.equal(ethers.constants.MaxUint256)
+    })
+
+    it('returns max on n/0', async () => {
+      expect(
+        await uFixed6.unsafeMuldiv2(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.equal(ethers.constants.MaxUint256)
+    })
+
+    it('returns one on 0/0 (a)', async () => {
+      expect(
+        await uFixed6.unsafeMuldiv1(utils.parseUnits('0', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.equal(utils.parseUnits('1', 6))
+    })
+
+    it('returns one on 0/0 (a)', async () => {
+      expect(
+        await uFixed6.unsafeMuldiv2(utils.parseUnits('0', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.equal(utils.parseUnits('1', 6))
+    })
+
+    it('returns one on 0/0 (b)', async () => {
+      expect(
+        await uFixed6.unsafeMuldiv1(utils.parseUnits('20', 6), utils.parseUnits('0', 6), utils.parseUnits('0', 6)),
+      ).to.equal(utils.parseUnits('1', 6))
+    })
+
+    it('returns one on 0/0 (b)', async () => {
+      expect(
+        await uFixed6.unsafeMuldiv2(utils.parseUnits('20', 6), utils.parseUnits('0', 6), utils.parseUnits('0', 6)),
+      ).to.equal(utils.parseUnits('1', 6))
+    })
+  })
+
+  describe('#unsafeMuldivOut', async () => {
+    it('muldivs', async () => {
+      expect(
+        await uFixed6.unsafeMuldivOut1(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('2', 6)),
+      ).to.equal(utils.parseUnits('100', 6))
+    })
+
+    it('muldivs', async () => {
+      expect(await uFixed6.unsafeMuldivOut2(utils.parseUnits('20', 6), 10, 2)).to.equal(utils.parseUnits('100', 6))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await uFixed6.unsafeMuldivOut1(
+          utils.parseUnits('1.111111', 6),
+          utils.parseUnits('0.333333', 6),
+          utils.parseUnits('0.333333', 6),
+        ),
+      ).to.equal(utils.parseUnits('1.111111', 6))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await uFixed6.unsafeMuldivOut2(
+          utils.parseUnits('1.111111', 6),
+          utils.parseUnits('0.333333', 6),
+          utils.parseUnits('0.333333', 6),
+        ),
+      ).to.equal(utils.parseUnits('1.111111', 6))
+    })
+
+    it('muldivs (rounds up)', async () => {
+      expect(await uFixed6.unsafeMuldivOut1(1, 21, 10)).to.equal(3)
+      expect(await uFixed6.unsafeMuldivOut2(1, 21, 10)).to.equal(3)
+    })
+
+    it('returns max on n/0', async () => {
+      expect(
+        await uFixed6.unsafeMuldivOut1(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.equal(ethers.constants.MaxUint256)
+    })
+
+    it('returns max on n/0', async () => {
+      expect(
+        await uFixed6.unsafeMuldivOut2(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.equal(ethers.constants.MaxUint256)
+    })
+
+    it('returns one on 0/0 (a)', async () => {
+      expect(
+        await uFixed6.unsafeMuldivOut1(utils.parseUnits('0', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.equal(utils.parseUnits('1', 6))
+    })
+
+    it('returns one on 0/0 (a)', async () => {
+      expect(
+        await uFixed6.unsafeMuldivOut2(utils.parseUnits('0', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
+      ).to.equal(utils.parseUnits('1', 6))
+    })
+
+    it('returns one on 0/0 (b)', async () => {
+      expect(
+        await uFixed6.unsafeMuldivOut1(utils.parseUnits('20', 6), utils.parseUnits('0', 6), utils.parseUnits('0', 6)),
+      ).to.equal(utils.parseUnits('1', 6))
+    })
+
+    it('returns one on 0/0 (b)', async () => {
+      expect(
+        await uFixed6.unsafeMuldivOut2(utils.parseUnits('20', 6), utils.parseUnits('0', 6), utils.parseUnits('0', 6)),
+      ).to.equal(utils.parseUnits('1', 6))
+    })
+  })
+
   describe('#eq', async () => {
     it('returns true', async () => {
       expect(await uFixed6.eq(12, 12)).to.equal(true)

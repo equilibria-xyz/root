@@ -303,6 +303,152 @@ describe('UFixed18', () => {
     })
   })
 
+  describe('#unsafeMuldiv', async () => {
+    it('muldivs', async () => {
+      expect(
+        await uFixed18.unsafeMuldiv1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('2')),
+      ).to.equal(utils.parseEther('100'))
+    })
+
+    it('muldivs', async () => {
+      expect(await uFixed18.unsafeMuldiv2(utils.parseEther('20'), 10, 2)).to.equal(utils.parseEther('100'))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await uFixed18.unsafeMuldiv1(
+          utils.parseEther('1.111111111111111111'),
+          utils.parseEther('0.333333333333333333'),
+          utils.parseEther('0.333333333333333333'),
+        ),
+      ).to.equal(utils.parseEther('1.111111111111111111'))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await uFixed18.unsafeMuldiv2(
+          utils.parseEther('1.111111111111111111'),
+          utils.parseEther('0.333333333333333333'),
+          utils.parseEther('0.333333333333333333'),
+        ),
+      ).to.equal(utils.parseEther('1.111111111111111111'))
+    })
+
+    it('muldivs (rounds down)', async () => {
+      expect(await uFixed18.unsafeMuldiv1(1, 21, 10)).to.equal(2)
+      expect(await uFixed18.unsafeMuldiv2(1, 21, 10)).to.equal(2)
+    })
+
+    it('returns max for n/0', async () => {
+      expect(
+        await uFixed18.unsafeMuldiv1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.equal(ethers.constants.MaxUint256)
+    })
+
+    it('returns max for n/0', async () => {
+      expect(
+        await uFixed18.unsafeMuldiv2(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.equal(ethers.constants.MaxUint256)
+    })
+
+    it('returns one for 0/0 (a)', async () => {
+      expect(
+        await uFixed18.unsafeMuldiv1(utils.parseEther('0'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.equal(utils.parseEther('1'))
+    })
+
+    it('returns one for 0/0 (a)', async () => {
+      expect(
+        await uFixed18.unsafeMuldiv2(utils.parseEther('0'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.equal(utils.parseEther('1'))
+    })
+
+    it('returns one for 0/0 (b)', async () => {
+      expect(
+        await uFixed18.unsafeMuldiv1(utils.parseEther('20'), utils.parseEther('0'), utils.parseEther('0')),
+      ).to.equal(utils.parseEther('1'))
+    })
+
+    it('returns one for 0/0 (b)', async () => {
+      expect(
+        await uFixed18.unsafeMuldiv2(utils.parseEther('20'), utils.parseEther('0'), utils.parseEther('0')),
+      ).to.equal(utils.parseEther('1'))
+    })
+  })
+
+  describe('#unsafeMuldivOut', async () => {
+    it('muldivs', async () => {
+      expect(
+        await uFixed18.unsafeMuldivOut1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('2')),
+      ).to.equal(utils.parseEther('100'))
+    })
+
+    it('muldivs', async () => {
+      expect(await uFixed18.unsafeMuldivOut2(utils.parseEther('20'), 10, 2)).to.equal(utils.parseEther('100'))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await uFixed18.unsafeMuldivOut1(
+          utils.parseEther('1.111111111111111111'),
+          utils.parseEther('0.333333333333333333'),
+          utils.parseEther('0.333333333333333333'),
+        ),
+      ).to.equal(utils.parseEther('1.111111111111111111'))
+    })
+
+    it('muldivs (precision)', async () => {
+      expect(
+        await uFixed18.unsafeMuldivOut2(
+          utils.parseEther('1.111111111111111111'),
+          utils.parseEther('0.333333333333333333'),
+          utils.parseEther('0.333333333333333333'),
+        ),
+      ).to.equal(utils.parseEther('1.111111111111111111'))
+    })
+
+    it('muldivs (rounds up)', async () => {
+      expect(await uFixed18.unsafeMuldivOut1(1, 21, 10)).to.equal(3)
+      expect(await uFixed18.unsafeMuldivOut2(1, 21, 10)).to.equal(3)
+    })
+
+    it('returns max for n/0', async () => {
+      expect(
+        await uFixed18.unsafeMuldivOut1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.equal(ethers.constants.MaxUint256)
+    })
+
+    it('returns max for n/0', async () => {
+      expect(
+        await uFixed18.unsafeMuldivOut2(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.equal(ethers.constants.MaxUint256)
+    })
+
+    it('returns one for 0/0 (a)', async () => {
+      expect(
+        await uFixed18.unsafeMuldivOut1(utils.parseEther('0'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.equal(utils.parseEther('1'))
+    })
+
+    it('returns one for 0/0 (a)', async () => {
+      expect(
+        await uFixed18.unsafeMuldivOut2(utils.parseEther('0'), utils.parseEther('10'), utils.parseEther('0')),
+      ).to.equal(utils.parseEther('1'))
+    })
+
+    it('returns one for 0/0 (b)', async () => {
+      expect(
+        await uFixed18.unsafeMuldivOut1(utils.parseEther('20'), utils.parseEther('0'), utils.parseEther('0')),
+      ).to.equal(utils.parseEther('1'))
+    })
+
+    it('returns one for 0/0 (b)', async () => {
+      expect(
+        await uFixed18.unsafeMuldivOut2(utils.parseEther('20'), utils.parseEther('0'), utils.parseEther('0')),
+      ).to.equal(utils.parseEther('1'))
+    })
+  })
+
   describe('#eq', async () => {
     it('returns true', async () => {
       expect(await uFixed18.eq(12, 12)).to.equal(true)
