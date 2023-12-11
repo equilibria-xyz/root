@@ -72,6 +72,9 @@ abstract contract Kept is IKept, Initializable {
     /// @notice Placed on a function to incentivize keepers to call it
     /// @param config The multiplier and buffer configuration to apply
     /// @param data Arbitrary data to pass to the _raiseKeeperFee function
+    /// @param applicableCalldata The applicable calldata
+    /// @param applicableValue The applicable value
+    /// @param data Arbitrary data to pass to the _raiseKeeperFee function
     modifier keep(
         KeepConfig memory config,
         bytes memory applicableCalldata,
@@ -84,10 +87,16 @@ abstract contract Kept is IKept, Initializable {
 
         uint256 applicableGas = startGas - gasleft();
 
-        _handleKeeperReward(config, applicableGas, applicableCalldata, applicableValue, data);
+        _handleKeeperFee(config, applicableGas, applicableCalldata, applicableValue, data);
     }
 
-    function _handleKeeperReward(
+    /// @notice Called by the keep modifier to handle keeper fee computation and payment
+    /// @param config The multiplier and buffer configuration to apply
+    /// @param applicableGas The applicable gas cost
+    /// @param applicableCalldata The applicable calldata
+    /// @param applicableValue The applicable value
+    /// @param data Arbitrary data to pass to the _raiseKeeperFee function
+    function _handleKeeperFee(
         KeepConfig memory config,
         uint256 applicableGas,
         bytes memory applicableCalldata,
