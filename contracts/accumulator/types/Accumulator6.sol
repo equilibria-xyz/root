@@ -1,38 +1,30 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
+import "./AccumulatorValue6.sol";
 import "../../number/types/Fixed6.sol";
 import "../../number/types/UFixed6.sol";
 
 /// @dev Accumulator6 type
 struct Accumulator6 {
-    Fixed6 _value;
+    AccumulatorValue6 _value;
+    UFixed6 _total;
 }
-
 using Accumulator6Lib for Accumulator6 global;
-struct StoredAccumulator6 {
-    int256 _value;
-}
-struct Accumulator6Storage { StoredAccumulator6 value; }
-using Accumulator6StorageLib for Accumulator6Storage global;
-
 
 /**
  * @title Accumulator6Lib
- * @notice Library that surfaces math operations for the signed Accumulator type.
- * @dev This accumulator tracks cumulative changes to a value over time. Using the `accumulated` function, one
- * can determine how much a value has changed between two points in time. The `increment` and `decrement` functions
- * can be used to update the accumulator.
+ * @notice Library 
  */
 library Accumulator6Lib {
     /**
-     * Returns how much has been accumulated between two accumulators
-     * @param self The current point of the accumulation to compare with `from`
-     * @param from The starting point of the accumulation
-     * @param total Demoninator of the ratio (see `increment` and `decrement` functions)
+     * Accumulates to current point and returns how much has been accumulated
+     * @param self The latest accumulated point
+     * @param to The point to accumulate to
+     * @return The accumulated value between the two points
      */
-    function accumulated(Accumulator6 memory self, Accumulator6 memory from, UFixed6 total) internal pure returns (Fixed6) {
-        return _mul(self._value.sub(from._value), total);
+    function accumulate(Accumulator6 memory self, AccumulatorValue6 memory to) internal pure returns (Fixed6) {
+        return self._value.accumulated(to, self._total);
     }
 
     /**
@@ -40,11 +32,9 @@ library Accumulator6Lib {
      * @dev Always rounds down in order to prevent overstating the accumulated value
      * @param self The accumulator to increment
      * @param amount Numerator of the ratio
-     * @param total Denominator of the ratio
      */
-    function increment(Accumulator6 memory self, Fixed6 amount, UFixed6 total) internal pure {
-        if (amount.isZero()) return;
-        self._value = self._value.add(_div(amount, total));
+    function increment(Accumulator6 memory self, Fixed6 amount) internal pure {
+        self._value.increment(amount, self._total);
     }
 
     /**
@@ -52,29 +42,85 @@ library Accumulator6Lib {
      * @dev Always rounds down in order to prevent overstating the accumulated value
      * @param self The accumulator to decrement
      * @param amount Numerator of the ratio
-     * @param total Denominator of the ratio
      */
-    function decrement(Accumulator6 memory self, Fixed6 amount, UFixed6 total) internal pure {
-        if (amount.isZero()) return;
-        self._value = self._value.add(_div(amount.mul(Fixed6Lib.NEG_ONE), total));
+    function decrement(Accumulator6 memory self, Fixed6 amount) internal pure {
+        self._value.decrement(amount, self._total);
     }
 
-    function _div(Fixed6 amount, UFixed6 total) private pure returns (Fixed6) {
-        return amount.sign() == -1 ? amount.divOut(Fixed6Lib.from(total)) : amount.div(Fixed6Lib.from(total));
+    /**
+     * @notice Transfers an amount between two accumulators
+     * @param from The accumulator to transfer from
+     * @param to The accumulator to transfer to
+     * @param amount The amount to transfer
+     */
+    function transfer(Accumulator6 memory from, Accumulator6 memory to, Fixed6 amount) internal pure {
+        transfer(from, to, amount, UFixed6Lib.ZERO);
     }
 
-    function _mul(Fixed6 amount, UFixed6 total) private pure returns (Fixed6) {
-        return amount.sign() == -1 ? amount.mulOut(Fixed6Lib.from(total)) : amount.mul(Fixed6Lib.from(total));
-    }
-}
+    /**
+     * @notice Transfers an amount between two accumulators with a fee
+     * @param from The accumulator to transfer from
+     * @param to The accumulator to transfer to
+     * @param amount The amount to transfer
+     * @param fee The fee percentage to take
+     * @return The fee amount taken
+     */
+    function transfer(
+        Accumulator6 memory from,
+        Accumulator6 memory to,
+        Fixed6 amount,
+        UFixed6 fee
+    ) internal pure returns (UFixed6) {
+        (Fixed6 amountWithoutFee, UFixed6 feeAmount) = _takeFee(amount, fee);
 
-library Accumulator6StorageLib {
-    function read(Accumulator6Storage storage self) internal view returns (Accumulator6 memory) {
-        StoredAccumulator6 memory storedValue = self.value;
-        return Accumulator6(Fixed6.wrap(int256(storedValue._value)));
+        decrement(from, amount.gt(Fixed6Lib.ZERO) ? amount : amountWithoutFee);
+        increment(to, amount.gt(Fixed6Lib.ZERO) ? amountWithoutFee : amount);
+
+        return feeAmount;
     }
 
-    function store(Accumulator6Storage storage self, Accumulator6 memory newValue) internal {
-        self.value = StoredAccumulator6(Fixed6.unwrap(newValue._value));
+    /**
+     * @notice Transfers an amount between two accumulators with a fee using a supplementary accumulator
+     * @dev The supplementary accumulator bridges the gap between the total's of the two accumulators such that the
+     *      magnitude of the delta per share is the same for both accumulators.
+     * @param from The accumulator to transfer from
+     * @param to The accumulator to transfer to
+     * @param supplement The supplementary accumulator to balance the transfer
+     * @param amount The amount to transfer
+     * @param fee The fee percentage to take
+     * @return The fee amount taken
+     */
+    function transfer(
+        Accumulator6 memory from,
+        Accumulator6 memory to,
+        Accumulator6 memory supplement,
+        Fixed6 amount,
+        UFixed6 fee
+    ) internal pure returns (UFixed6) {
+        (Fixed6 amountWithoutFee, UFixed6 feeAmount) = _takeFee(amount, fee);
+
+        UFixed6 major = from._total.max(to._total);
+        bool fromIsMajor = from._total.eq(major);
+
+        (Fixed6 fromAmount, Fixed6 toAmount) = (
+            (fromIsMajor ? amount : amountWithoutFee).muldiv(Fixed6Lib.from(from._total), Fixed6Lib.from(major)),
+            (fromIsMajor ? amountWithoutFee : amount).muldiv(Fixed6Lib.from(to._total), Fixed6Lib.from(major))
+        );
+
+        decrement(from, fromAmount);
+        increment(to, toAmount);
+        increment(supplement, fromAmount.sub(toAmount).sub(Fixed6Lib.from(feeAmount)));
+
+        return feeAmount;
+    }
+
+    /// @notice Takes a fee from an amount
+    /// @param amount The amount to take the fee from
+    /// @param fee The fee percentage to take
+    /// @return amountWithoutFee The amount without the fee taken
+    /// @return feeAmount The fee amount taken
+    function _takeFee(Fixed6 amount, UFixed6 fee) private pure returns (Fixed6 amountWithoutFee, UFixed6 feeAmount) {
+        feeAmount = amount.abs().mul(fee);
+        amountWithoutFee = Fixed6Lib.from(amount.sign(), amount.abs().sub(feeAmount));
     }
 }
