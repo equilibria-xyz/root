@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import "../../number/types/Fixed6.sol";
 import "../../number/types/UFixed6.sol";
+import "../AdiabaticMath6.sol";
 
 /// @dev InverseAdiabatic6 type
 struct InverseAdiabatic6 {
@@ -38,19 +39,24 @@ library InverseAdiabatic6Lib {
         Fixed6 change,
         UFixed6 price
     ) internal pure returns (Fixed6) {
-        UFixed6 latestSkew = self.scale.unsafeSub(latest);
-        Fixed6 orderSkew = change.min(Fixed6Lib.from(latestSkew)).mul(Fixed6Lib.NEG_ONE);
+        Fixed6 latestSkew = Fixed6Lib.from(self.scale.unsafeSub(latest));
+        Fixed6 orderSkew = change.min(latestSkew).mul(Fixed6Lib.NEG_ONE);
 
-        if (latestSkew.isZero() && orderSkew.isZero()) return Fixed6Lib.ZERO;
-        if (self.scale.isZero()) revert Adiabatic6ZeroScaleError();
+        return AdiabaticMath6.linearCompute(
+            self.scale,
+            self.adiabaticFee,
+            latestSkew,
+            orderSkew,
+            change.mul(Fixed6Lib.from(price)).mul(Fixed6Lib.NEG_ONE)
+        );
+    }
 
-        // normalize for skew scale
-        (Fixed6 latestScaled, Fixed6 changeScaled) =
-            (Fixed6Lib.from(latestSkew.div(self.scale)), orderSkew.div(Fixed6Lib.from(self.scale)));
-
-        // adiabatic fee = skew change * fee percentage * mean of skew range
-        return change.mul(Fixed6Lib.from(price)).mul(Fixed6Lib.NEG_ONE)
-            .mul(Fixed6Lib.from(self.adiabaticFee)).mul(_mean(latestScaled, latestScaled.add(changeScaled)));
+    /// @notice Computes the latest exposure along with all fees
+    /// @param self The adiabatic configuration
+    /// @param latest The latest skew in asset terms
+    /// @return The latest total exposure in asset terms
+    function exposure(InverseAdiabatic6 memory self, UFixed6 latest) internal pure returns (Fixed6) {
+        return compute(self, UFixed6Lib.ZERO, Fixed6Lib.from(latest), UFixed6Lib.ONE);
     }
 
     /// @notice Computes the latest exposure along with all fees
@@ -58,26 +64,23 @@ library InverseAdiabatic6Lib {
     /// @param latest The latest skew in asset terms
     /// @param change The change in skew in asset terms
     /// @param price The price of the underlying asset
-    /// @return latestExposure The latest total exposure in asset terms
     /// @return linearFee The linear fee in underlying terms
     /// @return proportionalFee The proportional fee in underlying terms
     /// @return adiabaticFee The adiabatic fee in underlying terms
-    function sync(InverseAdiabatic6 memory self, UFixed6 latest, Fixed6 change, UFixed6 price) internal pure returns (
-        Fixed6 latestExposure,
+    function fee(InverseAdiabatic6 memory self, UFixed6 latest, Fixed6 change, UFixed6 price) internal pure returns (
         UFixed6 linearFee,
         UFixed6 proportionalFee,
         Fixed6 adiabaticFee
     ) {
-        latestExposure = compute(self, UFixed6Lib.ZERO, Fixed6Lib.from(latest), UFixed6Lib.ONE);
-        linearFee = change.abs().mul(price).mul(self.linearFee);
-        proportionalFee = change.abs().mul(price).muldiv(change.abs(), self.scale).mul(self.proportionalFee);
+        (linearFee, proportionalFee) =
+            AdiabaticMath6.baseFee(self.scale, self.linearFee, self.proportionalFee, change, price);
         adiabaticFee = compute(self, latest, change, price);
     }
 
     /// @dev Updates the scale and compute the resultant change fee
     /// @param self The adiabatic configuration
     /// @param newConfig The new fee config
-    /// @param latest The latest skew
+    /// @param latest The latest skew in asset terms
     /// @param price The price of the underlying asset
     /// @return The update fee in underlying terms
     function update(
@@ -90,13 +93,5 @@ library InverseAdiabatic6Lib {
         (self.linearFee, self.proportionalFee, self.adiabaticFee, self.scale) =
             (newConfig.linearFee, newConfig.proportionalFee, newConfig.adiabaticFee, newConfig.scale);
         return compute(self, UFixed6Lib.ZERO, Fixed6Lib.from(latest), price).sub(prior);
-    }
-
-    /// @notice Finds the mean value of the impact function f(x) = x over `from` to `to`
-    /// @param from The lower bound
-    /// @param to The upper bound
-    /// @return The mean value
-    function _mean(Fixed6 from, Fixed6 to) private pure returns (Fixed6) {
-        return from.add(to).div(Fixed6Lib.from(2));
     }
 }
