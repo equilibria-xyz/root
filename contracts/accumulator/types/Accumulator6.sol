@@ -12,6 +12,17 @@ struct Accumulator6 {
 }
 using Accumulator6Lib for Accumulator6 global;
 
+struct BiAccumulation {
+    Fixed6 from;
+    Fixed6 to;
+}
+
+struct TriAccumulation {
+    Fixed6 from;
+    Fixed6 to;
+    Fixed6 supplement;
+}
+
 /**
  * @title Accumulator6Lib
  * @notice Library 
@@ -63,20 +74,25 @@ library Accumulator6Lib {
      * @param to The accumulator to transfer to
      * @param amount The amount to transfer
      * @param fee The fee percentage to take
-     * @return The fee amount taken
      */
     function transfer(
         Accumulator6 memory from,
         Accumulator6 memory to,
         Fixed6 amount,
         UFixed6 fee
-    ) internal pure returns (UFixed6) {
-        (Fixed6 amountWithoutFee, UFixed6 feeAmount) = _takeFee(amount, fee);
+    ) internal pure returns (UFixed6 accumulationFee, BiAccumulation memory accumulation) {
+        (Fixed6 amountWithoutFee, UFixed6 feeAmount) = _takeFeeOrAll(
+            amount,
+            fee,
+            (amount.gte(Fixed6Lib.ZERO) ? to : from)._total
+        );
+        
+        accumulationFee = feeAmount;
+        accumulation.from = (amount.gte(Fixed6Lib.ZERO) ? amount : amountWithoutFee).mul(Fixed6Lib.NEG_ONE);
+        accumulation.to = amount.gte(Fixed6Lib.ZERO) ? amountWithoutFee : amount;
 
-        decrement(from, amount.gt(Fixed6Lib.ZERO) ? amount : amountWithoutFee);
-        increment(to, amount.gt(Fixed6Lib.ZERO) ? amountWithoutFee : amount);
-
-        return feeAmount;
+        increment(from, accumulation.from);
+        increment(to, accumulation.to);
     }
 
     /**
@@ -88,7 +104,6 @@ library Accumulator6Lib {
      * @param supplement The supplementary accumulator to balance the transfer
      * @param amount The amount to transfer
      * @param fee The fee percentage to take
-     * @return The fee amount taken
      */
     function transfer(
         Accumulator6 memory from,
@@ -96,22 +111,22 @@ library Accumulator6Lib {
         Accumulator6 memory supplement,
         Fixed6 amount,
         UFixed6 fee
-    ) internal pure returns (UFixed6) {
+    ) internal pure returns (UFixed6 accumulationFee, TriAccumulation memory accumulation) {
         (Fixed6 amountWithoutFee, UFixed6 feeAmount) = _takeFee(amount, fee);
 
         UFixed6 major = from._total.max(to._total);
         bool fromIsMajor = from._total.eq(major);
 
-        (Fixed6 fromAmount, Fixed6 toAmount) = (
-            (fromIsMajor ? amount : amountWithoutFee).muldiv(Fixed6Lib.from(from._total), Fixed6Lib.from(major)),
+        accumulationFee = feeAmount;
+        (accumulation.from, accumulation.to) = (
+            (fromIsMajor ? amount : amountWithoutFee).muldiv(Fixed6Lib.from(-1, from._total), Fixed6Lib.from(major)),
             (fromIsMajor ? amountWithoutFee : amount).muldiv(Fixed6Lib.from(to._total), Fixed6Lib.from(major))
         );
+        accumulation.supplement = accumulation.from.sub(accumulation.to).sub(Fixed6Lib.from(feeAmount));
 
-        decrement(from, fromAmount);
-        increment(to, toAmount);
-        increment(supplement, fromAmount.sub(toAmount).sub(Fixed6Lib.from(feeAmount)));
-
-        return feeAmount;
+        increment(from, accumulation.from);
+        increment(to, accumulation.to);
+        increment(supplement, accumulation.supplement);
     }
 
     /// @notice Takes a fee from an amount
@@ -122,5 +137,22 @@ library Accumulator6Lib {
     function _takeFee(Fixed6 amount, UFixed6 fee) private pure returns (Fixed6 amountWithoutFee, UFixed6 feeAmount) {
         feeAmount = amount.abs().mul(fee);
         amountWithoutFee = Fixed6Lib.from(amount.sign(), amount.abs().sub(feeAmount));
+    }
+
+    /// @notice Takes a fee from an amount
+    /// @param amount The amount to take the fee from
+    /// @param fee The fee percentage to take
+    /// @param receiverTotal The total of the receiver accumulator
+    /// @return amountWithoutFee The amount without the fee taken
+    /// @return feeAmount The fee amount taken
+    function _takeFeeOrAll(
+        Fixed6 amount,
+        UFixed6 fee,
+        UFixed6 receiverTotal
+    ) private pure returns (Fixed6 amountWithoutFee, UFixed6 feeAmount) {
+        feeAmount = receiverTotal.isZero() ? amount.abs() : amount.abs().mul(fee);
+        amountWithoutFee = receiverTotal.isZero() ?
+            Fixed6Lib.ZERO :
+            Fixed6Lib.from(amount.sign(), amount.abs().sub(feeAmount));
     }
 }
