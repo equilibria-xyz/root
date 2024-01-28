@@ -47,7 +47,7 @@ library InverseAdiabatic6Lib {
             self.adiabaticFee,
             latestSkew,
             orderSkew,
-            change.mul(Fixed6Lib.from(price)).mul(Fixed6Lib.NEG_ONE)
+            change.abs().mul(price)
         );
     }
 

@@ -42,7 +42,7 @@ library LinearAdiabatic6Lib {
             self.adiabaticFee,
             latest,
             change,
-            change.mul(Fixed6Lib.from(price))
+            change.abs().mul(price)
         );
     }
 

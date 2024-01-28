@@ -44,7 +44,7 @@ library AdiabaticMath6 {
         UFixed6 adiabaticFee,
         Fixed6 latest,
         Fixed6 change,
-        Fixed6 notional
+        UFixed6 notional
     ) internal pure returns (Fixed6) {
         if (latest.isZero() && change.isZero()) return Fixed6Lib.ZERO;
         if (scale.isZero()) revert Adiabatic6ZeroScaleError();
@@ -54,14 +54,15 @@ library AdiabaticMath6 {
             (latest.div(Fixed6Lib.from(scale)), change.div(Fixed6Lib.from(scale)));
 
         // adiabatic fee = notional * fee percentage * mean of skew range
-        return notional.mul(Fixed6Lib.from(adiabaticFee)).mul(linearMean(latestScaled, latestScaled.add(changeScaled)));
+        return Fixed6Lib.from(change.sign(), notional.mul(adiabaticFee))
+            .mul(_linearMean(latestScaled, latestScaled.add(changeScaled)));
     }
 
     /// @notice Finds the mean value of the function f(x) = x over `from` to `to`
     /// @param from The lower bound
     /// @param to The upper bound
     /// @return The mean value
-    function linearMean(Fixed6 from, Fixed6 to) private pure returns (Fixed6) {
+    function _linearMean(Fixed6 from, Fixed6 to) private pure returns (Fixed6) {
         return from.add(to).div(Fixed6Lib.from(2));
     }
 }
