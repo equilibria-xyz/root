@@ -25,8 +25,6 @@ using InverseAdiabatic6Lib for InverseAdiabatic6 global;
  *      value to the system with respect to the underlying asset.
  */
 library InverseAdiabatic6Lib {
-    error Adiabatic6ZeroScaleError();
-
     /// @notice Computes the adiabatic fee from a latest skew and change in skew
     /// @param self The adiabatic configuration
     /// @param latest The latest skew in asset terms

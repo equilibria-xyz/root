@@ -42,7 +42,7 @@ describe('AdiabaticMath6', () => {
     })
 
     it('reverts with zero scale', async () => {
-      const fees = await expect(
+      await expect(
         adiabaticMath.baseFee(
           parseUnits('0', 6),
           parseUnits('0.1', 6),
