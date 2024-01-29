@@ -202,8 +202,8 @@ describe('InverseAdiabatic6', () => {
     })
 
     it('reverts from zero w/ latest', async () => {
-      await expect(
-        linearAdiabatic.update(
+      expect(
+        await linearAdiabatic.update(
           {
             linearFee: parseUnits('0', 6),
             proportionalFee: parseUnits('0', 6),
@@ -219,7 +219,7 @@ describe('InverseAdiabatic6', () => {
           parseUnits('50', 6),
           parseUnits('123', 6),
         ),
-      ).to.revertedWith('Adiabatic6ZeroScaleError')
+      ).to.equal(ethers.utils.parseUnits('-1383.75', 6)) // inverse zeroes at scale == 0 instead of dividing by zero
     })
 
     it('returns correct fee from non-zero', async () => {

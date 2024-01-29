@@ -19,7 +19,7 @@ using InverseAdiabatic6Lib for InverseAdiabatic6 global;
  * @notice Library that that manages the inverse adiabatic fee algorithm
  * @dev This algorithm specifies an adiatatic fee over the function:
  * 
- *      f(skew) = adiabaticFee * max(scale - skew, 0)
+ *      f(skew) = adiabaticFee * max(scale - skew, 0), skew >= 0
  * 
  *      This is used to reward or penalize actions that move skew up or down this curve accordingly with net-zero
  *      value to the system with respect to the underlying asset.
@@ -37,15 +37,16 @@ library InverseAdiabatic6Lib {
         Fixed6 change,
         UFixed6 price
     ) internal pure returns (Fixed6) {
+        UFixed6 current = UFixed6Lib.from(Fixed6Lib.from(latest).add(change));
         Fixed6 latestSkew = Fixed6Lib.from(self.scale.unsafeSub(latest));
-        Fixed6 orderSkew = change.min(latestSkew).mul(Fixed6Lib.NEG_ONE);
+        Fixed6 currentSkew = Fixed6Lib.from(self.scale.unsafeSub(current));
 
         return AdiabaticMath6.linearCompute(
             self.scale,
             self.adiabaticFee,
             latestSkew,
-            orderSkew,
-            change.abs().mul(price)
+            currentSkew.sub(latestSkew),
+            price
         );
     }
 

@@ -63,7 +63,7 @@ describe('AdiabaticMath6', () => {
             parseUnits('0.1', 6),
             parseUnits('50', 6),
             parseUnits('10', 6),
-            parseUnits('1230', 6),
+            parseUnits('123', 6),
           )
           expect(fee).to.equal(parseUnits('67.65', 6))
         })
@@ -76,7 +76,7 @@ describe('AdiabaticMath6', () => {
             parseUnits('0.1', 6),
             parseUnits('50', 6),
             parseUnits('-10', 6),
-            parseUnits('1230', 6),
+            parseUnits('123', 6),
           )
           expect(fee).to.equal(parseUnits('-55.35', 6))
         })
@@ -91,7 +91,7 @@ describe('AdiabaticMath6', () => {
             parseUnits('0.1', 6),
             parseUnits('-50', 6),
             parseUnits('10', 6),
-            parseUnits('1230', 6),
+            parseUnits('123', 6),
           )
           expect(fee).to.equal(parseUnits('-55.35', 6))
         })
@@ -104,7 +104,7 @@ describe('AdiabaticMath6', () => {
             parseUnits('0.1', 6),
             parseUnits('-50', 6),
             parseUnits('-10', 6),
-            parseUnits('1230', 6),
+            parseUnits('123', 6),
           )
           expect(fee).to.equal(parseUnits('67.65', 6))
         })
@@ -132,7 +132,7 @@ describe('AdiabaticMath6', () => {
             parseUnits('0.1', 6),
             parseUnits('50', 6),
             parseUnits('10', 6),
-            parseUnits('1230', 6),
+            parseUnits('123', 6),
           ),
         ).to.be.revertedWith('Adiabatic6ZeroScaleError()')
       })

@@ -37,14 +37,14 @@ library AdiabaticMath6 {
     /// @param adiabaticFee The adiabatic fee percentage
     /// @param latest The latest skew in asset terms
     /// @param change The change in skew in asset terms
-    /// @param notional The notional amount of the order
+    /// @param price The price of the underlying asset
     /// @return The adiabatic fee in underlying terms
     function linearCompute(
         UFixed6 scale,
         UFixed6 adiabaticFee,
         Fixed6 latest,
         Fixed6 change,
-        UFixed6 notional
+        UFixed6 price
     ) internal pure returns (Fixed6) {
         if (latest.isZero() && change.isZero()) return Fixed6Lib.ZERO;
         if (scale.isZero()) revert Adiabatic6ZeroScaleError();
@@ -54,7 +54,7 @@ library AdiabaticMath6 {
             (latest.div(Fixed6Lib.from(scale)), change.div(Fixed6Lib.from(scale)));
 
         // adiabatic fee = notional * fee percentage * mean of skew range
-        return Fixed6Lib.from(change.sign(), notional.mul(adiabaticFee))
+        return change.mul(Fixed6Lib.from(price)).mul(Fixed6Lib.from(adiabaticFee))
             .mul(_linearMean(latestScaled, latestScaled.add(changeScaled)));
     }
 
