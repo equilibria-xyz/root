@@ -18,11 +18,18 @@ const NOTIONAL = utils.parseUnits('500', 6)
 
 const CONTROLLER = {
   k: K,
+  min: utils.parseUnits('-10000', 6),
   max: utils.parseUnits('10000', 6),
 }
 
 const CONTROLLER_HALF_CAPPED = {
   k: K,
+  min: VALUE.add(
+    SKEW.mul(TO_TIMESTAMP - FROM_TIMESTAMP)
+      .mul(1e6)
+      .div(2)
+      .div(K),
+  ).mul(-1),
   max: VALUE.add(
     SKEW.mul(TO_TIMESTAMP - FROM_TIMESTAMP)
       .mul(1e6)
@@ -32,6 +39,7 @@ const CONTROLLER_HALF_CAPPED = {
 }
 const CONTROLLER_COMPLETELY_CAPPED = {
   k: K,
+  min: VALUE.mul(-1),
   max: VALUE,
 }
 
