@@ -38,7 +38,7 @@ library PController6Lib {
                 .div(Fixed6Lib.from(self.k))
         );
 
-        // cap the new value at the max
+        // cap the new value between min and max
         newValue = newValueUncapped.min(self.max).max(self.min);
 
         // compute distance and range to the resultant value
