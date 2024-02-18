@@ -17,12 +17,16 @@ contract MockInverseAdiabatic6 {
         return InverseAdiabatic6Lib.exposure(self, latest);
     }
 
-    function fee(InverseAdiabatic6 memory self, UFixed6 latest, Fixed6 change, UFixed6 price) external pure returns (
-        UFixed6 linearFee,
-        UFixed6 proportionalFee,
-        Fixed6 adiabaticFee
-    ) {
-        return InverseAdiabatic6Lib.fee(self, latest, change, price);
+    function linear(InverseAdiabatic6 memory self, Fixed6 change, UFixed6 price) external pure returns (UFixed6) {
+        return InverseAdiabatic6Lib.linear(self, change, price);
+    }
+
+    function proportional(InverseAdiabatic6 memory self, Fixed6 change, UFixed6 price) external pure returns (UFixed6) {
+        return InverseAdiabatic6Lib.proportional(self, change, price);
+    }
+
+    function adiabatic(InverseAdiabatic6 memory self, UFixed6 latest, Fixed6 change, UFixed6 price) external pure returns (Fixed6) {
+        return InverseAdiabatic6Lib.adiabatic(self, latest, change, price);
     }
 
     function update(

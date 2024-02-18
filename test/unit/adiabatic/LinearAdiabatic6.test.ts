@@ -110,9 +110,41 @@ describe('LinearAdiabatic6', () => {
     })
   })
 
-  describe('#fee', async () => {
+  describe('#linear', async () => {
     it('returns correct fee with positive latest', async () => {
-      const fees = await await linearAdiabatic.fee(
+      const fee = await await linearAdiabatic.linear(
+        {
+          linearFee: parseUnits('0.1', 6),
+          proportionalFee: parseUnits('0.2', 6),
+          adiabaticFee: parseUnits('0.3', 6),
+          scale: parseUnits('100', 6),
+        },
+        parseUnits('10', 6),
+        parseUnits('123', 6),
+      )
+      expect(fee).to.equal(parseUnits('123', 6))
+    })
+  })
+
+  describe('#proportional', async () => {
+    it('returns correct fee with positive latest', async () => {
+      const fee = await await linearAdiabatic.proportional(
+        {
+          linearFee: parseUnits('0.1', 6),
+          proportionalFee: parseUnits('0.2', 6),
+          adiabaticFee: parseUnits('0.3', 6),
+          scale: parseUnits('100', 6),
+        },
+        parseUnits('10', 6),
+        parseUnits('123', 6),
+      )
+      expect(fee).to.equal(parseUnits('24.6', 6))
+    })
+  })
+
+  describe('#adiabatic', async () => {
+    it('returns correct fee with positive latest', async () => {
+      const fee = await await linearAdiabatic.adiabatic(
         {
           linearFee: parseUnits('0.1', 6),
           proportionalFee: parseUnits('0.2', 6),
@@ -123,9 +155,7 @@ describe('LinearAdiabatic6', () => {
         parseUnits('10', 6),
         parseUnits('123', 6),
       )
-      expect(fees[0]).to.equal(parseUnits('123', 6))
-      expect(fees[1]).to.equal(parseUnits('24.6', 6))
-      expect(fees[2]).to.equal(parseUnits('202.95', 6))
+      expect(fee).to.equal(parseUnits('202.95', 6))
     })
   })
 

@@ -18,9 +18,9 @@ using InverseAdiabatic6Lib for InverseAdiabatic6 global;
  * @title InverseAdiabatic6Lib
  * @notice Library that that manages the inverse adiabatic fee algorithm
  * @dev This algorithm specifies an adiatatic fee over the function:
- * 
+ *
  *      f(skew) = adiabaticFee * max(scale - skew, 0), skew >= 0
- * 
+ *
  *      This is used to reward or penalize actions that move skew up or down this curve accordingly with net-zero
  *      value to the system with respect to the underlying asset.
  */
@@ -50,7 +50,7 @@ library InverseAdiabatic6Lib {
         );
     }
 
-    /// @notice Computes the latest exposure along with all fees
+    /// @notice Computes the latest exposure
     /// @param self The adiabatic configuration
     /// @param latest The latest skew in asset terms
     /// @return The latest total exposure in asset terms
@@ -58,22 +58,37 @@ library InverseAdiabatic6Lib {
         return compute(self, UFixed6Lib.ZERO, Fixed6Lib.from(latest), UFixed6Lib.ONE);
     }
 
-    /// @notice Computes the latest exposure along with all fees
+    /// @notice Computes the linear fee
+    /// @param self The adiabatic configuration
+    /// @param change The change in skew in asset terms
+    /// @param price The price of the underlying asset
+    /// @return The linear fee in underlying terms
+    function linear(InverseAdiabatic6 memory self, Fixed6 change, UFixed6 price) internal pure returns (UFixed6) {
+        return AdiabaticMath6.linearFee(self.linearFee, change, price);
+    }
+
+    /// @notice Computes the proportional fee
+    /// @param self The adiabatic configuration
+    /// @param change The change in skew in asset terms
+    /// @param price The price of the underlying asset
+    /// @return The proportional fee in underlying terms
+    function proportional(InverseAdiabatic6 memory self, Fixed6 change, UFixed6 price) internal pure returns (UFixed6) {
+        return AdiabaticMath6.proportionalFee(self.scale, self.proportionalFee, change, price);
+    }
+
+    /// @notice Computes the adiabatic fee
     /// @param self The adiabatic configuration
     /// @param latest The latest skew in asset terms
     /// @param change The change in skew in asset terms
     /// @param price The price of the underlying asset
-    /// @return linearFee The linear fee in underlying terms
-    /// @return proportionalFee The proportional fee in underlying terms
-    /// @return adiabaticFee The adiabatic fee in underlying terms
-    function fee(InverseAdiabatic6 memory self, UFixed6 latest, Fixed6 change, UFixed6 price) internal pure returns (
-        UFixed6 linearFee,
-        UFixed6 proportionalFee,
-        Fixed6 adiabaticFee
-    ) {
-        (linearFee, proportionalFee) =
-            AdiabaticMath6.baseFee(self.scale, self.linearFee, self.proportionalFee, change, price);
-        adiabaticFee = compute(self, latest, change, price);
+    /// @return The adiabatic fee in underlying terms
+    function adiabatic(
+        InverseAdiabatic6 memory self,
+        UFixed6 latest,
+        Fixed6 change,
+        UFixed6 price
+    ) internal pure returns (Fixed6) {
+        return compute(self, latest, change, price);
     }
 
     /// @dev Updates the scale and compute the resultant change fee
