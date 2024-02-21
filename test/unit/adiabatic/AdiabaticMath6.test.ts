@@ -16,36 +16,43 @@ describe('AdiabaticMath6', () => {
     adiabaticMath = await new MockAdiabaticMath6__factory(user).deploy()
   })
 
-  describe('#baseFee', async () => {
+  describe('#linearFee', async () => {
     it('returns correct base fees', async () => {
-      const fees = await adiabaticMath.baseFee(
+      const fee = await adiabaticMath.linearFee(parseUnits('0.1', 6), parseUnits('10', 6), parseUnits('123', 6))
+      expect(fee).to.equal(parseUnits('123', 6))
+    })
+
+    it('returns correct base fees with empty order', async () => {
+      const fee = await adiabaticMath.linearFee(parseUnits('0.1', 6), parseUnits('0', 6), parseUnits('123', 6))
+      expect(fee).to.equal(parseUnits('0', 6))
+    })
+  })
+
+  describe('#proportionalFee', async () => {
+    it('returns correct base fees', async () => {
+      const fee = await adiabaticMath.proportionalFee(
         parseUnits('100', 6),
-        parseUnits('0.1', 6),
         parseUnits('0.2', 6),
         parseUnits('10', 6),
         parseUnits('123', 6),
       )
-      expect(fees[0]).to.equal(parseUnits('123', 6))
-      expect(fees[1]).to.equal(parseUnits('24.6', 6))
+      expect(fee).to.equal(parseUnits('24.6', 6))
     })
 
     it('returns correct base fees with empty order', async () => {
-      const fees = await adiabaticMath.baseFee(
+      const fee = await adiabaticMath.proportionalFee(
         parseUnits('100', 6),
-        parseUnits('0.1', 6),
         parseUnits('0.2', 6),
         parseUnits('0', 6),
         parseUnits('123', 6),
       )
-      expect(fees[0]).to.equal(parseUnits('0', 6))
-      expect(fees[1]).to.equal(parseUnits('0', 6))
+      expect(fee).to.equal(parseUnits('0', 6))
     })
 
     it('reverts with zero scale', async () => {
       await expect(
-        adiabaticMath.baseFee(
+        adiabaticMath.proportionalFee(
           parseUnits('0', 6),
-          parseUnits('0.1', 6),
           parseUnits('0.2', 6),
           parseUnits('10', 6),
           parseUnits('123', 6),

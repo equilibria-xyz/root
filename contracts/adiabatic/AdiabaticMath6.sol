@@ -12,24 +12,22 @@ library AdiabaticMath6 {
     error Adiabatic6ZeroScaleError();
 
     /// @notice Computes the base fees for an order
-    /// @param scale The scale of the skew
-    /// @param linearFee The linear fee percentage
-    /// @param proportionalFee The proportional fee percentage
+    /// @param fee The linear fee percentage
     /// @param change The change in skew in asset terms
     /// @param price The price of the underlying asset
     /// @return The linear fee in underlying terms
+    function linearFee(UFixed6 fee, Fixed6 change, UFixed6 price) internal pure returns (UFixed6) {
+        return change.abs().mul(price).mul(fee);
+    }
+
+    /// @notice Computes the base fees for an order
+    /// @param scale The scale of the skew
+    /// @param fee The proportional fee percentage
+    /// @param change The change in skew in asset terms
+    /// @param price The price of the underlying asset
     /// @return The proportional fee in underlying terms
-    function baseFee(
-        UFixed6 scale,
-        UFixed6 linearFee,
-        UFixed6 proportionalFee,
-        Fixed6 change,
-        UFixed6 price
-    ) internal pure returns (UFixed6, UFixed6) {
-        return (
-            change.abs().mul(price).mul(linearFee),
-            change.abs().mul(price).muldiv(change.abs(), scale).mul(proportionalFee)
-        );
+    function proportionalFee(UFixed6 scale, UFixed6 fee, Fixed6 change, UFixed6 price) internal pure returns (UFixed6) {
+        return change.abs().mul(price).muldiv(change.abs(), scale).mul(fee);
     }
 
     /// @notice Computes the adiabatic fee from a latest skew and change in skew over a linear function

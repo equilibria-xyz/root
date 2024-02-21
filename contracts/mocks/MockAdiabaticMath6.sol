@@ -4,14 +4,21 @@ pragma solidity ^0.8.13;
 import "../adiabatic/AdiabaticMath6.sol";
 
 contract MockAdiabaticMath6 {
-    function baseFee(
-        UFixed6 scale,
-        UFixed6 linearFee,
-        UFixed6 proportionalFee,
+    function linearFee(
+        UFixed6 fee,
         Fixed6 change,
         UFixed6 price
-    ) external pure returns (UFixed6, UFixed6) {
-        return AdiabaticMath6.baseFee(scale, linearFee, proportionalFee, change, price);
+    ) external pure returns (UFixed6) {
+        return AdiabaticMath6.linearFee(fee, change, price);
+    }
+
+    function proportionalFee(
+        UFixed6 scale,
+        UFixed6 fee,
+        Fixed6 change,
+        UFixed6 price
+    ) external pure returns (UFixed6) {
+        return AdiabaticMath6.proportionalFee(scale, fee, change, price);
     }
 
     function linearCompute(
