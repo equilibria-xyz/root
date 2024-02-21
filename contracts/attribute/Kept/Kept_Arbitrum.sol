@@ -19,7 +19,7 @@ abstract contract Kept_Arbitrum is Kept {
     // Tx Fee = block.baseFee * l2GasUsed + ArbGasInfo.getL1BaseFeeEstimate() * 16 * (calldataLength + fixedOverhead)
     // Dynamic buffer = (ArbGasInfo.getL1BaseFeeEstimate() * 16 * (calldataLength + fixedOverhead))
     function _calldataFee(
-        bytes calldata applicableCalldata,
+        bytes memory applicableCalldata,
         UFixed18 multiplierCalldata,
         uint256 bufferCalldata
     ) internal view virtual override returns (UFixed18) {

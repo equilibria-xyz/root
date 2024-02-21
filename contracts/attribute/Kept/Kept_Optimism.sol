@@ -18,7 +18,7 @@ abstract contract Kept_Optimism is Kept {
     // https://community.optimism.io/docs/developers/build/transaction-fees/#the-l1-data-fee
     // Adds a buffer to the L1 gas used to account for the overhead of the transaction
     function _calldataFee(
-        bytes calldata applicableCalldata,
+        bytes memory applicableCalldata,
         UFixed18 multiplierCalldata,
         uint256 bufferCalldata
     ) internal view virtual override returns (UFixed18) {

@@ -31,7 +31,8 @@ abstract contract Kept is IKept, Initializable {
     /// @notice Called by the keep modifier to raise the optionally raise the keeper fee
     /// @param amount The amount of keeper fee to raise
     /// @param data Arbitrary data passed in from the keep modifier
-    function _raiseKeeperFee(UFixed18 amount, bytes memory data) internal virtual { }
+    /// @return The amount of keeper fee that was actually raised
+    function _raiseKeeperFee(UFixed18 amount, bytes memory data) internal virtual returns (UFixed18) { return amount; }
 
     /// @notice Computes the calldata portion of the keeper fee
     /// @dev Used for L2 implementation with significant calldata costs
@@ -40,7 +41,7 @@ abstract contract Kept is IKept, Initializable {
     /// @param bufferCalldata The buffer to apply to the calldata cost
     /// @return The calldata portion of the keeper fee
     function _calldataFee(
-        bytes calldata applicableCalldata,
+        bytes memory applicableCalldata,
         UFixed18 multiplierCalldata,
         uint256 bufferCalldata
     ) internal view virtual returns (UFixed18) { return UFixed18Lib.ZERO; }
@@ -71,9 +72,12 @@ abstract contract Kept is IKept, Initializable {
     /// @notice Placed on a function to incentivize keepers to call it
     /// @param config The multiplier and buffer configuration to apply
     /// @param data Arbitrary data to pass to the _raiseKeeperFee function
+    /// @param applicableCalldata The applicable calldata
+    /// @param applicableValue The applicable value
+    /// @param data Arbitrary data to pass to the _raiseKeeperFee function
     modifier keep(
         KeepConfig memory config,
-        bytes calldata applicableCalldata,
+        bytes memory applicableCalldata,
         uint256 applicableValue,
         bytes memory data
     ) {
@@ -82,13 +86,30 @@ abstract contract Kept is IKept, Initializable {
         _;
 
         uint256 applicableGas = startGas - gasleft();
+
+        _handleKeeperFee(config, applicableGas, applicableCalldata, applicableValue, data);
+    }
+
+    /// @notice Called by the keep modifier to handle keeper fee computation and payment
+    /// @param config The multiplier and buffer configuration to apply
+    /// @param applicableGas The applicable gas cost
+    /// @param applicableCalldata The applicable calldata
+    /// @param applicableValue The applicable value
+    /// @param data Arbitrary data to pass to the _raiseKeeperFee function
+    function _handleKeeperFee(
+        KeepConfig memory config,
+        uint256 applicableGas,
+        bytes memory applicableCalldata,
+        uint256 applicableValue,
+        bytes memory data
+    ) internal {
         (UFixed18 baseFee, UFixed18 calldataFee) = (
             _baseFee(applicableGas, config.multiplierBase, config.bufferBase),
             _calldataFee(applicableCalldata, config.multiplierCalldata, config.bufferCalldata)
         );
 
         UFixed18 keeperFee = UFixed18.wrap(applicableValue).add(baseFee).add(calldataFee).mul(_etherPrice());
-        _raiseKeeperFee(keeperFee, data);
+        keeperFee = _raiseKeeperFee(keeperFee, data);
         keeperToken().push(msg.sender, keeperFee);
 
         emit KeeperCall(msg.sender, applicableGas, applicableValue, baseFee, calldataFee, keeperFee);

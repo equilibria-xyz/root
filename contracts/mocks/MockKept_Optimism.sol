@@ -17,9 +17,10 @@ contract MockKept_Optimism is Kept_Optimism {
         super.__Kept__initialize(ethTokenOracleFeed_, keeperToken_);
     }
 
-    function _raiseKeeperFee(UFixed18 amount, bytes memory data) internal override {
+    function _raiseKeeperFee(UFixed18 amount, bytes memory data) internal override returns (UFixed18) {
         emit RaiseKeeperFeeCalled(amount, data);
         keeperToken().pull(benefactor, amount);
+        return amount;
     }
 
     function toBeKept(

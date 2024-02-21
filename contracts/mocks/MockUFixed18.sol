@@ -21,6 +21,10 @@ contract MockUFixed18 {
         return UFixed18Lib.from(a);
     }
 
+    function unsafeFrom(Fixed18 a) external pure returns (UFixed18) {
+        return UFixed18Lib.unsafeFrom(a);
+    }
+
     function from(uint256 a) external pure returns (UFixed18) {
         return UFixed18Lib.from(a);
     }
@@ -39,6 +43,10 @@ contract MockUFixed18 {
 
     function sub(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
         return UFixed18Lib.sub(a, b);
+    }
+
+    function unsafeSub(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
+        return UFixed18Lib.unsafeSub(a, b);
     }
 
     function mul(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
