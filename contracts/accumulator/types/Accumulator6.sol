@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./AccumulatorValue6.sol";
+import "./Accumulated6.sol";
 import "../../number/types/Fixed6.sol";
 import "../../number/types/UFixed6.sol";
 
 /// @dev Accumulator6 type
 struct Accumulator6 {
-    AccumulatorValue6 _value;
+    Accumulated6 _value;
     UFixed6 _total;
 }
 using Accumulator6Lib for Accumulator6 global;
@@ -25,7 +25,7 @@ struct TriAccumulation {
 
 /**
  * @title Accumulator6Lib
- * @notice Library 
+ * @notice Library
  */
 library Accumulator6Lib {
     /**
@@ -34,7 +34,7 @@ library Accumulator6Lib {
      * @param to The point to accumulate to
      * @return The accumulated value between the two points
      */
-    function accumulate(Accumulator6 memory self, AccumulatorValue6 memory to) internal pure returns (Fixed6) {
+    function accumulate(Accumulator6 memory self, Accumulated6 memory to) internal pure returns (Fixed6) {
         return self._value.accumulated(to, self._total);
     }
 
@@ -86,7 +86,7 @@ library Accumulator6Lib {
             fee,
             (amount.gte(Fixed6Lib.ZERO) ? to : from)._total
         );
-        
+
         accumulationFee = feeAmount;
         accumulation.from = (amount.gte(Fixed6Lib.ZERO) ? amount : amountWithoutFee).mul(Fixed6Lib.NEG_ONE);
         accumulation.to = amount.gte(Fixed6Lib.ZERO) ? amountWithoutFee : amount;
