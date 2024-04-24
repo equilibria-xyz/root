@@ -6,7 +6,9 @@ import "./Kept.sol";
 interface OptGasInfo {
     function getL1GasUsed(bytes memory) external view returns (uint256);
     function l1BaseFee() external view returns (uint256);
-    function scalar() external view returns (uint256);
+    function baseFeeScalar() external view returns (uint256);
+    function blobBaseFee() external view returns (uint256);
+    function blobBaseFeeScalar() external view returns (uint256);
     function decimals() external view returns (uint256);
 }
 
@@ -14,8 +16,9 @@ interface OptGasInfo {
 abstract contract Kept_Optimism is Kept {
     // https://community.optimism.io/docs/developers/build/transaction-fees/#the-l1-data-fee
     OptGasInfo constant OPT_GAS = OptGasInfo(0x420000000000000000000000000000000000000F);
+    uint256 public constant OPT_BASE_FEE_MULTIPLIER = 16;
 
-    // https://community.optimism.io/docs/developers/build/transaction-fees/#the-l1-data-fee
+    // https://docs.optimism.io/stack/transactions/fees#ecotone
     // Adds a buffer to the L1 gas used to account for the overhead of the transaction
     function _calldataFee(
         bytes memory applicableCalldata,
@@ -26,7 +29,11 @@ abstract contract Kept_Optimism is Kept {
             OPT_GAS.getL1GasUsed(applicableCalldata),
             multiplierCalldata,
             bufferCalldata,
-            OPT_GAS.l1BaseFee() * OPT_GAS.scalar() / (10 ** OPT_GAS.decimals())
+            // https://github.com/ethereum-optimism/optimism/blob/develop/packages/contracts-bedrock/src/L2/GasPriceOracle.sol#L138
+            (
+                OPT_BASE_FEE_MULTIPLIER * OPT_GAS.baseFeeScalar() * OPT_GAS.l1BaseFee() +
+                OPT_GAS.blobBaseFeeScalar() * OPT_GAS.blobBaseFee()
+            ) / (OPT_BASE_FEE_MULTIPLIER * 10 ** OPT_GAS.decimals())
         );
     }
 }
