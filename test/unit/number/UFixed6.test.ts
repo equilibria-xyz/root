@@ -54,6 +54,16 @@ describe('UFixed6', () => {
     })
   })
 
+  describe('#fromUnsafe(Fixed6)', async () => {
+    it('creates positive', async () => {
+      expect(await uFixed6.unsafeFrom(utils.parseUnits('10', 6))).to.equal(utils.parseUnits('10', 6))
+    })
+
+    it('zero if negative', async () => {
+      expect(await uFixed6.unsafeFrom(utils.parseUnits('-10', 6))).to.equal(utils.parseUnits('0', 6))
+    })
+  })
+
   describe('#from(UFixed18)', async () => {
     it('creates new (no rounding)', async () => {
       expect(await uFixed6['fromBase18(uint256)'](utils.parseEther('10.1'))).to.equal(utils.parseUnits('10.1', 6))
@@ -101,6 +111,16 @@ describe('UFixed6', () => {
   describe('#sub', async () => {
     it('subs', async () => {
       expect(await uFixed6.sub(20, 10)).to.equal(10)
+    })
+  })
+
+  describe('#unsafeSub', async () => {
+    it('subs', async () => {
+      expect(await uFixed6.unsafeSub(20, 10)).to.equal(10)
+    })
+
+    it('zero if underflow', async () => {
+      expect(await uFixed6.unsafeSub(10, 20)).to.equal(0)
     })
   })
 

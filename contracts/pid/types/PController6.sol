@@ -6,7 +6,8 @@ import "../../number/types/Fixed6.sol";
 /// @dev PController6 type
 struct PController6 {
     UFixed6 k;
-    UFixed6 max;
+    Fixed6 min;
+    Fixed6 max;
 }
 using PController6Lib for PController6 global;
 
@@ -37,16 +38,16 @@ library PController6Lib {
                 .div(Fixed6Lib.from(self.k))
         );
 
-        // cap the new value at the max
-        newValue = Fixed6Lib.from(newValueUncapped.sign(), self.max.min(newValueUncapped.abs()));
+        // cap the new value between min and max
+        newValue = newValueUncapped.min(self.max).max(self.min);
 
         // compute distance and range to the resultant value
         (UFixed6 distance, Fixed6 range) = (UFixed6Lib.from(toTimestamp - fromTimestamp), newValueUncapped.sub(value));
 
-        // compute the amount of buffer into the value is outside the max
-        UFixed6 buffer = value.abs().gt(self.max) ?
+        // compute the amount of buffer until the value is outside the max
+        UFixed6 buffer = value.gt(self.max) || value.lt(self.min) ?
             UFixed6Lib.ZERO :
-            Fixed6Lib.from(range.sign(), self.max).sub(value).abs();
+            (range.sign() > 0 ? self.max : self.min).sub(value).abs();
 
         // compute the timestamp at which the value will be at the max
         interceptTimestamp = range.isZero() ?

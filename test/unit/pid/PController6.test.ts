@@ -9,17 +9,26 @@ const { ethers } = HRE
 
 const CONTROLLER = {
   k: utils.parseUnits('10', 6),
+  min: utils.parseUnits('-10000', 6),
   max: utils.parseUnits('10000', 6),
+}
+
+const CONTROLLER_ASYMMETRIC = {
+  k: utils.parseUnits('10', 6),
+  min: utils.parseUnits('0', 6),
+  max: utils.parseUnits('1000', 6),
 }
 
 const CONTROLLER_LOW_MAX = {
   k: utils.parseUnits('10', 6),
+  min: utils.parseUnits('-1000', 6),
   max: utils.parseUnits('1000', 6),
 }
 
 // max is below VALUE
 const CONTROLLER_VERY_LOW_MAX = {
   k: utils.parseUnits('10', 6),
+  min: utils.parseUnits('-100', 6),
   max: utils.parseUnits('100', 6),
 }
 
@@ -134,6 +143,35 @@ describe('PController6', () => {
       )
 
       expect(newValue).to.equal(CONTROLLER_LOW_MAX.max.mul(-1))
+      // Reaches max at the halfway point
+      expect(interceptTimestamp).to.equal(TO_TIMESTAMP_UFIXED6.sub(FROM_TIMESTAMP_UFIXED6).div(2))
+    })
+
+    it('asymmetric range', async () => {
+      const negativeSkew = SKEW
+      const [newValue, interceptTimestamp] = await pController6.compute(
+        { ...CONTROLLER, min: 0 },
+        VALUE,
+        SKEW,
+        FROM_TIMESTAMP,
+        TO_TIMESTAMP,
+      )
+
+      expect(newValue).to.equal(computeNewValue(VALUE, SKEW, CONTROLLER.k))
+      // Value will be max after TO_TIMESTAMP, so interceptTimestamp is clamped to TO_TIMESTAMP
+      expect(interceptTimestamp).to.equal(TO_TIMESTAMP_UFIXED6)
+    })
+
+    it('asymmetric range, clamps to min', async () => {
+      const [newValue, interceptTimestamp] = await pController6.compute(
+        { ...CONTROLLER_LOW_MAX, min: 0 },
+        VALUE,
+        SKEW.mul(-1),
+        FROM_TIMESTAMP,
+        TO_TIMESTAMP,
+      )
+
+      expect(newValue).to.equal(0)
       // Reaches max at the halfway point
       expect(interceptTimestamp).to.equal(TO_TIMESTAMP_UFIXED6.sub(FROM_TIMESTAMP_UFIXED6).div(2))
     })

@@ -36,6 +36,16 @@ library UFixed6Lib {
     }
 
     /**
+     * @notice Creates a unsigned fixed-decimal from a signed fixed-decimal
+     * @dev Does not revert on underflow, instead returns `ZERO`
+     * @param a Signed fixed-decimal
+     * @return New unsigned fixed-decimal
+     */
+    function unsafeFrom(Fixed6 a) internal pure returns (UFixed6) {
+        return a.lt(Fixed6Lib.ZERO) ? ZERO : from(a);
+    }
+
+    /**
      * @notice Creates a unsigned fixed-decimal from a unsigned integer
      * @param a Unsigned number
      * @return New unsigned fixed-decimal
@@ -90,6 +100,17 @@ library UFixed6Lib {
      */
     function sub(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
         return UFixed6.wrap(UFixed6.unwrap(a) - UFixed6.unwrap(b));
+    }
+
+    /**
+     * @notice Subtracts unsigned fixed-decimal `a` by `b`
+     * @dev Does not revert on underflow, instead returns `ZERO`
+     * @param a Unsigned fixed-decimal to subtract from
+     * @param b Unsigned fixed-decimal to subtract
+     * @return Resulting subtracted unsigned fixed-decimal
+     */
+    function unsafeSub(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
+        return gt(b, a) ? ZERO : sub(a, b);
     }
 
     /**
