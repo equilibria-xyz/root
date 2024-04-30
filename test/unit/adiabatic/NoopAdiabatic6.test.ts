@@ -20,14 +20,17 @@ describe('NoopAdiabatic6', () => {
     it('returns correct fee with positive latest', async () => {
       const fee = await await linearAdiabatic.linear(
         {
-          linearFee: parseUnits('0.1', 6),
+          linearFee: parseUnits('0.3', 6),
           proportionalFee: parseUnits('0.2', 6),
           scale: parseUnits('100', 6),
         },
         parseUnits('10', 6),
         parseUnits('123', 6),
       )
-      expect(fee).to.equal(parseUnits('123', 6))
+
+      // |change| * price * |change| / scale * proportionalFee
+      // 10 * 123 * 0.1 = 24.6
+      expect(fee).to.equal(parseUnits('369', 6))
     })
   })
 
@@ -42,6 +45,9 @@ describe('NoopAdiabatic6', () => {
         parseUnits('10', 6),
         parseUnits('123', 6),
       )
+
+      // |change| * price * |change| / scale * proportionalFee
+      // 10 * 123 * 10 / 100 * 0.2 = 24.6
       expect(fee).to.equal(parseUnits('24.6', 6))
     })
   })
