@@ -13,7 +13,7 @@ export type CommonStruct = {
 
 export function erc721Domain(verifier: VerifierBase | FakeContract<IVerifierBase>) {
   return {
-    name: 'Perennial Root Unit Tests',
+    name: 'Equilibria Root Unit Tests',
     version: '1.0.0',
     chainId: 31337, // hardhat chain id
     verifyingContract: verifier.address,

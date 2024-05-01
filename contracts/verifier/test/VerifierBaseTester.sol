@@ -6,5 +6,5 @@ import { VerifierBase } from "../VerifierBase.sol";
 
 /// @dev Empty implementation for the sole purpose of testing base class
 contract VerifierBaseTester is VerifierBase {
-    constructor() EIP712("Perennial Root Unit Tests", "1.0.0") { }
+    constructor() EIP712("Equilibria Root Unit Tests", "1.0.0") { }
 }

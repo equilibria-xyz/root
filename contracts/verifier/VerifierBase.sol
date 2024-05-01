@@ -5,7 +5,7 @@ import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { Common, CommonLib } from "./types/Common.sol";
 import { GroupCancellation, GroupCancellationLib } from "./types/GroupCancellation.sol";
-import "./interfaces/IVerifierBase.sol";
+import { IVerifierBase } from "./interfaces/IVerifierBase.sol";
 
 abstract contract VerifierBase is IVerifierBase, EIP712 {
     /// @dev mapping of nonces per account and their cancelled state
