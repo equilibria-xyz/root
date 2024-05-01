@@ -8,8 +8,6 @@ import { GroupCancellation, GroupCancellationLib } from "./types/GroupCancellati
 import "./interfaces/IVerifierBase.sol";
 
 abstract contract VerifierBase is IVerifierBase, EIP712 {
-    // TODO: migrate logic from perenial-verifier package
-
     /// @dev mapping of nonces per account and their cancelled state
     mapping(address => mapping(uint256 => bool)) public nonces;
 
