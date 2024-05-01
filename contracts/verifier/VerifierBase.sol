@@ -16,11 +16,7 @@ abstract contract VerifierBase is IVerifierBase, EIP712 {
     /// @dev mapping of group nonces per account and their cancelled state
     mapping(address => mapping(uint256 => bool)) public groups;
 
-    /// @notice Verifies the signature of no-op common message
-    /// @dev Cancels the nonce after verifying the signature
-    /// @param common The common data of the message
-    /// @param signature The signature of the account for the message
-    /// @return The address corresponding to the signature
+    /// @inheritdoc IVerifierBase
     function verifyCommon(Common calldata common, bytes calldata signature)
         external
         validateAndCancel(common, signature) returns (address)
@@ -28,11 +24,7 @@ abstract contract VerifierBase is IVerifierBase, EIP712 {
         return ECDSA.recover(_hashTypedDataV4(CommonLib.hash(common)), signature);
     }
 
-    /// @notice Verifies the signature of a group cancellation type
-    /// @dev Cancels the nonce after verifying the signature
-    /// @param groupCancellation The group cancellation to verify
-    /// @param signature The signature of the account for the group cancellation
-    /// @return The address corresponding to the signature
+    /// @inheritdoc IVerifierBase
     function verifyGroupCancellation(GroupCancellation calldata groupCancellation, bytes calldata signature)
         external
         validateAndCancel(groupCancellation.common, signature) returns (address)
@@ -40,29 +32,23 @@ abstract contract VerifierBase is IVerifierBase, EIP712 {
         return ECDSA.recover(_hashTypedDataV4(GroupCancellationLib.hash(groupCancellation)), signature);
     }
  
-    /// @notice Cancels a nonce
-    /// @param nonce The nonce to cancel
+    /// @inheritdoc IVerifierBase
     function cancelNonce(uint256 nonce) external {
         _cancelNonce(msg.sender, nonce);
     }
 
-    /// @notice Cancels a group nonce
-    /// @param group The group nonce to cancel
+    /// @inheritdoc IVerifierBase
     function cancelGroup(uint256 group) external {
         _cancelGroup(msg.sender, group);
     }   
-    /// @notice Cancels a nonce for an account via a signed message
-    /// @dev Process a no-op message that will invalidate the specified nonce
-    /// @param common The common data of the message
-    /// @param signature The signature of the account for the message
+
+    /// @inheritdoc IVerifierBase
     function cancelNonceWithSignature(Common calldata common, bytes calldata signature) external {
         address signer = IVerifierBase(this).verifyCommon(common, signature);
         if (signer != common.account) revert VerifierInvalidSignerError();
     }
 
-    /// @notice Cancels a group for an account via a signed message
-    /// @param groupCancellation The group cancellation message
-    /// @param signature The signature of the account for the group cancellation
+    /// @inheritdoc IVerifierBase
     function cancelGroupWithSignature(GroupCancellation calldata groupCancellation, bytes calldata signature) external {
         address signer = IVerifierBase(this).verifyGroupCancellation(groupCancellation, signature);
         if (signer != groupCancellation.common.account) revert VerifierInvalidSignerError();
