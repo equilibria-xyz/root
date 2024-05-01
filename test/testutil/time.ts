@@ -12,6 +12,12 @@ export async function advanceBlockTo(block: number): Promise<void> {
   }
 }
 
+export async function currentBlockTimestamp(): Promise<number> {
+  const blockNumber = await ethers.provider.getBlockNumber()
+  const block = await ethers.provider.getBlock(blockNumber)
+  return block.timestamp
+}
+
 export async function increase(duration: number): Promise<void> {
   await ethers.provider.send('evm_increaseTime', [duration])
   await advanceBlock()
