@@ -22,6 +22,7 @@ interface IVerifierBase {
     event NonceCancelled(address indexed account, uint256 nonce);
     event GroupCancelled(address indexed account, uint256 group);
 
+    function verifyCommon(Common calldata common, bytes calldata signature) external returns (address);
     function verifyGroupCancellation(GroupCancellation calldata groupCancellation, bytes calldata signature) external returns (address);
 
     function cancelNonce(uint256 nonce) external;

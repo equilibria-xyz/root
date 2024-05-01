@@ -7,9 +7,9 @@ struct Common {
     address account;
     /// ensures the message is unique to a particular protocol version, chain, and verifier
     address domain;
-    /// TODO: document
+    /// per-sender nonce which is automatically cancelled upon validation
     uint256 nonce;
-    /// TODO: document
+    /// per-sender nonce which must be manually cancelled with a GroupCancellation message
     uint256 group;
     /// prevents this message from having the intended effect after a specified timestamp
     uint256 expiry;
