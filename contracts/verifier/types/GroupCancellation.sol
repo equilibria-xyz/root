@@ -15,7 +15,9 @@ using GroupCancellationLib for GroupCancellation global;
 /// @title GroupCancellationLib
 /// @notice Library used to hash and verify action to cancel a group nonce.
 library GroupCancellationLib {
-    bytes32 constant public STRUCT_HASH = keccak256("GroupCancellation(uint256 group,Common common)Common(address account,address domain,uint256 nonce,uint256 group,uint256 expiry)");
+    bytes32 constant public STRUCT_HASH = keccak256(
+        "GroupCancellation(uint256 group,Common common)"
+        "Common(address account,address domain,uint256 nonce,uint256 group,uint256 expiry)");
 
     function hash(GroupCancellation memory self) internal pure returns (bytes32) {
         return keccak256(abi.encode(STRUCT_HASH, self.group, CommonLib.hash(self.common)));
