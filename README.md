@@ -2,6 +2,17 @@
 
 Core library for DeFi.
 
+## Facilities
+| Name            | Purpose                                        |
+|             ---:|------------------------------------------------|
+| **accumulator** | tracks cumulative changes to a value           |
+| **attribute**   | abstract contracts with foundational patterns  |
+| **number**      | fixed decimal types and math functions         |
+| **pid**         | proportional integral derivative controller    |
+| **token**       | helpers for working with fungible tokens       |
+| **utilization** | calculates rates based on a utilization curve  |
+| **verifier**    | helps create and verify EIP712 signed messages |
+
 ## Installation
 
 ```
@@ -10,7 +21,7 @@ npm install @equilibria/root
 
 ## Contributing
 
-### Pre Requisites
+### Prerequisites
 
 This repo works best with Node.js v16.x.x, this is preconfigured for users of [asdf](https://asdf-vm.com/).
 
@@ -51,7 +62,7 @@ To get a gas report based on unit test calls:
 $ yarn gasReport
 ```
 
-### Deploy contract to netowrk (requires Mnemonic and infura API key)
+### Deploy contract to network (requires Mnemonic and infura API key)
 
 ```
 npx hardhat run --network rinkeby ./scripts/deploy.ts
