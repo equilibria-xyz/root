@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import { Common, CommonLib } from "./types/Common.sol";
 import { GroupCancellation, GroupCancellationLib } from "./types/GroupCancellation.sol";
 import { IVerifierBase } from "./interfaces/IVerifierBase.sol";
@@ -17,19 +17,24 @@ abstract contract VerifierBase is IVerifierBase, EIP712 {
     /// @inheritdoc IVerifierBase
     function verifyCommon(Common calldata common, bytes calldata signature)
         external
-        validateAndCancel(common, signature) returns (address)
+        validateAndCancel(common, signature)
     {
-        return ECDSA.recover(_hashTypedDataV4(CommonLib.hash(common)), signature);
+        if (!SignatureChecker.isValidSignatureNow(common.signer, _hashTypedDataV4(CommonLib.hash(common)), signature))
+            revert VerifierInvalidSignerError();
     }
 
     /// @inheritdoc IVerifierBase
     function verifyGroupCancellation(GroupCancellation calldata groupCancellation, bytes calldata signature)
         external
-        validateAndCancel(groupCancellation.common, signature) returns (address)
+        validateAndCancel(groupCancellation.common, signature)
     {
-        return ECDSA.recover(_hashTypedDataV4(GroupCancellationLib.hash(groupCancellation)), signature);
+        if (!SignatureChecker.isValidSignatureNow(
+            groupCancellation.common.signer,
+            _hashTypedDataV4(GroupCancellationLib.hash(groupCancellation)),
+            signature
+        )) revert VerifierInvalidSignerError();
     }
- 
+
     /// @inheritdoc IVerifierBase
     function cancelNonce(uint256 nonce) external {
         _cancelNonce(msg.sender, nonce);
@@ -38,19 +43,16 @@ abstract contract VerifierBase is IVerifierBase, EIP712 {
     /// @inheritdoc IVerifierBase
     function cancelGroup(uint256 group) external {
         _cancelGroup(msg.sender, group);
-    }   
+    }
 
     /// @inheritdoc IVerifierBase
     function cancelNonceWithSignature(Common calldata common, bytes calldata signature) external {
-        address signer = IVerifierBase(this).verifyCommon(common, signature);
-        if (signer != common.account) revert VerifierInvalidSignerError();
+        IVerifierBase(this).verifyCommon(common, signature); // cancels nonce
     }
 
     /// @inheritdoc IVerifierBase
     function cancelGroupWithSignature(GroupCancellation calldata groupCancellation, bytes calldata signature) external {
-        address signer = IVerifierBase(this).verifyGroupCancellation(groupCancellation, signature);
-        if (signer != groupCancellation.common.account) revert VerifierInvalidSignerError();
-
+        IVerifierBase(this).verifyGroupCancellation(groupCancellation, signature);
         _cancelGroup(groupCancellation.common.account, groupCancellation.group);
     }
 
