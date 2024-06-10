@@ -17,7 +17,8 @@ using GroupCancellationLib for GroupCancellation global;
 library GroupCancellationLib {
     bytes32 constant public STRUCT_HASH = keccak256(
         "GroupCancellation(uint256 group,Common common)"
-        "Common(address account,address domain,uint256 nonce,uint256 group,uint256 expiry)");
+        "Common(address account,address signer,address domain,uint256 nonce,uint256 group,uint256 expiry)"
+    );
 
     function hash(GroupCancellation memory self) internal pure returns (bytes32) {
         return keccak256(abi.encode(STRUCT_HASH, self.group, CommonLib.hash(self.common)));

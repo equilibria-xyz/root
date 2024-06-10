@@ -31,17 +31,17 @@ interface IVerifierBase {
 
     /// @notice Verifies the signature of no-op common message
     /// @dev Cancels the nonce after verifying the signature
+    ///      Reverts if the signature does not match the signer
     /// @param common The common data of the message
     /// @param signature The signature of the account for the message
-    /// @return The address corresponding to the signature
-    function verifyCommon(Common calldata common, bytes calldata signature) external returns (address);
 
+    function verifyCommon(Common calldata common, bytes calldata signature) external;
     /// @notice Verifies the signature of a group cancellation type
     /// @dev Cancels the nonce after verifying the signature
+    ///      Reverts if the signature does not match the signer
     /// @param groupCancellation The group cancellation to verify
     /// @param signature The signature of the account for the group cancellation
-    /// @return The address corresponding to the signature    
-    function verifyGroupCancellation(GroupCancellation calldata groupCancellation, bytes calldata signature) external returns (address);
+    function verifyGroupCancellation(GroupCancellation calldata groupCancellation, bytes calldata signature) external;
 
     /// @notice Cancels a nonce
     /// @param nonce The nonce to cancel
