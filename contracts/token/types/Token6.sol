@@ -145,6 +145,15 @@ library Token6Lib {
     function balanceOf(Token6 self, address account) internal view returns (UFixed6) {
         return UFixed6.wrap(IERC20(Token6.unwrap(self)).balanceOf(account));
     }
+
+    /**
+     * @notice Returns the `self` total supply
+     * @param self Token to check for
+     * @return The total supply of the token
+     */
+    function totalSupply(Token6 self) internal view returns (UFixed6) {
+        return UFixed6.wrap(IERC20(Token6.unwrap(self)).totalSupply());
+    }
 }
 
 library Token6StorageLib {

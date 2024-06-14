@@ -81,7 +81,7 @@ describe('TokenOrEther18', () => {
         tokenOrEther18
           .connect(user)
           ['approve(address,address,uint256)'](ETHER, recipient.address, utils.parseEther('100')),
-      ).to.be.revertedWith('TokenOrEther18ApproveEtherError()')
+      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
     })
 
     it('approves tokens (round down implicit) (18)', async () => {
@@ -99,7 +99,7 @@ describe('TokenOrEther18', () => {
         tokenOrEther18
           .connect(user)
           ['approve(address,address,uint256)'](ETHER, recipient.address, utils.parseEther('100').add(1)),
-      ).to.be.revertedWith('TokenOrEther18ApproveEtherError()')
+      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
     })
 
     it('approves tokens all (18)', async () => {
@@ -113,7 +113,7 @@ describe('TokenOrEther18', () => {
     it('approves tokens all (ether)', async () => {
       await expect(
         tokenOrEther18.connect(user)['approve(address,address)'](ETHER, recipient.address),
-      ).to.be.revertedWith('TokenOrEther18ApproveEtherError()')
+      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
     })
 
     describe('with prior allowance', () => {
@@ -202,7 +202,7 @@ describe('TokenOrEther18', () => {
 
     it('transfers tokens (ether)', async () => {
       await expect(tokenOrEther18.connect(user).pull(ETHER, user.address, utils.parseEther('100'))).to.be.revertedWith(
-        'TokenOrEther18PullEtherError()',
+        'TokenOrEther18UnsupportedEtherError()',
       )
     })
 
@@ -218,7 +218,7 @@ describe('TokenOrEther18', () => {
     it('transfers tokens (round down implicit) (ether)', async () => {
       await expect(
         tokenOrEther18.connect(user).pull(ETHER, user.address, utils.parseEther('100').add(1)),
-      ).to.be.revertedWith('TokenOrEther18PullEtherError()')
+      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
     })
   })
 
@@ -233,7 +233,7 @@ describe('TokenOrEther18', () => {
     it('transfers tokens (ether)', async () => {
       await expect(
         tokenOrEther18.connect(user).pullTo(ETHER, user.address, recipient.address, utils.parseEther('100')),
-      ).to.be.revertedWith('TokenOrEther18PullEtherError()')
+      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
     })
 
     it('transfers tokens (round down implicit) (18)', async () => {
@@ -250,7 +250,7 @@ describe('TokenOrEther18', () => {
     it('transfers tokens (round down implicit) (ether)', async () => {
       await expect(
         tokenOrEther18.connect(user).pullTo(ETHER, user.address, recipient.address, utils.parseEther('100').add(1)),
-      ).to.be.revertedWith('TokenOrEther18PullEtherError()')
+      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
     })
   })
 
@@ -306,6 +306,19 @@ describe('TokenOrEther18', () => {
     it('returns balanceOf (ether)', async () => {
       await user.sendTransaction({ to: tokenOrEther18.address, value: ethers.utils.parseEther('100') })
       expect(await tokenOrEther18.connect(user)['balanceOf(address)'](ETHER)).to.equal(utils.parseEther('100'))
+    })
+  })
+
+  describe('#totalSupply', async () => {
+    it('returns total supply (18)', async () => {
+      await erc20.mock.totalSupply.withArgs().returns(100_000_000)
+      expect(await tokenOrEther18.connect(user).totalSupply(erc20.address)).to.equal(utils.parseUnits('100', 6))
+    })
+
+    it('reverts (ether)', async () => {
+      await expect(tokenOrEther18.connect(user).totalSupply(ETHER)).to.revertedWith(
+        'TokenOrEther18UnsupportedEtherError()',
+      )
     })
   })
 
