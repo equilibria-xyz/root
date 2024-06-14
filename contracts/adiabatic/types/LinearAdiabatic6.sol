@@ -54,6 +54,21 @@ library LinearAdiabatic6Lib {
         return compute(self, Fixed6Lib.ZERO, latest, UFixed6Lib.ONE);
     }
 
+    /// @dev Computes the change in exposure from a new configuration
+    /// @param self The latest fee configuration
+    /// @param newConfig The new fee configuration
+    /// @param latest The latest skew in asset terms
+    /// @param price The price of the underlying asset
+    /// @return The update fee in underlying terms
+    function exposure(
+        LinearAdiabatic6 memory self,
+        LinearAdiabatic6 memory newConfig,
+        Fixed6 latest,
+        UFixed6 price
+    ) internal pure returns (Fixed6) {
+        return compute(newConfig, Fixed6Lib.ZERO, latest, price).sub(compute(self, Fixed6Lib.ZERO, latest, price));
+    }
+
     /// @notice Computes the linear fee
     /// @param self The adiabatic configuration
     /// @param change The change in skew in asset terms
@@ -85,23 +100,5 @@ library LinearAdiabatic6Lib {
         UFixed6 price
     ) internal pure returns (Fixed6) {
         return compute(self, latest, change, price);
-    }
-
-    /// @dev Updates the scale and compute the resultant change fee
-    /// @param self The adiabatic configuration
-    /// @param newConfig The new fee config
-    /// @param latest The latest skew in asset terms
-    /// @param price The price of the underlying asset
-    /// @return The update fee in underlying terms
-    function update(
-        LinearAdiabatic6 memory self,
-        LinearAdiabatic6 memory newConfig,
-        Fixed6 latest,
-        UFixed6 price
-    ) internal pure returns (Fixed6) {
-        Fixed6 prior = compute(self, Fixed6Lib.ZERO, latest, price);
-        (self.linearFee, self.proportionalFee, self.adiabaticFee, self.scale) =
-            (newConfig.linearFee, newConfig.proportionalFee, newConfig.adiabaticFee, newConfig.scale);
-        return compute(self, Fixed6Lib.ZERO, latest, price).sub(prior);
     }
 }
