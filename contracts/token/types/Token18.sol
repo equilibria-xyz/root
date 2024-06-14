@@ -143,6 +143,15 @@ library Token18Lib {
     function balanceOf(Token18 self, address account) internal view returns (UFixed18) {
         return UFixed18.wrap(IERC20(Token18.unwrap(self)).balanceOf(account));
     }
+
+    /**
+     * @notice Returns the `self` total supply
+     * @param self Token to check for
+     * @return The total supply of the token
+     */
+    function totalSupply(Token18 self) internal view returns (UFixed18) {
+        return UFixed18.wrap(IERC20(Token18.unwrap(self)).totalSupply());
+    }
 }
 
 library Token18StorageLib {

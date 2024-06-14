@@ -64,6 +64,10 @@ contract MockTokenOrEther18 {
         return TokenOrEther18Lib.balanceOf(self, account);
     }
 
+    function totalSupply(TokenOrEther18 self) external view returns (UFixed18) {
+        return TokenOrEther18Lib.totalSupply(self);
+    }
+
     function read(TokenOrEther18Storage slot) external view returns (TokenOrEther18) {
         return slot.read();
     }
