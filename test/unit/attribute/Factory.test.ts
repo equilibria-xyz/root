@@ -58,6 +58,14 @@ describe('Factory', () => {
       const instance2Address = await factory.connect(owner).callStatic.create2('instance', salt2)
       expect(instance1Address).to.not.equal(instance2Address)
     })
+
+    it('can deterministically calculate address', async () => {
+      const instanceName = 'instance3'
+      const instanceSalt = ethers.utils.formatBytes32String('salt3')
+      const calculatedAddress = await factory.computeCreate2Address(instanceName, instanceSalt)
+      const actualAddress = await factory.connect(owner).callStatic.create2(instanceName, instanceSalt)
+      expect(calculatedAddress).to.equal(actualAddress)
+    })
   })
 
   describe('#instances', async () => {

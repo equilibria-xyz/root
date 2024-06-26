@@ -45,11 +45,23 @@ abstract contract Factory is IFactory, Ownable, Pausable {
     /// @notice Creates a new instance at a deterministic address
     /// @dev Deploys a BeaconProxy with the this contract as the beacon
     /// @param data The initialization data
-    /// @param salt Used to determine the address of the BeaconProxy
+    /// @param salt Used to determine a unique BeaconProxy address
     /// @return newInstance The new instance
     function _create2(bytes memory data, bytes32 salt) internal returns (IInstance newInstance) {
         newInstance = IInstance(address(new BeaconProxy{salt: salt}(address(this), data)));
         _register(newInstance);
+    }
+
+    // @notice Calculates the address at which the instance will be deployed
+    // @dev Passes the proxy's creation code along with this factory's address
+    // @param data The same initialization data used in the _create2 call
+    // @param salt Used to determine a unique BeaconProxy address
+    function _computeCreate2Address(bytes memory data, bytes32 salt) internal view returns (address) {
+        bytes memory bytecode = abi.encodePacked(
+            type(BeaconProxy).creationCode,
+            abi.encode(address(this), data)
+        );
+        return Create2.computeAddress(salt, keccak256(bytecode));
     }
 
     /// @notice Registers a new instance
