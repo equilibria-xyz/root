@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
+// TODO: should update all these to specific imports?
+import "@openzeppelin/contracts/utils/Create2.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "./interfaces/IFactory.sol";
 import "./interfaces/IInstance.sol";
@@ -38,6 +40,15 @@ abstract contract Factory is IFactory, Ownable, Pausable {
     /// @return newInstance The new instance
     function _create(bytes memory data) internal returns (IInstance newInstance) {
         newInstance = IInstance(address(new BeaconProxy(address(this), data)));
+        _register(newInstance);
+    }
+    /// @notice Creates a new instance at a deterministic address
+    /// @dev Deploys a BeaconProxy with the this contract as the beacon
+    /// @param data The initialization data
+    /// @param salt Used to determine the address of the BeaconProxy
+    /// @return newInstance The new instance
+    function _create2(bytes memory data, bytes32 salt) internal returns (IInstance newInstance) {
+        newInstance = IInstance(address(new BeaconProxy{salt: salt}(address(this), data)));
         _register(newInstance);
     }
 

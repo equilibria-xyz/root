@@ -39,6 +39,25 @@ describe('Factory', () => {
       const instance = MockInstance__factory.connect(instanceAddress, owner)
       expect(await instance.name()).to.equal(instanceName)
     })
+
+    it('creates instance deterministically', async () => {
+      const instanceName = 'instance2'
+      const instanceSalt = ethers.utils.formatBytes32String('SaltyMcSaltSalt')
+      const instanceAddress = await factory.connect(owner).callStatic.create2(instanceName, instanceSalt)
+      await expect(factory.connect(owner).create2(instanceName, instanceSalt))
+        .to.emit(factory, 'InstanceRegistered')
+        .withArgs(instanceAddress)
+      const instance = MockInstance__factory.connect(instanceAddress, owner)
+      expect(await instance.name()).to.equal(instanceName)
+    })
+
+    it('deploys instances to different addresses for different salts', async () => {
+      const salt1 = ethers.utils.formatBytes32String('salt1')
+      const salt2 = ethers.utils.formatBytes32String('salt2')
+      const instance1Address = await factory.connect(owner).callStatic.create2('instance', salt1)
+      const instance2Address = await factory.connect(owner).callStatic.create2('instance', salt2)
+      expect(instance1Address).to.not.equal(instance2Address)
+    })
   })
 
   describe('#instances', async () => {
@@ -52,6 +71,14 @@ describe('Factory', () => {
       await factory.connect(owner).create(instanceName)
       expect(await factory.instances(instanceAddress)).to.be.true
     })
+
+    it('returns true if create2 instance exists', async () => {
+      const instanceName = 'instance2'
+      const instanceSalt = ethers.utils.formatBytes32String('salt')
+      const instanceAddress = await factory.connect(owner).callStatic.create2(instanceName, instanceSalt)
+      await factory.connect(owner).create2(instanceName, instanceSalt)
+      expect(await factory.instances(instanceAddress)).to.be.true
+    })
   })
 
   describe('#onlyInstance', async () => {
@@ -63,6 +90,15 @@ describe('Factory', () => {
       const instanceName = 'instance'
       const instanceAddress = await factory.connect(owner).callStatic.create(instanceName)
       await factory.connect(owner).create(instanceName)
+      const instance = MockInstance__factory.connect(instanceAddress, owner)
+      await expect(instance.connect(user).callOnlyInstanceFunction()).to.not.be.reverted
+    })
+
+    it('allows create2 instances to call', async () => {
+      const instanceName = 'instance2'
+      const instanceSalt = ethers.utils.formatBytes32String('salt')
+      const instanceAddress = await factory.connect(owner).callStatic.create2(instanceName, instanceSalt)
+      await factory.connect(owner).create2(instanceName, instanceSalt)
       const instance = MockInstance__factory.connect(instanceAddress, owner)
       await expect(instance.connect(user).callOnlyInstanceFunction()).to.not.be.reverted
     })

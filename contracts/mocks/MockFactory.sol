@@ -15,5 +15,9 @@ contract MockFactory is Factory {
         return MockInstance(address(_create(abi.encodeCall(MockInstance.initialize, (name)))));
     }
 
+    function create2(string calldata name, bytes32 salt) external onlyOwner returns (MockInstance){
+        return MockInstance(address(_create2(abi.encodeCall(MockInstance.initialize, (name)), salt)));
+    }
+
     function onlyCallableByInstance() external view onlyInstance {}
 }
