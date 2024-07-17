@@ -8,7 +8,7 @@ interface IVerifierBase {
     // sig: 0xfec563a0
     /// @custom:error Signer is trying to cancel a nonce for another user
     error VerifierInvalidSignerError();
-    // sig: 0xb09262f6
+    // sig: 0xa568ee00
     /// @custom:error Message was meant for another protocol, version, or chain
     error VerifierInvalidDomainError();
     // sig: 0xb09262f6
@@ -34,8 +34,8 @@ interface IVerifierBase {
     ///      Reverts if the signature does not match the signer
     /// @param common The common data of the message
     /// @param signature The signature of the account for the message
-
     function verifyCommon(Common calldata common, bytes calldata signature) external;
+
     /// @notice Verifies the signature of a group cancellation type
     /// @dev Cancels the nonce after verifying the signature
     ///      Reverts if the signature does not match the signer
