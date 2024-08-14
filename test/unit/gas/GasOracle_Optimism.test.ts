@@ -59,7 +59,8 @@ describe('GasOracle_Optimism', () => {
       ethTokenOracleFeed.latestRoundData.returns([0, ethers.utils.parseUnits('1000', 8), 0, 0, 0])
 
       // set compute fee
-      await setBaseFee(ethers.utils.parseUnits('1', 9)) // 1 gwei
+      const baseFee = ethers.utils.parseUnits('1', 9)
+      await setBaseFee(baseFee) // 1 gwei
 
       // set calldata fee
       const L1_BASE_FEE = ethers.utils.parseUnits('5', 'gwei')
@@ -76,7 +77,7 @@ describe('GasOracle_Optimism', () => {
       // total l1 gas cost = (5_000_000 * 1.2 + 1_000_000) = 7_000_000
       // total l1 eth cost = 7_000_000 * 10 gwei = 70 * 10^15 = 0.07 eth
       // total usd cost = 0.07277875 * 1000 = 72.77875 usd
-      expect(await gasOracleRunner.cost(0))
+      expect(await gasOracleRunner.cost(0, { gasPrice: baseFee }))
         .to.emit(gasOracleRunner, 'Cost')
         .withArgs(ethers.utils.parseEther('72.77875'))
     })
@@ -98,7 +99,8 @@ describe('GasOracle_Optimism', () => {
       ethTokenOracleFeed.latestRoundData.returns([0, ethers.utils.parseUnits('1000', 8), 0, 0, 0])
 
       // set base fee
-      await setBaseFee(ethers.utils.parseUnits('1', 9)) // 1 gwei
+      const baseFee = ethers.utils.parseUnits('1', 9)
+      await setBaseFee(baseFee) // 1 gwei
 
       // set value
       const value = ethers.utils.parseEther('0.0012') // 0.0012 eth
@@ -108,7 +110,7 @@ describe('GasOracle_Optimism', () => {
       // total l1 gas cost = (5_000_000 * 1.2 + 1_000_000) = 7_000_000
       // total l1 eth cost = 7_000_000 * 10 gwei = 70 * 10^15 = 0.07 eth
       // total usd cost = 0.07397875 eth * 1000 = 73.97875 usd
-      expect(await gasOracleRunner.cost(value))
+      expect(await gasOracleRunner.cost(value, { gasPrice: baseFee }))
         .to.emit(gasOracleRunner, 'Cost')
         .withArgs(ethers.utils.parseEther('73.97875'))
     })
