@@ -9,6 +9,7 @@ interface IOwnable is IInitializable {
 
     error OwnableNotOwnerError(address sender);
     error OwnableNotPendingOwnerError(address sender);
+    error OwnableAlreadyInitializedError();
 
     function owner() external view returns (address);
     function pendingOwner() external view returns (address);
