@@ -29,6 +29,18 @@ interface IVerifierBase {
     /// @notice Emitted when a group nonce is cancelled
     event GroupCancelled(address indexed account, uint256 group);
 
+    /// @notice Returns whether the nonce has been cancelled
+    /// @param account The account to check the nonce for
+    /// @param nonce The nonce to check
+    /// @return True if the nonce has been cancelled
+    function nonces(address account, uint256 nonce) external view returns (bool);
+
+    /// @notice Returns whether the group nonce has been cancelled
+    /// @param account The account to check the group nonce for
+    /// @param nonce The group nonce to check
+    /// @return True if the group nonce has been cancelled
+    function groups(address account, uint256 nonce) external view returns (bool);
+
     /// @notice Verifies the signature of no-op common message
     /// @dev Cancels the nonce after verifying the signature
     ///      Reverts if the signature does not match the signer
