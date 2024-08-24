@@ -8,10 +8,10 @@ import { GroupCancellation, GroupCancellationLib } from "./types/GroupCancellati
 import { IVerifierBase } from "./interfaces/IVerifierBase.sol";
 
 abstract contract VerifierBase is IVerifierBase, EIP712 {
-    /// @dev mapping of nonces per account and their cancelled state
+    /// @inheritdoc IVerifierBase
     mapping(address => mapping(uint256 => bool)) public nonces;
 
-    /// @dev mapping of group nonces per account and their cancelled state
+    /// @inheritdoc IVerifierBase
     mapping(address => mapping(uint256 => bool)) public groups;
 
     /// @inheritdoc IVerifierBase
