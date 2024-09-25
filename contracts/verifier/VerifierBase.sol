@@ -60,8 +60,8 @@ abstract contract VerifierBase is IVerifierBase, EIP712 {
     /// @param account the account to check authorization for
     /// @param signer the signer of the account
     /// @return whether the signer is authorized
-    function _authorized(address account, address signer) internal virtual returns (bool) {
-        return account != signer;
+    function _authorized(address account, address signer) internal view virtual returns (bool) {
+        return account == signer;
     }
 
     /// @notice Cancels a nonce
