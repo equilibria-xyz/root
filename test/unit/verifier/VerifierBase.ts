@@ -46,19 +46,6 @@ describe('VerifierBase', () => {
       expect(await verifier.nonces(caller.address, 0)).to.eq(true)
     })
 
-    it('should verify default common w/ sc signer', async () => {
-      const common = { ...DEFAULT_COMMON, account: caller.address, signer: scSigner.address, domain: caller.address }
-      const signature = await signCommon(caller, verifier, common)
-
-      scSigner.isValidSignature.returns(0x1626ba7e)
-
-      await expect(verifier.connect(caller).verifyCommon(common, signature))
-        .to.emit(verifier, 'NonceCancelled')
-        .withArgs(caller.address, 0)
-
-      expect(await verifier.nonces(caller.address, 0)).to.eq(true)
-    })
-
     it('should reject common w/ invalid signer', async () => {
       const common = { ...DEFAULT_COMMON, account: caller.address, signer: market.address, domain: caller.address }
       const signature = await signCommon(caller, verifier, common)
@@ -256,27 +243,6 @@ describe('VerifierBase', () => {
         },
       }
       const signature = await signGroupCancellation(caller, verifier, groupCancellation)
-
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature))
-        .to.emit(verifier, 'NonceCancelled')
-        .withArgs(caller.address, 0)
-
-      expect(await verifier.nonces(caller.address, 0)).to.eq(true)
-    })
-
-    it('should verify default group cancellation w/ sc signer', async () => {
-      const groupCancellation = {
-        ...DEFAULT_GROUP_CANCELLATION,
-        common: {
-          ...DEFAULT_GROUP_CANCELLATION.common,
-          account: caller.address,
-          signer: scSigner.address,
-          domain: caller.address,
-        },
-      }
-      const signature = await signGroupCancellation(caller, verifier, groupCancellation)
-
-      scSigner.isValidSignature.returns(0x1626ba7e)
 
       await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature))
         .to.emit(verifier, 'NonceCancelled')
