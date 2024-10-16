@@ -147,6 +147,13 @@ describe('Token18', () => {
     })
   })
 
+  describe('#totalSupply', async () => {
+    it('returns total supply', async () => {
+      await erc20.mock.totalSupply.withArgs().returns(100_000_000)
+      expect(await token18.connect(user).totalSupply(erc20.address)).to.equal(utils.parseUnits('100', 6))
+    })
+  })
+
   describe('#store(Token18)', async () => {
     it('sets value', async () => {
       await token18.store(SLOT, erc20.address)

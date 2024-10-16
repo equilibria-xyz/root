@@ -2,15 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./Kept.sol";
-
-interface OptGasInfo {
-    function getL1GasUsed(bytes memory) external view returns (uint256);
-    function l1BaseFee() external view returns (uint256);
-    function baseFeeScalar() external view returns (uint256);
-    function blobBaseFee() external view returns (uint256);
-    function blobBaseFeeScalar() external view returns (uint256);
-    function decimals() external view returns (uint256);
-}
+import { OptGasInfo } from "../../gas/GasOracle_Optimism.sol";
 
 /// @dev Optimism Kept implementation
 abstract contract Kept_Optimism is Kept {

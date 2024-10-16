@@ -126,6 +126,7 @@ const config: HardhatUserConfig = {
   },
   dependencyCompiler: {
     paths: [
+      '@openzeppelin/contracts/interfaces/IERC1271.sol',
       '@openzeppelin/contracts/vendor/optimism/ICrossDomainMessenger.sol',
       '@openzeppelin/contracts/vendor/arbitrum/IArbSys.sol',
       '@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol',

@@ -69,7 +69,7 @@ describe('LinearAdiabatic6', () => {
   describe('#exposure', async () => {
     it('returns correct fee with positive latest', async () => {
       expect(
-        await linearAdiabatic.exposure(
+        await linearAdiabatic['exposure((uint256,uint256,uint256,uint256),int256)'](
           {
             linearFee: parseUnits('0.1', 6),
             proportionalFee: parseUnits('0.2', 6),
@@ -83,7 +83,7 @@ describe('LinearAdiabatic6', () => {
 
     it('returns correct fee with negative latest', async () => {
       expect(
-        await linearAdiabatic.exposure(
+        await linearAdiabatic['exposure((uint256,uint256,uint256,uint256),int256)'](
           {
             linearFee: parseUnits('0.1', 6),
             proportionalFee: parseUnits('0.2', 6),
@@ -97,7 +97,7 @@ describe('LinearAdiabatic6', () => {
 
     it('returns correct fee with zero latest', async () => {
       expect(
-        await linearAdiabatic.exposure(
+        await linearAdiabatic['exposure((uint256,uint256,uint256,uint256),int256)'](
           {
             linearFee: parseUnits('0.1', 6),
             proportionalFee: parseUnits('0.2', 6),
@@ -162,7 +162,9 @@ describe('LinearAdiabatic6', () => {
   describe('#update', async () => {
     it('returns correct fee from zero w/ no latest', async () => {
       expect(
-        await linearAdiabatic.update(
+        await linearAdiabatic[
+          'exposure((uint256,uint256,uint256,uint256),(uint256,uint256,uint256,uint256),int256,uint256)'
+        ](
           {
             linearFee: parseUnits('0', 6),
             proportionalFee: parseUnits('0', 6),
@@ -183,7 +185,7 @@ describe('LinearAdiabatic6', () => {
 
     it('reverts from zero w/ latest', async () => {
       await expect(
-        linearAdiabatic.update(
+        linearAdiabatic['exposure((uint256,uint256,uint256,uint256),(uint256,uint256,uint256,uint256),int256,uint256)'](
           {
             linearFee: parseUnits('0', 6),
             proportionalFee: parseUnits('0', 6),
@@ -204,7 +206,9 @@ describe('LinearAdiabatic6', () => {
 
     it('returns correct fee from non-zero', async () => {
       expect(
-        await linearAdiabatic.update(
+        await linearAdiabatic[
+          'exposure((uint256,uint256,uint256,uint256),(uint256,uint256,uint256,uint256),int256,uint256)'
+        ](
           {
             linearFee: parseUnits('0.2', 6),
             proportionalFee: parseUnits('0.4', 6),

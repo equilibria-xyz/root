@@ -2,12 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./Kept.sol";
-
-// https://github.com/OffchainLabs/nitro/blob/v2.0.14/contracts/src/precompiles/ArbGasInfo.sol#L93
-interface ArbGasInfo {
-    /// @notice Get ArbOS's estimate of the L1 basefee in wei
-    function getL1BaseFeeEstimate() external view returns (uint256);
-}
+import { ArbGasInfo } from "../../gas/GasOracle_Arbitrum.sol";
 
 /// @dev Arbitrum Kept implementation
 abstract contract Kept_Arbitrum is Kept {

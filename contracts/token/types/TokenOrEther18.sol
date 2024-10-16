@@ -23,8 +23,7 @@ library TokenOrEther18Lib {
     using Address for address;
     using SafeERC20 for IERC20;
 
-    error TokenOrEther18PullEtherError();
-    error TokenOrEther18ApproveEtherError();
+    error TokenOrEther18UnsupportedEtherError();
 
     TokenOrEther18 public constant ZERO = TokenOrEther18.wrap(address(0));
     TokenOrEther18 public constant ETHER = TokenOrEther18.wrap(address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE));
@@ -65,7 +64,7 @@ library TokenOrEther18Lib {
      * @param grantee Address to allow spending
      */
     function approve(TokenOrEther18 self, address grantee) internal {
-        if (isEther(self)) revert TokenOrEther18ApproveEtherError();
+        if (isEther(self)) revert TokenOrEther18UnsupportedEtherError();
         IERC20(TokenOrEther18.unwrap(self)).approve(grantee, type(uint256).max);
     }
 
@@ -79,7 +78,7 @@ library TokenOrEther18Lib {
      * @param amount Amount of tokens to approve to spend
      */
     function approve(TokenOrEther18 self, address grantee, UFixed18 amount) internal {
-        if (isEther(self)) revert TokenOrEther18ApproveEtherError();
+        if (isEther(self)) revert TokenOrEther18UnsupportedEtherError();
         IERC20(TokenOrEther18.unwrap(self)).safeApprove(grantee, UFixed18.unwrap(amount));
     }
 
@@ -114,7 +113,7 @@ library TokenOrEther18Lib {
      * @param amount Amount of tokens to transfer
      */
     function pull(TokenOrEther18 self, address benefactor, UFixed18 amount) internal {
-        if (isEther(self)) revert TokenOrEther18PullEtherError();
+        if (isEther(self)) revert TokenOrEther18UnsupportedEtherError();
         IERC20(TokenOrEther18.unwrap(self)).safeTransferFrom(benefactor, address(this), UFixed18.unwrap(amount));
     }
 
@@ -127,7 +126,7 @@ library TokenOrEther18Lib {
      * @param amount Amount of tokens to transfer
      */
     function pullTo(TokenOrEther18 self, address benefactor, address recipient, UFixed18 amount) internal {
-        if (isEther(self)) revert TokenOrEther18PullEtherError();
+        if (isEther(self)) revert TokenOrEther18UnsupportedEtherError();
         IERC20(TokenOrEther18.unwrap(self)).safeTransferFrom(benefactor, recipient, UFixed18.unwrap(amount));
     }
 
@@ -170,6 +169,17 @@ library TokenOrEther18Lib {
                 account.balance :
                 IERC20(TokenOrEther18.unwrap(self)).balanceOf(account)
         );
+    }
+
+    /**
+     * @notice Returns the `self` token total supply
+     * @dev Reverts if trying to query Ether
+     * @param self Token to check for
+     * @return The total supply of the token
+     */
+    function totalSupply(TokenOrEther18 self) internal view returns (UFixed18) {
+        if (isEther(self)) revert TokenOrEther18UnsupportedEtherError();
+        return UFixed18.wrap(IERC20(TokenOrEther18.unwrap(self)).totalSupply());
     }
 }
 

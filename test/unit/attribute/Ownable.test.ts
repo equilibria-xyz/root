@@ -25,6 +25,17 @@ describe('Ownable', () => {
 
       expect(await ownable.owner()).to.equal(owner.address)
     })
+
+    it('reverts if owner already set (reinitializing)', async () => {
+      expect(await ownable.owner()).to.equal(ethers.constants.AddressZero)
+
+      // mock the owner being set in a previous implementation version
+      await ownable.connect(owner).__initializeV(1)
+
+      await expect(ownable.connect(owner).__initializeV(2)).to.revertedWith('OwnableAlreadyInitializedError')
+
+      expect(await ownable.owner()).to.equal(owner.address)
+    })
   })
 
   describe('#setPendingOwner', async () => {
