@@ -56,6 +56,14 @@ abstract contract VerifierBase is IVerifierBase, EIP712 {
         _cancelGroup(groupCancellation.common.account, groupCancellation.group);
     }
 
+    /// @notice Checks account authorization
+    /// @param account the account to check authorization for
+    /// @param signer the signer of the account
+    /// @return whether the signer is authorized
+    function _authorized(address account, address signer) internal view virtual returns (bool) {
+        return account == signer;
+    }
+
     /// @notice Cancels a nonce
     /// @param account The account to cancel the nonce for
     /// @param nonce The nonce to cancel
@@ -74,6 +82,7 @@ abstract contract VerifierBase is IVerifierBase, EIP712 {
 
     /// @dev Validates the common data of a message
     modifier validateAndCancel(Common calldata common, bytes calldata signature) {
+        if (!_authorized(common.account, common.signer)) revert VerifierInvalidSignerError();
         if (common.domain != msg.sender) revert VerifierInvalidDomainError();
         if (signature.length != 65) revert VerifierInvalidSignatureError();
         if (nonces[common.account][common.nonce]) revert VerifierInvalidNonceError();
