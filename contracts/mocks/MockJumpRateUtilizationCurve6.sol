@@ -7,4 +7,14 @@ contract MockJumpRateUtilizationCurve6 {
     function compute(JumpRateUtilizationCurve6 memory self, UFixed6 utilization) external pure returns (Fixed6) {
         return JumpRateUtilizationCurve6Lib.compute(self, utilization);
     }
+
+    function accumulate(
+        JumpRateUtilizationCurve6 memory self,
+        UFixed6 utilization,
+        uint256 fromTimestamp,
+        uint256 toTimestamp,
+        UFixed6 notional
+    ) external pure returns (Fixed6) {
+        return JumpRateUtilizationCurve6Lib.accumulate(self, utilization, fromTimestamp, toTimestamp, notional);
+    }
 }
