@@ -16,16 +16,26 @@ contract MockInstance is Instance {
         name = name_;
     }
 
+    function initializeIncorrect() external {
+        __Instance__initialize();
+    }
+
     function callOnlyInstanceFunction() external view {
         IMockFactory(address(factory())).onlyCallableByInstance();
     }
 
     /// @dev This function can only be called by the factory owner
-    function protectedFunctionOwner() external view onlyOwner { }
+    function protectedFunctionOwner(string calldata name_) external onlyOwner {
+        name = name_;
+    }
 
     /// @dev This function can only be called by the factory
-    function protectedFunctionFactory() external view onlyFactory { }
+    function protectedFunctionFactory(string calldata name_) external onlyFactory {
+        name = name_;
+    }
 
     /// @dev This function can only be called when the factory is not paused
-    function protectedFunctionPaused() external view whenNotPaused { }
+    function protectedFunctionPaused(string calldata name_) external whenNotPaused {
+        name = name_;
+    }
 }
