@@ -22,6 +22,9 @@ describe('Factory', () => {
   })
 
   describe('#initialize', async () => {
+    it('reverts when reintializing', async () => {
+      await expect(factory.connect(owner).initializeIncorrect()).to.be.reverted
+    })
     it('initializes implementation/pauser/owner', async () => {
       expect(await factory.implementation()).to.equal(instanceImplementation.address)
       expect(await factory.pauser()).to.equal(pauser.address)

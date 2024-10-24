@@ -36,6 +36,11 @@ describe('Ownable', () => {
 
       expect(await ownable.owner()).to.equal(owner.address)
     })
+
+    it('reverts when reintializing', async () => {
+      await ownable.connect(owner).__initialize()
+      await expect(ownable.connect(owner).initializeIncorrect()).to.be.reverted
+    })
   })
 
   describe('#setPendingOwner', async () => {

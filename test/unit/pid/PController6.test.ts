@@ -232,5 +232,18 @@ describe('PController6', () => {
     it('fromTimestamp must be before toTimestamp', async () => {
       await expect(pController6.compute(CONTROLLER, VALUE, SKEW, TO_TIMESTAMP, FROM_TIMESTAMP)).to.be.reverted
     })
+
+    it('set buffer to 0, if value is greater than max or less than min', async () => {
+      const [newValue, interceptTimestamp] = await pController6.compute(
+        CONTROLLER_VERY_LOW_MAX,
+        CONTROLLER_VERY_LOW_MAX.max.add(1),
+        SKEW,
+        FROM_TIMESTAMP,
+        TO_TIMESTAMP,
+      )
+
+      expect(newValue).to.equal(CONTROLLER_VERY_LOW_MAX.max)
+      expect(interceptTimestamp).to.equal(0)
+    })
   })
 })

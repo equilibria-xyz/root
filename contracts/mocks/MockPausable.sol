@@ -10,6 +10,10 @@ contract MockPausable is Pausable {
         super.__Pausable__initialize();
     }
 
+    function initializeIncorrect() external {
+        super.__Pausable__initialize();
+    }
+
     function increment() external whenNotPaused {
         counter++;
     }

@@ -26,6 +26,11 @@ describe('Pausable', () => {
       expect(await pausable.pauser()).to.equal(owner.address)
       expect(await pausable.owner()).to.equal(owner.address)
     })
+
+    it('reverts when reintializing', async () => {
+      await pausable.connect(owner).__initialize()
+      await expect(pausable.connect(owner).initializeIncorrect()).to.be.reverted
+    })
   })
 
   describe('#updatePauser', async () => {

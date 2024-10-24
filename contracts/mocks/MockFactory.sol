@@ -11,6 +11,10 @@ contract MockFactory is Factory {
         __Factory__initialize();
     }
 
+    function initializeIncorrect() external {
+        __Factory__initialize();
+    }
+
     function create(string calldata name) external onlyOwner returns (MockInstance) {
         return MockInstance(address(_create(abi.encodeCall(MockInstance.initialize, (name)))));
     }
