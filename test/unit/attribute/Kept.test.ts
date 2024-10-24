@@ -88,7 +88,7 @@ describe('Kept', () => {
   })
 
   describe('#__Kept__initialize', async () => {
-    it('reverts when reintializing', async () => {
+    it('reverts when reinitializing', async () => {
       await expect(kept.connect(owner).initializeIncorrect(ethTokenOracleFeed.address, keeperToken.address)).to.be
         .reverted
     })

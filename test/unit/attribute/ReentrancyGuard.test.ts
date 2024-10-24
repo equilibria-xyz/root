@@ -25,7 +25,7 @@ describe('ReentrancyGuard', () => {
       expect(await reentrancyGuard.__status()).to.equal(1)
     })
 
-    it('reverts when reintializing', async () => {
+    it('reverts when reinitializing', async () => {
       await reentrancyGuard.connect(owner).__initialize()
       await expect(reentrancyGuard.connect(owner).initializeIncorrect()).to.be.reverted
     })

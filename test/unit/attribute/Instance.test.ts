@@ -32,7 +32,7 @@ describe('Instance', () => {
   })
 
   describe('#initialize', async () => {
-    it('reverts when reintializing', async () => {
+    it('reverts when reinitializing', async () => {
       await expect(instance.connect(owner).initializeIncorrect()).to.be.reverted
     })
   })

@@ -22,7 +22,7 @@ describe('Factory', () => {
   })
 
   describe('#initialize', async () => {
-    it('reverts when reintializing', async () => {
+    it('reverts when reinitializing', async () => {
       await expect(factory.connect(owner).initializeIncorrect()).to.be.reverted
     })
     it('initializes implementation/pauser/owner', async () => {
