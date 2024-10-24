@@ -24,7 +24,7 @@ contract MockKept is Kept {
     function _raiseKeeperFee(UFixed18 amount, bytes memory data) internal override returns (UFixed18) {
         emit RaiseKeeperFeeCalled(amount, data);
         keeperToken().pull(benefactor, amount);
-        return amount;
+        return super._raiseKeeperFee(amount, data);
     }
 
     function toBeKept(UFixed18 multiplier, uint256 buffer, uint256 value, bytes memory data)

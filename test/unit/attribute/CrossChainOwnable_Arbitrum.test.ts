@@ -91,6 +91,10 @@ describe('CrossChainOwnable_Arbitrum', () => {
       expect(await ownable.owner()).to.equal(xChainOwner.address)
       expect(await ownable.pendingOwner()).to.equal(ethers.constants.AddressZero)
       expect(await ownable.crossChainRestricted()).to.equal(true)
+
+      // Transfer owner again
+      await ownable.connect(user).updatePendingOwner(xChainOwner.address)
+      await ownable.connect(arbSys.wallet).acceptOwner()
     })
 
     it('reverts if not cross chain', async () => {
