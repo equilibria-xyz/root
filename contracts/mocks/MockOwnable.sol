@@ -20,5 +20,6 @@ contract MockOwnable is Ownable {
 
     function _beforeAcceptOwner() internal override {
         beforeCalled = true;
+        super._beforeAcceptOwner();
     }
 }
