@@ -105,4 +105,12 @@ describe('Accumulator6', () => {
       expect(await accumulator6.accumulated(from, utils.parseUnits('1', 6).add(1))).to.equal(-2)
     })
   })
+
+  describe('#reset', async () => {
+    it('resets', async () => {
+      await accumulator6.increment(utils.parseUnits('2', 6), utils.parseUnits('5', 6))
+      await accumulator6.reset()
+      expect(await value(accumulator6)).to.equal(utils.parseUnits('0', 6))
+    })
+  })
 })

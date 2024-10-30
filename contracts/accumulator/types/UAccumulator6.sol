@@ -44,6 +44,12 @@ library UAccumulator6Lib {
         if (amount.isZero()) return;
         self._value = self._value.add(amount.div(total));
     }
+
+    /// @notice Resets the accumulator to its initial state
+    /// @param self The accumulator to reset
+    function reset(UAccumulator6 memory self) internal pure {
+        self._value = UFixed6Lib.ZERO;
+    }
 }
 
 library UAccumulator6StorageLib {

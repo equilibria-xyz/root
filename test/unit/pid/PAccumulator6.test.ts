@@ -160,4 +160,13 @@ describe('PAccumulator6', () => {
       await expect(pAccumulator6.accumulate(CONTROLLER, SKEW, TO_TIMESTAMP, FROM_TIMESTAMP, NOTIONAL)).to.be.reverted
     })
   })
+
+  describe('#reset', () => {
+    it('resets', async () => {
+      await pAccumulator6.reset()
+      const accumulator = await pAccumulator6.accumulator()
+      expect(accumulator._value).to.equal(0)
+      expect(accumulator._skew).to.equal(0)
+    })
+  })
 })

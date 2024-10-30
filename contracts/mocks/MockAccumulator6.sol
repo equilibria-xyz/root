@@ -26,4 +26,10 @@ contract MockAccumulator6 {
         self.decrement(amount, total);
         accumulatorStorage.store(self);
     }
+
+    function reset() external {
+        Accumulator6 memory self = accumulatorStorage.read();
+        self.reset();
+        accumulatorStorage.store(self);
+    }
 }
