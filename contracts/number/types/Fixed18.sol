@@ -73,6 +73,16 @@ library Fixed18Lib {
     }
 
     /**
+     * @notice Creates a signed fixed-decimal from a significand and an exponent
+     * @param significand Significand
+     * @param exponent Exponent
+     * @return New signed fixed-decimal
+     */
+    function fromSignificandAndExponent(int256 significand, UFixed18 exponent) internal pure returns (Fixed18) {
+        return Fixed18.wrap(significand * int256(10 ** UFixed18.unwrap(exponent)));
+    }
+
+    /**
      * @notice Returns whether the signed fixed-decimal is equal to zero.
      * @param a Signed fixed-decimal
      * @return Whether the signed fixed-decimal is zero.
