@@ -8,6 +8,8 @@ on:
       - master
       - dev
       - v2
+      - v2.3
+      - v2.3-fix-review
 
 env:
   CI: true

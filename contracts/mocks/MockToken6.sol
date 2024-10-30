@@ -56,6 +56,10 @@ contract MockToken6 {
         return Token6Lib.balanceOf(self, account);
     }
 
+    function totalSupply(Token6 self) external view returns (UFixed6) {
+        return Token6Lib.totalSupply(self);
+    }
+
     function read(Token6Storage slot) external view returns (Token6) {
         return slot.read();
     }
