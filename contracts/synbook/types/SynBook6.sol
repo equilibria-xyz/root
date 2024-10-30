@@ -44,7 +44,7 @@ library SynBook6Lib {
         // TODO: put notional in indefinite for increased precision
         return spread.mul(Fixed6Lib.from(change.abs())).mul(Fixed6Lib.from(price));
     }
-,
+
     /// @dev f(x) = d0 * x + d1 * x^2 / 2 + d2 * x^3 / 3 + d3 * x^4 / 4
     /// @dev sign = 1 for buy / ask and -1 for sell / bid
     function _indefinite(
