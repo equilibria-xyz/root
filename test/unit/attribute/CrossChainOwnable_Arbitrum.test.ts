@@ -93,6 +93,7 @@ describe('CrossChainOwnable_Arbitrum', () => {
       expect(await ownable.crossChainRestricted()).to.equal(true)
 
       // Transfer owner again
+      // During cross-chain transfer, the owner is set to the cross-chain sender
       await ownable.connect(user).updatePendingOwner(xChainOwner.address)
       await ownable.connect(arbSys.wallet).acceptOwner()
     })
