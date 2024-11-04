@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Ownable.sol";
+import "../token/types/Token18.sol";
 
 /**
  * @title OwnerWithdrawable
@@ -10,12 +10,11 @@ import "./Ownable.sol";
  */
 contract OwnerWithdrawable is Ownable {
     /**
-     * @notice Withdraws ERC20 tokens from the contract
+     * @notice Withdraws all ERC20 tokens from the contract to the owner
      * @dev Can only be called by the owner
      * @param token Address of the ERC20 token
-     * @param amount Amount of tokens to withdraw
      */
-    function withdraw(address token, uint256 amount) public virtual onlyOwner {
-        IERC20(token).transfer(owner(), amount);
+    function withdraw(Token18 token) public virtual onlyOwner {
+        token.push(owner(), token.balanceOf(address(this)));
     }
 }
