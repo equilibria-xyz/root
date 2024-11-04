@@ -8,8 +8,7 @@ on:
       - master
       - dev
       - v2
-      - v2.3
-      - v2.3-fix-review
+      - v2.4
 
 env:
   CI: true
