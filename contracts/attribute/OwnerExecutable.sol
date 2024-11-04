@@ -17,8 +17,8 @@ contract OwnerExecutable is Ownable {
      * @param data Calldata to be executed
      * @return result The result of the call
      */
-    function execute(address target, bytes calldata data) public virtual onlyOwner returns (bytes memory result) {
-        (bool success, bytes memory response) = target.call(data);
+    function execute(address target, bytes calldata data) public payable virtual onlyOwner returns (bytes memory result) {
+        (bool success, bytes memory response) = target.call{value: msg.value}(data);
         if (!success) {
             revert OwnableExecuteCallFailed();
         }

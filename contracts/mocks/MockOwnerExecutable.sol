@@ -5,7 +5,7 @@ import "../attribute/OwnerExecutable.sol";
 import "./MockOwnable.sol";
 
 contract MockOwnerExecutable is MockOwnable, OwnerExecutable {
-    function execute(address target, bytes calldata data) public override(OwnerExecutable) returns (bytes memory result) {
+    function execute(address target, bytes calldata data) public payable override(OwnerExecutable) returns (bytes memory result) {
         return super.execute(target, data);
     }
 
