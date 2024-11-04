@@ -14,7 +14,7 @@ contract MockOwnable is Ownable {
         super.__Ownable__initialize();
     }
 
-    function _beforeAcceptOwner() internal override {
+    function _beforeAcceptOwner() internal virtual override {
         beforeCalled = true;
     }
 }
