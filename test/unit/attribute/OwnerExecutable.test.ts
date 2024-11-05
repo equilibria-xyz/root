@@ -28,6 +28,19 @@ describe('OwnerExecutable', () => {
       expect(decodedResult[0]).to.equal(owner.address)
     })
 
+    it('executes payable call successfully', async () => {
+      const target = user.address
+      const data = '0x'
+      const value = ethers.utils.parseEther('1.0')
+
+      const balanceBefore = await ethers.provider.getBalance(target)
+
+      await ownableExecutable.connect(owner).execute(target, data, { value: value })
+
+      const balanceAfter = await ethers.provider.getBalance(target)
+      expect(balanceAfter.sub(balanceBefore)).to.equal(value)
+    })
+
     it('reverts if call fails', async () => {
       const target = ownableExecutable.address
       const data = '0x'
@@ -43,6 +56,16 @@ describe('OwnerExecutable', () => {
 
       await expect(ownableExecutable.connect(user).execute(target, data)).to.be.revertedWith(
         `OwnableNotOwnerError("${user.address}")`,
+      )
+    })
+
+    it('reverts if payable call fails', async () => {
+      const target = ownableExecutable.address
+      const data = ownableExecutable.interface.encodeFunctionData('owner')
+      const value = ethers.utils.parseEther('1.0')
+
+      await expect(ownableExecutable.connect(owner).execute(target, data, { value: value })).to.be.revertedWith(
+        'OwnableExecuteCallFailed',
       )
     })
   })
