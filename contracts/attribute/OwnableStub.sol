@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./Ownable.sol";
+import { Ownable } from "./Ownable.sol";
 
 /**
  * @title OwnableStub
@@ -13,7 +13,7 @@ contract OwnableStub {
      * @notice Accepts ownership of the contract
      * @dev Can only be called by the pending owner to ensure correctness.
      */
-    function acceptOwner(address ownable) public {
+    function acceptOwner(address ownable) external {
         Ownable(ownable).acceptOwner();
     }
 }
