@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/OwnerExecutable.sol";
-import "./MockOwnable.sol";
+import {OwnerExecutable} from "../attribute/OwnerExecutable.sol";
+import {MockOwnable, Ownable} from "./MockOwnable.sol";
 
 contract MockOwnerExecutable is MockOwnable, OwnerExecutable {
     function execute(address target, bytes calldata data) public payable override(OwnerExecutable) returns (bytes memory result) {
