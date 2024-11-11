@@ -59,6 +59,13 @@ library PAccumulator6Lib {
         self._skew = skew;
     }
 
+    /// @notice Resets the accumulator to its initial state
+    /// @param self The accumulator to reset
+    function reset(PAccumulator6 memory self) internal pure {
+        self._value = Fixed6Lib.ZERO;
+        self._skew = Fixed6Lib.ZERO;
+    }
+
     /// @notice Helper function to accumulate a singular rate against notional
     /// @param rate The rate to accumulate
     /// @param fromTimestamp The timestamp to accumulate from
