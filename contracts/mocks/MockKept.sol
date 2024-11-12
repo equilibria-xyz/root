@@ -17,10 +17,14 @@ contract MockKept is Kept {
         super.__Kept__initialize(ethTokenOracleFeed_, keeperToken_);
     }
 
+    function initializeIncorrect(AggregatorV3Interface ethTokenOracleFeed_, Token18 keeperToken_) external {
+        super.__Kept__initialize(ethTokenOracleFeed_, keeperToken_);
+    }
+
     function _raiseKeeperFee(UFixed18 amount, bytes memory data) internal override returns (UFixed18) {
         emit RaiseKeeperFeeCalled(amount, data);
         keeperToken().pull(benefactor, amount);
-        return amount;
+        return super._raiseKeeperFee(amount, data);
     }
 
     function toBeKept(UFixed18 multiplier, uint256 buffer, uint256 value, bytes memory data)

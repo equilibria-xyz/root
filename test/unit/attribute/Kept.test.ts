@@ -88,6 +88,10 @@ describe('Kept', () => {
   })
 
   describe('#__Kept__initialize', async () => {
+    it('reverts when reinitializing', async () => {
+      await expect(kept.connect(owner).initializeIncorrect(ethTokenOracleFeed.address, keeperToken.address)).to.be
+        .reverted
+    })
     it('initializes keeperToken and ethTokenOracleFeed', async () => {
       expect(await kept.keeperToken()).to.equal(keeperToken.address)
       expect(await kept.ethTokenOracleFeed()).to.equal(ethTokenOracleFeed.address)

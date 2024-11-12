@@ -29,6 +29,13 @@ describe('CrossChainOwner_Optimism', () => {
     uOwner = await new CrossChainOwnerOptimism__factory(owner).deploy()
   })
 
+  describe('#initialize', async () => {
+    it('reverts when reinitializing', async () => {
+      await uOwner.connect(user).initialize()
+      await expect(uOwner.connect(user).initialize()).to.be.reverted
+    })
+  })
+
   describe('#execute', async () => {
     beforeEach(async () => {
       await uOwner.connect(user).initialize()

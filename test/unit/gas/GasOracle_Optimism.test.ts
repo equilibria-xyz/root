@@ -5,7 +5,7 @@ import HRE from 'hardhat'
 
 import {
   AggregatorV3Interface,
-  GasOracle__factory,
+  GasOracleOptimism__factory,
   GasOracleRunner__factory,
   OptGasInfo,
 } from '../../../types/generated'
@@ -43,7 +43,7 @@ describe('GasOracle_Optimism', () => {
 
   describe('#cost', async () => {
     it('returns correct cost (no value)', async () => {
-      const gasOracle = await new GasOracle__factory(owner).deploy(
+      const gasOracle = await new GasOracleOptimism__factory(owner).deploy(
         ethTokenOracleFeed.address,
         8,
         1_000_000,
@@ -83,7 +83,7 @@ describe('GasOracle_Optimism', () => {
     })
 
     it('returns correct cost (value)', async () => {
-      const gasOracle = await new GasOracle__factory(owner).deploy(
+      const gasOracle = await new GasOracleOptimism__factory(owner).deploy(
         ethTokenOracleFeed.address,
         8,
         1_000_000,

@@ -12,6 +12,10 @@ contract MockReentrancyGuard is ReentrancyGuard {
         super.__ReentrancyGuard__initialize();
     }
 
+    function initializeIncorrect() external {
+        super.__ReentrancyGuard__initialize();
+    }
+
     function __status() external view returns (uint256) {
         return _status.read();
     }

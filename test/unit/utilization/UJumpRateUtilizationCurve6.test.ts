@@ -33,6 +33,10 @@ const CURVE_4 = {
   targetUtilization: ethers.utils.parseUnits('0.80', 6),
 }
 
+const FROM_TIMESTAMP = 1626156000
+const TO_TIMESTAMP = 1626159000
+const NOTIONAL = ethers.utils.parseUnits('500', 6)
+
 describe('UJumpRateUtilizationCurve6', () => {
   let user: SignerWithAddress
   let jumpRateUtilizationCurve: MockUJumpRateUtilizationCurve6
@@ -192,6 +196,352 @@ describe('UJumpRateUtilizationCurve6', () => {
         expect(await jumpRateUtilizationCurve.compute(CURVE_4, ethers.utils.parseUnits('1.10', 6))).to.equal(
           ethers.utils.parseUnits('0.10', 6),
         )
+      })
+    })
+  })
+
+  describe('#accumulate', async () => {
+    context('CURVE_1', async () => {
+      it('returns correct accumalation at zero utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_1,
+            ethers.utils.parseUnits('0.00', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.004756', 6))
+      })
+
+      it('returns correct accumulation below target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_1,
+            ethers.utils.parseUnits('0.40', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.014269', 6))
+      })
+
+      it('returns correct accumulation at target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_1,
+            ethers.utils.parseUnits('0.80', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.023782', 6))
+      })
+
+      it('returns correct accumulation above target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_1,
+            ethers.utils.parseUnits('0.90', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.035673', 6))
+      })
+
+      it('returns correct accumulation at max utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_1,
+            ethers.utils.parseUnits('1.00', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.047564', 6))
+      })
+
+      it('returns correct accumulation above max utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_1,
+            ethers.utils.parseUnits('1.10', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.047564', 6))
+      })
+
+      it('returns correct accumulation at zero time elapsed', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_1,
+            ethers.utils.parseUnits('1.10', 6),
+            FROM_TIMESTAMP,
+            FROM_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0', 6))
+      })
+    })
+
+    context('CURVE_2', async () => {
+      it('returns correct accumalation at zero utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_2,
+            ethers.utils.parseUnits('0.00', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.047564', 6))
+      })
+
+      it('returns correct accumulation below target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_2,
+            ethers.utils.parseUnits('0.40', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.035673', 6))
+      })
+
+      it('returns correct accumulation at target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_2,
+            ethers.utils.parseUnits('0.80', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.023782', 6))
+      })
+
+      it('returns correct accumulation above target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_2,
+            ethers.utils.parseUnits('0.90', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.035673', 6))
+      })
+
+      it('returns correct accumulation at max utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_2,
+            ethers.utils.parseUnits('1.00', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.047564', 6))
+      })
+
+      it('returns correct accumulation above max utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_2,
+            ethers.utils.parseUnits('1.10', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.047564', 6))
+      })
+
+      it('returns correct accumulation at zero time elapsed', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_2,
+            ethers.utils.parseUnits('1.10', 6),
+            FROM_TIMESTAMP,
+            FROM_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0', 6))
+      })
+    })
+
+    context('CURVE_3', async () => {
+      it('returns correct accumalation at zero utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_3,
+            ethers.utils.parseUnits('0.00', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.023782', 6))
+      })
+
+      it('returns correct accumulation below target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_3,
+            ethers.utils.parseUnits('0.40', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.035673', 6))
+      })
+
+      it('returns correct accumulation at target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_3,
+            ethers.utils.parseUnits('0.80', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.047564', 6))
+      })
+
+      it('returns correct accumulation above target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_3,
+            ethers.utils.parseUnits('0.90', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.035673', 6))
+      })
+
+      it('returns correct accumulation at max utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_3,
+            ethers.utils.parseUnits('1.00', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.023782', 6))
+      })
+
+      it('returns correct accumulation above max utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_3,
+            ethers.utils.parseUnits('1.10', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.023782', 6))
+      })
+
+      it('returns correct accumulation at zero time elapsed', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_3,
+            ethers.utils.parseUnits('1.10', 6),
+            FROM_TIMESTAMP,
+            FROM_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0', 6))
+      })
+    })
+
+    context('CURVE_4', async () => {
+      it('returns correct accumalation at zero utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_4,
+            ethers.utils.parseUnits('0.00', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.047564', 6))
+      })
+
+      it('returns correct accumulation below target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_4,
+            ethers.utils.parseUnits('0.40', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.035673', 6))
+      })
+
+      it('returns correct accumulation at target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_4,
+            ethers.utils.parseUnits('0.80', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.023782', 6))
+      })
+
+      it('returns correct accumulation above target utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_4,
+            ethers.utils.parseUnits('0.90', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.014269', 6))
+      })
+
+      it('returns correct accumulation at max utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_4,
+            ethers.utils.parseUnits('1.00', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.004756', 6))
+      })
+
+      it('returns correct accumulation above max utilization', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_4,
+            ethers.utils.parseUnits('1.10', 6),
+            FROM_TIMESTAMP,
+            TO_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0.004756', 6))
+      })
+
+      it('returns correct accumulation at zero time elapsed', async () => {
+        expect(
+          await jumpRateUtilizationCurve.accumulate(
+            CURVE_4,
+            ethers.utils.parseUnits('1.10', 6),
+            FROM_TIMESTAMP,
+            FROM_TIMESTAMP,
+            NOTIONAL,
+          ),
+        ).to.equal(ethers.utils.parseUnits('0', 6))
       })
     })
   })
