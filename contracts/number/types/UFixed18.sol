@@ -64,6 +64,16 @@ library UFixed18Lib {
     }
 
     /**
+     * @notice Creates an unsigned fixed-decimal from a significand and an exponent
+     * @param significand The significand of the number
+     * @param exponent The exponent of the number
+     * @return New unsigned fixed-decimal
+     */
+    function fromSignificandAndExponent(uint256 significand, uint256 exponent) internal pure returns (UFixed18) {
+        return UFixed18.wrap(significand * (10 ** exponent));
+    }
+
+    /**
      * @notice Returns whether the unsigned fixed-decimal is equal to zero.
      * @param a Unsigned fixed-decimal
      * @return Whether the unsigned fixed-decimal is zero.

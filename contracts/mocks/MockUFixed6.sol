@@ -36,6 +36,10 @@ contract MockUFixed6 {
         return UFixed6Lib.from(a, roundOut);
     }
 
+    function fromSignificandAndExponent(uint256 significand, uint256 exponent) external pure returns (UFixed6) {
+        return UFixed6Lib.fromSignificandAndExponent(significand, exponent);
+    }
+
     function isZero(UFixed6 a) external pure returns (bool) {
         return UFixed6Lib.isZero(a);
     }
