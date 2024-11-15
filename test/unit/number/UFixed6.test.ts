@@ -92,6 +92,41 @@ describe('UFixed6', () => {
     })
   })
 
+  describe('#fromSignificandAndExponent', async () => {
+    it('creates new from significand and exponent', async () => {
+      expect(await uFixed6.fromSignificandAndExponent(10, 6)).to.equal(utils.parseUnits('10', 6))
+      expect(await uFixed6.fromSignificandAndExponent(10, 0)).to.equal(10)
+    })
+
+    it('creates new from significand and exponent with zero significand', async () => {
+      expect(await uFixed6.fromSignificandAndExponent(0, 6)).to.equal(0)
+      expect(await uFixed6.fromSignificandAndExponent(0, 0)).to.equal(0)
+    })
+
+    it('creates new from significand and exponent with zero exponent', async () => {
+      expect(await uFixed6.fromSignificandAndExponent(10, 0)).to.equal(10)
+    })
+
+    it('creates new from significand and exponent with large exponent', async () => {
+      expect(await uFixed6.fromSignificandAndExponent(1, 18)).to.equal(utils.parseUnits('1', 18))
+    })
+
+    it('creates new from significand and exponent with large significand', async () => {
+      const LARGE_SIGNIFICAND = ethers.constants.MaxInt256.div(10)
+      expect(await uFixed6.fromSignificandAndExponent(LARGE_SIGNIFICAND, 1)).to.equal(LARGE_SIGNIFICAND.mul(10))
+    })
+
+    it('reverts if too large', async () => {
+      const TOO_LARGE = ethers.BigNumber.from(2).pow(256).sub(10)
+      await expect(uFixed6.fromSignificandAndExponent(1, TOO_LARGE)).to.be.reverted
+    })
+
+    it('reverts if too small', async () => {
+      const TOO_SMALL = ethers.constants.MinInt256.add(1)
+      await expect(uFixed6.fromSignificandAndExponent(1, TOO_SMALL)).to.be.reverted
+    })
+  })
+
   describe('#isZero', async () => {
     it('returns true', async () => {
       expect(await uFixed6.isZero(0)).to.equal(true)
