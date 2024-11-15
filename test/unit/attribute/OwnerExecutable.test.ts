@@ -9,11 +9,10 @@ const { ethers } = HRE
 describe('OwnerExecutable', () => {
   let owner: SignerWithAddress
   let user: SignerWithAddress
-  let unrelated: SignerWithAddress
   let ownableExecutable: MockOwnerExecutable
 
   beforeEach(async () => {
-    ;[owner, user, unrelated] = await ethers.getSigners()
+    ;[owner, user] = await ethers.getSigners()
     ownableExecutable = await new MockOwnerExecutable__factory(owner).deploy()
     await ownableExecutable.connect(owner).__initialize()
   })
