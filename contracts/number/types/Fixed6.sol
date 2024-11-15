@@ -88,8 +88,8 @@ library Fixed6Lib {
      * @param exponent Exponent
      * @return New signed fixed-decimal
      */
-    function fromSignificandAndExponent(int256 significand, UFixed6 exponent) internal pure returns (Fixed6) {
-        return Fixed6.wrap(significand * int256(10 ** UFixed6.unwrap(exponent)));
+    function fromSignificandAndExponent(int256 significand, uint256 exponent) internal pure returns (Fixed6) {
+        return Fixed6.wrap(significand * int256(10 ** exponent));
     }
 
     /**

@@ -78,8 +78,8 @@ library Fixed18Lib {
      * @param exponent Exponent
      * @return New signed fixed-decimal
      */
-    function fromSignificandAndExponent(int256 significand, UFixed18 exponent) internal pure returns (Fixed18) {
-        return Fixed18.wrap(significand * int256(10 ** UFixed18.unwrap(exponent)));
+    function fromSignificandAndExponent(int256 significand, uint256 exponent) internal pure returns (Fixed18) {
+        return Fixed18.wrap(significand * int256(10 ** exponent));
     }
 
     /**

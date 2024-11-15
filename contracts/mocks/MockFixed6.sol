@@ -44,7 +44,7 @@ contract MockFixed6 {
         return Fixed6Lib.from(a, roundOut);
     }
 
-    function fromSignificandAndExponent(int256 significand, UFixed6 exponent) external pure returns (Fixed6) {
+    function fromSignificandAndExponent(int256 significand, uint256 exponent) external pure returns (Fixed6) {
         return Fixed6Lib.fromSignificandAndExponent(significand, exponent);
     }
 
