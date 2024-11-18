@@ -79,8 +79,8 @@ library UFixed6Lib {
      * @param exponent The exponent of the number
      * @return New unsigned fixed-decimal
      */
-    function fromSignificandAndExponent(uint256 significand, uint256 exponent) internal pure returns (UFixed6) {
-        return UFixed6.wrap(significand * (10 ** exponent));
+    function from(UFixed6 significand, uint256 exponent) internal pure returns (UFixed6) {
+        return significand.mul(from(10 ** exponent));
     }
 
     /**

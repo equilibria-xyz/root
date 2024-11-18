@@ -78,8 +78,8 @@ library Fixed18Lib {
      * @param exponent Exponent
      * @return New signed fixed-decimal
      */
-    function fromSignificandAndExponent(int256 significand, uint256 exponent) internal pure returns (Fixed18) {
-        return Fixed18.wrap(significand * int256(10 ** exponent));
+    function from(Fixed18 significand, uint256 exponent) internal pure returns (Fixed18) {
+        return significand.mul(from(int256(10 ** exponent)));
     }
 
     /**
