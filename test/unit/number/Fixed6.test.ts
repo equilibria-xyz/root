@@ -135,12 +135,16 @@ describe('Fixed6', () => {
     })
   })
 
-  describe('#fromSignificandAndExpo', async () => {
+  describe('#from(Fixed6,uint256)', async () => {
     it('creates new from significand and exponent', async () => {
-      expect(await fixed6.fromSignificandAndExponent(10, 6)).to.equal(utils.parseUnits('10', 6))
-      expect(await fixed6.fromSignificandAndExponent(-10, 6)).to.equal(utils.parseUnits('-10', 6))
-      expect(await fixed6.fromSignificandAndExponent(10, 0)).to.equal(10)
-      expect(await fixed6.fromSignificandAndExponent(-10, 0)).to.equal(-10)
+      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('0.00001', 6), 6)).to.equal(
+        utils.parseUnits('10', 6),
+      )
+      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('-0.00001', 6), 6)).to.equal(
+        utils.parseUnits('-10', 6),
+      )
+      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('0.00001', 6), 0)).to.equal(10)
+      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('-0.00001', 6), 0)).to.equal(-10)
     })
 
     it('creates new from significand and exponent with zero significand', async () => {
@@ -149,17 +153,25 @@ describe('Fixed6', () => {
     })
 
     it('creates new from significand and exponent with zero exponent', async () => {
-      expect(await fixed6.fromSignificandAndExponent(10, 0)).to.equal(10)
-      expect(await fixed6.fromSignificandAndExponent(-10, 0)).to.equal(-10)
+      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('0.00001', 6), 0)).to.equal(
+        utils.parseUnits('0.00001', 6),
+      )
+      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('-0.00001', 6), 0)).to.equal(
+        utils.parseUnits('-0.00001', 6),
+      )
     })
 
     it('creates new from significand and exponent with large exponent', async () => {
-      expect(await fixed6.fromSignificandAndExponent(1, 18)).to.equal(utils.parseUnits('1', 18))
-      expect(await fixed6.fromSignificandAndExponent(-1, 18)).to.equal(utils.parseUnits('-1', 18))
+      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('0.000001', 6), 18)).to.equal(
+        utils.parseUnits('1', 18),
+      )
+      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('-0.000001', 6), 18)).to.equal(
+        utils.parseUnits('-1', 18),
+      )
     })
 
     it('creates new from significand and exponent with large significand', async () => {
-      const LARGE_SIGNIFICAND = ethers.constants.MaxInt256.div(10)
+      const LARGE_SIGNIFICAND = utils.parseUnits('1', 40)
       expect(await fixed6.fromSignificandAndExponent(LARGE_SIGNIFICAND, 1)).to.equal(LARGE_SIGNIFICAND.mul(10))
       expect(await fixed6.fromSignificandAndExponent(LARGE_SIGNIFICAND.mul(-1), 1)).to.equal(LARGE_SIGNIFICAND.mul(-10))
     })

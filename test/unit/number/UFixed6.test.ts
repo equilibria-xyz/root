@@ -92,10 +92,11 @@ describe('UFixed6', () => {
     })
   })
 
-  describe('#fromSignificandAndExponent', async () => {
+  describe('#from(UFixed6,uint256)', async () => {
     it('creates new from significand and exponent', async () => {
-      expect(await uFixed6.fromSignificandAndExponent(10, 6)).to.equal(utils.parseUnits('10', 6))
-      expect(await uFixed6.fromSignificandAndExponent(10, 0)).to.equal(10)
+      expect(await uFixed6.fromSignificandAndExponent(utils.parseUnits('10', 6), 6)).to.equal(
+        utils.parseUnits('10', 12),
+      )
     })
 
     it('creates new from significand and exponent with zero significand', async () => {
@@ -104,15 +105,17 @@ describe('UFixed6', () => {
     })
 
     it('creates new from significand and exponent with zero exponent', async () => {
-      expect(await uFixed6.fromSignificandAndExponent(10, 0)).to.equal(10)
+      expect(await uFixed6.fromSignificandAndExponent(utils.parseUnits('10', 6), 0)).to.equal(utils.parseUnits('10', 6))
     })
 
     it('creates new from significand and exponent with large exponent', async () => {
-      expect(await uFixed6.fromSignificandAndExponent(1, 18)).to.equal(utils.parseUnits('1', 18))
+      expect(await uFixed6.fromSignificandAndExponent(utils.parseUnits('10', 6), 18)).to.equal(
+        utils.parseUnits('10', 24),
+      )
     })
 
     it('creates new from significand and exponent with large significand', async () => {
-      const LARGE_SIGNIFICAND = ethers.constants.MaxInt256.div(10)
+      const LARGE_SIGNIFICAND = utils.parseUnits('1', 40)
       expect(await uFixed6.fromSignificandAndExponent(LARGE_SIGNIFICAND, 1)).to.equal(LARGE_SIGNIFICAND.mul(10))
     })
 

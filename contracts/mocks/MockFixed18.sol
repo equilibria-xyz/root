@@ -40,8 +40,8 @@ contract MockFixed18 {
         return Fixed18Lib.from(a);
     }
 
-    function fromSignificandAndExponent(int256 significand, uint256 exponent) external pure returns (Fixed18) {
-        return Fixed18Lib.fromSignificandAndExponent(significand, exponent);
+    function fromSignificandAndExponent(Fixed18 significand, uint256 exponent) external pure returns (Fixed18) {
+        return Fixed18Lib.from(significand, exponent);
     }
 
     function isZero(Fixed18 a) external pure returns (bool) {

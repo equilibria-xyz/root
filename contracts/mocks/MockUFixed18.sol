@@ -33,8 +33,8 @@ contract MockUFixed18 {
         return UFixed18Lib.from(a);
     }
 
-    function fromSignificandAndExponent(uint256 significand, uint256 exponent) external pure returns (UFixed18) {
-        return UFixed18Lib.fromSignificandAndExponent(significand, exponent);
+    function fromSignificandAndExponent(UFixed18 significand, uint256 exponent) external pure returns (UFixed18) {
+        return UFixed18Lib.from(significand, exponent);
     }
 
     function isZero(UFixed18 a) external pure returns (bool) {
