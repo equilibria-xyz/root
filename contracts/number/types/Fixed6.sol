@@ -88,8 +88,11 @@ library Fixed6Lib {
      * @param exponent Exponent
      * @return New signed fixed-decimal
      */
-    function from(Fixed6 significand, uint256 exponent) internal pure returns (Fixed6) {
-        return significand.mul(from(int256(10 ** exponent)));
+    function from(Fixed6 significand, int256 exponent) internal pure returns (Fixed6) {
+        if (exponent < 0) {
+            return significand.div(from(int256(10 ** uint256(-1 * exponent))));
+        }
+        return significand.mul(from(int256(10 ** uint256(exponent))));
     }
 
     /**

@@ -69,8 +69,11 @@ library UFixed18Lib {
      * @param exponent The exponent of the number
      * @return New unsigned fixed-decimal
      */
-    function from(UFixed18 significand, uint256 exponent) internal pure returns (UFixed18) {
-        return significand.mul(from(10 ** exponent));
+    function from(UFixed18 significand, int256 exponent) internal pure returns (UFixed18) {
+        if (exponent < 0) {
+            return significand.div(from(10 ** uint256(-1 * exponent)));
+        }
+        return significand.mul(from(10 ** uint256(exponent)));
     }
 
     /**
