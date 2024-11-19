@@ -135,7 +135,7 @@ describe('Fixed6', () => {
     })
   })
 
-  describe('#from(Fixed6,uint256)', async () => {
+  describe('#from(Fixed6,int256)', async () => {
     it('creates new from significand and exponent', async () => {
       expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('0.00001', 6), 6)).to.equal(
         utils.parseUnits('10', 6),
@@ -143,8 +143,15 @@ describe('Fixed6', () => {
       expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('-0.00001', 6), 6)).to.equal(
         utils.parseUnits('-10', 6),
       )
-      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('0.00001', 6), 0)).to.equal(10)
-      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('-0.00001', 6), 0)).to.equal(-10)
+    })
+
+    it('creates new from significand and exponent with negative exponent', async () => {
+      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('10', 6), -2)).to.equal(
+        utils.parseUnits('0.1', 6),
+      )
+      expect(await fixed6.fromSignificandAndExponent(utils.parseUnits('-10', 6), -2)).to.equal(
+        utils.parseUnits('-0.1', 6),
+      )
     })
 
     it('creates new from significand and exponent with zero significand', async () => {

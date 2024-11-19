@@ -105,10 +105,15 @@ describe('Fixed18', () => {
     })
   })
 
-  describe('#from(Fixed18,uint256)', async () => {
+  describe('#from(Fixed18,int256)', async () => {
     it('creates new from significand and exponent', async () => {
       expect(await fixed18.fromSignificandAndExponent(utils.parseEther('10'), 2)).to.equal(utils.parseEther('1000'))
       expect(await fixed18.fromSignificandAndExponent(utils.parseEther('-10'), 2)).to.equal(utils.parseEther('-1000'))
+    })
+
+    it('creates new from significand and exponent with negative exponent', async () => {
+      expect(await fixed18.fromSignificandAndExponent(utils.parseEther('10'), -2)).to.equal(utils.parseEther('0.1'))
+      expect(await fixed18.fromSignificandAndExponent(utils.parseEther('-10'), -2)).to.equal(utils.parseEther('-0.1'))
     })
 
     it('creates new from significand and exponent with zero significand', async () => {
