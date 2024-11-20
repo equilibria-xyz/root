@@ -79,10 +79,9 @@ library Fixed18Lib {
      * @return New signed fixed-decimal
      */
     function from(Fixed18 significand, int256 exponent) internal pure returns (Fixed18) {
-        if (exponent < 0) {
-            return significand.div(from(int256(10 ** uint256(-1 * exponent))));
-        }
-        return significand.mul(from(int256(10 ** uint256(exponent))));
+        return exponent < 0
+            ? significand.div(from(int256(10 ** uint256(-1 * exponent))))
+            : significand.mul(from(int256(10 ** uint256(exponent))));
     }
 
     /**

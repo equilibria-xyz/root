@@ -70,10 +70,9 @@ library UFixed18Lib {
      * @return New unsigned fixed-decimal
      */
     function from(UFixed18 significand, int256 exponent) internal pure returns (UFixed18) {
-        if (exponent < 0) {
-            return significand.div(from(10 ** uint256(-1 * exponent)));
-        }
-        return significand.mul(from(10 ** uint256(exponent)));
+        return exponent < 0
+            ? significand.div(from(10 ** uint256(-1 * exponent)))
+            : significand.mul(from(10 ** uint256(exponent)));
     }
 
     /**

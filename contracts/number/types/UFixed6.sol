@@ -80,10 +80,9 @@ library UFixed6Lib {
      * @return New unsigned fixed-decimal
      */
     function from(UFixed6 significand, int256 exponent) internal pure returns (UFixed6) {
-        if (exponent < 0) {
-            return significand.div(from(10 ** uint256(-1 * exponent)));
-        }
-        return significand.mul(from(10 ** uint256(exponent)));
+        return exponent < 0
+            ? significand.div(from(10 ** uint256(-1 * exponent)))
+            : significand.mul(from(10 ** uint256(exponent)));
     }
 
     /**
