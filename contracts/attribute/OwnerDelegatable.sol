@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import {IVotes} from "@openzeppelin/contracts/governance/utils/IVotes.sol";
-import {Ownable} from "./Ownable.sol";
+import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
+import { Ownable } from "./Ownable.sol";
 
 /**
  * @title OwnerDelegatable

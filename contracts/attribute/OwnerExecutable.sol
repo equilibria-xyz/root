@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import {Ownable} from "./Ownable.sol";
+import { Ownable } from "./Ownable.sol";
 
 /**
  * @title OwnerExecutable
