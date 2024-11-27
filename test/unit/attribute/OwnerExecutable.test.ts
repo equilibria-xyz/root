@@ -2,7 +2,13 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import HRE from 'hardhat'
 
-import { MockOwnerExecutable, MockOwnerExecutable__factory } from '../../../types/generated'
+import {
+  MockTokenOrEther18__factory,
+  MockOwnerExecutable,
+  MockOwnerExecutable__factory,
+  Ownable,
+} from '../../../types/generated'
+import { constants } from 'ethers'
 
 const { ethers } = HRE
 
@@ -28,7 +34,8 @@ describe('OwnerExecutable', () => {
     })
 
     it('executes payable call successfully', async () => {
-      const target = user.address
+      const testContract = await new MockTokenOrEther18__factory(owner).deploy()
+      const target = testContract.address
       const data = '0x'
       const value = ethers.utils.parseEther('1.0')
 
@@ -44,9 +51,7 @@ describe('OwnerExecutable', () => {
       const target = ownableExecutable.address
       const data = '0x'
 
-      await expect(ownableExecutable.connect(owner).execute(target, data)).to.be.revertedWith(
-        'OwnableExecuteCallFailed',
-      )
+      await expect(ownableExecutable.connect(owner).execute(target, data)).to.be.reverted
     })
 
     it('reverts if not owner', async () => {
@@ -63,9 +68,7 @@ describe('OwnerExecutable', () => {
       const data = ownableExecutable.interface.encodeFunctionData('owner')
       const value = ethers.utils.parseEther('1.0')
 
-      await expect(ownableExecutable.connect(owner).execute(target, data, { value: value })).to.be.revertedWith(
-        'OwnableExecuteCallFailed',
-      )
+      await expect(ownableExecutable.connect(owner).execute(target, data, { value: value })).to.be.reverted
     })
   })
 })

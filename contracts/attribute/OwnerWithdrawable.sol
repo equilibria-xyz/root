@@ -15,6 +15,6 @@ abstract contract OwnerWithdrawable is Ownable {
      * @param token Address of the ERC20 token
      */
     function withdraw(Token18 token) public virtual onlyOwner {
-        token.push(owner(), token.balanceOf(address(this)));
+        token.push(owner());
     }
 }

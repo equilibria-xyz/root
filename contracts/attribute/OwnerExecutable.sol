@@ -2,12 +2,15 @@
 pragma solidity ^0.8.13;
 
 import { Ownable } from "./Ownable.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 /**
  * @title OwnerExecutable
  * @notice Allows the owner to execute calls to other contracts
  */
 abstract contract OwnerExecutable is Ownable {
+    using Address for address;
+
     error OwnableExecuteCallFailed();
 
     /**
@@ -17,11 +20,7 @@ abstract contract OwnerExecutable is Ownable {
      * @param data Calldata to be executed
      * @return result The result of the call
      */
-    function execute(address target, bytes calldata data) public payable virtual onlyOwner returns (bytes memory result) {
-        (bool success, bytes memory response) = target.call{value: msg.value}(data);
-        if (!success) {
-            revert OwnableExecuteCallFailed();
-        }
-        return response;
+    function execute(address target, bytes calldata data) public payable virtual onlyOwner returns (bytes memory) {
+        return target.functionCallWithValue(data, msg.value);
     }
 }

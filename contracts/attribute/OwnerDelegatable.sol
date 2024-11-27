@@ -9,8 +9,6 @@ import { Ownable } from "./Ownable.sol";
  * @notice Allows the owner to delegate governance voting power for held tokens
  */
 abstract contract OwnerDelegatable is Ownable {
-    error OwnableGovernDelegationFailed();
-
     /**
      * @notice Delegates voting power for a specific token to an address
      * @dev Can only be called by the owner
@@ -18,10 +16,6 @@ abstract contract OwnerDelegatable is Ownable {
      * @param delegatee The address to delegate voting power to
      */
     function delegate(IVotes token, address delegatee) public virtual onlyOwner {
-        try token.delegate(delegatee) {
-            // Delegation succeeded
-        } catch {
-            revert OwnableGovernDelegationFailed();
-        }
+        token.delegate(delegatee);
     }
 }
