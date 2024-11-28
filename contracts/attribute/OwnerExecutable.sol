@@ -11,8 +11,6 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 abstract contract OwnerExecutable is Ownable {
     using Address for address;
 
-    error OwnableExecuteCallFailed();
-
     /**
      * @notice Executes a call to a target contract
      * @dev Can only be called by the owner
@@ -21,6 +19,6 @@ abstract contract OwnerExecutable is Ownable {
      * @return result The result of the call
      */
     function execute(address target, bytes calldata data) public payable virtual onlyOwner returns (bytes memory) {
-        return target.functionCallWithValue(data, msg.value);
+        return Address.functionCallWithValue(target, data, msg.value);
     }
 }
