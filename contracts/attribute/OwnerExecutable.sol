@@ -9,8 +9,6 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
  * @notice Allows the owner to execute calls to other contracts
  */
 abstract contract OwnerExecutable is Ownable {
-    using Address for address;
-
     /**
      * @notice Executes a call to a target contract
      * @dev Can only be called by the owner
