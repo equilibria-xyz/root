@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../attribute/Ownable.sol";
+import { Ownable } from "../attribute/Ownable.sol";
 
 contract MockOwnable is Ownable {
     bool public beforeCalled;
@@ -10,11 +10,16 @@ contract MockOwnable is Ownable {
         super.__Ownable__initialize();
     }
 
+    function initializeIncorrect() external {
+        super.__Ownable__initialize();
+    }
+
     function __initializeV(uint256 version) external initializer(version) {
         super.__Ownable__initialize();
     }
 
-    function _beforeAcceptOwner() internal override {
+    function _beforeAcceptOwner() internal virtual override {
         beforeCalled = true;
+        super._beforeAcceptOwner();
     }
 }

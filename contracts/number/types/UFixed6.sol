@@ -74,6 +74,18 @@ library UFixed6Lib {
     }
 
     /**
+     * @notice Creates an unsigned fixed-decimal from a significand and an exponent
+     * @param significand The significand of the number
+     * @param exponent The exponent of the number
+     * @return New unsigned fixed-decimal
+     */
+    function from(UFixed6 significand, int256 exponent) internal pure returns (UFixed6) {
+        return exponent < 0
+            ? significand.div(from(10 ** uint256(-1 * exponent)))
+            : significand.mul(from(10 ** uint256(exponent)));
+    }
+
+    /**
      * @notice Returns whether the unsigned fixed-decimal is equal to zero.
      * @param a Unsigned fixed-decimal
      * @return Whether the unsigned fixed-decimal is zero.

@@ -59,6 +59,12 @@ library Accumulator6Lib {
         self._value = self._value.add(_div(amount.mul(Fixed6Lib.NEG_ONE), total));
     }
 
+    /// @notice Resets the accumulator to its initial state
+    /// @param self The accumulator to reset
+    function reset(Accumulator6 memory self) internal pure {
+        self._value = Fixed6Lib.ZERO;
+    }
+
     function _div(Fixed6 amount, UFixed6 total) private pure returns (Fixed6) {
         return amount.sign() == -1 ? amount.divOut(Fixed6Lib.from(total)) : amount.div(Fixed6Lib.from(total));
     }

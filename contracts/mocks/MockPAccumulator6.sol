@@ -21,4 +21,10 @@ contract MockPAccumulator6 {
         accumulated = self.accumulate(controller, skew, fromTimestamp, toTimestamp, notional);
         accumulator = self;
     }
+
+    function reset() external {
+        PAccumulator6 memory self = accumulator;
+        self.reset();
+        accumulator = self;
+    }
 }
