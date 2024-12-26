@@ -136,6 +136,14 @@ contract MockUFixed6 {
         return UFixed6Lib.truncate(a);
     }
 
+    function inside(UFixed6 value, UFixed6 min, UFixed6 max) external pure returns (bool) {
+        return UFixed6Lib.inside(value, min, max);
+    }
+
+    function outside(UFixed6 value, UFixed6 min, UFixed6 max) external pure returns (bool) {
+        return UFixed6Lib.outside(value, min, max);
+    }
+
     function read(UFixed6Storage slot) external view returns (UFixed6) {
         return slot.read();
     }
