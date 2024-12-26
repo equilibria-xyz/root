@@ -368,6 +368,28 @@ library Fixed6Lib {
     function abs(Fixed6 a) internal pure returns (UFixed6) {
         return UFixed6.wrap(SignedMath.abs(Fixed6.unwrap(a)));
     }
+
+    /**
+     * @notice Returns whether the signed fixed-decimal `value` is inside the range `min` and `max`
+     * @param value Signed fixed-decimal to check
+     * @param min Minimum value
+     * @param max Maximum value
+     * @return Whether `value` is inside the range `min` and `max`
+     */
+    function inside(Fixed6 value, Fixed6 min, Fixed6 max) internal pure returns (bool) {
+        return gte(value, min) && lte(value, max);
+    }
+
+    /**
+     * @notice Returns whether the signed fixed-decimal `value` is outside the range `min` and `max`
+     * @param value Signed fixed-decimal to check
+     * @param min Minimum value
+     * @param max Maximum value
+     * @return Whether `value` is outside the range `min` and `max`
+     */
+    function outside(Fixed6 value, Fixed6 min, Fixed6 max) internal pure returns (bool) {
+        return lt(value, min) || gt(value, max);
+    }
 }
 
 library Fixed6StorageLib {

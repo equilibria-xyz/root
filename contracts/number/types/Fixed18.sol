@@ -358,6 +358,28 @@ library Fixed18Lib {
     function abs(Fixed18 a) internal pure returns (UFixed18) {
         return UFixed18.wrap(SignedMath.abs(Fixed18.unwrap(a)));
     }
+
+    /**
+     * @notice Returns whether the signed fixed-decimal `value` is inside the range `min` and `max`
+     * @param value Signed fixed-decimal to check
+     * @param min Minimum value
+     * @param max Maximum value
+     * @return Whether `value` is inside the range `min` and `max`
+     */
+    function inside(Fixed18 value, Fixed18 min, Fixed18 max) internal pure returns (bool) {
+        return gte(value, min) && lte(value, max);
+    }
+
+    /**
+     * @notice Returns whether the signed fixed-decimal `value` is outside the range `min` and `max`
+     * @param value Signed fixed-decimal to check
+     * @param min Minimum value
+     * @param max Maximum value
+     * @return Whether `value` is outside the range `min` and `max`
+     */
+    function outside(Fixed18 value, Fixed18 min, Fixed18 max) internal pure returns (bool) {
+        return lt(value, min) || gt(value, max);
+    }
 }
 
 library Fixed18StorageLib {
