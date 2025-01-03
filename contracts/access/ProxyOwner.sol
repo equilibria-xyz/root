@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/access/Ownable2Step.sol";
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import { Ownable, Ownable2Step } from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import { ProxyAdmin, TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 /**
  * @title ProxyOwner
@@ -13,6 +13,9 @@ import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 contract ProxyOwner is ProxyAdmin, Ownable2Step {
     error ProxyOwnerNotPendingAdminError();
 
+    /// @dev Specify deployer as the initial owner
+    constructor() ProxyAdmin(msg.sender) {}
+
     /// @dev Mapping of the pending admin for each proxy
     mapping(TransparentUpgradeableProxy => address) public pendingAdmins;
 
@@ -21,7 +24,7 @@ contract ProxyOwner is ProxyAdmin, Ownable2Step {
         if(pendingAdmins[proxy] != msg.sender) revert ProxyOwnerNotPendingAdminError();
         _;
     }
-    
+
     /// @notice Sets the pending admin for `proxy` to `newAdmin`
     /// @param proxy The proxy to change the pending admin for
     /// @param newAdmin The address of the new pending admin

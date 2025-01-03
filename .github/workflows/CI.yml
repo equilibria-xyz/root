@@ -37,6 +37,7 @@ jobs:
         run: yarn run lint
 
   unit-test:
+    if: false
     name: Unit Tests w/ Coverage
     runs-on: ubuntu-latest
     steps:

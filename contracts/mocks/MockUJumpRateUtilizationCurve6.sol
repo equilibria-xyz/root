@@ -7,7 +7,7 @@ contract MockUJumpRateUtilizationCurve6 {
     function compute(UJumpRateUtilizationCurve6 memory self, UFixed6 utilization) external pure returns (UFixed6) {
         return UJumpRateUtilizationCurve6Lib.compute(self, utilization);
     }
-    
+
     function accumulate(
         UJumpRateUtilizationCurve6 memory self,
         UFixed6 utilization,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/crosschain/CrossChainEnabled.sol";
+import "./CrossChainEnabled.sol";
 import "../Ownable.sol";
 import "../../storage/Storage.sol";
 

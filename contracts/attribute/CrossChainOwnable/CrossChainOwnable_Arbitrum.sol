@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/crosschain/arbitrum/CrossChainEnabledArbitrumL2.sol";
-import "./CrossChainOwnable.sol";
+import { CrossChainOwnable } from "./CrossChainOwnable.sol";
+import { CrossChainEnabledArbitrumL2 } from "./CrossChainEnabledArbitrumL2.sol";
 
 /**
  * @title CrossChainOwnable_Arbitrum
