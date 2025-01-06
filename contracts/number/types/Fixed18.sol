@@ -367,7 +367,7 @@ library Fixed18Lib {
      * @return Whether `value` is inside the range `min` and `max`
      */
     function inside(Fixed18 value, Fixed18 min, Fixed18 max) internal pure returns (bool) {
-        return gte(value, min) && lte(value, max);
+        return !outside(value, min, max);
     }
 
     /**
