@@ -11,6 +11,8 @@ import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
  *      and to the proxy ownership transfer.
  */
 contract ProxyOwner is ProxyAdmin, Ownable2Step {
+    // sig: 0xd8921f35
+    /// @custom:error Caller is not the pending admin
     error ProxyOwnerNotPendingAdminError();
 
     /// @dev Mapping of the pending admin for each proxy
@@ -21,7 +23,7 @@ contract ProxyOwner is ProxyAdmin, Ownable2Step {
         if(pendingAdmins[proxy] != msg.sender) revert ProxyOwnerNotPendingAdminError();
         _;
     }
-    
+
     /// @notice Sets the pending admin for `proxy` to `newAdmin`
     /// @param proxy The proxy to change the pending admin for
     /// @param newAdmin The address of the new pending admin

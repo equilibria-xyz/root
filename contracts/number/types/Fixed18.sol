@@ -17,6 +17,8 @@ using Fixed18StorageLib for Fixed18Storage global;
  * @notice Library for the signed fixed-decimal type.
  */
 library Fixed18Lib {
+    // sig: 0x00a07eb5
+    /// @custom:error Arithmetic overflow
     error Fixed18OverflowError(uint256 value);
 
     int256 private constant BASE = 1e18;

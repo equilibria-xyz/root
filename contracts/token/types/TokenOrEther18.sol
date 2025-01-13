@@ -23,6 +23,8 @@ library TokenOrEther18Lib {
     using Address for address;
     using SafeERC20 for IERC20;
 
+    // sig: 0x035b2e5a
+    /// @custom:error Unsupported Ether
     error TokenOrEther18UnsupportedEtherError();
 
     TokenOrEther18 public constant ZERO = TokenOrEther18.wrap(address(0));

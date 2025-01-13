@@ -9,6 +9,8 @@ import "../number/types/Fixed6.sol";
  * @notice Library for managing math operations for adiabatic fees.
  */
 library AdiabaticMath6 {
+    // sig: 0xc7d40ac9
+    /// @custom:error Adiabatic scale is zero
     error Adiabatic6ZeroScaleError();
 
     /// @notice Computes the base fees for an order

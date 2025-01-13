@@ -9,6 +9,8 @@ import "../number/types/Fixed18.sol";
  * @notice Library for managing math operations for utilization curves.
  */
 library CurveMath18 {
+    // sig: 0xcbaada7d
+    /// @custom:error Out of bounds
     error CurveMath18OutOfBoundsError();
 
     /**

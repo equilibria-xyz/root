@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/utils/math/SignedMath.sol";
  * @notice Library for additional math functions that are not included in the OpenZeppelin libraries.
  */
 library NumberMath {
+    // sig: 0x23d359a3
+    /// @custom:error Division by zero
     error DivisionByZero();
 
     /**
