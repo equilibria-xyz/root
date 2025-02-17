@@ -353,7 +353,7 @@ library UFixed6Lib {
      * @return Whether `value` is inside the range `min` and `max`
      */
     function inside(UFixed6 value, UFixed6 min, UFixed6 max) internal pure returns (bool) {
-        return gte(value, min) && lte(value, max);
+        return !outside(value, min, max);
     }
 
     /**

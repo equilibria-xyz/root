@@ -377,7 +377,7 @@ library Fixed6Lib {
      * @return Whether `value` is inside the range `min` and `max`
      */
     function inside(Fixed6 value, Fixed6 min, Fixed6 max) internal pure returns (bool) {
-        return gte(value, min) && lte(value, max);
+        return !outside(value, min, max);
     }
 
     /**

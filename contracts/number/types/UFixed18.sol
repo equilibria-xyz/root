@@ -343,7 +343,7 @@ library UFixed18Lib {
      * @return Whether `value` is inside the range `min` and `max`
      */
     function inside(UFixed18 value, UFixed18 min, UFixed18 max) internal pure returns (bool) {
-        return gte(value, min) && lte(value, max);
+        return !outside(value, min, max);
     }
 
     /**
