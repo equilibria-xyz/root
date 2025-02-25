@@ -653,6 +653,66 @@ describe('Fixed18', () => {
     })
   })
 
+  describe('#inside', async () => {
+    context('returns true', async () => {
+      it('if inside', async () => {
+        expect(
+          await fixed18.inside(utils.parseEther('123.456'), utils.parseEther('123'), utils.parseEther('124')),
+        ).to.equal(true)
+      })
+
+      it('if equal to min', async () => {
+        expect(
+          await fixed18.inside(utils.parseEther('123'), utils.parseEther('123'), utils.parseEther('125')),
+        ).to.equal(true)
+      })
+
+      it('if equal to max', async () => {
+        expect(
+          await fixed18.inside(utils.parseEther('125'), utils.parseEther('124'), utils.parseEther('125')),
+        ).to.equal(true)
+      })
+    })
+
+    context('returns false', async () => {
+      it('if outside', async () => {
+        expect(
+          await fixed18.inside(utils.parseEther('123.456'), utils.parseEther('124'), utils.parseEther('125')),
+        ).to.equal(false)
+      })
+    })
+  })
+
+  describe('#outside', async () => {
+    context('returns true', async () => {
+      it('if outside', async () => {
+        expect(
+          await fixed18.outside(utils.parseEther('123.456'), utils.parseEther('124'), utils.parseEther('125')),
+        ).to.equal(true)
+      })
+    })
+
+    context('returns false', async () => {
+      it('if inside', async () => {
+        expect(
+          await fixed18.outside(utils.parseEther('123.456'), utils.parseEther('122'), utils.parseEther('124')),
+        ).to.equal(false)
+      })
+
+      it('if equal to min', async () => {
+        expect(
+          await fixed18.outside(utils.parseEther('123'), utils.parseEther('123'), utils.parseEther('125')),
+        ).to.equal(false)
+      })
+
+      it('if equal to max', async () => {
+        expect(
+          await fixed18.outside(utils.parseEther('125'), utils.parseEther('124'), utils.parseEther('125')),
+        ).to.equal(false)
+      })
+    })
+  })
+
   describe('#store(Fixed18)', async () => {
     it('sets value', async () => {
       await fixed18.store(SLOT, -12)

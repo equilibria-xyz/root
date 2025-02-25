@@ -148,6 +148,14 @@ contract MockFixed6 {
         return Fixed6Lib.abs(a);
     }
 
+    function inside(Fixed6 value, Fixed6 min, Fixed6 max) external pure returns (bool) {
+        return Fixed6Lib.inside(value, min, max);
+    }
+
+    function outside(Fixed6 value, Fixed6 min, Fixed6 max) external pure returns (bool) {
+        return Fixed6Lib.outside(value, min, max);
+    }
+
     function read(Fixed6Storage slot) external view returns (Fixed6) {
         return slot.read();
     }

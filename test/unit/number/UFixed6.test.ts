@@ -484,6 +484,66 @@ describe('UFixed6', () => {
     })
   })
 
+  describe('#inside', async () => {
+    context('returns true', async () => {
+      it('if inside', async () => {
+        expect(
+          await uFixed6.inside(utils.parseUnits('123.456', 6), utils.parseUnits('123', 6), utils.parseUnits('124', 6)),
+        ).to.equal(true)
+      })
+
+      it('if equal to min', async () => {
+        expect(
+          await uFixed6.inside(utils.parseUnits('123', 6), utils.parseUnits('123', 6), utils.parseUnits('125', 6)),
+        ).to.equal(true)
+      })
+
+      it('if equal to max', async () => {
+        expect(
+          await uFixed6.inside(utils.parseUnits('125', 6), utils.parseUnits('124', 6), utils.parseUnits('125', 6)),
+        ).to.equal(true)
+      })
+    })
+
+    context('returns false', async () => {
+      it('if outside', async () => {
+        expect(
+          await uFixed6.inside(utils.parseUnits('123.456', 6), utils.parseUnits('124', 6), utils.parseUnits('125', 6)),
+        ).to.equal(false)
+      })
+    })
+  })
+
+  describe('#outside', async () => {
+    context('returns true', async () => {
+      it('if outside', async () => {
+        expect(
+          await uFixed6.outside(utils.parseUnits('123.456', 6), utils.parseUnits('124', 6), utils.parseUnits('125', 6)),
+        ).to.equal(true)
+      })
+    })
+
+    context('returns false', async () => {
+      it('if inside', async () => {
+        expect(
+          await uFixed6.outside(utils.parseUnits('123.456', 6), utils.parseUnits('122', 6), utils.parseUnits('124', 6)),
+        ).to.equal(false)
+      })
+
+      it('if equal to min', async () => {
+        expect(
+          await uFixed6.outside(utils.parseUnits('123', 6), utils.parseUnits('123', 6), utils.parseUnits('125', 6)),
+        ).to.equal(false)
+      })
+
+      it('if equal to max', async () => {
+        expect(
+          await uFixed6.outside(utils.parseUnits('125', 6), utils.parseUnits('124', 6), utils.parseUnits('125', 6)),
+        ).to.equal(false)
+      })
+    })
+  })
+
   describe('#store(UFixed6)', async () => {
     it('sets value', async () => {
       await uFixed6.store(SLOT, 12)

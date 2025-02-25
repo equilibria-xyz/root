@@ -346,6 +346,28 @@ library UFixed6Lib {
     function truncate(UFixed6 a) internal pure returns (uint256) {
         return UFixed6.unwrap(a) / BASE;
     }
+
+    /**
+     * @notice Returns whether the unsigned fixed-decimal `value` is inside the range `min` and `max`
+     * @param value Unsigned fixed-decimal to check
+     * @param min Minimum value
+     * @param max Maximum value
+     * @return Whether `value` is inside the range `min` and `max`
+     */
+    function inside(UFixed6 value, UFixed6 min, UFixed6 max) internal pure returns (bool) {
+        return !outside(value, min, max);
+    }
+
+    /**
+     * @notice Returns whether the unsigned fixed-decimal `value` is outside the range `min` and `max`
+     * @param value Unsigned fixed-decimal to check
+     * @param min Minimum value
+     * @param max Maximum value
+     * @return Whether `value` is outside the range `min` and `max`
+     */
+    function outside(UFixed6 value, UFixed6 min, UFixed6 max) internal pure returns (bool) {
+        return lt(value, min) || gt(value, max);
+    }
 }
 
 library UFixed6StorageLib {
