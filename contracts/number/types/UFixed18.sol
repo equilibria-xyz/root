@@ -17,6 +17,8 @@ using UFixed18StorageLib for UFixed18Storage global;
  * @notice Library for the unsigned fixed-decimal type.
  */
 library UFixed18Lib {
+    // sig: 0x501f289e
+    /// @custom:error Arithmetic underflow
     error UFixed18UnderflowError(int256 value);
 
     uint256 private constant BASE = 1e18;

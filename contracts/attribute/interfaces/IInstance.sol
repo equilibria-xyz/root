@@ -5,8 +5,14 @@ import "./IFactory.sol";
 import "./IInitializable.sol";
 
 interface IInstance is IInitializable {
+    // sig: 0x4d193d1f
+    /// @custom:error Caller is not the owner
     error InstanceNotOwnerError(address sender);
+    // sig: 0x864ec51e
+    /// @custom:error Caller is not the factory
     error InstanceNotFactoryError(address sender);
+    // sig: 0x4b94d2bb
+    /// @custom:error Contract is paused
     error InstancePausedError();
 
     function factory() external view returns (IFactory);

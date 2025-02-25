@@ -9,7 +9,11 @@ interface IPausable is IInitializable, IOwnable {
     event Paused();
     event Unpaused();
 
+    // sig: 0x78cefddd
+    /// @custom:error Contract is paused
     error PausablePausedError();
+    // sig: 0xf7987a92
+    /// @custom:error Caller is not the pauser
     error PausableNotPauserError(address sender);
 
     function pauser() external view returns (address);

@@ -17,6 +17,8 @@ using Fixed6StorageLib for Fixed6Storage global;
  * @notice Library for the signed fixed-decimal type.
  */
 library Fixed6Lib {
+    // sig: 0xeecaa25d
+    /// @custom:error Arithmetic overflow
     error Fixed6OverflowError(uint256 value);
 
     int256 private constant BASE = 1e6;
