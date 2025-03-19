@@ -76,15 +76,22 @@ describe('Initializable', () => {
 
     it('reverts if initialized twice', async () => {
       await expect(initializable.initialize()).to.emit(initializable, 'NoOp').withArgs()
-      await expect(initializable.initialize()).to.be.revertedWith(`InitializableAlreadyInitializedError(1)`)
+      await expect(initializable.initialize())
+        .to.be.revertedWithCustomError(initializable, 'InitializableAlreadyInitializedError')
+        .withArgs(1)
     })
 
     it('reverts if double initialized', async () => {
-      await expect(initializable.doubleInitialize()).to.be.revertedWith(`InitializableAlreadyInitializedError(1)`)
+      await expect(initializable.doubleInitialize())
+        .to.be.revertedWithCustomError(initializable, 'InitializableAlreadyInitializedError')
+        .withArgs(1)
     })
 
     it('reverts if invalid version', async () => {
-      await expect(initializable.customInitializer(0)).to.be.revertedWith(`InitializableZeroVersionError()`)
+      await expect(initializable.customInitializer(0)).to.be.revertedWithCustomError(
+        initializable,
+        'InitializableZeroVersionError',
+      )
     })
 
     it('doesnt revert for valid version', async () => {
@@ -131,14 +138,18 @@ describe('Initializable', () => {
       const initializableMulti = await new MockInitializableMulti__factory(owner).deploy()
       await initializableMulti.initialize17()
 
-      await expect(initializableMulti.initialize17()).to.be.revertedWith(`InitializableAlreadyInitializedError(17)`)
+      await expect(initializableMulti.initialize17())
+        .to.be.revertedWithCustomError(initializableMulti, 'InitializableAlreadyInitializedError')
+        .withArgs(17)
     })
 
     it('reverts if lesser version', async () => {
       const initializableMulti = await new MockInitializableMulti__factory(owner).deploy()
       await initializableMulti.initialize17()
 
-      await expect(initializableMulti.initialize2()).to.be.revertedWith(`InitializableAlreadyInitializedError(2)`)
+      await expect(initializableMulti.initialize2())
+        .to.be.revertedWithCustomError(initializableMulti, 'InitializableAlreadyInitializedError')
+        .withArgs(2)
     })
   })
 
@@ -150,21 +161,31 @@ describe('Initializable', () => {
 
     it('reverts if initialized twice', async () => {
       await expect(initializable.initialize()).to.emit(initializable, 'NoOp').withArgs()
-      await expect(initializable.initialize()).to.be.revertedWith(`InitializableAlreadyInitializedError(1)`)
+      await expect(initializable.initialize())
+        .to.be.revertedWithCustomError(initializable, 'InitializableAlreadyInitializedError')
+        .withArgs(1)
     })
 
     it('reverts if initialized twice with children', async () => {
       await expect(initializable.initializeWithChildren()).to.emit(initializable, 'NoOp').withArgs()
-      await expect(initializable.initializeWithChildren()).to.be.revertedWith(`InitializableAlreadyInitializedError(1)`)
+      await expect(initializable.initializeWithChildren())
+        .to.be.revertedWithCustomError(initializable, 'InitializableAlreadyInitializedError')
+        .withArgs(1)
     })
 
     it('reverts if child initializer called directly', async () => {
-      await expect(initializable.childInitializer()).to.be.revertedWith(`InitializableNotInitializingError()`)
+      await expect(initializable.childInitializer()).to.be.revertedWithCustomError(
+        initializable,
+        'InitializableNotInitializingError',
+      )
     })
 
     it('reverts if child initializer called directly after initialization', async () => {
       await expect(initializable.initialize()).to.emit(initializable, 'NoOp').withArgs()
-      await expect(initializable.childInitializer()).to.be.revertedWith(`InitializableNotInitializingError()`)
+      await expect(initializable.childInitializer()).to.be.revertedWithCustomError(
+        initializable,
+        'InitializableNotInitializingError',
+      )
     })
   })
 })

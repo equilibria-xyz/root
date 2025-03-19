@@ -78,9 +78,9 @@ describe('CrossChainOwner_Arbitrum', () => {
 
     it('reverts if not owner', async () => {
       arbSys.myCallersAddressWithoutAliasing.returns(user.address)
-      await expect(uOwner.connect(arbSys.wallet).execute(ethers.constants.AddressZero, '0x', 0)).to.be.revertedWith(
-        `OwnableNotOwnerError("${user.address}")`,
-      )
+      await expect(uOwner.connect(arbSys.wallet).execute(ethers.constants.AddressZero, '0x', 0))
+        .to.be.revertedWithCustomError(uOwner, 'OwnableNotOwnerError')
+        .withArgs(user.address)
     })
   })
 })

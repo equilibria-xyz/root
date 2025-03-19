@@ -1,10 +1,10 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
-import { utils } from 'ethers'
+import { BigNumber, utils } from 'ethers'
 import { expect } from 'chai'
 import HRE from 'hardhat'
 
 import { MockFixed18, MockFixed18__factory } from '../../../types/generated'
-
+import { PANIC_CODES } from '@nomicfoundation/hardhat-chai-matchers/panic'
 const { ethers } = HRE
 
 const SLOT = ethers.utils.keccak256(Buffer.from('equilibria.root.Fixed18.testSlot'))
@@ -74,12 +74,12 @@ describe('Fixed18', () => {
 
     it('reverts if too large or small', async () => {
       const TOO_LARGE = ethers.BigNumber.from(2).pow(256).sub(10)
-      await expect(fixed18['from(int256,uint256)'](1, TOO_LARGE)).to.be.revertedWith(
-        `Fixed18OverflowError(${TOO_LARGE})`,
-      )
-      await expect(fixed18['from(int256,uint256)'](-1, TOO_LARGE)).to.be.revertedWith(
-        `Fixed18OverflowError(${TOO_LARGE})`,
-      )
+      await expect(fixed18['from(int256,uint256)'](1, TOO_LARGE))
+        .to.be.revertedWithCustomError(fixed18, 'Fixed18OverflowError')
+        .withArgs(TOO_LARGE)
+      await expect(fixed18['from(int256,uint256)'](-1, TOO_LARGE))
+        .to.be.revertedWithCustomError(fixed18, 'Fixed18OverflowError')
+        .withArgs(TOO_LARGE)
     })
   })
 
@@ -90,7 +90,9 @@ describe('Fixed18', () => {
 
     it('reverts if too large', async () => {
       const TOO_LARGE = ethers.BigNumber.from(2).pow(256).sub(10)
-      await expect(fixed18['from(uint256)'](TOO_LARGE)).to.be.revertedWith(`Fixed18OverflowError(${TOO_LARGE})`)
+      await expect(fixed18['from(uint256)'](TOO_LARGE))
+        .to.be.revertedWithCustomError(fixed18, 'Fixed18OverflowError')
+        .withArgs(TOO_LARGE)
     })
   })
 
@@ -101,7 +103,7 @@ describe('Fixed18', () => {
 
     it('reverts if too large', async () => {
       const TOO_LARGE = ethers.constants.MaxInt256.sub(10)
-      await expect(fixed18.fromFixed6(TOO_LARGE)).to.be.reverted
+      await expect(fixed18.fromFixed6(TOO_LARGE)).to.be.revertedWithPanic(PANIC_CODES.ARITHMETIC_UNDER_OR_OVERFLOW)
     })
   })
 
@@ -142,7 +144,7 @@ describe('Fixed18', () => {
     })
 
     it('reverts if too large', async () => {
-      const TOO_LARGE = ethers.BigNumber.from(2).pow(256).sub(10)
+      const TOO_LARGE = ethers.constants.MaxInt256
       await expect(fixed18.fromSignificandAndExponent(1, TOO_LARGE)).to.be.reverted
     })
 
@@ -229,15 +231,15 @@ describe('Fixed18', () => {
     })
 
     it('reverts', async () => {
-      await expect(fixed18.div(0, 0)).to.revertedWith('0x12')
+      await expect(fixed18.div(0, 0)).to.revertedWithPanic(PANIC_CODES.DIVISION_BY_ZERO)
     })
 
     it('reverts', async () => {
-      await expect(fixed18.div(utils.parseEther('20'), 0)).to.revertedWith('0x12')
+      await expect(fixed18.div(utils.parseEther('20'), 0)).to.revertedWithPanic(PANIC_CODES.DIVISION_BY_ZERO)
     })
 
     it('reverts', async () => {
-      await expect(fixed18.div(utils.parseEther('-20'), 0)).to.revertedWith('0x12')
+      await expect(fixed18.div(utils.parseEther('-20'), 0)).to.revertedWithPanic(PANIC_CODES.DIVISION_BY_ZERO)
     })
   })
 
@@ -257,15 +259,15 @@ describe('Fixed18', () => {
     })
 
     it('reverts', async () => {
-      await expect(fixed18.divOut(0, 0)).to.revertedWith('DivisionByZero()')
+      await expect(fixed18.divOut(0, 0)).to.be.revertedWithCustomError(fixed18, 'DivisionByZero')
     })
 
     it('reverts', async () => {
-      await expect(fixed18.divOut(utils.parseEther('20'), 0)).to.revertedWith('DivisionByZero()')
+      await expect(fixed18.divOut(utils.parseEther('20'), 0)).to.be.revertedWithCustomError(fixed18, 'DivisionByZero')
     })
 
     it('reverts', async () => {
-      await expect(fixed18.divOut(utils.parseEther('-20'), 0)).to.revertedWith('DivisionByZero()')
+      await expect(fixed18.divOut(utils.parseEther('-20'), 0)).to.be.revertedWithCustomError(fixed18, 'DivisionByZero')
     })
   })
 
@@ -379,13 +381,13 @@ describe('Fixed18', () => {
     it('reverts', async () => {
       await expect(
         fixed18.muldiv1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
-      ).to.revertedWith('0x12')
+      ).to.revertedWithPanic(PANIC_CODES.DIVISION_BY_ZERO)
     })
 
     it('reverts', async () => {
       await expect(
         fixed18.muldiv2(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
-      ).to.revertedWith('0x12')
+      ).to.revertedWithPanic(PANIC_CODES.DIVISION_BY_ZERO)
     })
   })
 
@@ -445,13 +447,13 @@ describe('Fixed18', () => {
     it('reverts', async () => {
       await expect(
         fixed18.muldivOut1(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
-      ).to.revertedWith('DivisionByZero()')
+      ).to.revertedWithCustomError(fixed18, 'DivisionByZero')
     })
 
     it('reverts', async () => {
       await expect(
         fixed18.muldivOut2(utils.parseEther('20'), utils.parseEther('10'), utils.parseEther('0')),
-      ).to.revertedWith('DivisionByZero()')
+      ).to.revertedWithCustomError(fixed18, 'DivisionByZero')
     })
   })
 

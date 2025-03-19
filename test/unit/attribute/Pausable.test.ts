@@ -47,14 +47,14 @@ describe('Pausable', () => {
     })
 
     it('only owner can update pauser', async () => {
-      await expect(pausable.connect(user).updatePauser(user.address)).to.be.revertedWith(
-        `OwnableNotOwnerError("${user.address}")`,
-      )
+      await expect(pausable.connect(user).updatePauser(user.address))
+        .to.be.revertedWithCustomError(pausable, 'OwnableNotOwnerError')
+        .withArgs(user.address)
 
       await pausable.connect(owner).updatePauser(newPauser.address)
-      await expect(pausable.connect(newPauser).updatePauser(user.address)).to.be.revertedWith(
-        `OwnableNotOwnerError("${newPauser.address}")`,
-      )
+      await expect(pausable.connect(newPauser).updatePauser(user.address))
+        .to.be.revertedWithCustomError(pausable, 'OwnableNotOwnerError')
+        .withArgs(newPauser.address)
     })
   })
 
@@ -72,7 +72,7 @@ describe('Pausable', () => {
       await expect(pausable.connect(pauser).pause()).to.emit(pausable, 'Paused')
 
       expect(await pausable.paused()).to.equal(true)
-      await expect(pausable.increment()).to.be.revertedWith(`PausablePausedError()`)
+      await expect(pausable.increment()).to.be.revertedWithCustomError(pausable, 'PausablePausedError')
 
       // We should still be able to call incrementNoModifier
       await pausable.incrementNoModifier()
@@ -90,7 +90,9 @@ describe('Pausable', () => {
     })
 
     it('other users cannot pause', async () => {
-      await expect(pausable.connect(user).pause()).to.be.revertedWith(`PausableNotPauserError("${user.address}")`)
+      await expect(pausable.connect(user).pause())
+        .to.be.revertedWithCustomError(pausable, 'PausableNotPauserError')
+        .withArgs(user.address)
     })
   })
 
@@ -126,7 +128,9 @@ describe('Pausable', () => {
       await pausable.connect(owner).pause()
       expect(await pausable.paused()).to.equal(true)
 
-      await expect(pausable.connect(user).unpause()).to.be.revertedWith(`PausableNotPauserError("${user.address}")`)
+      await expect(pausable.connect(user).unpause())
+        .to.be.revertedWithCustomError(pausable, 'PausableNotPauserError')
+        .withArgs(user.address)
     })
   })
 })

@@ -83,9 +83,9 @@ describe('CrossChainOwner_Optimism', () => {
 
     it('reverts if not owner', async () => {
       crossDomainMessenger.xDomainMessageSender.returns(user.address)
-      await expect(
-        uOwner.connect(crossDomainMessenger.wallet).execute(ethers.constants.AddressZero, '0x', 0),
-      ).to.be.revertedWith(`OwnableNotOwnerError("${user.address}")`)
+      await expect(uOwner.connect(crossDomainMessenger.wallet).execute(ethers.constants.AddressZero, '0x', 0))
+        .to.be.revertedWithCustomError(uOwner, 'OwnableNotOwnerError')
+        .withArgs(user.address)
     })
   })
 })

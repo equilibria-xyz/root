@@ -45,9 +45,9 @@ describe('OwnerWithdrawable', function () {
       expect(await erc20.balanceOf(ownerWithdrawable.address)).to.equal(100)
 
       // Attempt to withdraw tokens as a non-owner
-      await expect(ownerWithdrawable.connect(addr1).withdraw(erc20.address)).to.be.revertedWith(
-        `OwnableNotOwnerError("${addr1.address}")`,
-      )
+      await expect(ownerWithdrawable.connect(addr1).withdraw(erc20.address))
+        .to.be.revertedWithCustomError(ownerWithdrawable, 'OwnableNotOwnerError')
+        .withArgs(addr1.address)
 
       // Check the contract balance after failed withdrawal
       expect(await erc20.balanceOf(ownerWithdrawable.address)).to.equal(100)

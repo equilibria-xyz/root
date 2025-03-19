@@ -39,13 +39,19 @@ describe('ReentrancyGuard', () => {
 
   describe('reenter same function', async () => {
     it('reverts', async () => {
-      await expect(reentrancyGuard.reenterRecursive()).to.be.revertedWith(`ReentrancyGuardReentrantCallError()`)
+      await expect(reentrancyGuard.reenterRecursive()).to.be.revertedWithCustomError(
+        reentrancyGuard,
+        'ReentrancyGuardReentrantCallError',
+      )
     })
   })
 
   describe('reenter different function', async () => {
     it('reverts', async () => {
-      await expect(reentrancyGuard.reenterDifferent()).to.be.revertedWith(`ReentrancyGuardReentrantCallError()`)
+      await expect(reentrancyGuard.reenterDifferent()).to.be.revertedWithCustomError(
+        reentrancyGuard,
+        'ReentrancyGuardReentrantCallError',
+      )
     })
   })
 })

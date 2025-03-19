@@ -1,10 +1,10 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { utils } from 'ethers'
 import { expect } from 'chai'
-import HRE, { waffle } from 'hardhat'
+import HRE from 'hardhat'
 
-import { IERC20Metadata__factory, MockTokenOrEther18, MockTokenOrEther18__factory } from '../../../types/generated'
-import { MockContract } from '@ethereum-waffle/mock-contract'
+import { MockERC20, MockTokenOrEther18, MockTokenOrEther18__factory } from '../../../types/generated'
+import { FakeContract, smock } from '@defi-wonderland/smock'
 
 const { ethers } = HRE
 
@@ -15,12 +15,12 @@ describe('TokenOrEther18', () => {
   let user: SignerWithAddress
   let recipient: SignerWithAddress
   let tokenOrEther18: MockTokenOrEther18
-  let erc20: MockContract
+  let erc20: FakeContract<MockERC20>
 
   beforeEach(async () => {
     ;[user, recipient] = await ethers.getSigners()
     tokenOrEther18 = await new MockTokenOrEther18__factory(user).deploy()
-    erc20 = await waffle.deployMockContract(user, IERC20Metadata__factory.abi)
+    erc20 = await smock.fake<MockERC20>('MockERC20')
   })
 
   describe('#zero', async () => {
@@ -67,9 +67,9 @@ describe('TokenOrEther18', () => {
 
   describe('#approve', async () => {
     it('approves tokens (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.allowance.withArgs(tokenOrEther18.address, recipient.address).returns(0)
-      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100')).returns(true)
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.allowance.whenCalledWith(tokenOrEther18.address, recipient.address).returns(0)
+      await erc20.approve.whenCalledWith(recipient.address, utils.parseEther('100')).returns(true)
 
       await tokenOrEther18
         .connect(user)
@@ -81,13 +81,13 @@ describe('TokenOrEther18', () => {
         tokenOrEther18
           .connect(user)
           ['approve(address,address,uint256)'](ETHER, recipient.address, utils.parseEther('100')),
-      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
+      ).to.be.revertedWithCustomError(tokenOrEther18, 'TokenOrEther18UnsupportedEtherError')
     })
 
     it('approves tokens (round down implicit) (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.allowance.withArgs(tokenOrEther18.address, recipient.address).returns(0)
-      await erc20.mock.approve.withArgs(recipient.address, utils.parseEther('100').add(1)).returns(true)
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.allowance.whenCalledWith(tokenOrEther18.address, recipient.address).returns(0)
+      await erc20.approve.whenCalledWith(recipient.address, utils.parseEther('100').add(1)).returns(true)
 
       await tokenOrEther18
         .connect(user)
@@ -99,13 +99,13 @@ describe('TokenOrEther18', () => {
         tokenOrEther18
           .connect(user)
           ['approve(address,address,uint256)'](ETHER, recipient.address, utils.parseEther('100').add(1)),
-      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
+      ).to.be.revertedWithCustomError(tokenOrEther18, 'TokenOrEther18UnsupportedEtherError')
     })
 
     it('approves tokens all (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.allowance.withArgs(tokenOrEther18.address, recipient.address).returns(0)
-      await erc20.mock.approve.withArgs(recipient.address, ethers.constants.MaxUint256).returns(true)
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.allowance.whenCalledWith(tokenOrEther18.address, recipient.address).returns(0)
+      await erc20.approve.whenCalledWith(recipient.address, ethers.constants.MaxUint256).returns(true)
 
       await tokenOrEther18.connect(user)['approve(address,address)'](erc20.address, recipient.address)
     })
@@ -113,12 +113,12 @@ describe('TokenOrEther18', () => {
     it('approves tokens all (ether)', async () => {
       await expect(
         tokenOrEther18.connect(user)['approve(address,address)'](ETHER, recipient.address),
-      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
+      ).to.be.revertedWithCustomError(tokenOrEther18, 'TokenOrEther18UnsupportedEtherError')
     })
 
     describe('with prior allowance', () => {
       beforeEach(async () => {
-        await erc20.mock.allowance.withArgs(tokenOrEther18.address, recipient.address).returns(utils.parseEther('1'))
+        await erc20.allowance.whenCalledWith(tokenOrEther18.address, recipient.address).returns(utils.parseEther('1'))
       })
 
       it('reverts when approving for a specific amount', async () => {
@@ -130,7 +130,7 @@ describe('TokenOrEther18', () => {
       })
 
       it('approves tokens all', async () => {
-        await erc20.mock.approve.withArgs(recipient.address, ethers.constants.MaxUint256).returns(true)
+        await erc20.approve.whenCalledWith(recipient.address, ethers.constants.MaxUint256).returns(true)
 
         await tokenOrEther18.connect(user)['approve(address,address)'](erc20.address, recipient.address)
       })
@@ -139,8 +139,8 @@ describe('TokenOrEther18', () => {
 
   describe('#push', async () => {
     it('transfers tokens (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100')).returns(true)
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.transfer.whenCalledWith(recipient.address, utils.parseEther('100')).returns(true)
 
       await tokenOrEther18
         .connect(user)
@@ -157,8 +157,8 @@ describe('TokenOrEther18', () => {
     })
 
     it('transfers tokens (round down implicit) (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100').add(1)).returns(true)
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.transfer.whenCalledWith(recipient.address, utils.parseEther('100').add(1)).returns(true)
 
       await tokenOrEther18
         .connect(user)
@@ -175,9 +175,9 @@ describe('TokenOrEther18', () => {
     })
 
     it('transfers tokens all (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.balanceOf.withArgs(tokenOrEther18.address).returns(utils.parseEther('100'))
-      await erc20.mock.transfer.withArgs(recipient.address, utils.parseEther('100')).returns(true)
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.balanceOf.whenCalledWith(tokenOrEther18.address).returns(utils.parseEther('100'))
+      await erc20.transfer.whenCalledWith(recipient.address, utils.parseEther('100')).returns(true)
 
       await tokenOrEther18.connect(user)['push(address,address)'](erc20.address, recipient.address)
     })
@@ -192,24 +192,24 @@ describe('TokenOrEther18', () => {
 
   describe('#pull', async () => {
     it('transfers tokens (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.transferFrom
-        .withArgs(user.address, tokenOrEther18.address, utils.parseEther('100'))
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.transferFrom
+        .whenCalledWith(user.address, tokenOrEther18.address, utils.parseEther('100'))
         .returns(true)
 
       await tokenOrEther18.connect(user).pull(erc20.address, user.address, utils.parseEther('100'))
     })
 
     it('transfers tokens (ether)', async () => {
-      await expect(tokenOrEther18.connect(user).pull(ETHER, user.address, utils.parseEther('100'))).to.be.revertedWith(
-        'TokenOrEther18UnsupportedEtherError()',
-      )
+      await expect(
+        tokenOrEther18.connect(user).pull(ETHER, user.address, utils.parseEther('100')),
+      ).to.be.revertedWithCustomError(tokenOrEther18, 'TokenOrEther18UnsupportedEtherError')
     })
 
     it('transfers tokens (round down implicit) (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.transferFrom
-        .withArgs(user.address, tokenOrEther18.address, utils.parseEther('100').add(1))
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.transferFrom
+        .whenCalledWith(user.address, tokenOrEther18.address, utils.parseEther('100').add(1))
         .returns(true)
 
       await tokenOrEther18.connect(user).pull(erc20.address, user.address, utils.parseEther('100').add(1))
@@ -218,14 +218,14 @@ describe('TokenOrEther18', () => {
     it('transfers tokens (round down implicit) (ether)', async () => {
       await expect(
         tokenOrEther18.connect(user).pull(ETHER, user.address, utils.parseEther('100').add(1)),
-      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
+      ).to.be.revertedWithCustomError(tokenOrEther18, 'TokenOrEther18UnsupportedEtherError')
     })
   })
 
   describe('#pullTo', async () => {
     it('transfers tokens (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.transferFrom.withArgs(user.address, recipient.address, utils.parseEther('100')).returns(true)
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.transferFrom.whenCalledWith(user.address, recipient.address, utils.parseEther('100')).returns(true)
 
       await tokenOrEther18.connect(user).pullTo(erc20.address, user.address, recipient.address, utils.parseEther('100'))
     })
@@ -233,13 +233,13 @@ describe('TokenOrEther18', () => {
     it('transfers tokens (ether)', async () => {
       await expect(
         tokenOrEther18.connect(user).pullTo(ETHER, user.address, recipient.address, utils.parseEther('100')),
-      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
+      ).to.be.revertedWithCustomError(tokenOrEther18, 'TokenOrEther18UnsupportedEtherError')
     })
 
     it('transfers tokens (round down implicit) (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.transferFrom
-        .withArgs(user.address, recipient.address, utils.parseEther('100').add(1))
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.transferFrom
+        .whenCalledWith(user.address, recipient.address, utils.parseEther('100').add(1))
         .returns(true)
 
       await tokenOrEther18
@@ -250,13 +250,13 @@ describe('TokenOrEther18', () => {
     it('transfers tokens (round down implicit) (ether)', async () => {
       await expect(
         tokenOrEther18.connect(user).pullTo(ETHER, user.address, recipient.address, utils.parseEther('100').add(1)),
-      ).to.be.revertedWith('TokenOrEther18UnsupportedEtherError()')
+      ).to.be.revertedWithCustomError(tokenOrEther18, 'TokenOrEther18UnsupportedEtherError')
     })
   })
 
   describe('#name', async () => {
     it('returns name', async () => {
-      await erc20.mock.name.withArgs().returns('Token Name')
+      await erc20.name.whenCalledWith().returns('Token Name')
       expect(await tokenOrEther18.connect(user).name(erc20.address)).to.equal('Token Name')
     })
 
@@ -267,7 +267,7 @@ describe('TokenOrEther18', () => {
 
   describe('#symbol', async () => {
     it('returns symbol', async () => {
-      await erc20.mock.symbol.withArgs().returns('TN')
+      await erc20.symbol.whenCalledWith().returns('TN')
       expect(await tokenOrEther18.connect(user).symbol(erc20.address)).to.equal('TN')
     })
 
@@ -278,8 +278,8 @@ describe('TokenOrEther18', () => {
 
   describe('#balanceOf', async () => {
     it('returns balanceOf (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.balanceOf.withArgs(user.address).returns(utils.parseEther('100'))
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.balanceOf.whenCalledWith(user.address).returns(utils.parseEther('100'))
       expect(await tokenOrEther18.connect(user)['balanceOf(address,address)'](erc20.address, user.address)).to.equal(
         utils.parseEther('100'),
       )
@@ -298,8 +298,8 @@ describe('TokenOrEther18', () => {
 
   describe('#balanceOf', async () => {
     it('returns balanceOf (18)', async () => {
-      await erc20.mock.decimals.withArgs().returns(18)
-      await erc20.mock.balanceOf.withArgs(tokenOrEther18.address).returns(utils.parseEther('100'))
+      await erc20.decimals.whenCalledWith().returns(18)
+      await erc20.balanceOf.whenCalledWith(tokenOrEther18.address).returns(utils.parseEther('100'))
       expect(await tokenOrEther18.connect(user)['balanceOf(address)'](erc20.address)).to.equal(utils.parseEther('100'))
     })
 
@@ -311,13 +311,14 @@ describe('TokenOrEther18', () => {
 
   describe('#totalSupply', async () => {
     it('returns total supply (18)', async () => {
-      await erc20.mock.totalSupply.withArgs().returns(100_000_000)
+      await erc20.totalSupply.whenCalledWith().returns(100_000_000)
       expect(await tokenOrEther18.connect(user).totalSupply(erc20.address)).to.equal(utils.parseUnits('100', 6))
     })
 
     it('reverts (ether)', async () => {
-      await expect(tokenOrEther18.connect(user).totalSupply(ETHER)).to.revertedWith(
-        'TokenOrEther18UnsupportedEtherError()',
+      await expect(tokenOrEther18.connect(user).totalSupply(ETHER)).to.be.revertedWithCustomError(
+        tokenOrEther18,
+        'TokenOrEther18UnsupportedEtherError',
       )
     })
   })

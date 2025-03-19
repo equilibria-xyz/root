@@ -84,13 +84,14 @@ describe('ProxyOwner', () => {
     })
 
     it('reverts if not pending', async () => {
-      await expect(proxyOwner2.connect(owner).acceptProxyAdmin(proxyOwner2.address, proxy.address)).to.be.revertedWith(
-        'ProxyOwnerNotPendingAdminError',
-      )
+      await expect(
+        proxyOwner2.connect(owner).acceptProxyAdmin(proxyOwner2.address, proxy.address),
+      ).to.be.revertedWithCustomError(proxyOwner2, 'ProxyOwnerNotPendingAdminError')
     })
 
     it('reverts if not pending (callback)', async () => {
-      await expect(proxyOwner2.connect(owner).acceptProxyAdminCallback(proxy.address)).to.be.revertedWith(
+      await expect(proxyOwner2.connect(owner).acceptProxyAdminCallback(proxy.address)).to.be.revertedWithCustomError(
+        proxyOwner2,
         'ProxyOwnerNotPendingAdminError',
       )
     })

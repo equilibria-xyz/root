@@ -94,7 +94,10 @@ describe('Factory', () => {
 
   describe('#onlyInstance', async () => {
     it('guards against non-instances calling', async () => {
-      await expect(factory.connect(user).onlyCallableByInstance()).to.be.revertedWith(`FactoryNotInstanceError()`)
+      await expect(factory.connect(user).onlyCallableByInstance()).to.be.revertedWithCustomError(
+        factory,
+        'FactoryNotInstanceError',
+      )
     })
 
     it('allows instances to call', async () => {

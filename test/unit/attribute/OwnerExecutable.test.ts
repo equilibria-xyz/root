@@ -58,9 +58,9 @@ describe('OwnerExecutable', () => {
       const target = ownableExecutable.address
       const data = ownableExecutable.interface.encodeFunctionData('owner')
 
-      await expect(ownableExecutable.connect(user).execute(target, data)).to.be.revertedWith(
-        `OwnableNotOwnerError("${user.address}")`,
-      )
+      await expect(ownableExecutable.connect(user).execute(target, data))
+        .to.be.revertedWithCustomError(ownableExecutable, 'OwnableNotOwnerError')
+        .withArgs(user.address)
     })
 
     it('reverts if payable call fails', async () => {

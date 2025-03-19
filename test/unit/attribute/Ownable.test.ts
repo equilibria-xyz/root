@@ -32,7 +32,10 @@ describe('Ownable', () => {
       // mock the owner being set in a previous implementation version
       await ownable.connect(owner).__initializeV(1)
 
-      await expect(ownable.connect(owner).__initializeV(2)).to.revertedWith('OwnableAlreadyInitializedError')
+      await expect(ownable.connect(owner).__initializeV(2)).to.revertedWithCustomError(
+        ownable,
+        'OwnableAlreadyInitializedError',
+      )
 
       expect(await ownable.owner()).to.equal(owner.address)
     })
@@ -58,9 +61,9 @@ describe('Ownable', () => {
     })
 
     it('reverts if not owner', async () => {
-      await expect(ownable.connect(user).updatePendingOwner(user.address)).to.be.revertedWith(
-        `OwnableNotOwnerError("${user.address}")`,
-      )
+      await expect(ownable.connect(user).updatePendingOwner(user.address))
+        .to.be.revertedWithCustomError(ownable, 'OwnableNotOwnerError')
+        .withArgs(user.address)
     })
 
     it('reset', async () => {
@@ -95,15 +98,15 @@ describe('Ownable', () => {
     })
 
     it('reverts if owner not pending owner', async () => {
-      await expect(ownable.connect(owner).acceptOwner()).to.be.revertedWith(
-        `OwnableNotPendingOwnerError("${owner.address}")`,
-      )
+      await expect(ownable.connect(owner).acceptOwner())
+        .to.be.revertedWithCustomError(ownable, 'OwnableNotPendingOwnerError')
+        .withArgs(owner.address)
     })
 
     it('reverts if unrelated not pending owner', async () => {
-      await expect(ownable.connect(unrelated).acceptOwner()).to.be.revertedWith(
-        `OwnableNotPendingOwnerError("${unrelated.address}")`,
-      )
+      await expect(ownable.connect(unrelated).acceptOwner())
+        .to.be.revertedWithCustomError(ownable, 'OwnableNotPendingOwnerError')
+        .withArgs(unrelated.address)
     })
   })
 })

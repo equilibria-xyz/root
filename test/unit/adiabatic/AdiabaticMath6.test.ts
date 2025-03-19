@@ -141,7 +141,7 @@ describe('AdiabaticMath6', () => {
             parseUnits('10', 6),
             parseUnits('123', 6),
           ),
-        ).to.be.revertedWith('Adiabatic6ZeroScaleError()')
+        ).to.be.revertedWithCustomError(adiabaticMath, 'Adiabatic6ZeroScaleError')
       })
     })
   })
