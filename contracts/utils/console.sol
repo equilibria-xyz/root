@@ -292,5 +292,56 @@ library console {
         hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18));
     }
 
+    function log(string memory p0, address p1, uint256 p2) internal view {
+        hhConsole.log(p0, p1, p2);
+    }
+
+    function log(string memory p0, address p1, int256 p2) internal view {
+        hhConsole.log(p0, p1, itoa(p2));
+    }
+
+    function log(string memory p0, address p1, Fixed6 p2) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6));
+    }
+
+    function log(string memory p0, address p1, UFixed6 p2) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6));
+    }
+
+    function log(string memory p0, address p1, Fixed18 p2) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18));
+    }
+
+    function log(string memory p0, address p1, UFixed18 p2) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18));
+    }
+
+    function log(string memory p0, uint256 p1, address p2) internal view {
+        hhConsole.log(p0, p1, p2);
+    }
+
+    function log(string memory p0, int256 p1, address p2) internal view {
+        hhConsole.log(p0, itoa(p1), p2);
+    }
+
+    function log(string memory p0, Fixed6 p1, address p2) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2);
+    }
+
+    function log(string memory p0, UFixed6 p1, address p2) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2);
+    }
+
+    function log(string memory p0, Fixed18 p1, address p2) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2);
+    }
+
+    function log(string memory p0, UFixed18 p1, address p2) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2);
+    }
+
+    function log(string memory p0, address p1, address p2) internal view {
+        hhConsole.log(p0, p1, p2);
+    }
 
 }

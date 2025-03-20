@@ -118,7 +118,8 @@ describe('Console', () => {
     console.log('  uf18 =', uf18.toString())
     console.log('  f6 =', f6.toString())
     console.log('  f18 =', f18.toString())
+    console.log('  a =', owner.address)
 
-    await expect(tester.testLogWithTwoValues(u, i, uf6, uf18, f6, f18)).to.not.be.reverted
+    await expect(tester.testLogWithTwoValues(u, i, uf6, uf18, f6, f18, owner.address)).to.not.be.reverted
   })
 })
