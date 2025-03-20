@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
+import { Fixed6, Fixed18 } from "../number/types/Fixed6.sol";
+import { UFixed6, UFixed18 } from "../number/types/UFixed6.sol";
+
 // reference material:
 // https://github.com/foundry-rs/forge-std/blob/master/src/console.sol and
 // https://github.com/NomicFoundation/hardhat/blob/main/packages/hardhat-core/console.sol
@@ -8,50 +11,19 @@ pragma solidity ^0.8.13;
 import { console as hhConsole } from "hardhat/console.sol";
 
 library console {
-    /*address constant CONSOLE_ADDRESS =
-        0x000000000000000000636F6e736F6c652e6c6f67;
-
-    function _sendLogPayloadImplementation(bytes memory payload) internal view {
-        address consoleAddress = CONSOLE_ADDRESS;
-        /// @solidity memory-safe-assembly
-        assembly {
-            pop(
-                staticcall(
-                    gas(),
-                    consoleAddress,
-                    add(payload, 32),
-                    mload(payload),
-                    0,
-                    0
-                )
-            )
-        }
-    }
-
-    function _castToPure(
-      function(bytes memory) internal view fnIn
-    ) internal pure returns (function(bytes memory) pure fnOut) {
-        assembly {
-            fnOut := fnIn
-        }
-    }
-
-    function _sendLogPayload(bytes memory payload) internal pure {
-        _castToPure(_sendLogPayloadImplementation)(payload);
-    }*/
-
     function itoa(int256 value) internal pure returns (string memory) {
         if (value == 0) return "0";
 
+        // Determine length of string and unsigned value
         bool negative = value < 0;
         uint256 v = negative ? uint256(-value) : uint256(value);
         uint256 len = negative ? 2 : 1;
-
         for (uint256 i = v; i > 0; i /= 10) {
             len++;
         }
         bytes memory bstr = new bytes(len);
 
+        // Build the string in reverse order
         uint256 i = len - 1;
         for (uint256 j = v; j > 0; j /= 10) {
             bstr[i--] = bytes1(uint8(48 + j % 10));
@@ -62,10 +34,119 @@ library console {
         return string(bstr);
     }
 
+    function ftoa(uint256 value, uint256 decimals) internal pure returns (string memory) {
+        if (value == 0) return "0";
+
+        // Split the integer and fractional parts
+        uint256 integerPart = value / (10**decimals);
+        uint256 fractionalPart = value % (10**decimals);
+
+        // Convert integer part to string
+        string memory integerStr = itoa(int256(integerPart));
+
+        // Convert fractional part to string
+        bytes memory fractionalStr = new bytes(decimals);
+        for (uint256 i = decimals; i > 0; i--) {
+            fractionalStr[i - 1] = bytes1(uint8(48 + fractionalPart % 10));
+            fractionalPart /= 10;
+        }
+
+        // Combine integer and fractional parts
+        return string(abi.encodePacked(integerStr, ".", fractionalStr));
+    }
+
+    function ftoa(int256 value, uint256 decimals) internal pure returns (string memory) {
+        if (value == 0) return "0";
+
+        // Determine sign and unsigned value
+        bool negative = value < 0;
+        uint256 absValue = negative ? uint256(-value) : uint256(value);
+
+        // Split the integer and fractional parts
+        uint256 integerPart = absValue / (10**decimals);
+        uint256 fractionalPart = absValue % (10**decimals);
+
+        // Convert integer part to string
+        string memory integerStr = itoa(int256(integerPart));
+
+        // Convert fractional part to string
+        bytes memory fractionalStr = new bytes(decimals);
+        for (uint256 i = decimals; i > 0; i--) {
+            fractionalStr[i - 1] = bytes1(uint8(48 + fractionalPart % 10));
+            fractionalPart /= 10;
+        }
+
+        // Combine integer and fractional parts
+        string memory result = string(abi.encodePacked(integerStr, ".", fractionalStr));
+        if (negative) result = string(abi.encodePacked("-", result));
+        return result;
+    }
+
+    // no string, just values
+
+    function log(int256 p0) internal view {
+        hhConsole.logInt(p0);
+    }
+
+    function log(uint256 p0) internal view {
+        hhConsole.logUint(p0);
+    }
+
+    function log(string memory p0) internal view {
+        hhConsole.logString(p0);
+    }
+
+    function log(bool p0) internal view {
+        hhConsole.logBool(p0);
+    }
+
+    function log(address p0) internal view {
+        hhConsole.logAddress(p0);
+    }
+
+    function log(bytes memory p0) internal view {
+        hhConsole.logBytes(p0);
+    }
+
+    function log(UFixed6 p0) internal view {
+        hhConsole.log(ftoa(UFixed6.unwrap(p0), 6));
+    }
+
+    function log(UFixed18 p0) internal view {
+        hhConsole.log(ftoa(UFixed18.unwrap(p0), 18));
+    }
+
+    function log(Fixed6 p0) internal view {
+        hhConsole.log(ftoa(Fixed6.unwrap(p0), 6));
+    }
+
+    function log(Fixed18 p0) internal view {
+        hhConsole.log(ftoa(Fixed18.unwrap(p0), 18));
+    }
+
+    // string with one value
+
     function log(string memory p0, int256 p1) internal view {
-        //_sendLogPayload(abi.encodeWithSignature("log(string,int256)", p0, p1));
         hhConsole.log(p0, itoa(p1));
     }
+
+    function log(string memory p0, UFixed6 p1) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18));
+    }
+
+    // string with two values
 
     function log(string memory p0, uint256 p1, uint256 p2) internal view {
         hhConsole.log(p0, p1, p2);
