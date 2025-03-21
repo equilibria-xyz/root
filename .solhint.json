@@ -3,7 +3,6 @@
   "rules": {
     "reason-string": ["off"],
     "compiler-version": ["error", "^0.8.13"],
-    "func-visibility": ["warn", { "ignoreConstructors": true }],
-    "no-console": "warn"
+    "func-visibility": ["warn", { "ignoreConstructors": true }]
   }
 }

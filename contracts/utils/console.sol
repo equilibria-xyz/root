@@ -10,9 +10,13 @@ import { UFixed6, UFixed18 } from "../number/types/UFixed6.sol";
 
 // manual code generation utility: scripts/console_codegen.ts
 
+/* solhint-disable no-console */
 import { console as hhConsole } from "hardhat/console.sol";
+/* solhint-enable no-console */
 
+/* solhint-disable contract-name-camelcase */
 library console {
+/* solhint-enable contract-name-camelcase */
     function itoa(int256 value) internal pure returns (string memory) {
         if (value == 0) return "0";
 
