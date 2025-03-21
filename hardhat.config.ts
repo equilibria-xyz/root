@@ -70,6 +70,7 @@ const config: HardhatUserConfig = {
         blockNumber: 12345678,
       },
       chainId: chainIds.hardhat,
+      allowUnlimitedContractSize: true,
     },
     goerli: createTestnetConfig('goerli'),
     kovan: createTestnetConfig('kovan'),

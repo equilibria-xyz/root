@@ -30,6 +30,7 @@ This debugging library is designed to be a replacement for hardhat or forge's co
 - Fixed6
 - Fixed18
 - address
+- bool
 
 It supports 1, 2, or 3 of the above values in a format string.
 

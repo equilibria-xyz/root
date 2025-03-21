@@ -8,7 +8,7 @@ import { ConsoleTester, ConsoleTester__factory } from '../../../types/generated'
 
 const { ethers } = HRE
 
-describe('Console', () => {
+describe.only('Console', () => {
   let owner: SignerWithAddress
   let tester: ConsoleTester
 
@@ -31,58 +31,48 @@ describe('Console', () => {
     return lowerBound.add(randomOffset)
   }
 
-  it('should log single fixed decimal values without a string', async () => {
-    await expect(
-      tester.testSingleValues(
-        utils.parseUnits('300001.012345', 6),
-        ethers.utils.parseEther('300002.012345678901234567'),
-        utils.parseUnits('-700001.012345', 6),
-        ethers.utils.parseEther('-700002.012345678901234567'),
-      ),
-    ).to.not.be.reverted
+  it('should log single values without a format string', async () => {
+    await expect(tester.testSingleValues(23)).to.not.be.reverted
   })
 
-  it('should log a string with signed integer', async () => {
-    await expect(tester.testLogWithInt(123)).to.not.be.reverted
-    await expect(tester.testLogWithInt(-321)).to.not.be.reverted
-  })
+  it('should log a string with a single value', async () => {
+    await expect(tester.testFormatNonNumericValues(owner.address)).to.not.be.reverted
 
-  it('should log fixed decimal types', async () => {
+    await expect(tester.testFormatInt(123)).to.not.be.reverted
+    await expect(tester.testFormatInt(-321)).to.not.be.reverted
+
     await expect(
-      tester.testLogWithUFixed(
+      tester.testFormatUFixed(
         utils.parseUnits('1000001.012345', 6),
         ethers.utils.parseEther('1000002.012345678901234567'),
       ),
     ).to.not.be.reverted
     await expect(
-      tester.testLogWithFixed(
-        utils.parseUnits('54321.987654', 6),
-        ethers.utils.parseEther('-60000.012345678901234567'),
-      ),
+      tester.testFormatFixed(utils.parseUnits('54321.987654', 6), ethers.utils.parseEther('-60000.012345678901234567')),
     ).to.not.be.reverted
     await expect(
-      tester.testLogWithFixed(utils.parseUnits('-9.012345', 6), ethers.utils.parseEther('-8.012345678901234567')),
+      tester.testFormatFixed(utils.parseUnits('-9.012345', 6), ethers.utils.parseEther('-8.012345678901234567')),
     ).to.not.be.reverted
   })
 
   it('should log fixed decimal types near type boundaries', async () => {
-    await expect(tester.testLogWithUFixed(0, 0)).to.not.be.reverted
-    await expect(tester.testLogWithFixed(0, 0)).to.not.be.reverted
-    await expect(tester.testLogWithUFixed(1, 1)).to.not.be.reverted
-    await expect(tester.testLogWithFixed(1, 1)).to.not.be.reverted
-    await expect(tester.testLogWithFixed(-1, -1)).to.not.be.reverted
-    await expect(tester.testLogWithUFixed(ethers.constants.MaxUint256.sub(1), ethers.constants.MaxUint256.sub(1))).to
-      .not.be.reverted
-    await expect(tester.testLogWithFixed(ethers.constants.MaxInt256.sub(1), ethers.constants.MaxInt256.sub(1))).to.not
+    await expect(tester.testFormatUFixed(0, 0)).to.not.be.reverted
+    await expect(tester.testFormatFixed(0, 0)).to.not.be.reverted
+    await expect(tester.testFormatUFixed(1, 1)).to.not.be.reverted
+    await expect(tester.testFormatFixed(1, 1)).to.not.be.reverted
+    await expect(tester.testFormatFixed(-1, -1)).to.not.be.reverted
+    await expect(tester.testFormatUFixed(ethers.constants.MaxUint256.sub(1), ethers.constants.MaxUint256.sub(1))).to.not
       .be.reverted
-    await expect(tester.testLogWithFixed(ethers.constants.MinInt256.add(1), ethers.constants.MinInt256.add(1))).to.not
-      .be.reverted
+    await expect(tester.testFormatFixed(ethers.constants.MaxInt256.sub(1), ethers.constants.MaxInt256.sub(1))).to.not.be
+      .reverted
+    await expect(tester.testFormatFixed(ethers.constants.MinInt256.add(1), ethers.constants.MinInt256.add(1))).to.not.be
+      .reverted
   })
 
   it('should log a string with two values', async () => {
-    await expect(tester.testLogWithTwoInts(23, 34)).to.not.be.reverted
+    await expect(tester.testFormatTwoInts(23, 34)).to.not.be.reverted
     await expect(
-      tester.testLogWithTwoFixedValues(
+      tester.testFormatTwoFixedValues(
         utils.parseUnits('5678.001', 6),
         ethers.utils.parseEther('67899.002000333'),
         utils.parseUnits('-4321.003', 6),
@@ -111,7 +101,9 @@ describe('Console', () => {
     decimalPart = BigNumber.from(Math.floor(Math.random() * 1_000_000_000_000_000_000).toString())
     const f18 = wholePart.add(decimalPart)
 
-    console.log('Fuzzed inputs to testLogWithTwoValues:')
+    const b = Math.random() < 0.5
+
+    console.log('Fuzzed inputs to full coverage test:')
     console.log('  u =', u.toString())
     console.log('  i =', i.toString())
     console.log('  uf6 =', uf6.toString())
@@ -119,8 +111,9 @@ describe('Console', () => {
     console.log('  f6 =', f6.toString())
     console.log('  f18 =', f18.toString())
     console.log('  a =', owner.address)
+    console.log('  b =', b)
 
-    await expect(tester.testLogWithTwoValues(u, i, uf6, uf18, f6, f18, owner.address)).to.not.be.reverted
-    await expect(tester.testLogWithThreeValues(u, i, uf6, uf18, f6, f18, owner.address)).to.not.be.reverted
+    await expect(tester.testFormatTwoValues(u, i, uf6, uf18, f6, f18, owner.address, b)).to.not.be.reverted
+    await expect(tester.testFormatThreeValues(u, i, uf6, uf18, f6, f18, owner.address, b)).to.not.be.reverted
   })
 })
