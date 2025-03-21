@@ -19,6 +19,34 @@ Core library for DeFi.
 npm install @equilibria/root
 ```
 
+## Usage
+
+### console
+This debugging library is designed to be a replacement for hardhat or forge's console library, adding support for logging signed integers and fixed **number** types in format strings. However, it only supports the following types:
+- uint256
+- int256
+- UFixed6
+- UFixed18
+- Fixed6
+- Fixed18
+- address
+
+It supports 1, 2, or 3 of the above values in a format string.
+
+To use, import the library...
+```
+import { console } from "@equilibria/root/utils/console.sol";
+```
+...and then call `console.log` with your format string:
+```
+        console.log("Processing local order for %s with maker %s at %s",
+            context.account,   // address
+            newOrder.maker(),  // Fixed6 (without unwrap)
+            newOrder.timestamp // uint256
+        );
+```
+
+
 ## Contributing
 
 ### Prerequisites

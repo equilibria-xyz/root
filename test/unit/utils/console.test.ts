@@ -91,7 +91,7 @@ describe('Console', () => {
     ).to.not.be.reverted
   })
 
-  it('should log a string with two fuzzed values', async () => {
+  it('should log a string with two and three fuzzed values', async () => {
     const u = randomBigNumber(BigNumber.from(0), BigNumber.from(100_000_000))
     const i = randomBigNumber(BigNumber.from(-200_000_000), BigNumber.from(10_000))
 
@@ -121,5 +121,6 @@ describe('Console', () => {
     console.log('  a =', owner.address)
 
     await expect(tester.testLogWithTwoValues(u, i, uf6, uf18, f6, f18, owner.address)).to.not.be.reverted
+    await expect(tester.testLogWithThreeValues(u, i, uf6, uf18, f6, f18, owner.address)).to.not.be.reverted
   })
 })

@@ -147,6 +147,7 @@ library console {
     }
 
     // string with two values
+    // 2 paramaters of 7 types = 7^2 = 49 methods
 
     function log(string memory p0, uint256 p1, uint256 p2) internal view {
         hhConsole.log(p0, p1, p2);
@@ -344,4 +345,1377 @@ library console {
         hhConsole.log(p0, p1, p2);
     }
 
+    // string with three values
+    // 3 paramaters of 7 types = 7^3 = 343 methods
+
+    function log(string memory p0, uint256 p1, uint256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, p2, p3);
+    }
+
+    function log(string memory p0, uint256 p1, uint256 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, p2, itoa(p3));
+    }
+
+    function log(string memory p0, uint256 p1, uint256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, uint256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, uint256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, uint256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, uint256 p2, address p3) internal view {
+        hhConsole.log(p0, p1, p2, p3);
+    }
+
+    function log(string memory p0, uint256 p1, int256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), p3);
+    }
+
+    function log(string memory p0, uint256 p1, int256 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), itoa(p3));
+    }
+
+    function log(string memory p0, uint256 p1, int256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, int256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, int256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, int256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, int256 p2, address p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), p3);
+    }
+
+    function log(string memory p0, uint256 p1, Fixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, uint256 p1, Fixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, uint256 p1, Fixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, Fixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, Fixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, Fixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, Fixed6 p2, address p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, uint256 p1, UFixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, uint256 p1, UFixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, uint256 p1, UFixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, UFixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, UFixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, UFixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, UFixed6 p2, address p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, uint256 p1, Fixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, uint256 p1, Fixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, uint256 p1, Fixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, Fixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, Fixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, Fixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, Fixed18 p2, address p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, uint256 p1, UFixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, uint256 p1, UFixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, uint256 p1, UFixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, UFixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, UFixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, UFixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, UFixed18 p2, address p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, uint256 p1, address p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, p2, p3);
+    }
+
+    function log(string memory p0, uint256 p1, address p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, p2, itoa(p3));
+    }
+
+    function log(string memory p0, uint256 p1, address p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, address p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, uint256 p1, address p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, address p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, uint256 p1, address p2, address p3) internal view {
+        hhConsole.log(p0, p1, p2, p3);
+    }
+    function log(string memory p0, int256 p1, uint256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, p3);
+    }
+
+    function log(string memory p0, int256 p1, uint256 p2, int256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, itoa(p3));
+    }
+
+    function log(string memory p0, int256 p1, uint256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, uint256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, uint256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, uint256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, uint256 p2, address p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, p3);
+    }
+
+    function log(string memory p0, int256 p1, int256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), itoa(p2), p3);
+    }
+
+    function log(string memory p0, int256 p1, int256 p2, int256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), itoa(p2), itoa(p3));
+    }
+
+    function log(string memory p0, int256 p1, int256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), itoa(p2), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, int256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), itoa(p2), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, int256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), itoa(p2), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, int256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), itoa(p2), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, int256 p2, address p3) internal view {
+        hhConsole.log(p0, itoa(p1), itoa(p2), p3);
+    }
+
+    function log(string memory p0, int256 p1, Fixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, int256 p1, Fixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, int256 p1, Fixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, Fixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, Fixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, Fixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, Fixed6 p2, address p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, int256 p1, UFixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, int256 p1, UFixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, int256 p1, UFixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, UFixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, UFixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, UFixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, UFixed6 p2, address p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, int256 p1, Fixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, int256 p1, Fixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, int256 p1, Fixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, Fixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, Fixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, Fixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, Fixed18 p2, address p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, int256 p1, UFixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, int256 p1, UFixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, int256 p1, UFixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, UFixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, UFixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, UFixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, UFixed18 p2, address p3) internal view {
+        hhConsole.log(p0, itoa(p1), ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, int256 p1, address p2, uint256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, p3);
+    }
+
+    function log(string memory p0, int256 p1, address p2, int256 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, itoa(p3));
+    }
+
+    function log(string memory p0, int256 p1, address p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, address p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, int256 p1, address p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, address p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, int256 p1, address p2, address p3) internal view {
+        hhConsole.log(p0, itoa(p1), p2, p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, uint256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, uint256 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, itoa(p3));
+    }
+
+    function log(string memory p0, UFixed6 p1, uint256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, uint256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, uint256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, uint256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, uint256 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, int256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), itoa(p2), p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, int256 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), itoa(p2), itoa(p3));
+    }
+
+    function log(string memory p0, UFixed6 p1, int256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), itoa(p2), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, int256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), itoa(p2), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, int256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), itoa(p2), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, int256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), itoa(p2), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, int256 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), itoa(p2), p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed6 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed6 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, Fixed18 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, UFixed18 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, address p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, p3);
+    }
+
+    function log(string memory p0, UFixed6 p1, address p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, itoa(p3));
+    }
+
+    function log(string memory p0, UFixed6 p1, address p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, address p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed6 p1, address p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, address p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed6 p1, address p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed6.unwrap(p1), 6), p2, p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, uint256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, uint256 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, itoa(p3));
+    }
+
+    function log(string memory p0, UFixed18 p1, uint256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, uint256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, uint256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, uint256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, uint256 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, int256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), itoa(p2), p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, int256 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), itoa(p2), itoa(p3));
+    }
+
+    function log(string memory p0, UFixed18 p1, int256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), itoa(p2), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, int256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), itoa(p2), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, int256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), itoa(p2), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, int256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), itoa(p2), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, int256 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), itoa(p2), p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed6 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed6 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, Fixed18 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, UFixed18 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, address p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, p3);
+    }
+
+    function log(string memory p0, UFixed18 p1, address p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, itoa(p3));
+    }
+
+    function log(string memory p0, UFixed18 p1, address p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, address p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, UFixed18 p1, address p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, address p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, UFixed18 p1, address p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(UFixed18.unwrap(p1), 18), p2, p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, uint256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, uint256 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, itoa(p3));
+    }
+
+    function log(string memory p0, Fixed6 p1, uint256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, uint256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, uint256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, uint256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, uint256 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, int256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), itoa(p2), p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, int256 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), itoa(p2), itoa(p3));
+    }
+
+    function log(string memory p0, Fixed6 p1, int256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), itoa(p2), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, int256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), itoa(p2), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, int256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), itoa(p2), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, int256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), itoa(p2), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, int256 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), itoa(p2), p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed6 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed6 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, Fixed18 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, UFixed18 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, address p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, p3);
+    }
+
+    function log(string memory p0, Fixed6 p1, address p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, itoa(p3));
+    }
+
+    function log(string memory p0, Fixed6 p1, address p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, address p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed6 p1, address p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, address p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed6 p1, address p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed6.unwrap(p1), 6), p2, p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, uint256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, uint256 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, itoa(p3));
+    }
+
+    function log(string memory p0, Fixed18 p1, uint256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, uint256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, uint256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, uint256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, uint256 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, int256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), itoa(p2), p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, int256 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), itoa(p2), itoa(p3));
+    }
+
+    function log(string memory p0, Fixed18 p1, int256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), itoa(p2), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, int256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), itoa(p2), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, int256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), itoa(p2), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, int256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), itoa(p2), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, int256 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), itoa(p2), p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed6 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed6 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, Fixed18 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, UFixed18 p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, address p2, uint256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, p3);
+    }
+
+    function log(string memory p0, Fixed18 p1, address p2, int256 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, itoa(p3));
+    }
+
+    function log(string memory p0, Fixed18 p1, address p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, address p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, Fixed18 p1, address p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, address p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, Fixed18 p1, address p2, address p3) internal view {
+        hhConsole.log(p0, ftoa(Fixed18.unwrap(p1), 18), p2, p3);
+    }
+
+    function log(string memory p0, address p1, uint256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, p2, p3);
+    }
+
+    function log(string memory p0, address p1, uint256 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, p2, itoa(p3));
+    }
+
+    function log(string memory p0, address p1, uint256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, uint256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, uint256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, uint256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, uint256 p2, address p3) internal view {
+        hhConsole.log(p0, p1, p2, p3);
+    }
+
+    function log(string memory p0, address p1, int256 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), p3);
+    }
+
+    function log(string memory p0, address p1, int256 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), itoa(p3));
+    }
+
+    function log(string memory p0, address p1, int256 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, int256 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, int256 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, int256 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, int256 p2, address p3) internal view {
+        hhConsole.log(p0, p1, itoa(p2), p3);
+    }
+
+    function log(string memory p0, address p1, Fixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, address p1, Fixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, address p1, Fixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, Fixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, Fixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, Fixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, Fixed6 p2, address p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, address p1, UFixed6 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, address p1, UFixed6 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), itoa(p3));
+    }
+
+    function log(string memory p0, address p1, UFixed6 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, UFixed6 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, UFixed6 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, UFixed6 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, UFixed6 p2, address p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed6.unwrap(p2), 6), p3);
+    }
+
+    function log(string memory p0, address p1, Fixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, address p1, Fixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, address p1, Fixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, Fixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, Fixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, Fixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, Fixed18 p2, address p3) internal view {
+        hhConsole.log(p0, p1, ftoa(Fixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, address p1, UFixed18 p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, address p1, UFixed18 p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), itoa(p3));
+    }
+
+    function log(string memory p0, address p1, UFixed18 p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, UFixed18 p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, UFixed18 p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, UFixed18 p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, UFixed18 p2, address p3) internal view {
+        hhConsole.log(p0, p1, ftoa(UFixed18.unwrap(p2), 18), p3);
+    }
+
+    function log(string memory p0, address p1, address p2, uint256 p3) internal view {
+        hhConsole.log(p0, p1, p2, p3);
+    }
+
+    function log(string memory p0, address p1, address p2, int256 p3) internal view {
+        hhConsole.log(p0, p1, p2, itoa(p3));
+    }
+
+    function log(string memory p0, address p1, address p2, Fixed6 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(Fixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, address p2, UFixed6 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(UFixed6.unwrap(p3), 6));
+    }
+
+    function log(string memory p0, address p1, address p2, Fixed18 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(Fixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, address p2, UFixed18 p3) internal view {
+        hhConsole.log(p0, p1, p2, ftoa(UFixed18.unwrap(p3), 18));
+    }
+
+    function log(string memory p0, address p1, address p2, address p3) internal view {
+        hhConsole.log(p0, p1, p2, p3);
+    }
 }

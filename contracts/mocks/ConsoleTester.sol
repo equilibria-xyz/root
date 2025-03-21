@@ -96,7 +96,8 @@ contract ConsoleTester {
         console.log("      address %s and Fixed18 %s", a, f18);
     }
 
-    /*function testLogWithThreeValues(uint256 u, int256 i, UFixed6 uf6, UFixed18 uf18, Fixed6 f6, Fixed18 f18) external view {
+    function testLogWithThreeValues(uint256 u, int256 i, UFixed6 uf6, UFixed18 uf18, Fixed6 f6, Fixed18 f18, address a) external view {
+        // not all permutations covered here
         console.log("      uint256 %s, int256 %s, UFixed6 %s", u, i, uf6);
         console.log("      uint256 %s, int256 %s, UFixed18 %s", u, i, uf18);
         console.log("      uint256 %s, int256 %s, Fixed6 %s", u, i, f6);
@@ -135,5 +136,26 @@ contract ConsoleTester {
         console.log("      UFixed6 %s, UFixed18 %s, Fixed18 %s", uf6, uf18, f18);
         console.log("      Fixed6 %s, Fixed18 %s, UFixed6 %s", f6, f18, uf6);
         console.log("      Fixed6 %s, Fixed18 %s, UFixed18 %s", f6, f18, uf18);
-    }*/
+        console.log("      address %s, uint256 %s, int256 %s", a, u, i);
+        console.log("      address %s, uint256 %s, UFixed6 %s", a, u, uf6);
+        console.log("      address %s, uint256 %s, UFixed18 %s", a, u, uf18);
+        console.log("      address %s, uint256 %s, Fixed6 %s", a, u, f6);
+        console.log("      address %s, uint256 %s, Fixed18 %s", a, u, f18);
+        console.log("      address %s, int256 %s, UFixed6 %s", a, i, uf6);
+        console.log("      address %s, int256 %s, UFixed18 %s", a, i, uf18);
+        console.log("      address %s, int256 %s, Fixed6 %s", a, i, f6);
+        console.log("      address %s, int256 %s, Fixed18 %s", a, i, f18);
+        console.log("      address %s, UFixed6 %s, UFixed18 %s", a, uf6, uf18);
+        console.log("      address %s, UFixed6 %s, Fixed6 %s", a, uf6, f6);
+        console.log("      address %s, UFixed6 %s, Fixed18 %s", a, uf6, f18);
+        console.log("      address %s, UFixed18 %s, Fixed6 %s", a, uf18, f6);
+        console.log("      address %s, UFixed18 %s, Fixed18 %s", a, uf18, f18);
+        console.log("      address %s, Fixed6 %s, Fixed18 %s", a, f6, f18);
+        console.log("      uint256 %s, address %s, int256 %s", u, a, i);
+        console.log("      uint256 %s, address %s, UFixed6 %s", u, a, uf6);
+        console.log("      int256 %s, address %s, UFixed18 %s", i, a, uf18);
+        console.log("      UFixed6 %s, address %s, Fixed6 %s", uf6, a, f6);
+        console.log("      UFixed18 %s, address %s, Fixed18 %s", uf18, a, f18);
+        console.log("      address %s, address %s, address %s", a, a, a);
+    }
 }
