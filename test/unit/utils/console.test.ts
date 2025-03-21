@@ -8,7 +8,7 @@ import { ConsoleTester, ConsoleTester__factory } from '../../../types/generated'
 
 const { ethers } = HRE
 
-describe.only('Console', () => {
+describe('Console', () => {
   let owner: SignerWithAddress
   let tester: ConsoleTester
 
