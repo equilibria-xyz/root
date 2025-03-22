@@ -46,8 +46,6 @@ import { console } from "@equilibria/root/utils/console.sol";
             newOrder.timestamp // uint256
         );
 ```
-If using hardhat, configure `allowUnlimitedContractSize: true` is true for your `hardhat` test network.
-
 
 ## Contributing
 
