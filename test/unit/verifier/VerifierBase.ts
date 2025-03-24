@@ -63,7 +63,8 @@ describe('VerifierBase', () => {
       const common = { ...DEFAULT_COMMON, account: caller.address, signer: market.address, domain: caller.address }
       const signature = await signCommon(caller, verifier, common)
 
-      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.revertedWith(
+      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidSignerError',
       )
 
@@ -76,7 +77,8 @@ describe('VerifierBase', () => {
 
       scSigner.isValidSignature.returns(false)
 
-      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.revertedWith(
+      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidSignerError',
       )
 
@@ -112,7 +114,8 @@ describe('VerifierBase', () => {
       }
       const signature = await signCommon(caller, verifier, common)
 
-      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWith(
+      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidExpiryError',
       )
 
@@ -129,7 +132,8 @@ describe('VerifierBase', () => {
       }
       const signature = await signCommon(caller, verifier, common)
 
-      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWith(
+      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidExpiryError',
       )
 
@@ -151,7 +155,8 @@ describe('VerifierBase', () => {
       const common = { ...DEFAULT_COMMON, account: caller.address, signer: caller.address, domain: market.address }
       const signature = await signCommon(caller, verifier, common)
 
-      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.revertedWith(
+      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidDomainError',
       )
 
@@ -162,7 +167,8 @@ describe('VerifierBase', () => {
       const common = { ...DEFAULT_COMMON, account: caller.address, signer: caller.address }
       const signature = await signCommon(caller, verifier, common)
 
-      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.revertedWith(
+      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidDomainError',
       )
 
@@ -174,7 +180,8 @@ describe('VerifierBase', () => {
       const signature =
         '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
 
-      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.revertedWith(
+      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidSignatureError',
       )
 
@@ -186,7 +193,8 @@ describe('VerifierBase', () => {
       const signature =
         '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123'
 
-      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.revertedWith(
+      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidSignatureError',
       )
 
@@ -205,7 +213,8 @@ describe('VerifierBase', () => {
 
       await verifier.connect(caller).cancelNonce(17)
 
-      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.revertedWith(
+      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidNonceError',
       )
 
@@ -224,7 +233,8 @@ describe('VerifierBase', () => {
 
       await verifier.connect(caller).cancelGroup(17)
 
-      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.revertedWith(
+      await expect(verifier.connect(caller).verifyCommon(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidGroupError',
       )
 
@@ -297,9 +307,9 @@ describe('VerifierBase', () => {
       }
       const signature = await signGroupCancellation(caller, verifier, groupCancellation)
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidSignerError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidSignerError')
 
       expect(await verifier.nonces(caller.address, 0)).to.eq(false)
     })
@@ -318,9 +328,9 @@ describe('VerifierBase', () => {
 
       scSigner.isValidSignature.returns(false)
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidSignerError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidSignerError')
 
       expect(await verifier.nonces(caller.address, 0)).to.eq(false)
     })
@@ -337,9 +347,9 @@ describe('VerifierBase', () => {
       }
       const signature = await signGroupCancellation(caller, verifier, groupCancellation)
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidSignerError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidSignerError')
 
       expect(await verifier.nonces(caller.address, 0)).to.eq(false)
     })
@@ -379,9 +389,9 @@ describe('VerifierBase', () => {
       }
       const signature = await signGroupCancellation(caller, verifier, groupCancellation)
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidExpiryError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidExpiryError')
 
       expect(await verifier.nonces(caller.address, 0)).to.eq(false)
     })
@@ -399,9 +409,9 @@ describe('VerifierBase', () => {
       }
       const signature = await signGroupCancellation(caller, verifier, groupCancellation)
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidExpiryError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidExpiryError')
 
       expect(await verifier.nonces(caller.address, 0)).to.eq(false)
     })
@@ -437,9 +447,9 @@ describe('VerifierBase', () => {
       }
       const signature = await signGroupCancellation(caller, verifier, groupCancellation)
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidDomainError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidDomainError')
 
       expect(await verifier.nonces(caller.address, 0)).to.eq(false)
     })
@@ -451,9 +461,9 @@ describe('VerifierBase', () => {
       }
       const signature = await signGroupCancellation(caller, verifier, groupCancellation)
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidDomainError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidDomainError')
 
       expect(await verifier.nonces(caller.address, 0)).to.eq(false)
     })
@@ -471,9 +481,9 @@ describe('VerifierBase', () => {
       const signature =
         '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidSignatureError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidSignatureError')
 
       expect(await verifier.nonces(caller.address, 0)).to.eq(false)
     })
@@ -491,9 +501,9 @@ describe('VerifierBase', () => {
       const signature =
         '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123'
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidSignatureError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidSignatureError')
 
       expect(await verifier.nonces(caller.address, 0)).to.eq(false)
     })
@@ -513,9 +523,9 @@ describe('VerifierBase', () => {
 
       await verifier.connect(caller).cancelNonce(17)
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidNonceError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidNonceError')
 
       expect(await verifier.nonces(caller.address, 17)).to.eq(true)
     })
@@ -535,9 +545,9 @@ describe('VerifierBase', () => {
 
       await verifier.connect(caller).cancelGroup(17)
 
-      await expect(verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidGroupError',
-      )
+      await expect(
+        verifier.connect(caller).verifyGroupCancellation(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidGroupError')
 
       expect(await verifier.nonces(caller.address, 0)).to.eq(false)
     })
@@ -577,7 +587,8 @@ describe('VerifierBase', () => {
       const common = { ...DEFAULT_COMMON, account: caller.address, signer: caller.address, domain: verifier.address }
       const signature = await signCommon(market, verifier, common)
 
-      await expect(verifier.connect(caller).cancelNonceWithSignature(common, signature)).to.revertedWith(
+      await expect(verifier.connect(caller).cancelNonceWithSignature(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidSignerError',
       )
 
@@ -588,7 +599,8 @@ describe('VerifierBase', () => {
       const common = { ...DEFAULT_COMMON, account: caller.address, signer: caller.address, domain: caller.address }
       const signature = await signCommon(caller, verifier, common)
 
-      await expect(verifier.connect(caller).cancelNonceWithSignature(common, signature)).to.revertedWith(
+      await expect(verifier.connect(caller).cancelNonceWithSignature(common, signature)).to.be.revertedWithCustomError(
+        verifier,
         'VerifierInvalidDomainError',
       )
 
@@ -649,9 +661,9 @@ describe('VerifierBase', () => {
       }
       const signature = await signGroupCancellation(market, verifier, groupCancellation)
 
-      await expect(verifier.connect(caller).cancelGroupWithSignature(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidSignerError',
-      )
+      await expect(
+        verifier.connect(caller).cancelGroupWithSignature(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidSignerError')
 
       expect(await verifier.groups(caller.address, 1)).to.eq(false)
     })
@@ -668,9 +680,9 @@ describe('VerifierBase', () => {
       }
       const signature = await signGroupCancellation(caller, verifier, groupCancellation)
 
-      await expect(verifier.connect(caller).cancelGroupWithSignature(groupCancellation, signature)).to.revertedWith(
-        'VerifierInvalidDomainError',
-      )
+      await expect(
+        verifier.connect(caller).cancelGroupWithSignature(groupCancellation, signature),
+      ).to.be.revertedWithCustomError(verifier, 'VerifierInvalidDomainError')
 
       expect(await verifier.groups(caller.address, 1)).to.eq(false)
     })

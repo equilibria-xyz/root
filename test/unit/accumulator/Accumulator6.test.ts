@@ -4,7 +4,7 @@ import { expect } from 'chai'
 import HRE from 'hardhat'
 
 import { MockAccumulator6, MockAccumulator6__factory } from '../../../types/generated'
-
+import { PANIC_CODES } from '@nomicfoundation/hardhat-chai-matchers/panic'
 const { ethers } = HRE
 
 describe('Accumulator6', () => {
@@ -48,7 +48,9 @@ describe('Accumulator6', () => {
     })
 
     it('non-zero amount / zero total (reverts)', async () => {
-      await expect(accumulator6.increment(utils.parseUnits('1', 6), utils.parseUnits('0', 6))).to.revertedWith('0x12')
+      await expect(accumulator6.increment(utils.parseUnits('1', 6), utils.parseUnits('0', 6))).to.revertedWithPanic(
+        PANIC_CODES.DIVISION_BY_ZERO,
+      )
     })
   })
 
@@ -80,9 +82,9 @@ describe('Accumulator6', () => {
     })
 
     it('non-zero amount / zero total (reverts)', async () => {
-      await expect(accumulator6.decrement(utils.parseUnits('1', 6), utils.parseUnits('0', 6))).to.revertedWith(
-        'DivisionByZero()',
-      )
+      await expect(
+        accumulator6.decrement(utils.parseUnits('1', 6), utils.parseUnits('0', 6)),
+      ).to.be.revertedWithCustomError(accumulator6, 'DivisionByZero')
     })
   })
 

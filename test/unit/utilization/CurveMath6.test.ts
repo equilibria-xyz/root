@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import HRE from 'hardhat'
 
 import { MockCurveMath6, MockCurveMath6__factory } from '../../../types/generated'
-
+import { PANIC_CODES } from '@nomicfoundation/hardhat-chai-matchers/panic'
 const { ethers } = HRE
 
 describe('CurveMath6', () => {
@@ -18,8 +18,9 @@ describe('CurveMath6', () => {
   describe('#linearInterpolation', async () => {
     context('increasing', async () => {
       it('reverts before start', async () => {
-        await expect(curveMath.linearInterpolation(100, 0, 200, 100, 0)).to.be.revertedWith(
-          'CurveMath6OutOfBoundsError()',
+        await expect(curveMath.linearInterpolation(100, 0, 200, 100, 0)).to.be.revertedWithCustomError(
+          curveMath,
+          'CurveMath6OutOfBoundsError',
         )
       })
 
@@ -36,16 +37,18 @@ describe('CurveMath6', () => {
       })
 
       it('reverts after end', async () => {
-        await expect(curveMath.linearInterpolation(100, 0, 200, 100, 300)).to.be.revertedWith(
-          'CurveMath6OutOfBoundsError()',
+        await expect(curveMath.linearInterpolation(100, 0, 200, 100, 300)).to.be.revertedWithCustomError(
+          curveMath,
+          'CurveMath6OutOfBoundsError',
         )
       })
     })
 
     context('decreasing', async () => {
       it('reverts before start', async () => {
-        await expect(curveMath.linearInterpolation(100, 100, 200, 0, 0)).to.be.revertedWith(
-          'CurveMath6OutOfBoundsError()',
+        await expect(curveMath.linearInterpolation(100, 100, 200, 0, 0)).to.be.revertedWithCustomError(
+          curveMath,
+          'CurveMath6OutOfBoundsError',
         )
       })
 
@@ -62,16 +65,18 @@ describe('CurveMath6', () => {
       })
 
       it('reverts after end', async () => {
-        await expect(curveMath.linearInterpolation(100, 100, 200, 0, 300)).to.be.revertedWith(
-          'CurveMath6OutOfBoundsError()',
+        await expect(curveMath.linearInterpolation(100, 100, 200, 0, 300)).to.be.revertedWithCustomError(
+          curveMath,
+          'CurveMath6OutOfBoundsError',
         )
       })
     })
 
     context('horizontal', async () => {
       it('reverts before start', async () => {
-        await expect(curveMath.linearInterpolation(100, 100, 200, 100, 0)).to.be.revertedWith(
-          'CurveMath6OutOfBoundsError()',
+        await expect(curveMath.linearInterpolation(100, 100, 200, 100, 0)).to.be.revertedWithCustomError(
+          curveMath,
+          'CurveMath6OutOfBoundsError',
         )
       })
 
@@ -88,26 +93,31 @@ describe('CurveMath6', () => {
       })
 
       it('reverts after end', async () => {
-        await expect(curveMath.linearInterpolation(100, 100, 200, 100, 300)).to.be.revertedWith(
-          'CurveMath6OutOfBoundsError()',
+        await expect(curveMath.linearInterpolation(100, 100, 200, 100, 300)).to.be.revertedWithCustomError(
+          curveMath,
+          'CurveMath6OutOfBoundsError',
         )
       })
     })
 
     context('vertical', async () => {
       it('reverts before start', async () => {
-        await expect(curveMath.linearInterpolation(100, 0, 200, 100, 0)).to.be.revertedWith(
-          'CurveMath6OutOfBoundsError()',
+        await expect(curveMath.linearInterpolation(100, 0, 200, 100, 0)).to.be.revertedWithCustomError(
+          curveMath,
+          'CurveMath6OutOfBoundsError',
         )
       })
 
       it('reverts with divide by zero', async () => {
-        expect(curveMath.linearInterpolation(100, 0, 100, 100, 100)).to.be.revertedWith('0x12')
+        await expect(curveMath.linearInterpolation(100, 0, 100, 100, 100)).to.be.revertedWithPanic(
+          PANIC_CODES.DIVISION_BY_ZERO,
+        )
       })
 
       it('reverts after end', async () => {
-        await expect(curveMath.linearInterpolation(100, 0, 100, 100, 300)).to.be.revertedWith(
-          'CurveMath6OutOfBoundsError()',
+        await expect(curveMath.linearInterpolation(100, 0, 100, 100, 300)).to.be.revertedWithCustomError(
+          curveMath,
+          'CurveMath6OutOfBoundsError',
         )
       })
     })

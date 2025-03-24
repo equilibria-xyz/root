@@ -4,6 +4,7 @@ import { expect } from 'chai'
 import HRE from 'hardhat'
 
 import { MockFixed6, MockFixed6__factory } from '../../../types/generated'
+import { PANIC_CODES } from '@nomicfoundation/hardhat-chai-matchers/panic'
 
 const { ethers } = HRE
 
@@ -74,10 +75,12 @@ describe('Fixed6', () => {
 
     it('reverts if too large or small', async () => {
       const TOO_LARGE = ethers.BigNumber.from(2).pow(256).sub(10)
-      await expect(fixed6['from(int256,uint256)'](1, TOO_LARGE)).to.be.revertedWith(`Fixed6OverflowError(${TOO_LARGE})`)
-      await expect(fixed6['from(int256,uint256)'](-1, TOO_LARGE)).to.be.revertedWith(
-        `Fixed6OverflowError(${TOO_LARGE})`,
-      )
+      await expect(fixed6['from(int256,uint256)'](1, TOO_LARGE))
+        .to.be.revertedWithCustomError(fixed6, 'Fixed6OverflowError')
+        .withArgs(TOO_LARGE)
+      await expect(fixed6['from(int256,uint256)'](-1, TOO_LARGE))
+        .to.be.revertedWithCustomError(fixed6, 'Fixed6OverflowError')
+        .withArgs(TOO_LARGE)
     })
   })
 
@@ -88,7 +91,9 @@ describe('Fixed6', () => {
 
     it('reverts if too large', async () => {
       const TOO_LARGE = ethers.BigNumber.from(2).pow(256).sub(10)
-      await expect(fixed6['from(uint256)'](TOO_LARGE)).to.be.revertedWith(`Fixed6OverflowError(${TOO_LARGE})`)
+      await expect(fixed6['from(uint256)'](TOO_LARGE))
+        .to.be.revertedWithCustomError(fixed6, 'Fixed6OverflowError')
+        .withArgs(TOO_LARGE)
     })
   })
 
@@ -184,7 +189,7 @@ describe('Fixed6', () => {
     })
 
     it('reverts if too large', async () => {
-      const TOO_LARGE = ethers.BigNumber.from(2).pow(256).sub(10)
+      const TOO_LARGE = ethers.constants.MaxInt256
       await expect(fixed6.fromSignificandAndExponent(1, TOO_LARGE)).to.be.reverted
     })
 
@@ -289,15 +294,15 @@ describe('Fixed6', () => {
     })
 
     it('reverts', async () => {
-      await expect(fixed6.div(0, 0)).to.revertedWith('0x12')
+      await expect(fixed6.div(0, 0)).to.revertedWithPanic(PANIC_CODES.DIVISION_BY_ZERO)
     })
 
     it('reverts', async () => {
-      await expect(fixed6.div(utils.parseUnits('20', 6), 0)).to.revertedWith('0x12')
+      await expect(fixed6.div(utils.parseUnits('20', 6), 0)).to.revertedWithPanic(PANIC_CODES.DIVISION_BY_ZERO)
     })
 
     it('reverts', async () => {
-      await expect(fixed6.div(utils.parseUnits('-20', 6), 0)).to.revertedWith('0x12')
+      await expect(fixed6.div(utils.parseUnits('-20', 6), 0)).to.revertedWithPanic(PANIC_CODES.DIVISION_BY_ZERO)
     })
   })
 
@@ -325,15 +330,15 @@ describe('Fixed6', () => {
     })
 
     it('reverts', async () => {
-      await expect(fixed6.divOut(0, 0)).to.revertedWith('DivisionByZero()')
+      await expect(fixed6.divOut(0, 0)).to.revertedWithCustomError(fixed6, 'DivisionByZero')
     })
 
     it('reverts', async () => {
-      await expect(fixed6.divOut(utils.parseUnits('20', 6), 0)).to.revertedWith('DivisionByZero()')
+      await expect(fixed6.divOut(utils.parseUnits('20', 6), 0)).to.revertedWithCustomError(fixed6, 'DivisionByZero')
     })
 
     it('reverts', async () => {
-      await expect(fixed6.divOut(utils.parseUnits('-20', 6), 0)).to.revertedWith('DivisionByZero()')
+      await expect(fixed6.divOut(utils.parseUnits('-20', 6), 0)).to.revertedWithCustomError(fixed6, 'DivisionByZero')
     })
   })
 
@@ -453,13 +458,13 @@ describe('Fixed6', () => {
     it('reverts', async () => {
       await expect(
         fixed6.muldiv1(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
-      ).to.revertedWith('0x12')
+      ).to.revertedWithPanic(PANIC_CODES.DIVISION_BY_ZERO)
     })
 
     it('reverts', async () => {
       await expect(
         fixed6.muldiv2(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
-      ).to.revertedWith('0x12')
+      ).to.revertedWithPanic(PANIC_CODES.DIVISION_BY_ZERO)
     })
   })
 
@@ -519,13 +524,13 @@ describe('Fixed6', () => {
     it('reverts', async () => {
       await expect(
         fixed6.muldivOut1(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
-      ).to.revertedWith('DivisionByZero()')
+      ).to.revertedWithCustomError(fixed6, 'DivisionByZero')
     })
 
     it('reverts', async () => {
       await expect(
         fixed6.muldivOut2(utils.parseUnits('20', 6), utils.parseUnits('10', 6), utils.parseUnits('0', 6)),
-      ).to.revertedWith('DivisionByZero()')
+      ).to.revertedWithCustomError(fixed6, 'DivisionByZero')
     })
   })
 

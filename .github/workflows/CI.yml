@@ -8,7 +8,7 @@ on:
       - master
       - dev
       - v2
-      - v2.4
+      - v2.5
 
 env:
   CI: true

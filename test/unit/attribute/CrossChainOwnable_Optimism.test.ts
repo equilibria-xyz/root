@@ -58,9 +58,9 @@ describe('CrossChainOwnable_Optimism', () => {
     })
 
     it('reverts if not owner', async () => {
-      await expect(ownable.connect(unrelated).updatePendingOwner(unrelated.address)).to.be.revertedWith(
-        `OwnableNotOwnerError("${unrelated.address}")`,
-      )
+      await expect(ownable.connect(unrelated).updatePendingOwner(unrelated.address))
+        .to.be.revertedWithCustomError(ownable, 'OwnableNotOwnerError')
+        .withArgs(unrelated.address)
     })
 
     it('reset', async () => {
@@ -90,23 +90,26 @@ describe('CrossChainOwnable_Optimism', () => {
     })
 
     it('reverts if not cross chain', async () => {
-      await expect(ownable.connect(xChainOwner).acceptOwner()).to.be.revertedWith('NotCrossChainCall()')
+      await expect(ownable.connect(xChainOwner).acceptOwner()).to.be.revertedWithCustomError(
+        ownable,
+        'NotCrossChainCall',
+      )
     })
 
     it('reverts if owner not pending owner', async () => {
       crossDomainMessenger.xDomainMessageSender.reset()
       crossDomainMessenger.xDomainMessageSender.returns(user.address)
-      await expect(ownable.connect(crossDomainMessenger.wallet).acceptOwner()).to.be.revertedWith(
-        `OwnableNotPendingOwnerError("${user.address}")`,
-      )
+      await expect(ownable.connect(crossDomainMessenger.wallet).acceptOwner())
+        .to.be.revertedWithCustomError(ownable, 'OwnableNotPendingOwnerError')
+        .withArgs(user.address)
     })
 
     it('reverts if unrelated not pending owner', async () => {
       crossDomainMessenger.xDomainMessageSender.reset()
       crossDomainMessenger.xDomainMessageSender.returns(unrelated.address)
-      await expect(ownable.connect(crossDomainMessenger.wallet).acceptOwner()).to.be.revertedWith(
-        `OwnableNotPendingOwnerError("${unrelated.address}")`,
-      )
+      await expect(ownable.connect(crossDomainMessenger.wallet).acceptOwner())
+        .to.be.revertedWithCustomError(ownable, 'OwnableNotPendingOwnerError')
+        .withArgs(unrelated.address)
     })
   })
 
@@ -120,9 +123,9 @@ describe('CrossChainOwnable_Optimism', () => {
 
     it('reverts if not owner', async () => {
       crossDomainMessenger.xDomainMessageSender.returns(user.address)
-      await expect(ownable.connect(crossDomainMessenger.wallet).mustOwner()).to.be.revertedWith(
-        `OwnableNotOwnerError("${user.address}")`,
-      )
+      await expect(ownable.connect(crossDomainMessenger.wallet).mustOwner())
+        .to.be.revertedWithCustomError(ownable, 'OwnableNotOwnerError')
+        .withArgs(user.address)
     })
   })
 })

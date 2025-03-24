@@ -34,9 +34,9 @@ describe('OwnerDelegatable', () => {
     })
 
     it('reverts if not owner', async () => {
-      await expect(ownerDelegatable.connect(user).delegate(mockToken.address, unrelated.address)).to.be.revertedWith(
-        `OwnableNotOwnerError("${user.address}")`,
-      )
+      await expect(ownerDelegatable.connect(user).delegate(mockToken.address, unrelated.address))
+        .to.be.revertedWithCustomError(ownerDelegatable, 'OwnableNotOwnerError')
+        .withArgs(user.address)
     })
   })
 })

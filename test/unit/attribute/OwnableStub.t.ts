@@ -38,7 +38,10 @@ describe('OwnableStub', function () {
       await ownableContract.connect(owner).updatePendingOwner(addr1.address)
 
       // Attempt to accept ownership through stub should fail
-      await expect(ownableStub.acceptOwner(ownableContract.address)).to.be.revertedWith('OwnableNotPendingOwnerError')
+      await expect(ownableStub.acceptOwner(ownableContract.address)).to.be.revertedWithCustomError(
+        ownableContract,
+        'OwnableNotPendingOwnerError',
+      )
     })
   })
 })

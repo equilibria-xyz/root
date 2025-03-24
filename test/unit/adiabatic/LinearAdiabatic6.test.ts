@@ -201,7 +201,7 @@ describe('LinearAdiabatic6', () => {
           parseUnits('50', 6),
           parseUnits('123', 6),
         ),
-      ).to.revertedWith('Adiabatic6ZeroScaleError')
+      ).to.be.revertedWithCustomError(linearAdiabatic, 'Adiabatic6ZeroScaleError')
     })
 
     it('returns correct fee from non-zero', async () => {
