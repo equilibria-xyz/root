@@ -105,5 +105,5 @@ npx hardhat verify --network <network> <DEPLOYED_CONTRACT_ADDRESS> "Constructor 
 ### Added plugins
 
 - Contract Sizer [hardhat-contract-sizer](https://github.com/ItsNickBarry/hardhat-contract-sizer)
-- Gas reporter [hardhat-gas-reporter](https://hardhat.org/plugins/hardhat-gas-reporter.html)
+- Gas reporter [hardhat-gas-reporter](https://www.npmjs.com/package/hardhat-gas-reporter)
 - Etherscan [hardhat-etherscan](https://hardhat.org/plugins/nomiclabs-hardhat-etherscan.html)
