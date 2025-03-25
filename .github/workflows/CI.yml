@@ -1,4 +1,4 @@
-name: Automated Tests and Linting
+name: CI
 
 on:
   push:
@@ -9,14 +9,41 @@ on:
       - dev
       - v2
       - v2.5
+  workflow_dispatch:
 
 env:
-  CI: true
-  PARSER_BROKEN: false # set to true if Solidity parsing is currently broken, this will skip Linting and Coverage
-concurrency:
-  group: build-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  FOUNDRY_PROFILE: ci
+
 jobs:
-  unit-test:
-    name: Unit Tests w/ Coverage
+  check:
+    strategy:
+      fail-fast: true
+
+    name: Foundry project
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Show Forge version
+        run: |
+          forge --version
+
+      - name: Run Forge fmt
+        run: |
+          forge fmt --check
+        id: fmt
+
+      - name: Run Forge build
+        run: |
+          forge build --sizes
+        id: build
+
+      - name: Run Forge tests
+        run: |
+          forge test -vvv
+        id: test
