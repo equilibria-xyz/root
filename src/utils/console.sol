@@ -22,7 +22,8 @@ library console {
 
         // Determine length of string and unsigned value
         bool negative = value < 0;
-        uint256 v = negative ? uint256(-value) : uint256(value);
+        // Handle corner case where type(int256).min cannot be multiplied by -1
+        uint256 v = negative ? (value == type(int256).min ? uint256(type(int256).max) + 1 : uint256(-value)) : uint256(value);
         uint256 len = negative ? 2 : 1;
         uint256 i;
         for (i = v; i > 0; i /= 10) {

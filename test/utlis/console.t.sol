@@ -1,51 +1,61 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Fixed6, Fixed6Lib, Fixed18, Fixed18Lib } from "../number/types/Fixed6.sol";
-import { UFixed6, UFixed6Lib, UFixed18, UFixed18Lib } from "../number/types/UFixed6.sol";
 
-import { console } from "../utils/console.sol";
+import { Test } from "forge-std/Test.sol";
 
-contract ConsoleTester {
+import { Fixed6, Fixed6Lib, Fixed18, Fixed18Lib } from "../../src/number/types/Fixed6.sol";
+import { UFixed6, UFixed6Lib, UFixed18, UFixed18Lib } from "../../src/number/types/UFixed6.sol";
 
-    function testSingleValues(uint256 seed) external view {
+import { console } from "../../src/utils/console.sol";
+
+contract ConsoleTest is Test {
+    // TODO: Why aren't these defined directly in the fixed types?
+    // Calling FixedLib.from() with a value outside the bounds will panic 0x11.
+    uint256 constant MAX_UFIXED6 = type(uint256).max / 1e6;
+    uint256 constant MAX_UFIXED18 = type(uint256).max / 1e18;
+    int256 constant MIN_FIXED6 = type(int256).min / 1e6;
+    int256 constant MAX_FIXED6 = type(int256).max / 1e6;
+    int256 constant MIN_FIXED18 = type(int256).min / 1e18;
+    int256 constant MAX_FIXED18 = type(int256).max / 1e18;
+
+    function test_singleValues(uint256 unsigned, int256 signed) external view {
         console.log("foo");
-        console.log(seed);
-        console.log(int(seed));
-        UFixed6 u6 = UFixed6Lib.from(seed);
-        UFixed18 u18 = UFixed18Lib.from(seed);
-        console.log(u6);
-        console.log(u18);
-        console.log(Fixed6Lib.from(-1, u6));
-        console.log(Fixed18Lib.from(-1, u18));
+        console.log(unsigned);
+        console.log(signed);
+
+        console.log(UFixed6Lib.from(bound(unsigned, 0, MAX_UFIXED6)));
+        console.log(UFixed18Lib.from(bound(unsigned, 0, MAX_UFIXED18)));
+        console.log(Fixed6Lib.from(bound(signed, MIN_FIXED6, MAX_FIXED6)));
+        console.log(Fixed18Lib.from(bound(signed, MIN_FIXED18, MAX_FIXED18)));
+
         console.log(address(this));
         console.log(true);
         console.log(false);
     }
 
-    function testFormatNonNumericValues(address a) external pure {
+    function test_formatNonNumericValues(address a) external pure {
         console.log("      Address %s", a);
         console.log("      Bool %s ", uint160(a) / 2 < type(uint160).max / 2);
         console.log("      Bool %s (should be true) and %s (should be false)", true, false);
     }
 
-    function testFormatInt(int256 signed) external pure {
-        console.log("      Unsigned int %s with trailing text",
-            signed >= 0 ? uint(signed) : uint(-signed));
+    function test_formatInt(uint256 unsigned, int256 signed) external pure {
+        console.log("      Unsigned int %s with trailing text", unsigned);
         console.log("      Signed int %s with trailing text", signed);
     }
 
-    function testFormatUFixed(UFixed6 decimal6, UFixed18 decimal18) external pure {
+    function test_formatUFixed(UFixed6 decimal6, UFixed18 decimal18) external pure {
         console.log("           Six decimal fixed %s (unsigned)", decimal6);
         console.log("      Eighteen decimal fixed %s (unsigned)", decimal18);
     }
 
-    function testFormatFixed(Fixed6 decimal6, Fixed18 decimal18) external pure {
-        console.log("           Six decimal fixed %s (signed)", decimal6);
-        console.log("      Eighteen decimal fixed %s (signed)", decimal18);
+    function test_formatFixed(int256 signed) external pure {
+        console.log("           Six decimal fixed %s (signed)", signed);
+        console.log("      Eighteen decimal fixed %s (signed)", signed);
     }
 
-    function testFormatTwoInts(uint256 val1, uint256 val2) external pure {
+    function test_formatTwoInts(uint256 val1, uint256 val2) external pure {
         console.log("      Both unsigned and unsigned: %s and %s", uint(val1), uint(val2));
         console.log("      Both unsigned and signed:   %s and %s", uint(val1), int(val2)*-1);
         console.log("      Both signed and unsigned:   %s and %s", int(val1)*-1, uint(val2));
@@ -53,7 +63,11 @@ contract ConsoleTester {
         console.log("      Both signed (positive):     %s and %s", int(val1), int(val2));
     }
 
-    function testFormatTwoFixedValues(UFixed6 uf6, UFixed18 uf18, Fixed6 f6, Fixed18 f18) external pure {
+    function test_formatTwoFixedValues(uint256 unsigned, int256 signed) external pure {
+        UFixed6 uf6 = UFixed6Lib.from(bound(unsigned, 0, MAX_UFIXED6));
+        UFixed18 uf18 = UFixed18Lib.from(bound(unsigned, 0, MAX_UFIXED18));
+        Fixed6 f6 = Fixed6Lib.from(bound(signed, MIN_FIXED6, MAX_FIXED6));
+        Fixed18 f18 = Fixed18Lib.from(bound(signed, MIN_FIXED18, MAX_FIXED18));
         console.log("      UFixed6 %s and UFixed6 %s", uf6, uf6);
         console.log("      UFixed18 %s and UFixed18 %s", uf18, uf18);
         console.log("      Fixed6 %s and Fixed6 %s", f6, f6);
@@ -68,16 +82,11 @@ contract ConsoleTester {
         console.log("      Fixed18 %s and UFixed18 %s", f18, uf18);
     }
 
-    function testFormatTwoValues(
-        uint256 u,
-        int256 i,
-        UFixed6 uf6,
-        UFixed18 uf18,
-        Fixed6 f6,
-        Fixed18 f18,
-        address a,
-        bool b
-    ) external pure {
+    function test_formatTwoValues(uint256 u, int256 i, address a, bool b) external pure {
+        UFixed6 uf6 = UFixed6Lib.from(bound(u, 0, MAX_UFIXED6));
+        UFixed18 uf18 = UFixed18Lib.from(bound(u, 0, MAX_UFIXED18));
+        Fixed6 f6 = Fixed6Lib.from(bound(i, MIN_FIXED6, MAX_FIXED6));
+        Fixed18 f18 = Fixed18Lib.from(bound(i, MIN_FIXED18, MAX_FIXED18));
         console.log("      uint256 %s and uint256 %s", u, u);
         console.log("      uint256 %s and int256 %s", u, i);
         console.log("      uint256 %s and address %s", u, a);
@@ -144,16 +153,16 @@ contract ConsoleTester {
         console.log("      Fixed18 %s and Fixed18 %s", f18, f18);
     }
 
-    function testFormatThreeValues(
+    function test_formatThreeValues(
         uint256 u,
         int256 i,
-        UFixed6 uf6,
-        UFixed18 uf18,
-        Fixed6 f6,
-        Fixed18 f18,
         address a,
         bool b
     ) external pure {
+        UFixed6 uf6 = UFixed6Lib.from(bound(u, 0, MAX_UFIXED6));
+        UFixed18 uf18 = UFixed18Lib.from(bound(u, 0, MAX_UFIXED18));
+        Fixed6 f6 = Fixed6Lib.from(bound(i, MIN_FIXED6, MAX_FIXED6));
+        Fixed18 f18 = Fixed18Lib.from(bound(i, MIN_FIXED18, MAX_FIXED18));
         console.log("      uint256 %s, uint256 %s and uint256 %s", u, u, u);
         console.log("      uint256 %s, uint256 %s and int256 %s", u, u, i);
         console.log("      uint256 %s, uint256 %s and address %s", u, u, a);
