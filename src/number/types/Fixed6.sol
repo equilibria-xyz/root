@@ -374,23 +374,23 @@ library Fixed6Lib {
     /**
      * @notice Returns whether the signed fixed-decimal `value` is inside the range `min` and `max`
      * @param value Signed fixed-decimal to check
-     * @param min Minimum value
-     * @param max Maximum value
+     * @param min_ Minimum value
+     * @param max_ Maximum value
      * @return Whether `value` is inside the range `min` and `max`
      */
-    function inside(Fixed6 value, Fixed6 min, Fixed6 max) internal pure returns (bool) {
-        return !outside(value, min, max);
+    function inside(Fixed6 value, Fixed6 min_, Fixed6 max_) internal pure returns (bool) {
+        return !outside(value, min_, max_);
     }
 
     /**
      * @notice Returns whether the signed fixed-decimal `value` is outside the range `min` and `max`
      * @param value Signed fixed-decimal to check
-     * @param min Minimum value
-     * @param max Maximum value
+     * @param min_ Minimum value
+     * @param max_ Maximum value
      * @return Whether `value` is outside the range `min` and `max`
      */
-    function outside(Fixed6 value, Fixed6 min, Fixed6 max) internal pure returns (bool) {
-        return lt(value, min) || gt(value, max);
+    function outside(Fixed6 value, Fixed6 min_, Fixed6 max_) internal pure returns (bool) {
+        return lt(value, min_) || gt(value, max_);
     }
 }
 

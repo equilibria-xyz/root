@@ -340,23 +340,23 @@ library UFixed18Lib {
     /**
      * @notice Returns whether the unsigned fixed-decimal `value` is inside the range `min` and `max`
      * @param value Unsigned fixed-decimal to check
-     * @param min Minimum value
-     * @param max Maximum value
+     * @param min_ Minimum value
+     * @param max_ Maximum value
      * @return Whether `value` is inside the range `min` and `max`
      */
-    function inside(UFixed18 value, UFixed18 min, UFixed18 max) internal pure returns (bool) {
-        return !outside(value, min, max);
+    function inside(UFixed18 value, UFixed18 min_, UFixed18 max_) internal pure returns (bool) {
+        return !outside(value, min_, max_);
     }
 
     /**
      * @notice Returns whether the unsigned fixed-decimal `value` is outside the range `min` and `max`
      * @param value Unsigned fixed-decimal to check
-     * @param min Minimum value
-     * @param max Maximum value
+     * @param min_ Minimum value
+     * @param max_ Maximum value
      * @return Whether `value` is outside the range `min` and `max`
      */
-    function outside(UFixed18 value, UFixed18 min, UFixed18 max) internal pure returns (bool) {
-        return lt(value, min) || gt(value, max);
+    function outside(UFixed18 value, UFixed18 min_, UFixed18 max_) internal pure returns (bool) {
+        return lt(value, min_) || gt(value, max_);
     }
 }
 

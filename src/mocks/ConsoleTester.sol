@@ -23,29 +23,29 @@ contract ConsoleTester {
         console.log(false);
     }
 
-    function testFormatNonNumericValues(address a) external view {
+    function testFormatNonNumericValues(address a) external pure {
         console.log("      Address %s", a);
         console.log("      Bool %s ", uint160(a) / 2 < type(uint160).max / 2);
         console.log("      Bool %s (should be true) and %s (should be false)", true, false);
     }
 
-    function testFormatInt(int256 signed) external view {
+    function testFormatInt(int256 signed) external pure {
         console.log("      Unsigned int %s with trailing text",
             signed >= 0 ? uint(signed) : uint(-signed));
         console.log("      Signed int %s with trailing text", signed);
     }
 
-    function testFormatUFixed(UFixed6 decimal6, UFixed18 decimal18) external view {
+    function testFormatUFixed(UFixed6 decimal6, UFixed18 decimal18) external pure {
         console.log("           Six decimal fixed %s (unsigned)", decimal6);
         console.log("      Eighteen decimal fixed %s (unsigned)", decimal18);
     }
 
-    function testFormatFixed(Fixed6 decimal6, Fixed18 decimal18) external view {
+    function testFormatFixed(Fixed6 decimal6, Fixed18 decimal18) external pure {
         console.log("           Six decimal fixed %s (signed)", decimal6);
         console.log("      Eighteen decimal fixed %s (signed)", decimal18);
     }
 
-    function testFormatTwoInts(uint256 val1, uint256 val2) external view {
+    function testFormatTwoInts(uint256 val1, uint256 val2) external pure {
         console.log("      Both unsigned and unsigned: %s and %s", uint(val1), uint(val2));
         console.log("      Both unsigned and signed:   %s and %s", uint(val1), int(val2)*-1);
         console.log("      Both signed and unsigned:   %s and %s", int(val1)*-1, uint(val2));
@@ -53,7 +53,7 @@ contract ConsoleTester {
         console.log("      Both signed (positive):     %s and %s", int(val1), int(val2));
     }
 
-    function testFormatTwoFixedValues(UFixed6 uf6, UFixed18 uf18, Fixed6 f6, Fixed18 f18) external view {
+    function testFormatTwoFixedValues(UFixed6 uf6, UFixed18 uf18, Fixed6 f6, Fixed18 f18) external pure {
         console.log("      UFixed6 %s and UFixed6 %s", uf6, uf6);
         console.log("      UFixed18 %s and UFixed18 %s", uf18, uf18);
         console.log("      Fixed6 %s and Fixed6 %s", f6, f6);
@@ -77,7 +77,7 @@ contract ConsoleTester {
         Fixed18 f18,
         address a,
         bool b
-    ) external view {
+    ) external pure {
         console.log("      uint256 %s and uint256 %s", u, u);
         console.log("      uint256 %s and int256 %s", u, i);
         console.log("      uint256 %s and address %s", u, a);
@@ -153,7 +153,7 @@ contract ConsoleTester {
         Fixed18 f18,
         address a,
         bool b
-    ) external view {
+    ) external pure {
         console.log("      uint256 %s, uint256 %s and uint256 %s", u, u, u);
         console.log("      uint256 %s, uint256 %s and int256 %s", u, u, i);
         console.log("      uint256 %s, uint256 %s and address %s", u, u, a);

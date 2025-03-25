@@ -144,12 +144,12 @@ contract MockFixed18 {
         return Fixed18Lib.abs(a);
     }
 
-    function inside(Fixed18 value, Fixed18 min, Fixed18 max) external pure returns (bool) {
-        return Fixed18Lib.inside(value, min, max);
+    function inside(Fixed18 value, Fixed18 min_, Fixed18 max_) external pure returns (bool) {
+        return Fixed18Lib.inside(value, min_, max_);
     }
 
-    function outside(Fixed18 value, Fixed18 min, Fixed18 max) external pure returns (bool) {
-        return Fixed18Lib.outside(value, min, max);
+    function outside(Fixed18 value, Fixed18 min_, Fixed18 max_) external pure returns (bool) {
+        return Fixed18Lib.outside(value, min_, max_);
     }
 
     function read(Fixed18Storage slot) external view returns (Fixed18) {

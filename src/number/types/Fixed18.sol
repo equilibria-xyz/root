@@ -364,23 +364,23 @@ library Fixed18Lib {
     /**
      * @notice Returns whether the signed fixed-decimal `value` is inside the range `min` and `max`
      * @param value Signed fixed-decimal to check
-     * @param min Minimum value
-     * @param max Maximum value
+     * @param min_ Minimum value
+     * @param max_ Maximum value
      * @return Whether `value` is inside the range `min` and `max`
      */
-    function inside(Fixed18 value, Fixed18 min, Fixed18 max) internal pure returns (bool) {
-        return !outside(value, min, max);
+    function inside(Fixed18 value, Fixed18 min_, Fixed18 max_) internal pure returns (bool) {
+        return !outside(value, min_, max_);
     }
 
     /**
      * @notice Returns whether the signed fixed-decimal `value` is outside the range `min` and `max`
      * @param value Signed fixed-decimal to check
-     * @param min Minimum value
-     * @param max Maximum value
+     * @param min_ Minimum value
+     * @param max_ Maximum value
      * @return Whether `value` is outside the range `min` and `max`
      */
-    function outside(Fixed18 value, Fixed18 min, Fixed18 max) internal pure returns (bool) {
-        return lt(value, min) || gt(value, max);
+    function outside(Fixed18 value, Fixed18 min_, Fixed18 max_) internal pure returns (bool) {
+        return lt(value, min_) || gt(value, max_);
     }
 }
 
