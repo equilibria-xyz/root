@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/crosschain/CrossChainEnabled.sol";
 import "../Ownable.sol";
-import "../../storage/Storage.sol";
 
 /**
  * @title CrossChainOwnable
@@ -18,11 +17,11 @@ import "../../storage/Storage.sol";
  *      a fuse will be tripped, preventing same-chain ownership going forward.
  */
 abstract contract CrossChainOwnable is Ownable, CrossChainEnabled {
-    BoolStorage private constant _crossChainRestricted = BoolStorage.wrap(keccak256("equilibria.root.CrossChainOwnable.crossChainRestricted"));
-    function crossChainRestricted() public view returns (bool) { return _crossChainRestricted.read(); }
+    bool private _crossChainRestricted;
+    function crossChainRestricted() public view returns (bool) { return _crossChainRestricted; }
 
     function _beforeAcceptOwner() internal override {
-        if (!crossChainRestricted()) _crossChainRestricted.store(true);
+        if (!crossChainRestricted()) _crossChainRestricted = true;
     }
 
     function _sender() internal view override returns (address) {

@@ -4,13 +4,13 @@ pragma solidity ^0.8.13;
 import "../attribute/Initializable.sol";
 
 contract MockInitializable is Initializable {
-    Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.Initializable.version"));
+    uint256 private _version;
 
     event NoOp();
     event NoOpChild();
 
     function __version() external view returns (uint256) {
-        return _version.read();
+        return _version;
     }
 
     function initialize() public initializer(1) {
@@ -64,12 +64,12 @@ contract MockInitializableConstructor8 is MockInitializableConstructor3 {
 }
 
 contract MockInitializableMulti is Initializable {
-    Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.Initializable.version"));
+    uint256 private _version;
 
     event NoOp(uint256 version);
 
     function __version() external view returns (uint256) {
-        return _version.read();
+        return _version;
     }
 
     function initialize1() public initializer(1) {

@@ -4,7 +4,6 @@ pragma solidity ^0.8.13;
 import "./Initializable.sol";
 import "./Ownable.sol";
 import "./interfaces/IPausable.sol";
-import "../storage/Storage.sol";
 
 /**
  * @title Pausable
@@ -16,12 +15,12 @@ import "../storage/Storage.sol";
  */
 abstract contract Pausable is IPausable, Ownable {
     /// @dev The pauser address
-    AddressStorage private constant _pauser = AddressStorage.wrap(keccak256("equilibria.root.Pausable.pauser"));
-    function pauser() public view returns (address) { return _pauser.read(); }
+    address private _pauser;
+    function pauser() public view returns (address) { return _pauser; }
 
     /// @dev Whether the contract is paused
-    BoolStorage private constant _paused = BoolStorage.wrap(keccak256("equilibria.root.Pausable.paused"));
-    function paused() public view returns (bool) { return _paused.read(); }
+    bool private _paused;
+    function paused() public view returns (bool) { return _paused; }
 
     /**
      * @notice Initializes the contract setting `msg.sender` as the initial pauser
@@ -37,7 +36,7 @@ abstract contract Pausable is IPausable, Ownable {
      * @param newPauser New pauser address
      */
     function updatePauser(address newPauser) public onlyOwner {
-        _pauser.store(newPauser);
+        _pauser = newPauser;
         emit PauserUpdated(newPauser);
     }
 
@@ -46,7 +45,7 @@ abstract contract Pausable is IPausable, Ownable {
      * @dev Can only be called by the pauser
      */
     function pause() external onlyPauser {
-        _paused.store(true);
+        _paused = true;
         emit Paused();
     }
 
@@ -55,7 +54,7 @@ abstract contract Pausable is IPausable, Ownable {
      * @dev Can only be called by the pauser
      */
     function unpause() external onlyPauser {
-        _paused.store(false);
+        _paused = false;
         emit Unpaused();
     }
 

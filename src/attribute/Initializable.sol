@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "./interfaces/IInitializable.sol";
-import "../storage/Storage.sol";
 
 /**
  * @title Initializable
@@ -15,28 +14,28 @@ import "../storage/Storage.sol";
  */
 abstract contract Initializable is IInitializable {
     /// @dev The initialized flag
-    Uint256Storage private constant _version = Uint256Storage.wrap(keccak256("equilibria.root.Initializable.version"));
+    uint256 private _version;
 
     /// @dev The initializing flag
-    BoolStorage private constant _initializing = BoolStorage.wrap(keccak256("equilibria.root.Initializable.initializing"));
+    bool private _initializing;
 
     /// @dev Can only be called once per version, `version` is 1-indexed
     modifier initializer(uint256 version) {
         if (version == 0) revert InitializableZeroVersionError();
-        if (_version.read() >= version) revert InitializableAlreadyInitializedError(version);
+        if (_version >= version) revert InitializableAlreadyInitializedError(version);
 
-        _version.store(version);
-        _initializing.store(true);
+        _version = version;
+        _initializing = true;
 
         _;
 
-        _initializing.store(false);
+        _initializing = false;
         emit Initialized(version);
     }
 
     /// @dev Can only be called from an initializer or constructor
     modifier onlyInitializer() {
-        if (!_constructing() && !_initializing.read()) revert InitializableNotInitializingError();
+        if (!_constructing() && !_initializing) revert InitializableNotInitializingError();
         _;
     }
 

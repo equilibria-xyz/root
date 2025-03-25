@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 
 import "./Initializable.sol";
 import "./interfaces/IOwnable.sol";
-import "../storage/Storage.sol";
 
 /**
  * @title Ownable
@@ -14,12 +13,12 @@ import "../storage/Storage.sol";
  */
 abstract contract Ownable is IOwnable, Initializable {
     /// @dev The owner address
-    AddressStorage private constant _owner = AddressStorage.wrap(keccak256("equilibria.root.Ownable.owner"));
-    function owner() public view returns (address) { return _owner.read(); }
+    address private _owner;
+    function owner() public view returns (address) { return _owner; }
 
     /// @dev The pending owner address
-    AddressStorage private constant _pendingOwner = AddressStorage.wrap(keccak256("equilibria.root.Ownable.pendingOwner"));
-    function pendingOwner() public view returns (address) { return _pendingOwner.read(); }
+    address private _pendingOwner;
+    function pendingOwner() public view returns (address) { return _pendingOwner; }
 
     /**
      * @notice Initializes the contract setting `msg.sender` as the initial owner
@@ -36,7 +35,7 @@ abstract contract Ownable is IOwnable, Initializable {
      * @param newPendingOwner New pending owner address
      */
     function updatePendingOwner(address newPendingOwner) public onlyOwner {
-        _pendingOwner.store(newPendingOwner);
+        _pendingOwner = newPendingOwner;
         emit PendingOwnerUpdated(newPendingOwner);
     }
 
@@ -63,7 +62,7 @@ abstract contract Ownable is IOwnable, Initializable {
      * @param newOwner New owner address
      */
     function _updateOwner(address newOwner) private {
-        _owner.store(newOwner);
+        _owner = newOwner;
         emit OwnerUpdated(newOwner);
     }
 

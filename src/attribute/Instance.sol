@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../storage/Storage.sol";
 import "./interfaces/IInstance.sol";
 import "./Initializable.sol";
 
@@ -9,15 +8,15 @@ import "./Initializable.sol";
 /// @notice An abstract contract that is created and managed by a factory
 abstract contract Instance is IInstance, Initializable {
     /// @dev The factory address storage slot
-    AddressStorage private constant _factory = AddressStorage.wrap(keccak256("equilibria.root.Instance.factory"));
+    address private _factory;
 
     /// @notice Returns the factory that created this instance
     /// @return The factory that created this instance
-    function factory() public view returns (IFactory) { return IFactory(_factory.read()); }
+    function factory() public view returns (IFactory) { return IFactory(_factory); }
 
     /// @notice Initializes the contract setting `msg.sender` as the factory
     function __Instance__initialize() internal onlyInitializer {
-        _factory.store(msg.sender);
+        _factory = msg.sender;
     }
 
     /// @notice Only allow the owner defined by the factory to call the function
