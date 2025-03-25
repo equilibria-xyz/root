@@ -1,109 +1,66 @@
-# Root
+## Foundry
 
-Core library for DeFi.
+**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
-## Facilities
-| Name            | Purpose                                        |
-|             ---:|------------------------------------------------|
-| **accumulator** | tracks cumulative changes to a value           |
-| **attribute**   | abstract contracts with foundational patterns  |
-| **number**      | fixed decimal types and math functions         |
-| **pid**         | proportional integral derivative controller    |
-| **token**       | helpers for working with fungible tokens       |
-| **utilization** | calculates rates based on a utilization curve  |
-| **verifier**    | helps create and verify EIP712 signed messages |
+Foundry consists of:
 
-## Installation
+-   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
+-   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
+-   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
+-   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
 
-```
-npm install @equilibria/root
-```
+## Documentation
+
+https://book.getfoundry.sh/
 
 ## Usage
 
-### console
-This debugging library is designed to be a replacement for hardhat or forge's console library, adding support for logging signed integers and fixed **number** types in format strings. However, it only supports the following types:
-- uint256
-- int256
-- UFixed6
-- UFixed18
-- Fixed6
-- Fixed18
-- address
-- bool
+### Build
 
-It supports 1, 2, or 3 of the above values in a format string.
-
-To use, import the library...
+```shell
+$ forge build
 ```
-import { console } from "@equilibria/root/utils/console.sol";
-```
-...and then call `console.log` with your format string:
-```
-        console.log("Processing local order for %s with maker %s at %s",
-            context.account,   // address
-            newOrder.maker(),  // Fixed6 (without unwrap)
-            newOrder.timestamp // uint256
-        );
-```
-
-## Contributing
-
-### Prerequisites
-
-This repo works best with Node.js v16.x.x, this is preconfigured for users of [asdf](https://asdf-vm.com/).
-
-Before running any command, make sure to install dependencies:
-
-```sh
-$ yarn
-```
-
-### Compile
-
-Compile the smart contracts with Hardhat:
-
-```sh
-$ yarn compile
-```
-
-This also generates the Typechain types
 
 ### Test
 
-Run the Mocha tests:
-
-```sh
-$ yarn test
+```shell
+$ forge test
 ```
 
-To run tests against a Mainnet fork, set your `ALCHEMY_KEY` in `.env` and run
+### Format
 
-```sh
-$ yarn test-integration
+```shell
+$ forge fmt
 ```
 
-### Gas Report
-To get a gas report based on unit test calls:
+### Gas Snapshots
 
-```sh
-$ yarn gasReport
+```shell
+$ forge snapshot
 ```
 
-### Deploy contract to network (requires Mnemonic and infura API key)
+### Anvil
 
-```
-npx hardhat run --network rinkeby ./scripts/deploy.ts
-```
-
-### Validate a contract with etherscan (requires API key)
-
-```
-npx hardhat verify --network <network> <DEPLOYED_CONTRACT_ADDRESS> "Constructor argument 1"
+```shell
+$ anvil
 ```
 
-### Added plugins
+### Deploy
 
-- Contract Sizer [hardhat-contract-sizer](https://github.com/ItsNickBarry/hardhat-contract-sizer)
-- Gas reporter [hardhat-gas-reporter](https://www.npmjs.com/package/hardhat-gas-reporter)
-- Etherscan [hardhat-etherscan](https://hardhat.org/plugins/nomiclabs-hardhat-etherscan.html)
+```shell
+$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```
+
+### Cast
+
+```shell
+$ cast <subcommand>
+```
+
+### Help
+
+```shell
+$ forge --help
+$ anvil --help
+$ cast --help
+```

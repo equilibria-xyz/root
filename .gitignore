@@ -1,20 +1,14 @@
-node_modules
+# Compiler files
+cache/
+out/
 
-#Hardhat files
-cache
-artifacts
-factories
-coverage
-coverage.json
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
 
+# Docs
+docs/
+
+# Dotenv file
 .env
-
-# typechain generated
-types/generated
-
-# eslint cache
-.eslintcache
-
-.vscode
-
-.idea
