@@ -269,6 +269,7 @@ contract Fixed18Test is Test {
         b = Fixed18Lib.from(10);
         assertEq(Fixed18.unwrap(m.unsafeDiv(a, b)), 2, "divides and floors");
 
+        assertEq(Fixed18.unwrap(m.unsafeDiv(Fixed18Lib.ZERO, Fixed18Lib.ZERO)), 1e18, "0 / 0 = 1");
         a = Fixed18Lib.from(20);
         assertEq(Fixed18.unwrap(m.unsafeDiv(a, Fixed18Lib.ZERO)), type(int256).max, "20 / 0 = MaxInt");
         a = Fixed18Lib.from(-20);
@@ -289,7 +290,7 @@ contract Fixed18Test is Test {
 
         assertEq(Fixed18.unwrap(m.unsafeDivOut(Fixed18Lib.ZERO, Fixed18Lib.ZERO)), 1e18, "0 / 0 = 1");
         a = Fixed18Lib.from(20);
-        assertEq(Fixed18.unwrap(m.unsafeDiv(a, Fixed18Lib.ZERO)), type(int256).max, "20 / 0 = MaxInt");
+        assertEq(Fixed18.unwrap(m.unsafeDivOut(a, Fixed18Lib.ZERO)), type(int256).max, "20 / 0 = MaxInt");
         a = Fixed18Lib.from(-20);
         assertEq(Fixed18.unwrap(m.unsafeDivOut(a, Fixed18Lib.ZERO)), type(int256).min, "-20 / 0 = MinInt");
     }
