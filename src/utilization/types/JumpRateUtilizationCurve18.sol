@@ -5,26 +5,26 @@ import "../CurveMath18.sol";
 import "../../number/types/UFixed18.sol";
 import "../../number/types/Fixed18.sol";
 
-/// @dev UJumpRateUtilizationCurve18 type
-struct UJumpRateUtilizationCurve18 {
+/// @dev JumpRateUtilizationCurve18 type
+struct JumpRateUtilizationCurve18 {
     UFixed18 minRate;
     UFixed18 maxRate;
     UFixed18 targetRate;
     UFixed18 targetUtilization;
 }
-using UJumpRateUtilizationCurve18Lib for UJumpRateUtilizationCurve18 global;
+using JumpRateUtilizationCurve18Lib for JumpRateUtilizationCurve18 global;
 
 /**
- * @title UJumpRateUtilizationCurve18Lib
+ * @title JumpRateUtilizationCurve18Lib
  * @notice Library for the unsigned Jump Rate utilization curve type
  */
-library UJumpRateUtilizationCurve18Lib {
+library JumpRateUtilizationCurve18Lib {
     /**
      * @notice Computes the corresponding rate for a utilization ratio
      * @param utilization The utilization ratio
      * @return The corresponding rate
      */
-    function compute(UJumpRateUtilizationCurve18 memory self, UFixed18 utilization) internal pure returns (UFixed18) {
+    function compute(JumpRateUtilizationCurve18 memory self, UFixed18 utilization) internal pure returns (UFixed18) {
         if (utilization.lt(self.targetUtilization)) {
             return CurveMath18.linearInterpolation(
                 UFixed18Lib.ZERO,
@@ -47,7 +47,7 @@ library UJumpRateUtilizationCurve18Lib {
     }
 
     function accumulate(
-        UJumpRateUtilizationCurve18 memory self,
+        JumpRateUtilizationCurve18 memory self,
         UFixed18 utilization,
         uint256 fromTimestamp,
         uint256 toTimestamp,

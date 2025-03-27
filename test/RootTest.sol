@@ -8,6 +8,7 @@ import { Fixed18, Fixed18Lib } from "../src/number/types/Fixed18.sol";
 import { UFixed6, UFixed6Lib } from "../src/number/types/UFixed6.sol";
 import { UFixed18, UFixed18Lib } from "../src/number/types/UFixed18.sol";
 
+/// @dev Facilities useful for testing library types, particularly fixed numeric types
 contract RootTest is Test {
     function assertFixed6Eq(Fixed6 a, Fixed6 b, string memory message) public pure {
         assertEq(Fixed6.unwrap(a), Fixed6.unwrap(b), message);

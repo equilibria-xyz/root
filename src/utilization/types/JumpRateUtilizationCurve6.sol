@@ -4,26 +4,26 @@ pragma solidity ^0.8.13;
 import "../CurveMath6.sol";
 import "../../number/types/UFixed6.sol";
 
-/// @dev UJumpRateUtilizationCurve6 type
-struct UJumpRateUtilizationCurve6 {
+/// @dev JumpRateUtilizationCurve6 type
+struct JumpRateUtilizationCurve6 {
     UFixed6 minRate;
     UFixed6 maxRate;
     UFixed6 targetRate;
     UFixed6 targetUtilization;
 }
-using UJumpRateUtilizationCurve6Lib for UJumpRateUtilizationCurve6 global;
+using JumpRateUtilizationCurve6Lib for JumpRateUtilizationCurve6 global;
 
 /**
- * @title UJumpRateUtilizationCurve6Lib
+ * @title JumpRateUtilizationCurve6Lib
  * @notice Library for the unsigned base-6 Jump Rate utilization curve type
  */
-library UJumpRateUtilizationCurve6Lib {
+library JumpRateUtilizationCurve6Lib {
     /**
      * @notice Computes the corresponding rate for a utilization ratio
      * @param utilization The utilization ratio
      * @return The corresponding rate
      */
-    function compute(UJumpRateUtilizationCurve6 memory self, UFixed6 utilization) internal pure returns (UFixed6) {
+    function compute(JumpRateUtilizationCurve6 memory self, UFixed6 utilization) internal pure returns (UFixed6) {
         if (utilization.lt(self.targetUtilization)) {
             return CurveMath6.linearInterpolation(
                 UFixed6Lib.ZERO,
@@ -46,7 +46,7 @@ library UJumpRateUtilizationCurve6Lib {
     }
 
     function accumulate(
-        UJumpRateUtilizationCurve6 memory self,
+        JumpRateUtilizationCurve6 memory self,
         UFixed6 utilization,
         uint256 fromTimestamp,
         uint256 toTimestamp,
