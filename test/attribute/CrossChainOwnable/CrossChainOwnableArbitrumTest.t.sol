@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import {Test} from "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 
-import {CrossChainOwnable_Arbitrum} from "src/attribute/CrossChainOwnable/CrossChainOwnable_Arbitrum.sol";
+import { CrossChainOwnable_Arbitrum } from "src/attribute/CrossChainOwnable/CrossChainOwnable_Arbitrum.sol";
 
 contract CrossChainOwnableArbitrumTest is Test {
     // Events emitted by the contract
@@ -46,7 +46,7 @@ contract CrossChainOwnableArbitrumTest is Test {
         vm.deal(arbSysAddress, 10 ether);
     }
 
-    function testOwnableInitialize() public {
+    function test_ownableInitialize() public {
         // Test initial ownership
         assertEq(ownable.owner(), address(0));
 
@@ -61,7 +61,7 @@ contract CrossChainOwnableArbitrumTest is Test {
         assertEq(ownable.owner(), user);
     }
 
-    function testSetPendingOwner() public {
+    function test_setPendingOwner() public {
         vm.prank(user);
         // Initialize contract
         ownable.__initialize();
@@ -77,7 +77,7 @@ contract CrossChainOwnableArbitrumTest is Test {
         assertEq(ownable.pendingOwner(), xChainOwner);
     }
 
-    function testSetPendingOwnerNotOwner() public {
+    function test_setPendingOwnerNotOwner() public {
         vm.prank(user);
         // Initialize contract
         ownable.__initialize();
@@ -88,7 +88,7 @@ contract CrossChainOwnableArbitrumTest is Test {
         ownable.updatePendingOwner(unrelated);
     }
 
-    function testResetPendingOwner() public {
+    function test_resetPendingOwner() public {
         vm.prank(user);
         // Initialize contract
         ownable.__initialize();
@@ -104,7 +104,7 @@ contract CrossChainOwnableArbitrumTest is Test {
         assertEq(ownable.pendingOwner(), address(0));
     }
 
-    function testAcceptOwner() public {
+    function test_acceptOwner() public {
         vm.prank(user);
         // Initialize contract and set pending owner
         ownable.__initialize();
@@ -125,7 +125,7 @@ contract CrossChainOwnableArbitrumTest is Test {
         assertTrue(ownable.crossChainRestricted());
     }
 
-    function testAcceptOwnerNotCrossChain() public {
+    function test_acceptOwnerNotCrossChain() public {
         vm.prank(user);
         // Initialize contract and set pending owner
         ownable.__initialize();
@@ -138,7 +138,7 @@ contract CrossChainOwnableArbitrumTest is Test {
         ownable.acceptOwner();
     }
 
-    function testAcceptOwnerNotPendingOwner() public {
+    function test_acceptOwnerNotPendingOwner() public {
         vm.prank(user);
         // Initialize contract and set pending owner
         ownable.__initialize();
@@ -154,7 +154,7 @@ contract CrossChainOwnableArbitrumTest is Test {
         ownable.acceptOwner();
     }
 
-    function testOnlyOwnerModifier() public {
+    function test_onlyOwnerModifier() public {
         vm.prank(user);
         // Initialize contract and set pending owner
         ownable.__initialize();
