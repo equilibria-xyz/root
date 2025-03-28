@@ -6,7 +6,8 @@ import { CrossChainOwner_Arbitrum } from "src/attribute/CrossChainOwner/CrossCha
 import {
     CrossChainOwnableArbitrumTest,
     MockCrossChainOwnable_Arbitrum
-} from "../CrossChainOwnable/CrossChainOwnableArbitrumTest.t.sol";
+} from "../CrossChainOwnable/CrossChainOwnableArbitrum.t.sol";
+import { MockReceiver } from "../../utlis/MockReceiver.sol";
 
 contract CrossChainOwnerArbitrumTest is CrossChainOwnableArbitrumTest {
     function setUp() public override {
@@ -42,11 +43,7 @@ contract CrossChainOwnerArbitrumTest is CrossChainOwnableArbitrumTest {
         uint256 beforeBalance = user.balance;
         uint256 sendAmount = 1 ether;
 
-        // Ensure the arbSys mock returns the correct (owner) address.
-        arbSys.setCallerAddress(xChainOwner);
-        arbSys.setIsAliased(true);
-
-        // Deal the arbSys address some funds.
+        // Deal the crossChainOwner address some funds.
         vm.deal(address(ownable), sendAmount);
 
         // Execute the call from the arbSys address, sending value along.
@@ -59,17 +56,13 @@ contract CrossChainOwnerArbitrumTest is CrossChainOwnableArbitrumTest {
     function test_callsAFunction() public {
         _setupExecute();
 
-        MockReceiverContract receiver = new MockReceiverContract();
+        MockReceiver receiver = new MockReceiver();
         assertEq(receiver.owner(), address(0), "Receiver should not have an owner");
-
-        // Ensure the arbSys mock returns the correct (owner) address.
-        arbSys.setCallerAddress(xChainOwner);
-        arbSys.setIsAliased(true);
 
         // Execute the call from the arbSys address
         vm.prank(address(arbSys));
         CrossChainOwner_Arbitrum(address(ownable)).execute(
-            payable(receiver), abi.encodeWithSelector(MockReceiverContract.setOwner.selector, user), 0
+            payable(receiver), abi.encodeWithSelector(MockReceiver.setOwner.selector, user), 0
         );
 
         assertEq(receiver.owner(), user, "User should be the owner of the receiver");
@@ -78,21 +71,17 @@ contract CrossChainOwnerArbitrumTest is CrossChainOwnableArbitrumTest {
     function test_callsAFunctionWithValue() public {
         _setupExecute();
 
-        MockReceiverContract receiver = new MockReceiverContract();
+        MockReceiver receiver = new MockReceiver();
         uint256 beforeBalance = address(receiver).balance;
         uint256 sendAmount = 1 ether;
 
-        // Ensure the arbSys mock returns the correct (owner) address.
-        arbSys.setCallerAddress(xChainOwner);
-        arbSys.setIsAliased(true);
-
-        // Deal the arbSys address some funds.
+        // Deal the crossChainOwner address some funds.
         vm.deal(address(ownable), sendAmount);
 
         // Execute the call from the arbSys address, sending value along.
         vm.prank(address(arbSys));
         CrossChainOwner_Arbitrum(address(ownable)).execute(
-            payable(receiver), abi.encodeWithSelector(MockReceiverContract.receiveFunds.selector), sendAmount
+            payable(receiver), abi.encodeWithSelector(MockReceiver.receiveFunds.selector), sendAmount
         );
 
         assertEq(address(receiver).balance, beforeBalance + sendAmount, "Receiver should receive the sent funds");
@@ -102,15 +91,3 @@ contract CrossChainOwnerArbitrumTest is CrossChainOwnableArbitrumTest {
 // Mock CrossChainOwner_Arbitrum contract for testing
 contract MockCrossChainOwner_Arbitrum is CrossChainOwner_Arbitrum, MockCrossChainOwnable_Arbitrum {}
 
-// Mock contract for testing that receives funds.
-contract MockReceiverContract {
-    address public owner;
-
-    function setOwner(address _owner) public {
-        owner = _owner;
-    }
-
-    function receiveFunds() public payable {}
-
-    receive() external payable {}
-}

@@ -23,7 +23,7 @@ contract CrossChainOwnableOptimismTest is Test {
     MockCrossChainOwnable_Optimism public ownable;
     MockCrossDomainMessenger public crossDomainMessenger;
 
-    function setUp() public {
+    function setUp() public virtual {
         // Setting up the accounts to be used in the tests
         owner = makeAddr("owner");
         xChainOwner = makeAddr("xChainOwner");
