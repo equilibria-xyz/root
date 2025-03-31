@@ -119,4 +119,6 @@ contract MockToken18 {
     function approve(Token18 self, address grantee, UFixed18 amount) external {
         Token18Lib.approve(self, grantee, amount);
     }
+
+    receive() external payable {}
 }

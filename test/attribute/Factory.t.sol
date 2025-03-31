@@ -20,11 +20,10 @@ contract FactoryTest is Test {
     }
 
     function test_initialize() public {
-        // should revert when incorrectly initialized
+        // Test initialization behavior
         vm.expectRevert(abi.encodeWithSelector(InitializableNotInitializingError.selector));
         factory.initializeIncorrect();
 
-        // should initialize when correctly initialized
         factory.initialize();
         assertEq(factory.owner(), address(this));
     }
@@ -34,17 +33,16 @@ contract FactoryTest is Test {
 
         IInstance instance;
 
-        // snapshot the state to get the instance address
-        uint256 snapshot = vm.snapshot();
+        // Use snapshot to predict the instance address for event testing
+        uint256 snapshot = vm.snapshotState();
         instance = factory.create();
-
-        // revert to the snapshot
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
         vm.expectEmit(true, true, true, true);
         emit InstanceRegistered(address(instance));
         factory.create();
 
+        // Verify instance registration and factory reference
         assertTrue(factory.instances(instance));
         assertEq(address(instance.factory()), address(factory));
     }
@@ -54,12 +52,10 @@ contract FactoryTest is Test {
 
         IInstance instance;
 
-        // snapshot the state to get the instance address
-        uint256 snapshot = vm.snapshot();
+        // Use snapshot to predict the instance address for event testing
+        uint256 snapshot = vm.snapshotState();
         instance = factory.create2(bytes32(0));
-
-        // revert to the snapshot
-        vm.revertTo(snapshot);
+        vm.revertToState(snapshot);
 
         vm.expectEmit(true, true, true, true);
         emit InstanceRegistered(address(instance));
@@ -69,6 +65,7 @@ contract FactoryTest is Test {
     function test_computeCreate2Address() public {
         factory.initialize();
 
+        // Verify create2 address computation matches actual deployment
         bytes32 salt = bytes32(0);
         address expected = address(factory.computeCreate2Address(salt));
 
@@ -80,11 +77,10 @@ contract FactoryTest is Test {
     function test_onlyCallableByInstance() public {
         factory.initialize();
 
-        // should revert when not called by an instance
+        // Test instance-only function access control
         vm.expectRevert(abi.encodeWithSelector(FactoryNotInstanceError.selector));
         factory.onlyCallableByInstance();
 
-        // should not revert when called by an instance
         MockInstance instance = factory.create();
         vm.prank(address(instance));
         factory.onlyCallableByInstance();

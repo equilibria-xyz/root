@@ -90,4 +90,3 @@ contract CrossChainOwnerArbitrumTest is CrossChainOwnableArbitrumTest {
 
 // Mock CrossChainOwner_Arbitrum contract for testing
 contract MockCrossChainOwner_Arbitrum is CrossChainOwner_Arbitrum, MockCrossChainOwnable_Arbitrum {}
-
