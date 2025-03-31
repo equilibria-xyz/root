@@ -104,6 +104,7 @@ contract MockCurveMath6 {
         return CurveMath6.linearInterpolation(startX, startY, endX, endY, targetX);
     }
 
+    /// @dev for test readability
     function linearInterpolationWholeNumbers(
         uint256 startX,
         int256 startY,
