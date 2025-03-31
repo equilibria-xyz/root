@@ -10,16 +10,32 @@ import { UFixed18, UFixed18Lib } from "../src/number/types/UFixed18.sol";
 
 /// @dev Facilities useful for testing library types, particularly fixed numeric types
 contract RootTest is Test {
+    function assertFixed6Eq(Fixed6 a, Fixed6 b) public pure {
+        assertEq(Fixed6.unwrap(a), Fixed6.unwrap(b));
+    }
+
     function assertFixed6Eq(Fixed6 a, Fixed6 b, string memory message) public pure {
         assertEq(Fixed6.unwrap(a), Fixed6.unwrap(b), message);
+    }
+
+    function assertFixed18Eq(Fixed18 a, Fixed18 b) public pure {
+        assertEq(Fixed18.unwrap(a), Fixed18.unwrap(b));
     }
 
     function assertFixed18Eq(Fixed18 a, Fixed18 b, string memory message) public pure {
         assertEq(Fixed18.unwrap(a), Fixed18.unwrap(b), message);
     }
 
+    function assertUFixed6Eq(UFixed6 a, UFixed6 b) public pure {
+        assertEq(UFixed6.unwrap(a), UFixed6.unwrap(b));
+    }
+
     function assertUFixed6Eq(UFixed6 a, UFixed6 b, string memory message) public pure {
         assertEq(UFixed6.unwrap(a), UFixed6.unwrap(b), message);
+    }
+
+    function assertUFixed18Eq(UFixed18 a, UFixed18 b) public pure {
+        assertEq(UFixed18.unwrap(a), UFixed18.unwrap(b));
     }
 
     function assertUFixed18Eq(UFixed18 a, UFixed18 b, string memory message) public pure {

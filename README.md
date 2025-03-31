@@ -61,7 +61,7 @@ foundryup
 Other installation options available [here](https://book.getfoundry.sh/getting-started/installation).
 
 Before running any command, make sure to install dependencies:
-```
+```sh
 forge install
 ```
 
@@ -76,5 +76,5 @@ forge test
 ```
 or for coverage report
 ```sh
-forge coverage
+make coverage
 ```
