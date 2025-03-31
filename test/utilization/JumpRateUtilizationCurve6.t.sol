@@ -12,10 +12,6 @@ contract JumpRateUtilizationCurve6Test is RootTest {
     uint256 constant TO_TIMESTAMP = 1626159000;
     UFixed6 NOTIONAL;
 
-    function setUp() public {
-        NOTIONAL = UFixed6Lib.from(500);
-    }
-
     JumpRateUtilizationCurve6 curve1 = JumpRateUtilizationCurve6({
         minRate: UFixed6.wrap(100_000), // 0.1
         maxRate: UFixed6Lib.ONE,
@@ -43,6 +39,10 @@ contract JumpRateUtilizationCurve6Test is RootTest {
         targetRate: UFixed6.wrap(500_000), // 0.5
         targetUtilization: UFixed6.wrap(800_000) // 0.8
     });
+
+    function setUp() public {
+        NOTIONAL = UFixed6Lib.from(500);
+    }
 
     function test_computeCurve1() public view {
         assertUFixed6Eq(
