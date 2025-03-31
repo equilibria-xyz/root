@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetFixedSupply.sol";
-
-import { RootTest } from "../RootTest.sol";
+import { TokenTest } from "./TokenTest.sol";
 
 import {
     Token18,
@@ -15,14 +12,17 @@ import {
     UFixed18Lib
 } from "../../src/token/types/Token18.sol";
 
-abstract contract Token18Test is RootTest {
-    address public user = makeAddr("user");
-    ERC20 public erc20 = new ERC20("Test Token", "TEST");
-    Token18 public token = Token18.wrap(address(erc20));
+abstract contract Token18Test is TokenTest {
+    Token18 public token;
     MockToken18 public m = new MockToken18();
 }
 
 contract Token18UnfundedUserTest is Token18Test {
+    function setUp() public {
+        super.setUpToken(18, 0);
+        token = Token18.wrap(address(erc20));
+    }
+
     function test_zero() public view {
         Token18 zeroToken = Token18.wrap(address(0));
         assertEq(zeroToken.isZero(), true, "zero address");
@@ -53,9 +53,9 @@ contract Token18UnfundedUserTest is Token18Test {
         m.approve(token, user, UFixed18Lib.from(100));
     }
 
-    function test_nameAndSymbol() public {
-        assertEq(token.name(), "Test Token", "name");
-        assertEq(token.symbol(), "TEST", "symbol");
+    function test_nameAndSymbol() public view{
+        assertEq(token.name(), "Test MiNted Token", "name");
+        assertEq(token.symbol(), "TMNT", "symbol");
     }
 
     function test_store() public {
@@ -69,7 +69,7 @@ contract Token18FundedUserTest is Token18Test {
     address public recipient = makeAddr("recipient");
 
     function setUp() public {
-        erc20 = new ERC20PresetFixedSupply("Test Minted Token", "TMNT", 300e18, address(this));
+        super.setUpToken(18, 300e18);
         token = Token18.wrap(address(erc20));
         erc20.transfer(user, 160e18); // send half to user
     }
@@ -100,13 +100,13 @@ contract Token18FundedUserTest is Token18Test {
         assertEq(erc20.balanceOf(recipient), 60e18, "pull some from user to recipient");
     }
 
-    function test_balance() public {
+    function test_balance() public view {
         assertUFixed18Eq(token.balanceOf(), UFixed18Lib.from(140), "balance of contract");
         assertUFixed18Eq(token.balanceOf(user), UFixed18Lib.from(160), "balance of user");
         assertUFixed18Eq(token.balanceOf(recipient), UFixed18Lib.ZERO, "balance of recipient");
     }
 
-    function test_totalSupply() public {
+    function test_totalSupply() public view {
         assertUFixed18Eq(token.totalSupply(), UFixed18Lib.from(300), "total supply");
     }
 }
@@ -120,5 +120,6 @@ contract MockToken18 {
         Token18Lib.approve(self, grantee, amount);
     }
 
+    // TODO: seems to be replacing MockReceiver in OwnerExecutable test; can we clean this up?
     receive() external payable {}
 }

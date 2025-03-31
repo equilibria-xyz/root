@@ -7,7 +7,7 @@
 
 # excludes test artificats from coverage reports
 CONTRACT_EXCLUDES="Mock"
-COVERAGE_EXCLUDES="\.t\.sol|(m|M)ock|RootTest"
+COVERAGE_EXCLUDES="\.t\.sol|(m|M)ock|(t|T)est"
 
 all: clean install build
 
