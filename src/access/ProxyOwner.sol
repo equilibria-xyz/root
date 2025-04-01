@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/access/Ownable2Step.sol";
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import { Ownable, Ownable2Step } from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import { ProxyAdmin, TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 
 /**
  * @title ProxyOwner
@@ -14,6 +15,9 @@ contract ProxyOwner is ProxyAdmin, Ownable2Step {
     // sig: 0xd8921f35
     /// @custom:error Caller is not the pending admin
     error ProxyOwnerNotPendingAdminError();
+
+    /// @dev Specify deployer as the initial owner
+    constructor() ProxyAdmin(msg.sender) {}
 
     /// @dev Mapping of the pending admin for each proxy
     mapping(TransparentUpgradeableProxy => address) public pendingAdmins;
@@ -27,7 +31,7 @@ contract ProxyOwner is ProxyAdmin, Ownable2Step {
     /// @notice Sets the pending admin for `proxy` to `newAdmin`
     /// @param proxy The proxy to change the pending admin for
     /// @param newAdmin The address of the new pending admin
-    function changeProxyAdmin(TransparentUpgradeableProxy proxy, address newAdmin) public override onlyOwner {
+    function changeProxyAdmin(TransparentUpgradeableProxy proxy, address newAdmin) public onlyOwner {
         pendingAdmins[proxy] = newAdmin;
     }
 
@@ -35,7 +39,7 @@ contract ProxyOwner is ProxyAdmin, Ownable2Step {
     /// @dev Callback used by the new proxy owner
     /// @param proxy The proxy to accept the pending admin for
     function acceptProxyAdminCallback(TransparentUpgradeableProxy proxy) external onlyPendingOwner(proxy) {
-        proxy.changeAdmin(msg.sender);
+        ERC1967Utils.changeAdmin(msg.sender);
         delete pendingAdmins[proxy];
     }
 

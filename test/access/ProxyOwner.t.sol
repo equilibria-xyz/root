@@ -3,14 +3,14 @@ pragma solidity ^0.8.13;
 
 import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import { Test } from "forge-std/Test.sol";
+import { ERC20TestToken } from "../token/TokenTest.sol";
 import { ProxyOwner } from "../../src/access/ProxyOwner.sol";
 
 contract ProxyOwnerTest is Test {
     address public immutable owner;
-    ERC20 public impl;
+    ERC20TestToken public impl;
     ProxyAdmin public proxyAdmin;
     ProxyOwner public proxyOwner;
     TransparentUpgradeableProxy public proxy;
@@ -21,17 +21,17 @@ contract ProxyOwnerTest is Test {
 
     function setUp() public virtual {
         vm.startPrank(owner);
-        impl = new ERC20("Test", "TEST");
+        impl = new ERC20TestToken("Test", "TEST", 18, 1000e18);
         proxyOwner = new ProxyOwner();
-        proxyAdmin = new ProxyAdmin();
+        proxyAdmin = new ProxyAdmin(owner);
         proxy = new TransparentUpgradeableProxy(address(impl), address(proxyAdmin), "");
     }
 }
 
 contract ProxyAdminIsProxyOwnerTest is ProxyOwnerTest {
     function test_transferOwnership() public {
-        proxyAdmin.changeProxyAdmin(proxy, address(proxyOwner));
-        assertEq(proxyOwner.getProxyAdmin(proxy), address(proxyOwner));
+        proxyAdmin.transferOwnership(address(proxyOwner));
+        assertEq(proxyOwner.owner(), address(proxyOwner));
     }
 }
 
@@ -41,7 +41,8 @@ contract ProxyOwnerIsProxyOwnerTest is ProxyOwnerTest {
 
     function setUp() public override {
         super.setUp();
-        proxyAdmin.changeProxyAdmin(proxy, address(proxyOwner));
+        // TODO: delete, now that initial owner is set in ctor
+        // proxyAdmin.changeProxyAdmin(proxy, address(proxyOwner));
         proxyOwner2 = new ProxyOwner();
     }
 
@@ -49,7 +50,6 @@ contract ProxyOwnerIsProxyOwnerTest is ProxyOwnerTest {
         address owner2 = makeAddr("owner2");
         vm.startPrank(owner);
         proxyOwner.transferOwnership(owner2);
-        assertEq(proxyOwner.getProxyAdmin(proxy), address(proxyOwner), "ProxyOwner should still be the admin");
         assertEq(proxyOwner.owner(), owner, "Owner should not have changed");
         assertEq(proxyOwner.pendingOwner(), owner2, "Pending owner should be owner2");
 
@@ -62,11 +62,11 @@ contract ProxyOwnerIsProxyOwnerTest is ProxyOwnerTest {
     function test_transferOwnershipOfProxy() public {
         vm.startPrank(owner);
         proxyOwner.changeProxyAdmin(proxy, address(proxyOwner2));
-        assertEq(proxyOwner.getProxyAdmin(proxy), address(proxyOwner), "ProxyOwner should still be the admin");
+        assertEq(proxyOwner.owner(), address(proxyOwner), "ProxyOwner should still be the admin");
         assertEq(proxyOwner.pendingAdmins(proxy), address(proxyOwner2), "Pending admin should be proxyOwner2");
 
         proxyOwner2.acceptProxyAdmin(proxyOwner, proxy);
-        assertEq(proxyOwner2.getProxyAdmin(proxy), address(proxyOwner2), "ProxyOwner2 should be the admin");
+        assertEq(proxyOwner2.owner(), address(proxyOwner2), "ProxyOwner2 should be the admin");
         assertEq(proxyOwner.pendingAdmins(proxy), address(0), "Pending admin should be cleared");
     }
 

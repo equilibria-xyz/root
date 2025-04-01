@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/utils/Address.sol";
 import "./interfaces/IInitializable.sol";
 
 /**
@@ -41,10 +40,9 @@ abstract contract Initializable is IInitializable {
 
     /**
      * @notice Returns whether the contract is currently being constructed
-     * @dev {Address.isContract} returns false for contracts currently in the process of being constructed
      * @return Whether the contract is currently being constructed
      */
     function _constructing() private view returns (bool) {
-        return !Address.isContract(address(this));
+        return !(address(this).code.length > 0);
     }
 }
