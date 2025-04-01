@@ -7,7 +7,7 @@ import {
     CrossChainOwnableArbitrumTest,
     MockCrossChainOwnable_Arbitrum
 } from "../CrossChainOwnable/CrossChainOwnableArbitrum.t.sol";
-import { MockReceiver } from "../../utlis/MockReceiver.sol";
+import { MockReceiver } from "../../testutil/MockReceiver.sol";
 
 contract CrossChainOwnerArbitrumTest is CrossChainOwnableArbitrumTest {
     function setUp() public override {

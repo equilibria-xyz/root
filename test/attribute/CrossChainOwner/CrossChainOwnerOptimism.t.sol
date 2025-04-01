@@ -7,7 +7,7 @@ import {
     CrossChainOwnableOptimismTest,
     MockCrossChainOwnable_Optimism
 } from "../CrossChainOwnable/CrossChainOwnableOptimism.t.sol";
-import { MockReceiver } from "../../utlis/MockReceiver.sol";
+import { MockReceiver } from "../../testutil/MockReceiver.sol";
 
 contract CrossChainOwnerOptimismTest is CrossChainOwnableOptimismTest {
     function setUp() public override {
