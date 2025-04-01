@@ -3,7 +3,7 @@
 -include .env
 
 # avoid folder clash with 'test' folder and target
-.PHONY: test
+.PHONY: coverage test
 
 # excludes test artificats from coverage reports
 CONTRACT_EXCLUDES="Mock"

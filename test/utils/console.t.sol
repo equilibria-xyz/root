@@ -45,14 +45,15 @@ contract ConsoleTest is Test {
         console.log("      Signed int %s with trailing text", signed);
     }
 
-    function test_formatUFixed(UFixed6 decimal6, UFixed18 decimal18) external pure {
-        console.log("           Six decimal fixed %s (unsigned)", decimal6);
-        console.log("      Eighteen decimal fixed %s (unsigned)", decimal18);
-    }
-
-    function test_formatFixed(int256 signed) external pure {
-        console.log("           Six decimal fixed %s (signed)", signed);
-        console.log("      Eighteen decimal fixed %s (signed)", signed);
+    function test_formatFixed(uint256 u, int256 i) external pure {
+        UFixed6 u6 = UFixed6Lib.from(bound(u, 0, MAX_UFIXED6));
+        UFixed18 u18 = UFixed18Lib.from(bound(u, 0, MAX_UFIXED18));
+        Fixed6 f6 = Fixed6Lib.from(bound(i, MIN_FIXED6, MAX_FIXED6));
+        Fixed18 f18 = Fixed18Lib.from(bound(i, MIN_FIXED18, MAX_FIXED18));
+        console.log("           Six decimal fixed %s (unsigned)", u6);
+        console.log("      Eighteen decimal fixed %s (unsigned)", u18);
+        console.log("           Six decimal fixed %s (signed)", f6);
+        console.log("      Eighteen decimal fixed %s (signed)", f18);
     }
 
     function test_formatTwoInts(uint256 val1, uint256 val2) external pure {
