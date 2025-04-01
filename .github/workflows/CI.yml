@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, v3]
   pull_request:
     branches:
       - master
@@ -15,11 +15,11 @@ env:
   FOUNDRY_PROFILE: ci
 
 jobs:
-  check:
+  unit-test:
     strategy:
       fail-fast: true
 
-    name: Foundry project
+    name: Unit Tests w/ Coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,15 +28,9 @@ jobs:
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
-
       - name: Show Forge version
         run: |
           forge --version
-
-      - name: Run Forge fmt
-        run: |
-          forge fmt --check
-        id: fmt
 
       - name: Run Forge build
         run: |
@@ -45,5 +39,5 @@ jobs:
 
       - name: Run Forge tests
         run: |
-          forge test -vvv
+          make coverage
         id: test
