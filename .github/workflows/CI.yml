@@ -39,5 +39,14 @@ jobs:
 
       - name: Run Forge tests
         run: |
-          make coverage
+          make lcov
         id: test
+
+      - name: Unit Test Code Coverage Report
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: Unit Test Coverage Report
+          lcov-file: ./coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          delete-old-comments: true
+        if: ${{ github.event_name == 'pull_request' }}

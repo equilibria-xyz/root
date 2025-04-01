@@ -23,3 +23,4 @@ build    :; forge clean && forge build
 # Unit Tests
 test     :; forge test --nmc ${CONTRACT_EXCLUDES}
 coverage :; forge coverage --nmc ${CONTRACT_EXCLUDES} --nmco ${COVERAGE_EXCLUDES}
+lcov     :; forge coverage --nmc ${CONTRACT_EXCLUDES} --nmco ${COVERAGE_EXCLUDES} --report lcov --report-file coverage/lcov.info
