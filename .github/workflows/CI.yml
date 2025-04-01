@@ -9,6 +9,7 @@ on:
       - dev
       - v2
       - v2.5
+      - v3
   workflow_dispatch:
 
 env:
