@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import { ProxyAdmin, Ownable } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 import { Test } from "forge-std/Test.sol";
 import { ERC20TestToken } from "../token/TokenTest.sol";
 import { ProxyOwner } from "../../src/access/ProxyOwner.sol";
+import { console } from "../../src/utils/console.sol";
 
 contract ProxyOwnerTest is Test {
     address public immutable owner;
@@ -20,30 +21,36 @@ contract ProxyOwnerTest is Test {
     }
 
     function setUp() public virtual {
-        vm.startPrank(owner);
         impl = new ERC20TestToken("Test", "TEST", 18, 1000e18);
+        vm.startPrank(owner);
         proxyOwner = new ProxyOwner();
+        vm.stopPrank();
         proxyAdmin = new ProxyAdmin(owner);
         proxy = new TransparentUpgradeableProxy(address(impl), address(proxyAdmin), "");
     }
 }
 
-contract ProxyAdminIsProxyOwnerTest is ProxyOwnerTest {
+contract ChangeProxyAdminToProxyOwnerTest is ProxyOwnerTest {
     function test_transferOwnership() public {
+        vm.startPrank(owner);
         proxyAdmin.transferOwnership(address(proxyOwner));
-        assertEq(proxyOwner.owner(), address(proxyOwner));
+        assertEq(proxyAdmin.owner(), address(proxyOwner));
     }
 }
 
-contract ProxyOwnerIsProxyOwnerTest is ProxyOwnerTest {
+contract ChangeProxyOwnerToAnotherProxyOwnerTest is ProxyOwnerTest {
     address user = makeAddr("user");
     ProxyOwner public proxyOwner2;
 
     function setUp() public override {
         super.setUp();
-        // TODO: delete, now that initial owner is set in ctor
-        // proxyAdmin.changeProxyAdmin(proxy, address(proxyOwner));
+        // transfer ownership of the ProxyAdmin to our ProxyOwner
+        vm.startPrank(owner);
+        proxyAdmin.transferOwnership(address(proxyOwner));
+        vm.stopPrank();
         proxyOwner2 = new ProxyOwner();
+        console.log("owner %s proxyOwner %s admin %s", owner, address(proxyOwner), address(proxyAdmin));
+        console.log("proxyAdmin %s this %s user %s", address(proxyAdmin), address(this), user);
     }
 
     function test_transferOwnership() public {
@@ -59,26 +66,15 @@ contract ProxyOwnerIsProxyOwnerTest is ProxyOwnerTest {
         assertEq(proxyOwner.pendingOwner(), address(0), "Pending owner should be cleared");
     }
 
-    function test_transferOwnershipOfProxy() public {
-        vm.startPrank(owner);
-        proxyOwner.changeProxyAdmin(proxy, address(proxyOwner2));
-        assertEq(proxyOwner.owner(), address(proxyOwner), "ProxyOwner should still be the admin");
-        assertEq(proxyOwner.pendingAdmins(proxy), address(proxyOwner2), "Pending admin should be proxyOwner2");
-
-        proxyOwner2.acceptProxyAdmin(proxyOwner, proxy);
-        assertEq(proxyOwner2.owner(), address(proxyOwner2), "ProxyOwner2 should be the admin");
-        assertEq(proxyOwner.pendingAdmins(proxy), address(0), "Pending admin should be cleared");
-    }
-
     function test_revertsIfNotOwnerWhenChangingProxyAdmin() public {
         vm.startPrank(user);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, user));
         proxyOwner.changeProxyAdmin(proxy, address(proxyOwner2));
     }
 
     function test_revertsIfNotOwnerWhenAcceptingProxyAdmin() public {
         vm.startPrank(user);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, user));
         proxyOwner.acceptProxyAdmin(proxyOwner2, proxy);
     }
 

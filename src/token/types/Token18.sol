@@ -62,7 +62,12 @@ library Token18Lib {
      * @param amount Amount of tokens to approve to spend
      */
     function approve(Token18 self, address grantee, UFixed18 amount) internal {
-        IERC20(Token18.unwrap(self)).approve(grantee, UFixed18.unwrap(amount));
+        IERC20 token = IERC20(Token18.unwrap(self));
+        require(
+            (amount.eq(UFixed18Lib.ZERO)) || (token.allowance(address(this), grantee) == 0),
+            "SafeERC20: approve from non-zero to non-zero allowance"
+        );
+        token.approve(grantee, UFixed18.unwrap(amount));
     }
 
     /**
