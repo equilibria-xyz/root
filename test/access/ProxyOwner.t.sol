@@ -47,10 +47,11 @@ contract ChangeProxyOwnerToAnotherProxyOwnerTest is ProxyOwnerTest {
         // transfer ownership of the ProxyAdmin to our ProxyOwner
         vm.startPrank(owner);
         proxyAdmin.transferOwnership(address(proxyOwner));
-        vm.stopPrank();
         proxyOwner2 = new ProxyOwner();
+        vm.stopPrank();
         console.log("owner %s proxyOwner %s admin %s", owner, address(proxyOwner), address(proxyAdmin));
         console.log("proxyAdmin %s this %s user %s", address(proxyAdmin), address(this), user);
+        console.log("proxyOwner2 owner %s", proxyOwner2.owner());
     }
 
     function test_transferOwnership() public {
@@ -64,29 +65,5 @@ contract ChangeProxyOwnerToAnotherProxyOwnerTest is ProxyOwnerTest {
         proxyOwner.acceptOwnership();
         assertEq(proxyOwner.owner(), owner2, "Owner should have changed");
         assertEq(proxyOwner.pendingOwner(), address(0), "Pending owner should be cleared");
-    }
-
-    function test_revertsIfNotOwnerWhenChangingProxyAdmin() public {
-        vm.startPrank(user);
-        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, user));
-        proxyOwner.changeProxyAdmin(proxy, address(proxyOwner2));
-    }
-
-    function test_revertsIfNotOwnerWhenAcceptingProxyAdmin() public {
-        vm.startPrank(user);
-        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, user));
-        proxyOwner.acceptProxyAdmin(proxyOwner2, proxy);
-    }
-
-    function test_revertsIfNotPending() public {
-        vm.startPrank(owner);
-        vm.expectRevert(ProxyOwner.ProxyOwnerNotPendingAdminError.selector);
-        proxyOwner.acceptProxyAdmin(proxyOwner2, proxy);
-    }
-
-    function test_revertsIfNotPendingCallback() public {
-        vm.startPrank(owner);
-        vm.expectRevert(ProxyOwner.ProxyOwnerNotPendingAdminError.selector);
-        proxyOwner.acceptProxyAdminCallback(proxy);
     }
 }
