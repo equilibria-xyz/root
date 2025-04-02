@@ -126,21 +126,21 @@ contract Fixed6Test is Test {
     function test_addition() public pure {
         Fixed6 a = Fixed6Lib.from(10);
         Fixed6 b = Fixed6Lib.from(20);
-        assertEq(Fixed6.unwrap(Fixed6Lib.add(a, b)), 30e6, "10 + 20 = 30");
+        assertEq(Fixed6.unwrap(a.add(b)), 30e6, "10 + 20 = 30");
 
         a = Fixed6Lib.from(-10);
         b = Fixed6Lib.from(-20);
-        assertEq(Fixed6.unwrap(Fixed6Lib.add(a, b)), -30e6, "-10 + -20 = -30");
+        assertEq(Fixed6.unwrap(a + b), -30e6, "-10 + -20 = -30");
     }
 
     function test_subtraction() public pure {
         Fixed6 a = Fixed6Lib.from(20);
         Fixed6 b = Fixed6Lib.from(10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.sub(a, b)), 10e6, "20 - 10 = 10");
+        assertEq(Fixed6.unwrap(a.sub(b)), 10e6, "20 - 10 = 10");
 
         a = Fixed6Lib.from(-20);
         b = Fixed6Lib.from(-10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.sub(a, b)), -10e6, "-20 - -10 = -10");
+        assertEq(Fixed6.unwrap(a - b), -10e6, "-20 - -10 = -10");
     }
 
     function test_multiplication() public pure {
@@ -150,9 +150,9 @@ contract Fixed6Test is Test {
         a = Fixed6Lib.from(-20);
         assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), -200e6, "-20 * 10 = -200");
         b = Fixed6Lib.from(-10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), 200e6, "-20 * -10 = 200");
+        assertEq(Fixed6.unwrap(a * b), 200e6, "-20 * -10 = 200");
         a = Fixed6Lib.from(20);
-        assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), -200e6, "20 * -10 = -200");
+        assertEq(Fixed6.unwrap(a * b), -200e6, "20 * -10 = -200");
     }
 
     function test_MultiplicationRoundsTowardZero() public pure {
@@ -198,9 +198,9 @@ contract Fixed6Test is Test {
         a = Fixed6.wrap(-20);
         assertEq(Fixed6.unwrap(Fixed6Lib.div(a, b)), -2e6, "-20 / 10 = -2");
         b = Fixed6.wrap(-10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.div(a, b)), 2e6, "-20 / -10 = 2");
+        assertEq(Fixed6.unwrap(a / b), 2e6, "-20 / -10 = 2");
         a = Fixed6.wrap(20);
-        assertEq(Fixed6.unwrap(Fixed6Lib.div(a, b)), -2e6, "20 / -10 = -2");
+        assertEq(Fixed6.unwrap(a / b), -2e6, "20 / -10 = -2");
     }
 
     function test_divisionRoundsTowardsZero() public pure {
@@ -418,10 +418,22 @@ contract Fixed6Test is Test {
         assertEq(Fixed6Lib.eq(a, b), true, "12 == 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-12);
-        assertEq(Fixed6Lib.eq(a, b), true, "-12 == -12");
+        assertEq(a == b, true, "-12 == -12");
         a = Fixed6.wrap(11);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.eq(a, b), false, "11 != 12");
+        assertEq(a == b, false, "11 != 12");
+    }
+
+    function test_notEquals() public pure {
+        Fixed6 a = Fixed6.wrap(12);
+        Fixed6 b = Fixed6.wrap(12);
+        assertEq(Fixed6Lib.neq(a, b), false, "12 != 12");
+        a = Fixed6.wrap(-12);
+        b = Fixed6.wrap(-12);
+        assertEq(a != b, false, "-12 != -12");
+        a = Fixed6.wrap(11);
+        b = Fixed6.wrap(12);
+        assertEq(a != b, true, "11 == 12");
     }
 
     function test_greaterThan() public pure {
@@ -433,9 +445,9 @@ contract Fixed6Test is Test {
         assertEq(Fixed6Lib.gt(a, b), true, "-12 > -13");
         a = Fixed6.wrap(12);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.gt(a, b), false, "12 !> 12");
+        assertEq(a > b, false, "12 !> 12");
         a = Fixed6.wrap(11);
-        assertEq(Fixed6Lib.gt(a, b), false, "11 !> 12");
+        assertEq(a > b, false, "11 !> 12");
     }
 
     function test_lessThan() public pure {
@@ -446,10 +458,10 @@ contract Fixed6Test is Test {
         assertEq(Fixed6Lib.lt(a, b), false, "12 !< 12");
         a = Fixed6.wrap(11);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.lt(a, b), true, "11 < 12");
+        assertEq(a < b, true, "11 < 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-11);
-        assertEq(Fixed6Lib.lt(a, b), true, "-12 < -11");
+        assertEq(a < b, true, "-12 < -11");
     }
 
     function test_greaterThanOrEqualTo() public pure {
@@ -464,10 +476,10 @@ contract Fixed6Test is Test {
         assertEq(Fixed6Lib.gte(a, b), true, "12 >= 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-12);
-        assertEq(Fixed6Lib.gte(a, b), true, "-12 >= -12");
+        assertEq(a >= b, true, "-12 >= -12");
         a = Fixed6.wrap(11);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.gte(a, b), false, "11 !>= 12");
+        assertEq(a >= b, false, "11 !>= 12");
     }
 
     function test_lessThanOrEqualTo() public pure {
@@ -481,10 +493,10 @@ contract Fixed6Test is Test {
         assertEq(Fixed6Lib.lte(a, b), true, "-12 <= -12");
         a = Fixed6.wrap(11);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.lte(a, b), true, "11 <= 12");
+        assertEq(a <= b, true, "11 <= 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-11);
-        assertEq(Fixed6Lib.lte(a, b), true, "-12 <= -11");
+        assertEq(a <= b, true, "-12 <= -11");
     }
 
     function test_compare() public pure {
