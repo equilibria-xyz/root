@@ -8,7 +8,6 @@ import { IVerifierBase, VerifierBase } from "src/verifier/VerifierBase.sol";
 import { Common, CommonLib } from "src/verifier/types/Common.sol";
 import { GroupCancellation, GroupCancellationLib } from "src/verifier/types/GroupCancellation.sol";
 import { signCommon, signGroupCancellation } from "../testutil/erc712Helpers.sol";
-import { console } from "forge-std/console.sol";
 
 contract VerifierBaseTest is Test {
     VerifierBaseTester public verifier;
@@ -34,7 +33,6 @@ contract VerifierBaseTest is Test {
     // verifyCommon
 
     function test_verifyCommon() public {
-        console.log("this should break the build");
         bytes memory signature = signCommon(address(verifier), DEFAULT_COMMON, accountKey);
         verifier.verifyCommon(DEFAULT_COMMON, signature);
     }
