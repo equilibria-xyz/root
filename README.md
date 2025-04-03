@@ -65,6 +65,12 @@ Before running any command, make sure to install dependencies:
 forge install
 ```
 
+To install solhint:
+```sh
+sudo npm install -g solhint
+```
+
+
 ### Compile
 ```sh
 forge build

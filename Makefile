@@ -17,6 +17,9 @@ clean    :; forge clean
 # Install the modules
 install  :; forge install
 
+# Lint
+lint     :; solhint 'src/**/*.sol' --fix
+
 # Builds
 build    :; forge clean && forge build
 

@@ -16,6 +16,19 @@ env:
   FOUNDRY_PROFILE: ci
 
 jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: solhint
+        uses: contractshark/inject-solhint-ci@latest
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          solhint_input: 'src/**/*.sol'
+
   unit-test:
     strategy:
       fail-fast: true
