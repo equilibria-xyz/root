@@ -7,7 +7,6 @@ import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/trans
 import { Test } from "forge-std/Test.sol";
 import { ERC20TestToken } from "../token/TokenTest.sol";
 import { ProxyOwner } from "../../src/access/ProxyOwner.sol";
-import { console } from "../../src/utils/console.sol";
 
 contract ProxyOwnerTest is Test {
     address public immutable owner;
@@ -49,9 +48,6 @@ contract ChangeProxyOwnerToAnotherProxyOwnerTest is ProxyOwnerTest {
         proxyAdmin.transferOwnership(address(proxyOwner));
         proxyOwner2 = new ProxyOwner();
         vm.stopPrank();
-        console.log("owner %s proxyOwner %s admin %s", owner, address(proxyOwner), address(proxyAdmin));
-        console.log("proxyAdmin %s this %s user %s", address(proxyAdmin), address(this), user);
-        console.log("proxyOwner2 owner %s", proxyOwner2.owner());
     }
 
     function test_transferOwnership() public {
