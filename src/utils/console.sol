@@ -14,9 +14,9 @@ import { UFixed6, UFixed18 } from "../number/types/UFixed6.sol";
 import { console as fConsole } from "forge-std/console.sol";
 /* solhint-enable no-console */
 
-/* solhint-disable contract-name-camelcase */
+/* solhint-disable contract-name-camelcase, contract-name-capwords */
 library console {
-/* solhint-enable contract-name-camelcase */
+/* solhint-enable contract-name-camelcase, contract-name-capwords */
     function itoa(int256 value) internal pure returns (string memory) {
         if (value == 0) return "0";
 

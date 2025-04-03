@@ -18,7 +18,7 @@ clean    :; forge clean
 install  :; forge install
 
 # Lint
-lint     :; solhint 'src/**/*.sol' --fix
+lint     :; solhint 'src/**/*.sol' && solhint -c './.solhint-test.json' 'test/**/*.sol'
 
 # Builds
 build    :; forge clean && forge build

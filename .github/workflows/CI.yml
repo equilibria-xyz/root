@@ -31,7 +31,7 @@ jobs:
         id: install
 
       - name: Lint
-        run: solhint 'src/**/*.sol'
+        run: make lint
         id: lint
 
   unit-test:
