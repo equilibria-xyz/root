@@ -10,10 +10,6 @@ import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/Transparen
  * @dev Adds 2-step ownership transfer to the OpenZeppelin ProxyAdmin contract for the owner of the ProxyAdmin.
  */
 contract ProxyOwner is ProxyAdmin, Ownable2Step {
-    // sig: 0xd8921f35
-    /// @custom:error Caller is not the pending admin
-    error ProxyOwnerNotPendingAdminError();
-
     /// @dev Specify deployer as the initial owner
     constructor() ProxyAdmin(msg.sender) {}
 
