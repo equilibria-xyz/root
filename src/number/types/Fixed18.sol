@@ -1,16 +1,46 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
 import "../NumberMath.sol";
 import "./Fixed6.sol";
 import "./UFixed18.sol";
+import "./Fixed18Operators.sol" as Operators;
 
 /// @dev Fixed18 type
 type Fixed18 is int256;
 using Fixed18Lib for Fixed18 global;
 type Fixed18Storage is bytes32;
 using Fixed18StorageLib for Fixed18Storage global;
+
+using {
+    Operators.add as +,
+    Operators.sub as -,
+    Operators.mul as *,
+    Operators.div as /,
+    Operators.eq as ==,
+    Operators.neq as !=,
+    Operators.gt as >,
+    Operators.lt as <,
+    Operators.gte as >=,
+    Operators.lte as <=
+} for Fixed18 global;
+
+// TODO: These are optional; needed only if we want to preserve the ability to
+// call the functions on the type without using the operator overloads.
+// Also note these must appear _after_ the usings above or they will be ignored.
+using {
+    Operators.add,
+    Operators.sub,
+    Operators.mul,
+    Operators.div,
+    Operators.eq,
+    Operators.neq,
+    Operators.gt,
+    Operators.lt,
+    Operators.gte,
+    Operators.lte
+} for Fixed18 global;
 
 /**
  * @title Fixed18Lib
@@ -21,7 +51,7 @@ library Fixed18Lib {
     /// @custom:error Arithmetic overflow
     error Fixed18OverflowError(uint256 value);
 
-    int256 private constant BASE = 1e18;
+    int256 internal constant BASE = 1e18;
     Fixed18 public constant ZERO = Fixed18.wrap(0);
     Fixed18 public constant ONE = Fixed18.wrap(BASE);
     Fixed18 public constant NEG_ONE = Fixed18.wrap(-1 * BASE);
@@ -96,36 +126,6 @@ library Fixed18Lib {
     }
 
     /**
-     * @notice Adds two signed fixed-decimals `a` and `b` together
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Resulting summed signed fixed-decimal
-     */
-    function add(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(Fixed18.unwrap(a) + Fixed18.unwrap(b));
-    }
-
-    /**
-     * @notice Subtracts signed fixed-decimal `b` from `a`
-     * @param a Signed fixed-decimal to subtract from
-     * @param b Signed fixed-decimal to subtract
-     * @return Resulting subtracted signed fixed-decimal
-     */
-    function sub(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(Fixed18.unwrap(a) - Fixed18.unwrap(b));
-    }
-
-    /**
-     * @notice Multiplies two signed fixed-decimals `a` and `b` together
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Resulting multiplied signed fixed-decimal
-     */
-    function mul(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(Fixed18.unwrap(a) * Fixed18.unwrap(b) / BASE);
-    }
-
-    /**
      * @notice Multiplies two signed fixed-decimals `a` and `b` together, rounding the result away from zero if there is a remainder
      * @param a First signed fixed-decimal
      * @param b Second signed fixed-decimal
@@ -133,16 +133,6 @@ library Fixed18Lib {
      */
     function mulOut(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
         return Fixed18.wrap(NumberMath.divOut(Fixed18.unwrap(a) * Fixed18.unwrap(b), BASE));
-    }
-
-    /**
-     * @notice Divides signed fixed-decimal `a` by `b`
-     * @param a Signed fixed-decimal to divide
-     * @param b Signed fixed-decimal to divide by
-     * @return Resulting divided signed fixed-decimal
-     */
-    function div(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
-        return Fixed18.wrap(Fixed18.unwrap(a) * BASE / Fixed18.unwrap(b));
     }
 
     /**
@@ -164,11 +154,11 @@ library Fixed18Lib {
      */
     function unsafeDiv(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
         if (isZero(b)) {
-            if (gt(a, ZERO)) return MAX;
-            if (lt(a, ZERO)) return MIN;
+            if (Operators.gt(a, ZERO)) return MAX;
+            if (Operators.lt(a, ZERO)) return MIN;
             return ONE;
         } else {
-            return div(a, b);
+            return Operators.div(a, b);
         }
     }
 
@@ -181,8 +171,8 @@ library Fixed18Lib {
      */
     function unsafeDivOut(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
         if (isZero(b)) {
-            if (gt(a, ZERO)) return MAX;
-            if (lt(a, ZERO)) return MIN;
+            if (Operators.gt(a, ZERO)) return MAX;
+            if (Operators.lt(a, ZERO)) return MIN;
             return ONE;
         } else {
             return divOut(a, b);
@@ -231,56 +221,6 @@ library Fixed18Lib {
      */
     function muldivOut(Fixed18 a, Fixed18 b, Fixed18 c) internal pure returns (Fixed18) {
         return Fixed18.wrap(NumberMath.divOut(Fixed18.unwrap(a) * Fixed18.unwrap(b), Fixed18.unwrap(c)));
-    }
-
-    /**
-     * @notice Returns whether signed fixed-decimal `a` is equal to `b`
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Whether `a` is equal to `b`
-     */
-    function eq(Fixed18 a, Fixed18 b) internal pure returns (bool) {
-        return compare(a, b) == 1;
-    }
-
-    /**
-     * @notice Returns whether signed fixed-decimal `a` is greater than `b`
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Whether `a` is greater than `b`
-     */
-    function gt(Fixed18 a, Fixed18 b) internal pure returns (bool) {
-        return compare(a, b) == 2;
-    }
-
-    /**
-     * @notice Returns whether signed fixed-decimal `a` is less than `b`
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Whether `a` is less than `b`
-     */
-    function lt(Fixed18 a, Fixed18 b) internal pure returns (bool) {
-        return compare(a, b) == 0;
-    }
-
-    /**
-     * @notice Returns whether signed fixed-decimal `a` is greater than or equal to `b`
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Whether `a` is greater than or equal to `b`
-     */
-    function gte(Fixed18 a, Fixed18 b) internal pure returns (bool) {
-        return gt(a, b) || eq(a, b);
-    }
-
-    /**
-     * @notice Returns whether signed fixed-decimal `a` is less than or equal to `b`
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Whether `a` is less than or equal to `b`
-     */
-    function lte(Fixed18 a, Fixed18 b) internal pure returns (bool) {
-        return lt(a, b) || eq(a, b);
     }
 
     /**
@@ -380,7 +320,7 @@ library Fixed18Lib {
      * @return Whether `value` is outside the range `min` and `max`
      */
     function outside(Fixed18 value, Fixed18 min_, Fixed18 max_) internal pure returns (bool) {
-        return lt(value, min_) || gt(value, max_);
+        return Operators.lt(value, min_) || Operators.gt(value, max_);
     }
 }
 
