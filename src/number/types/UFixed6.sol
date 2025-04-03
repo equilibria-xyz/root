@@ -1,16 +1,57 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/utils/math/Math.sol";
-import "../NumberMath.sol";
+import { Math, NumberMath } from "../NumberMath.sol";
 import { Fixed6, Fixed6Lib } from "./Fixed6.sol";
 import { UFixed18 } from "./UFixed18.sol";
+import "./UFixed6Math.sol" as UFixed6Math;
 
 /// @dev UFixed6 type
 type UFixed6 is uint256;
-using UFixed6Lib for UFixed6 global;
 type UFixed6Storage is bytes32;
 using UFixed6StorageLib for UFixed6Storage global;
+
+using {
+    UFixed6Math.add as +,
+    UFixed6Math.sub as -,
+    UFixed6Math.mul as *,
+    UFixed6Math.div as /,
+    UFixed6Math.eq as ==,
+    UFixed6Math.neq as !=,
+    UFixed6Math.gt as >,
+    UFixed6Math.lt as <,
+    UFixed6Math.gte as >=,
+    UFixed6Math.lte as <=
+} for UFixed6 global;
+
+using {
+    UFixed6Math.isZero,
+    UFixed6Math.add,
+    UFixed6Math.sub,
+    UFixed6Math.unsafeSub,
+    UFixed6Math.mul,
+    UFixed6Math.mulOut,
+    UFixed6Math.div,
+    UFixed6Math.divOut,
+    UFixed6Math.unsafeDiv,
+    UFixed6Math.unsafeDivOut,
+    UFixed6Math.muldiv,
+    UFixed6Math.muldivOut,
+    UFixed6Math.muldivFixed,
+    UFixed6Math.muldivOutFixed,
+    UFixed6Math.eq,
+    UFixed6Math.neq,
+    UFixed6Math.gt,
+    UFixed6Math.lt,
+    UFixed6Math.gte,
+    UFixed6Math.lte,
+    UFixed6Math.compare,
+    UFixed6Math.min,
+    UFixed6Math.max,
+    UFixed6Math.truncate,
+    UFixed6Math.inside,
+    UFixed6Math.outside
+} for UFixed6 global;
 
 /**
  * @title UFixed6Lib
@@ -21,10 +62,10 @@ library UFixed6Lib {
     /// @custom:error Arithmetic underflow
     error UFixed6UnderflowError(int256 value);
 
-    uint256 private constant BASE = 1e6;
-    UFixed6 public constant ZERO = UFixed6.wrap(0);
-    UFixed6 public constant ONE = UFixed6.wrap(BASE);
-    UFixed6 public constant MAX = UFixed6.wrap(type(uint256).max);
+    uint256 constant BASE = 1e6;
+    UFixed6 constant ZERO = UFixed6.wrap(0);
+    UFixed6 constant ONE = UFixed6.wrap(BASE);
+    UFixed6 constant MAX = UFixed6.wrap(type(uint256).max);
 
     /**
      * @notice Creates a unsigned fixed-decimal from a signed fixed-decimal
@@ -88,285 +129,13 @@ library UFixed6Lib {
     }
 
     /**
-     * @notice Returns whether the unsigned fixed-decimal is equal to zero.
-     * @param a Unsigned fixed-decimal
-     * @return Whether the unsigned fixed-decimal is zero.
-     */
-    function isZero(UFixed6 a) internal pure returns (bool) {
-        return UFixed6.unwrap(a) == 0;
-    }
-
-    /**
-     * @notice Adds two unsigned fixed-decimals `a` and `b` together
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Resulting summed unsigned fixed-decimal
-     */
-    function add(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        return UFixed6.wrap(UFixed6.unwrap(a) + UFixed6.unwrap(b));
-    }
-
-    /**
-     * @notice Subtracts unsigned fixed-decimal `b` from `a`
-     * @param a Unsigned fixed-decimal to subtract from
-     * @param b Unsigned fixed-decimal to subtract
-     * @return Resulting subtracted unsigned fixed-decimal
-     */
-    function sub(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        return UFixed6.wrap(UFixed6.unwrap(a) - UFixed6.unwrap(b));
-    }
-
-    /**
-     * @notice Subtracts unsigned fixed-decimal `a` by `b`
-     * @dev Does not revert on underflow, instead returns `ZERO`
-     * @param a Unsigned fixed-decimal to subtract from
-     * @param b Unsigned fixed-decimal to subtract
-     * @return Resulting subtracted unsigned fixed-decimal
-     */
-    function unsafeSub(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        return gt(b, a) ? ZERO : sub(a, b);
-    }
-
-    /**
-     * @notice Multiplies two unsigned fixed-decimals `a` and `b` together
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Resulting multiplied unsigned fixed-decimal
-     */
-    function mul(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        return UFixed6.wrap(UFixed6.unwrap(a) * UFixed6.unwrap(b) / BASE);
-    }
-
-    /**
-     * @notice Multiplies two unsigned fixed-decimals `a` and `b` together, rounding the result up to the next integer if there is a remainder
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Resulting multiplied unsigned fixed-decimal
-     */
-    function mulOut(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        return UFixed6.wrap(NumberMath.divOut(UFixed6.unwrap(a) * UFixed6.unwrap(b), BASE));
-    }
-
-    /**
-     * @notice Divides unsigned fixed-decimal `a` by `b`
-     * @param a Unsigned fixed-decimal to divide
-     * @param b Unsigned fixed-decimal to divide by
-     * @return Resulting divided unsigned fixed-decimal
-     */
-    function div(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        return UFixed6.wrap(UFixed6.unwrap(a) * BASE / UFixed6.unwrap(b));
-    }
-
-    /**
-     * @notice Divides unsigned fixed-decimal `a` by `b`, rounding the result up to the next integer if there is a remainder
-     * @param a Unsigned fixed-decimal to divide
-     * @param b Unsigned fixed-decimal to divide by
-     * @return Resulting divided unsigned fixed-decimal
-     */
-    function divOut(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        return UFixed6.wrap(NumberMath.divOut(UFixed6.unwrap(a) * BASE, UFixed6.unwrap(b)));
-    }
-
-    /**
-     * @notice Divides unsigned fixed-decimal `a` by `b`
-     * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0` and `MAX` for `n/0`.
-     * @param a Unsigned fixed-decimal to divide
-     * @param b Unsigned fixed-decimal to divide by
-     * @return Resulting divided unsigned fixed-decimal
-     */
-    function unsafeDiv(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        if (isZero(b)) {
-            return isZero(a) ? ONE : MAX;
-        } else {
-            return div(a, b);
-        }
-    }
-
-    /**
-     * @notice Divides unsigned fixed-decimal `a` by `b`, rounding the result up to the next integer if there is a remainder
-     * @dev Does not revert on divide-by-0, instead returns `ONE` for `0/0` and `MAX` for `n/0`.
-     * @param a Unsigned fixed-decimal to divide
-     * @param b Unsigned fixed-decimal to divide by
-     * @return Resulting divided unsigned fixed-decimal
-     */
-    function unsafeDivOut(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        if (isZero(b)) {
-            return isZero(a) ? ONE : MAX;
-        } else {
-            return divOut(a, b);
-        }
-    }
-
-    /**
-     * @notice Computes a * b / c without loss of precision due to BASE conversion
-     * @param a First unsigned fixed-decimal
-     * @param b Unsigned number to multiply by
-     * @param c Unsigned number to divide by
-     * @return Resulting computation
-     */
-    function muldiv(UFixed6 a, uint256 b, uint256 c) internal pure returns (UFixed6) {
-        return muldiv(a, UFixed6.wrap(b), UFixed6.wrap(c));
-    }
-
-    /**
-     * @notice Computes a * b / c without loss of precision due to BASE conversion, rounding the result up to the next integer if there is a remainder
-     * @param a First unsigned fixed-decimal
-     * @param b Unsigned number to multiply by
-     * @param c Unsigned number to divide by
-     * @return Resulting computation
-     */
-    function muldivOut(UFixed6 a, uint256 b, uint256 c) internal pure returns (UFixed6) {
-        return muldivOut(a, UFixed6.wrap(b), UFixed6.wrap(c));
-    }
-
-
-    /**
-     * @notice Computes a * b / c without loss of precision due to BASE conversion
-     * @param a First unsigned fixed-decimal
-     * @param b Unsigned fixed-decimal to multiply by
-     * @param c Unsigned fixed-decimal to divide by
-     * @return Resulting computation
-     */
-    function muldiv(UFixed6 a, UFixed6 b, UFixed6 c) internal pure returns (UFixed6) {
-        return UFixed6.wrap(UFixed6.unwrap(a) * UFixed6.unwrap(b) / UFixed6.unwrap(c));
-    }
-
-    /**
-     * @notice Computes a * b / c without loss of precision due to BASE conversion, rounding the result up to the next integer if there is a remainder
-     * @param a First unsigned fixed-decimal
-     * @param b Unsigned fixed-decimal to multiply by
-     * @param c Unsigned fixed-decimal to divide by
-     * @return Resulting computation
-     */
-    function muldivOut(UFixed6 a, UFixed6 b, UFixed6 c) internal pure returns (UFixed6) {
-        return UFixed6.wrap(NumberMath.divOut(UFixed6.unwrap(a) * UFixed6.unwrap(b), UFixed6.unwrap(c)));
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is equal to `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is equal to `b`
-     */
-    function eq(UFixed6 a, UFixed6 b) internal pure returns (bool) {
-        return compare(a, b) == 1;
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is greater than `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is greater than `b`
-     */
-    function gt(UFixed6 a, UFixed6 b) internal pure returns (bool) {
-        return compare(a, b) == 2;
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is less than `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is less than `b`
-     */
-    function lt(UFixed6 a, UFixed6 b) internal pure returns (bool) {
-        return compare(a, b) == 0;
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is greater than or equal to `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is greater than or equal to `b`
-     */
-    function gte(UFixed6 a, UFixed6 b) internal pure returns (bool) {
-        return gt(a, b) || eq(a, b);
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is less than or equal to `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is less than or equal to `b`
-     */
-    function lte(UFixed6 a, UFixed6 b) internal pure returns (bool) {
-        return lt(a, b) || eq(a, b);
-    }
-
-    /**
-     * @notice Compares the unsigned fixed-decimals `a` and `b`
-     * @dev Returns: 2 for greater than
-     *               1 for equal to
-     *               0 for less than
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Compare result of `a` and `b`
-     */
-    function compare(UFixed6 a, UFixed6 b) internal pure returns (uint256) {
-        (uint256 au, uint256 bu) = (UFixed6.unwrap(a), UFixed6.unwrap(b));
-        if (au > bu) return 2;
-        if (au < bu) return 0;
-        return 1;
-    }
-
-    /**
-     * @notice Returns a unsigned fixed-decimal representing the ratio of `a` over `b`
-     * @param a First unsigned number
-     * @param b Second unsigned number
-     * @return Ratio of `a` over `b`
-     */
+        * @notice Returns a unsigned fixed-decimal representing the ratio of `a` over `b`
+        * @param a First unsigned number
+        * @param b Second unsigned number
+        * @return Ratio of `a` over `b`
+        */
     function ratio(uint256 a, uint256 b) internal pure returns (UFixed6) {
-        return UFixed6.wrap(a * BASE / b);
-    }
-
-    /**
-     * @notice Returns the minimum of unsigned fixed-decimals `a` and `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Minimum of `a` and `b`
-     */
-    function min(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        return UFixed6.wrap(Math.min(UFixed6.unwrap(a), UFixed6.unwrap(b)));
-    }
-
-    /**
-     * @notice Returns the maximum of unsigned fixed-decimals `a` and `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Maximum of `a` and `b`
-     */
-    function max(UFixed6 a, UFixed6 b) internal pure returns (UFixed6) {
-        return UFixed6.wrap(Math.max(UFixed6.unwrap(a), UFixed6.unwrap(b)));
-    }
-
-    /**
-     * @notice Converts the unsigned fixed-decimal into an integer, truncating any decimal portion
-     * @param a Unsigned fixed-decimal
-     * @return Truncated unsigned number
-     */
-    function truncate(UFixed6 a) internal pure returns (uint256) {
-        return UFixed6.unwrap(a) / BASE;
-    }
-
-    /**
-     * @notice Returns whether the unsigned fixed-decimal `value` is inside the range `min` and `max`
-     * @param value Unsigned fixed-decimal to check
-     * @param min_ Minimum value
-     * @param max_ Maximum value
-     * @return Whether `value` is inside the range `min` and `max`
-     */
-    function inside(UFixed6 value, UFixed6 min_, UFixed6 max_) internal pure returns (bool) {
-        return !outside(value, min_, max_);
-    }
-
-    /**
-     * @notice Returns whether the unsigned fixed-decimal `value` is outside the range `min` and `max`
-     * @param value Unsigned fixed-decimal to check
-     * @param min_ Minimum value
-     * @param max_ Maximum value
-     * @return Whether `value` is outside the range `min` and `max`
-     */
-    function outside(UFixed6 value, UFixed6 min_, UFixed6 max_) internal pure returns (bool) {
-        return lt(value, min_) || gt(value, max_);
+        return UFixed6.wrap(a * UFixed6Lib.BASE / b);
     }
 }
 
