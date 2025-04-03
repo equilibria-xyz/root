@@ -22,12 +22,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 22.14
 
-      - name Install
-        run: npm --version && npm install -g solhint
+      - name: Install
+        run: npm install -g solhint
         id: install
 
-      - name Lint
+      - name: Lint
         run: solhint 'src/**/*.sol'
         id: lint
 
