@@ -3,8 +3,8 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
 import "../NumberMath.sol";
-import "./Fixed6.sol";
-import "./UFixed18.sol";
+import { Fixed6 } from "./Fixed6.sol";
+import { UFixed18 } from "./UFixed18.sol";
 import "./Fixed18Operators.sol" as Operators;
 
 /// @dev Fixed18 type

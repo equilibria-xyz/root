@@ -3,8 +3,9 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/utils/math/SignedMath.sol";
 import "../NumberMath.sol";
-import "./Fixed18.sol";
-import "./UFixed6.sol";
+import { Fixed18 } from "./Fixed18.sol";
+import { UFixed6 } from "./UFixed6.sol";
+import "./Fixed6Operators.sol" as Operators;
 
 /// @dev Fixed6 type
 type Fixed6 is int256;
@@ -12,49 +13,18 @@ using Fixed6Lib for Fixed6 global;
 type Fixed6Storage is bytes32;
 using Fixed6StorageLib for Fixed6Storage global;
 
-using { _add as + } for Fixed6 global;
-using { _sub as - } for Fixed6 global;
-using { _mul as * } for Fixed6 global;
-using { _div as / } for Fixed6 global;
-using { _eq as == } for Fixed6 global;
-using { _neq as != } for Fixed6 global;
-using { _gt as > } for Fixed6 global;
-using { _lt as < } for Fixed6 global;
-using { _gte as >= } for Fixed6 global;
-using { _lte as <= } for Fixed6 global;
-
-// TODO: We would rather not expose these redundant functions, but cannot declare them private.
-// Naming them without underscores would cause a naming conflict generating warnings.
-function _add(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
-    return Fixed6Lib.add(a, b);
-}
-function _sub(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
-    return Fixed6Lib.sub(a, b);
-}
-function _mul(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
-    return Fixed6Lib.mul(a, b);
-}
-function _div(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
-    return Fixed6Lib.div(a, b);
-}
-function _eq(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return Fixed6Lib.eq(a, b);
-}
-function _neq(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return Fixed6Lib.neq(a, b);
-}
-function _gt(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return Fixed6Lib.gt(a, b);
-}
-function _lt(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return Fixed6Lib.lt(a, b);
-}
-function _gte(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return Fixed6Lib.gte(a, b);
-}
-function _lte(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return Fixed6Lib.lte(a, b);
-}
+using {
+    Operators.add as +,
+    Operators.sub as -,
+    Operators.mul as *,
+    Operators.div as /,
+    Operators.eq as ==,
+    Operators.neq as !=,
+    Operators.gt as >,
+    Operators.lt as <,
+    Operators.gte as >=,
+    Operators.lte as <=
+} for Fixed6 global;
 
 /**
  * @title Fixed6Lib
