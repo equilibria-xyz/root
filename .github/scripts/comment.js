@@ -1,7 +1,9 @@
-// from https://github.com/marketplace/actions/slither-action
+// adapted from https://github.com/marketplace/actions/slither-action
 
 module.exports = async ({ github, context, header, body }) => {
-  const comment = [header, body].join("\n");
+  const comment = `${header}
+  <details><summary>Static Analysis Report</summary>${body}</details>
+  <br/>`
 
   const { data: comments } = await github.rest.issues.listComments({
     owner: context.repo.owner,

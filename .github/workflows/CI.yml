@@ -53,6 +53,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
 
   analyze:
+    name: Static Analysis
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
