@@ -65,7 +65,13 @@ Before running any command, make sure to install dependencies:
 forge install
 ```
 
-To install solhint:
+Optionally, to install [Slither](https://github.com/crytic/slither) static analyzer:
+```sh
+python3 -m pip install slither-analyzer
+```
+Other installation options available [here](https://github.com/crytic/slither?tab=readme-ov-file#how-to-install).
+
+Optionally, to install solhint:
 ```sh
 sudo npm install -g solhint
 ```

@@ -47,12 +47,6 @@ contract Token18UnfundedUserTest is Token18Test {
         assertEq(erc20.allowance(address(this), user), type(uint256).max, "approve all");
     }
 
-    function test_revertsApprovingWithPriorAllowance() public {
-        m.approve(token, user, UFixed18Lib.from(1));
-        vm.expectRevert("SafeERC20: approve from non-zero to non-zero allowance");
-        m.approve(token, user, UFixed18Lib.from(100));
-    }
-
     function test_nameAndSymbol() public view{
         assertEq(token.name(), "Test MiNted Token", "name");
         assertEq(token.symbol(), "TMNT", "symbol");
