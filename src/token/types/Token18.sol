@@ -107,6 +107,25 @@ library Token18Lib {
     }
 
     /**
+     * @notice Processes a token transfer based on the sign of the amount
+     * @dev If amount is positive, pulls tokens from the account to the caller
+     *      If amount is negative, pushes tokens from the caller to the account
+     * @param self Token to transfer
+     * @param account Address to pull from or push to
+     * @param amount Signed amount of tokens to transfer
+     */
+    function update(Token18 self, address account, Fixed18 amount) internal {
+        int256 sign = amount.sign();
+        if (sign == 0) return;
+
+        if (sign < 0) {
+            push(self, account, amount.abs());
+        } else {
+            pull(self, account, amount.abs());
+        }
+    }
+
+    /**
      * @notice Returns the name of the token
      * @param self Token to check for
      * @return Token name

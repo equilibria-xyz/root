@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../../number/types/UFixed6.sol";
+import "../../number/types/Fixed6.sol";
 
 /// @dev Token6
 type Token6 is address;
@@ -106,6 +107,25 @@ library Token6Lib {
      */
     function pullTo(Token6 self, address benefactor, address recipient, UFixed6 amount) internal {
         IERC20(Token6.unwrap(self)).safeTransferFrom(benefactor, recipient, UFixed6.unwrap(amount));
+    }
+
+    /**
+     * @notice Processes a token transfer based on the sign of the amount
+     * @dev If amount is positive, pulls tokens from the account to the caller
+     *      If amount is negative, pushes tokens from the caller to the account
+     * @param self Token to transfer
+     * @param account Address to pull from or push to
+     * @param amount Signed amount of tokens to transfer
+     */
+    function update(Token6 self, address account, Fixed6 amount) internal {
+        int256 sign = amount.sign();
+        if (sign == 0) return;
+
+        if (sign < 0) {
+            push(self, account, amount.abs());
+        } else {
+            pull(self, account, amount.abs());
+        }
     }
 
     /**
