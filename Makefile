@@ -20,6 +20,9 @@ install  :; forge install
 # Builds
 build    :; forge clean && forge build
 
+# Analyze
+analyze  :; slither .
+
 # Unit Tests
 test     :; forge test --nmc ${CONTRACT_EXCLUDES}
 coverage :; forge coverage --nmc ${CONTRACT_EXCLUDES} --nmco ${COVERAGE_EXCLUDES}
