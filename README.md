@@ -76,7 +76,6 @@ Optionally, to install solhint:
 sudo npm install -g solhint
 ```
 
-
 ### Compile
 ```sh
 forge build
@@ -90,3 +89,10 @@ or for coverage report
 ```sh
 make coverage
 ```
+
+### Documentation
+To autogenerate Markdown documentation based on natspec comments:
+```sh
+forge doc
+```
+To run local server for browsing; add `--serve` option.  Details [here](https://book.getfoundry.sh/reference/forge/forge-doc?highlight=forge%20doc#forge-doc).
