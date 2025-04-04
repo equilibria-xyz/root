@@ -12,6 +12,19 @@ using UFixed18Lib for UFixed18 global;
 type UFixed18Storage is bytes32;
 using UFixed18StorageLib for UFixed18Storage global;
 
+using {
+    _add as +,
+    _sub as -,
+    _mul as *,
+    _div as /,
+    _eq as ==,
+    _neq as !=,
+    _gt as >,
+    _lt as <,
+    _gte as >=,
+    _lte as <=
+} for UFixed18 global;
+
 /**
  * @title UFixed18Lib
  * @notice Library for the unsigned fixed-decimal type.
@@ -243,6 +256,16 @@ library UFixed18Lib {
     }
 
     /**
+     * @notice Returns whether unsigned fixed-decimal `a` is not equal to `b`
+     * @param a First unsigned fixed-decimal
+     * @param b Second unsigned fixed-decimal
+     * @return Whether `a` is not equal to `b`
+     */
+    function neq(UFixed18 a, UFixed18 b) internal pure returns (bool) {
+        return compare(a, b) == 1;
+    }
+
+    /**
      * @notice Returns whether unsigned fixed-decimal `a` is greater than `b`
      * @param a First unsigned fixed-decimal
      * @param b Second unsigned fixed-decimal
@@ -372,4 +395,35 @@ library UFixed18StorageLib {
             sstore(self, value)
         }
     }
+}
+
+function _add(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18Lib.add(a, b);
+}
+function _sub(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18Lib.sub(a, b);
+}
+function _mul(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18Lib.mul(a, b);
+}
+function _div(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18Lib.div(a, b);
+}
+function _eq(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return UFixed18Lib.eq(a, b);
+}
+function _neq(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return UFixed18Lib.neq(a, b);
+}
+function _gt(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return UFixed18Lib.gt(a, b);
+}
+function _lt(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return UFixed18Lib.lt(a, b);
+}
+function _gte(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return UFixed18Lib.gte(a, b);
+}
+function _lte(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return UFixed18Lib.lte(a, b);
 }
