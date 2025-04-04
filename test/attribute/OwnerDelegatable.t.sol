@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { ERC20, ERC20Permit, ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import { ERC20, ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
+import { EIP712 } from "@openzeppelin/contracts/governance/utils/Votes.sol";
 import { Test } from "forge-std/Test.sol";
 
 import { OwnerDelegatable, Ownable } from "src/attribute/OwnerDelegatable.sol";
@@ -64,7 +66,7 @@ contract MockOwnerDelegatable is MockOwnable, OwnerDelegatable {
 }
 
 contract MockERC20Votes is ERC20Votes {
-    constructor() ERC20("Mock ERC20 Votes", "MOCK") ERC20Permit("Mock ERC20 Votes") {}
+    constructor() ERC20("Mock ERC20 Votes", "MOCK") EIP712("MockERC20Votes", "v0.0") {}
 
     function mint(address to, uint256 amount) public {
         _mint(to, amount);
