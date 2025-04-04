@@ -11,7 +11,7 @@ import {
     UFixed6,
     UFixed6Lib
 } from "src/token/types/Token6.sol";
-import { Fixed6Lib } from "../../src/number/types/Fixed6.sol";
+import { Fixed6Lib } from "src/number/types/Fixed6.sol";
 
 abstract contract Token6Test is TokenTest {
     Token6 public token;
@@ -70,10 +70,9 @@ contract Token6FundedUserTest is Token6Test {
     }
 
     function test_push() public {
-        vm.startPrank(user);
+        vm.prank(user);
         token.push(recipient, UFixed6Lib.from(100));
         assertEq(erc20.balanceOf(recipient), 100e6, "push some from user to recipient");
-        vm.stopPrank();
         // contract has 140, user has 60, recipient has 100
 
         // contract uses address.this, so cannot push all from user to recipient
@@ -83,9 +82,8 @@ contract Token6FundedUserTest is Token6Test {
     }
 
     function test_pull() public {
-        vm.startPrank(user);
+        vm.prank(user);
         token.approve(address(this), UFixed6Lib.from(100));
-        vm.stopPrank();
 
         token.pull(user, UFixed6Lib.from(40));
         // contract should now have 140 + 40

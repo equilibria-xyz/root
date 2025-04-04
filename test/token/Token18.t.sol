@@ -11,7 +11,7 @@ import {
     UFixed18,
     UFixed18Lib
 } from "src/token/types/Token18.sol";
-import { Fixed18Lib } from "../../src/number/types/Fixed18.sol";
+import { Fixed18Lib } from "src/number/types/Fixed18.sol";
 
 abstract contract Token18Test is TokenTest {
     Token18 public token;
@@ -70,10 +70,9 @@ contract Token18FundedUserTest is Token18Test {
     }
 
     function test_push() public {
-        vm.startPrank(user);
+        vm.prank(user);
         token.push(recipient, UFixed18Lib.from(100));
         assertEq(erc20.balanceOf(recipient), 100e18, "push some from user to recipient");
-        vm.stopPrank();
         // contract has 140, user has 60, recipient has 100
 
         // contract uses address.this, so cannot push all from user to recipient
@@ -83,9 +82,8 @@ contract Token18FundedUserTest is Token18Test {
     }
 
     function test_pull() public {
-        vm.startPrank(user);
+        vm.prank(user);
         token.approve(address(this), UFixed18Lib.from(100));
-        vm.stopPrank();
 
         token.pull(user, UFixed18Lib.from(40));
         // contract should now have 140 + 40
