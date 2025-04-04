@@ -10,7 +10,8 @@ import {
     Token6StorageLib,
     UFixed6,
     UFixed6Lib
-} from "../../src/token/types/Token6.sol";
+} from "src/token/types/Token6.sol";
+import { Fixed6Lib } from "../../src/number/types/Fixed6.sol";
 
 abstract contract Token6Test is TokenTest {
     Token6 public token;
@@ -92,6 +93,28 @@ contract Token6FundedUserTest is Token6Test {
 
         token.pullTo(user, recipient, UFixed6Lib.from(60));
         assertEq(erc20.balanceOf(recipient), 60e6, "pull some from user to recipient");
+    }
+
+    function test_update() public {
+        vm.prank(user);
+        token.approve(address(this), UFixed6Lib.from(100));
+
+        // transfer from user to contract
+        token.update(user, Fixed6Lib.from(100));
+        // contract should now have 140 + 100
+        assertEq(erc20.balanceOf(address(this)), 240e6, "contract should have 240");
+        assertEq(erc20.balanceOf(user), 60e6, "user should have 60");
+
+        // transfer from contract to user
+        token.update(user, Fixed6Lib.from(-100));
+        // contract should now have 240 - 100
+        assertEq(erc20.balanceOf(address(this)), 140e6, "contract should have 140");
+        assertEq(erc20.balanceOf(user), 160e6, "user should have 160");
+
+        // should not revert if amount is 0
+        token.update(user, Fixed6Lib.from(0));
+        assertEq(erc20.balanceOf(address(this)), 140e6, "contract should have 140");
+        assertEq(erc20.balanceOf(user), 160e6, "user should have 160");
     }
 
     function test_balance() public view {

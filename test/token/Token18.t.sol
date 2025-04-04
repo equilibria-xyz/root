@@ -10,7 +10,8 @@ import {
     Token18StorageLib,
     UFixed18,
     UFixed18Lib
-} from "../../src/token/types/Token18.sol";
+} from "src/token/types/Token18.sol";
+import { Fixed18Lib } from "../../src/number/types/Fixed18.sol";
 
 abstract contract Token18Test is TokenTest {
     Token18 public token;
@@ -92,6 +93,28 @@ contract Token18FundedUserTest is Token18Test {
 
         token.pullTo(user, recipient, UFixed18Lib.from(60));
         assertEq(erc20.balanceOf(recipient), 60e18, "pull some from user to recipient");
+    }
+
+    function test_update() public {
+        vm.prank(user);
+        token.approve(address(this), UFixed18Lib.from(100));
+
+        // transfer from user to contract
+        token.update(user, Fixed18Lib.from(100));
+        // contract should now have 140 + 100
+        assertEq(erc20.balanceOf(address(this)), 240e18, "contract should have 240");
+        assertEq(erc20.balanceOf(user), 60e18, "user should have 60");
+
+        // transfer from contract to user
+        token.update(user, Fixed18Lib.from(-100));
+        // contract should now have 240 - 100
+        assertEq(erc20.balanceOf(address(this)), 140e18, "contract should have 140");
+        assertEq(erc20.balanceOf(user), 160e18, "user should have 160");
+
+        // should not revert if amount is 0
+        token.update(user, Fixed18Lib.from(0));
+        assertEq(erc20.balanceOf(address(this)), 140e18, "contract should have 140");
+        assertEq(erc20.balanceOf(user), 160e18, "user should have 160");
     }
 
     function test_balance() public view {
