@@ -71,6 +71,12 @@ python3 -m pip install slither-analyzer
 ```
 Other installation options available [here](https://github.com/crytic/slither?tab=readme-ov-file#how-to-install).
 
+Optionally, to install solhint:
+```sh
+sudo npm install -g solhint
+```
+
+
 ### Compile
 ```sh
 forge build

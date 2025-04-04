@@ -16,6 +16,24 @@ env:
   FOUNDRY_PROFILE: ci
 
 jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 22.14
+
+      - name: Install
+        run: npm install -g solhint
+        id: install
+
+      - name: Lint
+        run: make lint
+        id: lint
+
   unit-test:
     strategy:
       fail-fast: true
