@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/utils/math/SignedMath.sol";
-import "../NumberMath.sol";
+import { SignedMath } from "@openzeppelin/contracts/utils/math/SignedMath.sol";
+import { NumberMath } from "../NumberMath.sol";
 import { Fixed6 } from "./Fixed6.sol";
 import { UFixed18 } from "./UFixed18.sol";
-import "./Fixed18Operators.sol" as Operators;
 
 /// @dev Fixed18 type
 type Fixed18 is int256;
@@ -14,32 +13,29 @@ type Fixed18Storage is bytes32;
 using Fixed18StorageLib for Fixed18Storage global;
 
 using {
-    Operators.add as +,
-    Operators.sub as -,
-    Operators.mul as *,
-    Operators.div as /,
-    Operators.eq as ==,
-    Operators.neq as !=,
-    Operators.gt as >,
-    Operators.lt as <,
-    Operators.gte as >=,
-    Operators.lte as <=
+    add as +,
+    sub as -,
+    mul as *,
+    div as /,
+    eq as ==,
+    neq as !=,
+    gt as >,
+    lt as <,
+    gte as >=,
+    lte as <=
 } for Fixed18 global;
 
-// TODO: These are optional; needed only if we want to preserve the ability to
-// call the functions on the type without using the operator overloads.
-// Also note these must appear _after_ the usings above or they will be ignored.
 using {
-    Operators.add,
-    Operators.sub,
-    Operators.mul,
-    Operators.div,
-    Operators.eq,
-    Operators.neq,
-    Operators.gt,
-    Operators.lt,
-    Operators.gte,
-    Operators.lte
+    add,
+    sub,
+    mul,
+    div,
+    eq,
+    neq,
+    gt,
+    lt,
+    gte,
+    lte
 } for Fixed18 global;
 
 /**
@@ -154,11 +150,11 @@ library Fixed18Lib {
      */
     function unsafeDiv(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
         if (isZero(b)) {
-            if (Operators.gt(a, ZERO)) return MAX;
-            if (Operators.lt(a, ZERO)) return MIN;
+            if (gt(a, ZERO)) return MAX;
+            if (lt(a, ZERO)) return MIN;
             return ONE;
         } else {
-            return Operators.div(a, b);
+            return div(a, b);
         }
     }
 
@@ -171,8 +167,8 @@ library Fixed18Lib {
      */
     function unsafeDivOut(Fixed18 a, Fixed18 b) internal pure returns (Fixed18) {
         if (isZero(b)) {
-            if (Operators.gt(a, ZERO)) return MAX;
-            if (Operators.lt(a, ZERO)) return MIN;
+            if (gt(a, ZERO)) return MAX;
+            if (lt(a, ZERO)) return MIN;
             return ONE;
         } else {
             return divOut(a, b);
@@ -320,7 +316,7 @@ library Fixed18Lib {
      * @return Whether `value` is outside the range `min` and `max`
      */
     function outside(Fixed18 value, Fixed18 min_, Fixed18 max_) internal pure returns (bool) {
-        return Operators.lt(value, min_) || Operators.gt(value, max_);
+        return lt(value, min_) || gt(value, max_);
     }
 }
 
@@ -336,4 +332,104 @@ library Fixed18StorageLib {
             sstore(self, value)
         }
     }
+}
+
+/**
+    * @notice Adds two signed fixed-decimals `a` and `b` together
+    * @param a First signed fixed-decimal
+    * @param b Second signed fixed-decimal
+    * @return Resulting summed signed fixed-decimal
+    */
+function add(Fixed18 a, Fixed18 b) pure returns (Fixed18) {
+    return Fixed18.wrap(Fixed18.unwrap(a) + Fixed18.unwrap(b));
+}
+
+/**
+    * @notice Subtracts signed fixed-decimal `b` from `a`
+    * @param a Signed fixed-decimal to subtract from
+    * @param b Signed fixed-decimal to subtract
+    * @return Resulting subtracted signed fixed-decimal
+    */
+function sub(Fixed18 a, Fixed18 b) pure returns (Fixed18) {
+    return Fixed18.wrap(Fixed18.unwrap(a) - Fixed18.unwrap(b));
+}
+
+/**
+    * @notice Multiplies two signed fixed-decimals `a` and `b` together
+    * @param a First signed fixed-decimal
+    * @param b Second signed fixed-decimal
+    * @return Resulting multiplied signed fixed-decimal
+    */
+function mul(Fixed18 a, Fixed18 b) pure returns (Fixed18) {
+    return Fixed18.wrap(Fixed18.unwrap(a) * Fixed18.unwrap(b) / Fixed18Lib.BASE);
+}
+
+/**
+    * @notice Divides signed fixed-decimal `a` by `b`
+    * @param a Signed fixed-decimal to divide
+    * @param b Signed fixed-decimal to divide by
+    * @return Resulting divided signed fixed-decimal
+    */
+function div(Fixed18 a, Fixed18 b) pure returns (Fixed18) {
+    return Fixed18.wrap(Fixed18.unwrap(a) * Fixed18Lib.BASE / Fixed18.unwrap(b));
+}
+
+/**
+    * @notice Returns whether signed fixed-decimal `a` is equal to `b`
+    * @param a First signed fixed-decimal
+    * @param b Second signed fixed-decimal
+    * @return Whether `a` is equal to `b`
+    */
+function eq(Fixed18 a, Fixed18 b) pure returns (bool) {
+    return Fixed18Lib.compare(a, b) == 1;
+}
+
+/**
+    * @notice Returns whether signed fixed-decimal `a` is not equal to `b`
+    * @param a First signed fixed-decimal
+    * @param b Second signed fixed-decimal
+    * @return Whether `a` is not equal to `b`
+    */
+function neq(Fixed18 a, Fixed18 b) pure returns (bool) {
+    return Fixed18Lib.compare(a, b) != 1;
+}
+
+/**
+    * @notice Returns whether signed fixed-decimal `a` is greater than `b`
+    * @param a First signed fixed-decimal
+    * @param b Second signed fixed-decimal
+    * @return Whether `a` is greater than `b`
+    */
+function gt(Fixed18 a, Fixed18 b) pure returns (bool) {
+    return Fixed18Lib.compare(a, b) == 2;
+}
+
+/**
+    * @notice Returns whether signed fixed-decimal `a` is less than `b`
+    * @param a First signed fixed-decimal
+    * @param b Second signed fixed-decimal
+    * @return Whether `a` is less than `b`
+    */
+function lt(Fixed18 a, Fixed18 b) pure returns (bool) {
+    return Fixed18Lib.compare(a, b) == 0;
+}
+
+/**
+    * @notice Returns whether signed fixed-decimal `a` is greater than or equal to `b`
+    * @param a First signed fixed-decimal
+    * @param b Second signed fixed-decimal
+    * @return Whether `a` is greater than or equal to `b`
+    */
+function gte(Fixed18 a, Fixed18 b) pure returns (bool) {
+    return gt(a, b) || eq(a, b);
+}
+
+/**
+    * @notice Returns whether signed fixed-decimal `a` is less than or equal to `b`
+    * @param a First signed fixed-decimal
+    * @param b Second signed fixed-decimal
+    * @return Whether `a` is less than or equal to `b`
+    */
+function lte(Fixed18 a, Fixed18 b) pure returns (bool) {
+    return lt(a, b) || eq(a, b);
 }
