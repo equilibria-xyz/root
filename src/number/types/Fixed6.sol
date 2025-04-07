@@ -344,33 +344,102 @@ library Fixed6StorageLib {
     }
 }
 
+/**
+* @notice Adds two signed fixed-decimals `a` and `b` together
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Resulting summed signed fixed-decimal
+*/
 function add(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
     return Fixed6.wrap(Fixed6.unwrap(a) + Fixed6.unwrap(b));
 }
+
+/**
+* @notice Subtracts signed fixed-decimal `b` from `a`
+* @param a Signed fixed-decimal to subtract from
+* @param b Signed fixed-decimal to subtract
+* @return Resulting subtracted signed fixed-decimal
+*/
 function sub(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
     return Fixed6.wrap(Fixed6.unwrap(a) - Fixed6.unwrap(b));
 }
+
+/**
+* @notice Multiplies two signed fixed-decimals `a` and `b` together
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Resulting multiplied signed fixed-decimal
+*/
 function mul(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
     return Fixed6.wrap(Fixed6.unwrap(a) * Fixed6.unwrap(b) / Fixed6Lib.BASE);
 }
+
+/**
+* @notice Divides signed fixed-decimal `a` by `b`
+* @param a Signed fixed-decimal to divide
+* @param b Signed fixed-decimal to divide by
+* @return Resulting divided signed fixed-decimal
+*/
 function div(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
     return Fixed6.wrap(Fixed6.unwrap(a) * Fixed6Lib.BASE / Fixed6.unwrap(b));
 }
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is equal to `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is equal to `b`
+*/
 function eq(Fixed6 a, Fixed6 b) pure returns (bool) {
     return Fixed6Lib.compare(a, b) == 1;
 }
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is not equal to `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is not equal to `b`
+*/
 function neq(Fixed6 a, Fixed6 b) pure returns (bool) {
     return Fixed6Lib.compare(a, b) != 1;
 }
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is greater than `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is greater than `b`
+*/
 function gt(Fixed6 a, Fixed6 b) pure returns (bool) {
     return Fixed6Lib.compare(a, b) == 2;
 }
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is less than `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is less than `b`
+*/
 function lt(Fixed6 a, Fixed6 b) pure returns (bool) {
     return Fixed6Lib.compare(a, b) == 0;
 }
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is greater than or equal to `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is greater than or equal to `b`
+*/
 function gte(Fixed6 a, Fixed6 b) pure returns (bool) {
     return gt(a, b) || eq(a, b);
 }
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is less than or equal to `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is less than or equal to `b`
+*/
 function lte(Fixed6 a, Fixed6 b) pure returns (bool) {
     return lt(a, b) || eq(a, b);
 }
