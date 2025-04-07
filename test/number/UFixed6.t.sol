@@ -94,13 +94,13 @@ contract UFixed6Test is Test {
     function test_addition() public pure {
         UFixed6 a = UFixed6Lib.from(10);
         UFixed6 b = UFixed6Lib.from(20);
-        assertEq(UFixed6.unwrap(a.add(b)), 30e6, "10 + 20 = 30");
+        assertEq(UFixed6.unwrap(a + b), 30e6, "10 + 20 = 30");
     }
 
     function test_subtraction() public pure {
         UFixed6 a = UFixed6Lib.from(20);
         UFixed6 b = UFixed6Lib.from(10);
-        assertEq(UFixed6.unwrap(a.sub(b)), 10e6, "20 - 10 = 10");
+        assertEq(UFixed6.unwrap(a - b), 10e6, "20 - 10 = 10");
     }
 
     function test_subtractionRevertsIfNegative() public {
@@ -122,13 +122,13 @@ contract UFixed6Test is Test {
     function test_multiplication() public pure {
         UFixed6 a = UFixed6Lib.from(20);
         UFixed6 b = UFixed6Lib.from(10);
-        assertEq(UFixed6.unwrap(a.mul(b)), 200e6, "20 * 10 = 200");
+        assertEq(UFixed6.unwrap(a * b), 200e6, "20 * 10 = 200");
     }
 
     function test_MultiplicationRoundsTowardZero() public pure {
         UFixed6 a = UFixed6.wrap(1);
         UFixed6 b = UFixed6.wrap(2);
-        assertEq(UFixed6.unwrap(a.mul(b)), 0, "0.0000001 * 0.0000002 = 0");
+        assertEq(UFixed6.unwrap(a * b), 0, "0.0000001 * 0.0000002 = 0");
     }
 
     function test_multiplicationOut() public pure {
@@ -146,13 +146,13 @@ contract UFixed6Test is Test {
     function test_division() public pure {
         UFixed6 a = UFixed6.wrap(20);
         UFixed6 b = UFixed6.wrap(10);
-        assertEq(UFixed6.unwrap(a.div(b)), 2e6, "20 / 10 = 2");
+        assertEq(UFixed6.unwrap(a / b), 2e6, "20 / 10 = 2");
     }
 
     function test_divisionRoundsTowardsZero() public pure {
         UFixed6 a = UFixed6.wrap(21);
         UFixed6 b = UFixed6Lib.from(10);
-        assertEq(UFixed6.unwrap(a.div(b)), 2, "0.000021 / 0.000010 = 2");
+        assertEq(UFixed6.unwrap(a / b), 2, "0.000021 / 0.000010 = 2");
     }
 
     function test_divisionZeroByZero() public {
@@ -289,7 +289,7 @@ contract UFixed6Test is Test {
     function test_equals() public pure {
         UFixed6 a = UFixed6.wrap(12);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(a.eq(b), true, "12 == 12");
+        assertEq(a == b, true, "12 == 12");
         a = UFixed6.wrap(11);
         b = UFixed6.wrap(12);
         assertEq(a == b, false, "11 != 12");
@@ -298,7 +298,7 @@ contract UFixed6Test is Test {
     function test_notEquals() public pure {
         UFixed6 a = UFixed6.wrap(12);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(a.neq(b), false, "12 != 12");
+        assertEq(a != b, false, "12 != 12");
         a = UFixed6.wrap(11);
         b = UFixed6.wrap(12);
         assertEq(a != b, true, "11 == 12");
@@ -307,7 +307,7 @@ contract UFixed6Test is Test {
     function test_greaterThan() public pure {
         UFixed6 a = UFixed6.wrap(13);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(a.gt(b), true, "13 > 12");
+        assertEq(a > b, true, "13 > 12");
         a = UFixed6.wrap(12);
         b = UFixed6.wrap(12);
         assertEq(a > b, false, "12 !> 12");
@@ -318,7 +318,7 @@ contract UFixed6Test is Test {
     function test_lessThan() public pure {
         UFixed6 a = UFixed6.wrap(13);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(a.lt(b), false, "13 !< 12");
+        assertEq(a < b, false, "13 !< 12");
         a = UFixed6.wrap(12);
         assertEq(a < b, false, "12 !< 12");
         a = UFixed6.wrap(11);
@@ -329,7 +329,7 @@ contract UFixed6Test is Test {
     function test_greaterThanOrEqualTo() public pure {
         UFixed6 a = UFixed6.wrap(13);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(a.gte(b), true, "13 >= 12");
+        assertEq(a >= b, true, "13 >= 12");
         a = UFixed6.wrap(12);
         b = UFixed6.wrap(12);
         assertEq(a >= b, true, "12 >= 12");
@@ -341,7 +341,7 @@ contract UFixed6Test is Test {
     function test_lessThanOrEqualTo() public pure {
         UFixed6 a = UFixed6.wrap(13);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(a.lte(b), false, "13 !<= 12");
+        assertEq(a <= b, false, "13 !<= 12");
         a = UFixed6.wrap(12);
         assertEq(a <= b, true, "12 <= 12");
         a = UFixed6.wrap(11);
@@ -435,11 +435,11 @@ contract MockUFixed6 {
     }
 
     function sub(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {
-        return a.sub(b);
+        return a - b;
     }
 
     function div(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {
-        return a.div(b);
+        return a / b;
     }
 
     function divOut(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {

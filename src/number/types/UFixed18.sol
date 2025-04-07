@@ -25,19 +25,6 @@ using {
     lte as <=
 } for UFixed18 global;
 
-using {
-    add,
-    sub,
-    mul,
-    div,
-    eq,
-    neq,
-    gt,
-    lt,
-    gte,
-    lte
-} for UFixed18 global;
-
 /**
  * @title UFixed18Lib
  * @notice Library for the unsigned fixed-decimal type.
@@ -70,7 +57,7 @@ library UFixed18Lib {
      * @return New unsigned fixed-decimal
      */
     function unsafeFrom(Fixed18 a) internal pure returns (UFixed18) {
-        return a.lt(Fixed18Lib.ZERO) ? ZERO : from(a);
+        return a < Fixed18Lib.ZERO ? ZERO : from(a);
     }
 
     /**
@@ -99,8 +86,8 @@ library UFixed18Lib {
      */
     function from(UFixed18 significand, int256 exponent) internal pure returns (UFixed18) {
         return exponent < 0
-            ? significand.div(from(10 ** uint256(-1 * exponent)))
-            : significand.mul(from(10 ** uint256(exponent)));
+            ? significand / from(10 ** uint256(-1 * exponent))
+            : significand * from(10 ** uint256(exponent));
     }
 
     /**

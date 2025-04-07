@@ -25,19 +25,6 @@ using {
     lte as <=
 } for Fixed6 global;
 
-using {
-    add,
-    sub,
-    mul,
-    div,
-    eq,
-    neq,
-    gt,
-    lt,
-    gte,
-    lte
-} for Fixed6 global;
-
 /**
  * @title Fixed6Lib
  * @notice Library for the signed fixed-decimal type.
@@ -118,8 +105,8 @@ library Fixed6Lib {
      */
     function from(Fixed6 significand, int256 exponent) internal pure returns (Fixed6) {
         return exponent < 0
-            ? significand.div(from(int256(10 ** uint256(-1 * exponent))))
-            : significand.mul(from(int256(10 ** uint256(exponent))));
+            ? significand / from(int256(10 ** uint256(-1 * exponent)))
+            : significand * from(int256(10 ** uint256(exponent)));
     }
 
     /**

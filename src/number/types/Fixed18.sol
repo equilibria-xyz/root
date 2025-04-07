@@ -25,19 +25,6 @@ using {
     lte as <=
 } for Fixed18 global;
 
-using {
-    add,
-    sub,
-    mul,
-    div,
-    eq,
-    neq,
-    gt,
-    lt,
-    gte,
-    lte
-} for Fixed18 global;
-
 /**
  * @title Fixed18Lib
  * @notice Library for the signed fixed-decimal type.
@@ -108,8 +95,8 @@ library Fixed18Lib {
      */
     function from(Fixed18 significand, int256 exponent) internal pure returns (Fixed18) {
         return exponent < 0
-            ? significand.div(from(int256(10 ** uint256(-1 * exponent))))
-            : significand.mul(from(int256(10 ** uint256(exponent))));
+            ? significand / from(int256(10 ** uint256(-1 * exponent)))
+            : significand * from(int256(10 ** uint256(exponent)));
     }
 
     /**
