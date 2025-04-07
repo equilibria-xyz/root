@@ -83,13 +83,15 @@ contract UFixed18Test is Test {
     function test_addition() public pure {
         UFixed18 a = UFixed18Lib.from(10);
         UFixed18 b = UFixed18Lib.from(20);
-        assertEq(UFixed18.unwrap(UFixed18Lib.add(a, b)), 30e18, "10 + 20 = 30");
+        assertEq(UFixed18.unwrap(a.add(b)), 30e18, "10.add(20) = 30");
+        assertEq(UFixed18.unwrap(a + b), 30e18, "10 + 20 = 30");
     }
 
     function test_subtraction() public pure {
         UFixed18 a = UFixed18Lib.from(20);
         UFixed18 b = UFixed18Lib.from(10);
-        assertEq(UFixed18.unwrap(UFixed18Lib.sub(a, b)), 10e18, "20 - 10 = 10");
+        assertEq(UFixed18.unwrap(a.sub(b)), 10e18, "20.sub(10) = 10");
+        assertEq(UFixed18.unwrap(a - b), 10e18, "20 - 10 = 10");
     }
 
     function test_subtractionRevertsIfNegative() public {
@@ -111,13 +113,13 @@ contract UFixed18Test is Test {
     function test_multiplication() public pure {
         UFixed18 a = UFixed18Lib.from(20);
         UFixed18 b = UFixed18Lib.from(10);
-        assertEq(UFixed18.unwrap(UFixed18Lib.mul(a, b)), 200e18, "20 * 10 = 200");
+        assertEq(UFixed18.unwrap(a.mul(b)), 200e18, "20 * 10 = 200");
     }
 
     function test_MultiplicationRoundsTowardZero() public pure {
         UFixed18 a = UFixed18.wrap(1);
         UFixed18 b = UFixed18.wrap(2);
-        assertEq(UFixed18.unwrap(UFixed18Lib.mul(a, b)), 0, "0.000000000_000000001 * 0.000000000_000000002 = 0");
+        assertEq(UFixed18.unwrap(a * b), 0, "0.000000000_000000001 * 0.000000000_000000002 = 0");
     }
 
     function test_multiplicationOut() public pure {
@@ -135,13 +137,13 @@ contract UFixed18Test is Test {
     function test_division() public pure {
         UFixed18 a = UFixed18.wrap(20);
         UFixed18 b = UFixed18.wrap(10);
-        assertEq(UFixed18.unwrap(UFixed18Lib.div(a, b)), 2e18, "20 / 10 = 2");
+        assertEq(UFixed18.unwrap(a.div(b)), 2e18, "20 / 10 = 2");
     }
 
     function test_divisionRoundsTowardsZero() public pure {
         UFixed18 a = UFixed18.wrap(21);
         UFixed18 b = UFixed18Lib.from(10);
-        assertEq(UFixed18.unwrap(UFixed18Lib.div(a, b)), 2, "0.000000000_000000021 / 0.000000000_000000010 = 2");
+        assertEq(UFixed18.unwrap(a / b), 2, "0.000000000_000000021 / 0.000000000_000000010 = 2");
     }
 
     function test_divisionZeroByZero() public {
@@ -278,55 +280,64 @@ contract UFixed18Test is Test {
     function test_equals() public pure {
         UFixed18 a = UFixed18.wrap(12);
         UFixed18 b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.eq(a, b), true, "12 == 12");
+        assertEq(a.eq(b), true, "12 == 12");
         a = UFixed18.wrap(11);
         b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.eq(a, b), false, "11 != 12");
+        assertEq(a == b, false, "11 != 12");
+    }
+
+    function test_notEquals() public pure {
+        UFixed18 a = UFixed18.wrap(12);
+        UFixed18 b = UFixed18.wrap(12);
+        assertEq(a.neq(b), false, "12 != 12");
+        a = UFixed18.wrap(11);
+        b = UFixed18.wrap(12);
+        assertEq(a != b, true, "11 == 12");
     }
 
     function test_greaterThan() public pure {
         UFixed18 a = UFixed18.wrap(13);
         UFixed18 b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.gt(a, b), true, "13 > 12");
+        assertEq(a.gt(b), true, "13 > 12");
         a = UFixed18.wrap(12);
         b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.gt(a, b), false, "12 !> 12");
+        assertEq(a > b, false, "12 !> 12");
         a = UFixed18.wrap(11);
-        assertEq(UFixed18Lib.gt(a, b), false, "11 !> 12");
+        assertEq(a > b, false, "11 !> 12");
     }
 
     function test_lessThan() public pure {
         UFixed18 a = UFixed18.wrap(13);
         UFixed18 b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.lt(a, b), false, "13 !< 12");
+        assertEq(a.lt(b), false, "13 !< 12");
         a = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.lt(a, b), false, "12 !< 12");
+        assertEq(a < b, false, "12 !< 12");
         a = UFixed18.wrap(11);
         b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.lt(a, b), true, "11 < 12");
+        assertEq(a < b, true, "11 < 12");
     }
 
     function test_greaterThanOrEqualTo() public pure {
         UFixed18 a = UFixed18.wrap(13);
         UFixed18 b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.gte(a, b), true, "13 >= 12");
+        assertEq(a.gte(b), true, "13 >= 12");
         a = UFixed18.wrap(12);
         b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.gte(a, b), true, "12 >= 12");
+        assertEq(a >= b, true, "12 >= 12");
         a = UFixed18.wrap(11);
         b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.gte(a, b), false, "11 !>= 12");
+        assertEq(a >= b, false, "11 !>= 12");
     }
 
     function test_lessThanOrEqualTo() public pure {
         UFixed18 a = UFixed18.wrap(13);
         UFixed18 b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.lte(a, b), false, "13 !<= 12");
+        assertEq(a.lte(b), false, "13 !<= 12");
         a = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.lte(a, b), true, "12 <= 12");
+        assertEq(a <= b, true, "12 <= 12");
         a = UFixed18.wrap(11);
         b = UFixed18.wrap(12);
-        assertEq(UFixed18Lib.lte(a, b), true, "11 <= 12");
+        assertEq(a <= b, true, "11 <= 12");
     }
 
     function test_compare() public pure {

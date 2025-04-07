@@ -262,7 +262,7 @@ library UFixed18Lib {
      * @return Whether `a` is not equal to `b`
      */
     function neq(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return compare(a, b) == 1;
+        return compare(a, b) != 1;
     }
 
     /**
