@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./IInitializable.sol";
+import { IInitializable } from "src/attribute/interfaces/IInitializable.sol";
 
 interface IOwnable is IInitializable {
     event OwnerUpdated(address indexed newOwner);

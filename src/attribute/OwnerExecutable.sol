@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Ownable } from "./Ownable.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+
+import { Ownable } from "src/attribute/Ownable.sol";
 
 /**
  * @title OwnerExecutable

@@ -4,9 +4,9 @@ pragma solidity ^0.8.13;
 import { stdError } from "forge-std/StdError.sol";
 import { RootTest } from "../RootTest.sol";
 
-import { CurveMath18 } from "../../src/utilization/CurveMath18.sol";
-import { Fixed18, Fixed18Lib } from "../../src/number/types/Fixed18.sol";
-import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
+import { CurveMath18 } from "src/utilization/CurveMath18.sol";
+import { Fixed18, Fixed18Lib } from "src/number/types/Fixed18.sol";
+import { UFixed18, UFixed18Lib } from "src/number/types/UFixed18.sol";
 
 contract CurveMath18Test is RootTest {
     MockCurveMath18 m = new MockCurveMath18();

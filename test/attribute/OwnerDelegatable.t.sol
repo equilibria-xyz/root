@@ -11,7 +11,6 @@ import { OwnerDelegatable, Ownable } from "src/attribute/OwnerDelegatable.sol";
 import { MockOwnable } from "./Ownable.t.sol";
 
 contract OwnerDelegatableTest is Test {
-    // Event must match MockERC20Votes' definition
     event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
 
     error OwnableNotOwnerError(address owner);

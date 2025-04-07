@@ -2,7 +2,8 @@
 pragma solidity ^0.8.13;
 
 import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
-import { Ownable } from "./Ownable.sol";
+
+import { Ownable } from "src/attribute/Ownable.sol";
 
 /**
  * @title OwnerDelegatable

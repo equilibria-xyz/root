@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import { SynBook6 } from "src/synbook/types/SynBook6.sol";
+import { Fixed6, Fixed6Lib } from "src/number/types/Fixed6.sol";
+import { UFixed6, UFixed6Lib } from "src/number/types/UFixed6.sol";
 import { RootTest } from "../RootTest.sol";
-
-import { SynBook6 } from "../../src/synbook/types/SynBook6.sol";
-import { Fixed6, Fixed6Lib } from "../../src/number/types/Fixed6.sol";
-import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
 
 contract SynBook6Test is RootTest {
     SynBook6 curve1 = SynBook6({

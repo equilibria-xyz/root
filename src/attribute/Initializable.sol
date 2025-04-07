@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./interfaces/IInitializable.sol";
+import { IInitializable } from "src/attribute/interfaces/IInitializable.sol";
 
 /**
  * @title Initializable

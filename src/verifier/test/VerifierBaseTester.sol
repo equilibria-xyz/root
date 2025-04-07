@@ -2,7 +2,8 @@
 pragma solidity ^0.8.13;
 
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import { VerifierBase } from "../VerifierBase.sol";
+
+import { VerifierBase } from "src/verifier/VerifierBase.sol";
 
 /// @dev Empty implementation for the sole purpose of testing base class
 contract VerifierBaseTester is VerifierBase {
