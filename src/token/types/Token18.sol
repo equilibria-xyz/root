@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "../../number/types/UFixed18.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { UFixed18 } from "../../number/types/UFixed18.sol";
 
 /// @dev Token18
 type Token18 is address;
@@ -38,7 +38,7 @@ library Token18Lib {
      * @return Whether the two tokens are equal
      */
     function eq(Token18 a, Token18 b) internal pure returns (bool) {
-        return Token18.unwrap(a) ==  Token18.unwrap(b);
+        return Token18.unwrap(a) == Token18.unwrap(b);
     }
 
     /**

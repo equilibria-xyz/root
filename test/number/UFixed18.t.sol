@@ -426,11 +426,11 @@ contract MockUFixed18 {
     }
 
     function sub(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
-        return UFixed18Lib.sub(a, b);
+        return a.sub(b);
     }
 
     function div(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {
-        return UFixed18Lib.div(a, b);
+        return a.div(b);
     }
 
     function divOut(UFixed18 a, UFixed18 b) external pure returns (UFixed18) {

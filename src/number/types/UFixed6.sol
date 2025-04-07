@@ -46,7 +46,7 @@ library UFixed6Lib {
     /// @custom:error Arithmetic underflow
     error UFixed6UnderflowError(int256 value);
 
-    uint256 constant BASE = 1e6;
+    uint256 internal constant BASE = 1e6;
     UFixed6 constant ZERO = UFixed6.wrap(0);
     UFixed6 constant ONE = UFixed6.wrap(BASE);
     UFixed6 constant MAX = UFixed6.wrap(type(uint256).max);

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/utils/math/Math.sol";
-import "../NumberMath.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
+import { NumberMath } from "../NumberMath.sol";
 import { Fixed18, Fixed18Lib } from "./Fixed18.sol";
 import { UFixed6 } from "./UFixed6.sol";
 
@@ -13,16 +13,29 @@ type UFixed18Storage is bytes32;
 using UFixed18StorageLib for UFixed18Storage global;
 
 using {
-    _add as +,
-    _sub as -,
-    _mul as *,
-    _div as /,
-    _eq as ==,
-    _neq as !=,
-    _gt as >,
-    _lt as <,
-    _gte as >=,
-    _lte as <=
+    add as +,
+    sub as -,
+    mul as *,
+    div as /,
+    eq as ==,
+    neq as !=,
+    gt as >,
+    lt as <,
+    gte as >=,
+    lte as <=
+} for UFixed18 global;
+
+using {
+    add,
+    sub,
+    mul,
+    div,
+    eq,
+    neq,
+    gt,
+    lt,
+    gte,
+    lte
 } for UFixed18 global;
 
 /**
@@ -34,7 +47,7 @@ library UFixed18Lib {
     /// @custom:error Arithmetic underflow
     error UFixed18UnderflowError(int256 value);
 
-    uint256 private constant BASE = 1e18;
+    uint256 internal constant BASE = 1e18;
     UFixed18 public constant ZERO = UFixed18.wrap(0);
     UFixed18 public constant ONE = UFixed18.wrap(BASE);
     UFixed18 public constant MAX = UFixed18.wrap(type(uint256).max);
@@ -100,26 +113,6 @@ library UFixed18Lib {
     }
 
     /**
-     * @notice Adds two unsigned fixed-decimals `a` and `b` together
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Resulting summed unsigned fixed-decimal
-     */
-    function add(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) + UFixed18.unwrap(b));
-    }
-
-    /**
-     * @notice Subtracts unsigned fixed-decimal `b` from `a`
-     * @param a Unsigned fixed-decimal to subtract from
-     * @param b Unsigned fixed-decimal to subtract
-     * @return Resulting subtracted unsigned fixed-decimal
-     */
-    function sub(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) - UFixed18.unwrap(b));
-    }
-
-    /**
      * @notice Subtracts unsigned fixed-decimal `a` by `b`
      * @dev Does not revert on underflow, instead returns `ZERO`
      * @param a Unsigned fixed-decimal to subtract from
@@ -131,16 +124,6 @@ library UFixed18Lib {
     }
 
     /**
-     * @notice Multiplies two unsigned fixed-decimals `a` and `b` together
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Resulting multiplied unsigned fixed-decimal
-     */
-    function mul(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) * UFixed18.unwrap(b) / BASE);
-    }
-
-    /**
      * @notice Multiplies two unsigned fixed-decimals `a` and `b` together, rounding the result up to the next integer if there is a remainder
      * @param a First unsigned fixed-decimal
      * @param b Second unsigned fixed-decimal
@@ -148,16 +131,6 @@ library UFixed18Lib {
      */
     function mulOut(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
         return UFixed18.wrap(NumberMath.divOut(UFixed18.unwrap(a) * UFixed18.unwrap(b), BASE));
-    }
-
-    /**
-     * @notice Divides unsigned fixed-decimal `a` by `b`
-     * @param a Unsigned fixed-decimal to divide
-     * @param b Unsigned fixed-decimal to divide by
-     * @return Resulting divided unsigned fixed-decimal
-     */
-    function div(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) * BASE / UFixed18.unwrap(b));
     }
 
     /**
@@ -243,66 +216,6 @@ library UFixed18Lib {
      */
     function muldivOut(UFixed18 a, UFixed18 b, UFixed18 c) internal pure returns (UFixed18) {
         return UFixed18.wrap(NumberMath.divOut(UFixed18.unwrap(a) * UFixed18.unwrap(b), UFixed18.unwrap(c)));
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is equal to `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is equal to `b`
-     */
-    function eq(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return compare(a, b) == 1;
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is not equal to `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is not equal to `b`
-     */
-    function neq(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return compare(a, b) != 1;
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is greater than `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is greater than `b`
-     */
-    function gt(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return compare(a, b) == 2;
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is less than `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is less than `b`
-     */
-    function lt(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return compare(a, b) == 0;
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is greater than or equal to `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is greater than or equal to `b`
-     */
-    function gte(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return gt(a, b) || eq(a, b);
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is less than or equal to `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is less than or equal to `b`
-     */
-    function lte(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return lt(a, b) || eq(a, b);
     }
 
     /**
@@ -397,33 +310,102 @@ library UFixed18StorageLib {
     }
 }
 
-function _add(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
-    return UFixed18Lib.add(a, b);
+/**
+* @notice Adds two unsigned fixed-decimals `a` and `b` together
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Resulting summed unsigned fixed-decimal
+*/
+function add(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18.wrap(UFixed18.unwrap(a) + UFixed18.unwrap(b));
 }
-function _sub(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
-    return UFixed18Lib.sub(a, b);
+
+/**
+* @notice Subtracts unsigned fixed-decimal `b` from `a`
+* @param a Unsigned fixed-decimal to subtract from
+* @param b Unsigned fixed-decimal to subtract
+* @return Resulting subtracted unsigned fixed-decimal
+*/
+function sub(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18.wrap(UFixed18.unwrap(a) - UFixed18.unwrap(b));
 }
-function _mul(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
-    return UFixed18Lib.mul(a, b);
+
+/**
+* @notice Multiplies two unsigned fixed-decimals `a` and `b` together
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Resulting multiplied unsigned fixed-decimal
+*/
+function mul(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18.wrap(UFixed18.unwrap(a) * UFixed18.unwrap(b) / UFixed18Lib.BASE);
 }
-function _div(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
-    return UFixed18Lib.div(a, b);
+
+/**
+* @notice Divides unsigned fixed-decimal `a` by `b`
+* @param a Unsigned fixed-decimal to divide
+* @param b Unsigned fixed-decimal to divide by
+* @return Resulting divided unsigned fixed-decimal
+*/
+function div(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18.wrap(UFixed18.unwrap(a) * UFixed18Lib.BASE / UFixed18.unwrap(b));
 }
-function _eq(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return UFixed18Lib.eq(a, b);
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is equal to `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is equal to `b`
+*/
+function eq(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return UFixed18Lib.compare(a, b) == 1;
 }
-function _neq(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return UFixed18Lib.neq(a, b);
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is not equal to `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is not equal to `b`
+*/
+function neq(UFixed18 a, UFixed18 b)  pure returns (bool) {
+    return UFixed18Lib.compare(a, b) != 1;
 }
-function _gt(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return UFixed18Lib.gt(a, b);
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is greater than `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is greater than `b`
+*/
+function gt(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return UFixed18Lib.compare(a, b) == 2;
 }
-function _lt(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return UFixed18Lib.lt(a, b);
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is less than `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is less than `b`
+*/
+function lt(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return UFixed18Lib.compare(a, b) == 0;
 }
-function _gte(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return UFixed18Lib.gte(a, b);
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is greater than or equal to `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is greater than or equal to `b`
+*/
+function gte(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return gt(a, b) || eq(a, b);
 }
-function _lte(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return UFixed18Lib.lte(a, b);
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is less than or equal to `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is less than or equal to `b`
+*/
+function lte(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return lt(a, b) || eq(a, b);
 }

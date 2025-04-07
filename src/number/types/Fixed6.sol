@@ -47,7 +47,7 @@ library Fixed6Lib {
     /// @custom:error Arithmetic overflow
     error Fixed6OverflowError(uint256 value);
 
-    int256 public constant BASE = 1e6;
+    int256 internal constant BASE = 1e6;
     Fixed6 public constant ZERO = Fixed6.wrap(0);
     Fixed6 public constant ONE = Fixed6.wrap(BASE);
     Fixed6 public constant NEG_ONE = Fixed6.wrap(-1 * BASE);
