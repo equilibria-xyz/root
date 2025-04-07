@@ -6,8 +6,6 @@ import { TokenTest } from "./TokenTest.sol";
 import {
     Token18,
     Token18Lib,
-    Token18Storage,
-    Token18StorageLib,
     UFixed18,
     UFixed18Lib
 } from "../../src/token/types/Token18.sol";
@@ -50,12 +48,6 @@ contract Token18UnfundedUserTest is Token18Test {
     function test_nameAndSymbol() public view{
         assertEq(token.name(), "Test MiNted Token", "name");
         assertEq(token.symbol(), "TMNT", "symbol");
-    }
-
-    function test_store() public {
-        Token18Storage SLOT = Token18Storage.wrap(keccak256("equilibria.root.Token18.testSlot"));
-        Token18StorageLib.store(SLOT, token);
-        assertEq(Token18.unwrap(SLOT.read()), address(erc20), "stored and loaded");
     }
 }
 

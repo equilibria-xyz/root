@@ -9,8 +9,6 @@ import "./UFixed18.sol";
 /// @dev UFixed6 type
 type UFixed6 is uint256;
 using UFixed6Lib for UFixed6 global;
-type UFixed6Storage is bytes32;
-using UFixed6StorageLib for UFixed6Storage global;
 
 /**
  * @title UFixed6Lib
@@ -367,19 +365,5 @@ library UFixed6Lib {
      */
     function outside(UFixed6 value, UFixed6 min_, UFixed6 max_) internal pure returns (bool) {
         return lt(value, min_) || gt(value, max_);
-    }
-}
-
-library UFixed6StorageLib {
-    function read(UFixed6Storage self) internal view returns (UFixed6 value) {
-        assembly ("memory-safe") {
-            value := sload(self)
-        }
-    }
-
-    function store(UFixed6Storage self, UFixed6 value) internal {
-        assembly ("memory-safe") {
-            sstore(self, value)
-        }
     }
 }

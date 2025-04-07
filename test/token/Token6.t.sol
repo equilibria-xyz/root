@@ -6,8 +6,6 @@ import { TokenTest } from "./TokenTest.sol";
 import {
     Token6,
     Token6Lib,
-    Token6Storage,
-    Token6StorageLib,
     UFixed6,
     UFixed6Lib
 } from "../../src/token/types/Token6.sol";
@@ -50,12 +48,6 @@ contract Token6UnfundedUserTest is Token6Test {
     function test_nameAndSymbol() public view {
         assertEq(token.name(), "Test MiNted Token", "name");
         assertEq(token.symbol(), "TMNT", "symbol");
-    }
-
-    function test_store() public {
-        Token6Storage SLOT = Token6Storage.wrap(keccak256("equilibria.root.Token6.testSlot"));
-        Token6StorageLib.store(SLOT, token);
-        assertEq(Token6.unwrap(SLOT.read()), address(erc20), "stored and loaded");
     }
 }
 

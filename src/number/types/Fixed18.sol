@@ -9,8 +9,6 @@ import "./UFixed18.sol";
 /// @dev Fixed18 type
 type Fixed18 is int256;
 using Fixed18Lib for Fixed18 global;
-type Fixed18Storage is bytes32;
-using Fixed18StorageLib for Fixed18Storage global;
 
 /**
  * @title Fixed18Lib
@@ -381,19 +379,5 @@ library Fixed18Lib {
      */
     function outside(Fixed18 value, Fixed18 min_, Fixed18 max_) internal pure returns (bool) {
         return lt(value, min_) || gt(value, max_);
-    }
-}
-
-library Fixed18StorageLib {
-    function read(Fixed18Storage self) internal view returns (Fixed18 value) {
-        assembly ("memory-safe") {
-            value := sload(self)
-        }
-    }
-
-    function store(Fixed18Storage self, Fixed18 value) internal {
-        assembly ("memory-safe") {
-            sstore(self, value)
-        }
     }
 }
