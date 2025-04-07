@@ -119,11 +119,10 @@ library Token6Lib {
      */
     function update(Token6 self, address account, Fixed6 amount) internal {
         int256 sign = amount.sign();
-        if (sign == 0) return;
-
         if (sign < 0) {
             push(self, account, amount.abs());
-        } else {
+        }
+        if (sign > 0) {
             pull(self, account, amount.abs());
         }
     }
