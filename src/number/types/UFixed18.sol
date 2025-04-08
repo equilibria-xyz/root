@@ -35,9 +35,9 @@ library UFixed18Lib {
     error UFixed18UnderflowError(int256 value);
 
     uint256 internal constant BASE = 1e18;
-    UFixed18 public constant ZERO = UFixed18.wrap(0);
-    UFixed18 public constant ONE = UFixed18.wrap(BASE);
-    UFixed18 public constant MAX = UFixed18.wrap(type(uint256).max);
+    UFixed18 internal constant ZERO = UFixed18.wrap(0);
+    UFixed18 internal constant ONE = UFixed18.wrap(BASE);
+    UFixed18 internal constant MAX = UFixed18.wrap(type(uint256).max);
 
     /**
      * @notice Creates a unsigned fixed-decimal from a signed fixed-decimal

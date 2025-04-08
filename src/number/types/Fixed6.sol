@@ -35,11 +35,11 @@ library Fixed6Lib {
     error Fixed6OverflowError(uint256 value);
 
     int256 internal constant BASE = 1e6;
-    Fixed6 public constant ZERO = Fixed6.wrap(0);
-    Fixed6 public constant ONE = Fixed6.wrap(BASE);
-    Fixed6 public constant NEG_ONE = Fixed6.wrap(-1 * BASE);
-    Fixed6 public constant MAX = Fixed6.wrap(type(int256).max);
-    Fixed6 public constant MIN = Fixed6.wrap(type(int256).min);
+    Fixed6 internal constant ZERO = Fixed6.wrap(0);
+    Fixed6 internal constant ONE = Fixed6.wrap(BASE);
+    Fixed6 internal constant NEG_ONE = Fixed6.wrap(-1 * BASE);
+    Fixed6 internal constant MAX = Fixed6.wrap(type(int256).max);
+    Fixed6 internal constant MIN = Fixed6.wrap(type(int256).min);
 
     /**
      * @notice Creates a signed fixed-decimal from an unsigned fixed-decimal
