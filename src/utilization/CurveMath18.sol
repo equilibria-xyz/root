@@ -4,24 +4,20 @@ pragma solidity ^0.8.13;
 import "../number/types/UFixed18.sol";
 import "../number/types/Fixed18.sol";
 
-/**
- * @title CurveMath18
- * @notice Library for managing math operations for utilization curves.
- */
+/// @title CurveMath18
+/// @notice Library for managing math operations for utilization curves.
 library CurveMath18 {
     // sig: 0xcbaada7d
     /// @custom:error Out of bounds
     error CurveMath18OutOfBoundsError();
 
-    /**
-     * @notice Computes a linear interpolation between two points
-     * @param startX First point's x-coordinate
-     * @param startY First point's y-coordinate
-     * @param endX Second point's x-coordinate
-     * @param endY Second point's y-coordinate
-     * @param targetX x-coordinate to interpolate
-     * @return y-coordinate for `targetX` along the line from (`startX`, `startY`) -> (`endX`, `endY`)
-     */
+    /// @notice Computes a linear interpolation between two points
+    /// @param startX First point's x-coordinate
+    /// @param startY First point's y-coordinate
+    /// @param endX Second point's x-coordinate
+    /// @param endY Second point's y-coordinate
+    /// @param targetX x-coordinate to interpolate
+    /// @return y-coordinate for `targetX` along the line from (`startX`, `startY`) -> (`endX`, `endY`)
     function linearInterpolation(
         UFixed18 startX,
         Fixed18 startY,
@@ -37,15 +33,13 @@ library CurveMath18 {
         return yRange.mul(Fixed18Lib.from(xRatio)).add(startY);
     }
 
-    /**
-     * @notice Computes a linear interpolation between two points
-     * @param startX First point's x-coordinate
-     * @param startY First point's y-coordinate
-     * @param endX Second point's x-coordinate
-     * @param endY Second point's y-coordinate
-     * @param targetX x-coordinate to interpolate
-     * @return y-coordinate for `targetX` along the line from (`startX`, `startY`) -> (`endX`, `endY`)
-     */
+    /// @notice Computes a linear interpolation between two points
+    /// @param startX First point's x-coordinate
+    /// @param startY First point's y-coordinate
+    /// @param endX Second point's x-coordinate
+    /// @param endY Second point's y-coordinate
+    /// @param targetX x-coordinate to interpolate
+    /// @return y-coordinate for `targetX` along the line from (`startX`, `startY`) -> (`endX`, `endY`)
     function linearInterpolation(
         UFixed18 startX,
         UFixed18 startY,

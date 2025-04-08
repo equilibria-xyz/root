@@ -14,11 +14,8 @@ struct SynBook6 {
 }
 using SynBook6Lib for SynBook6 global;
 
-/**
- * @title SynBook6Lib
- * @notice Library that that manages the synthetic orderbook mechanism
- * @dev
- */
+/// @title SynBook6Lib
+/// @notice Library that that manages the synthetic orderbook mechanism
 library SynBook6Lib {
     /// @notice Computes the spread from the synthetic orderbook
     /// @param self The synthetic orderbook configuration

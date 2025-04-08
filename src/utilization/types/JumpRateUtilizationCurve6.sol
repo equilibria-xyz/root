@@ -13,16 +13,12 @@ struct JumpRateUtilizationCurve6 {
 }
 using JumpRateUtilizationCurve6Lib for JumpRateUtilizationCurve6 global;
 
-/**
- * @title JumpRateUtilizationCurve6Lib
- * @notice Library for the unsigned base-6 Jump Rate utilization curve type
- */
+/// @title JumpRateUtilizationCurve6Lib
+/// @notice Library for the unsigned base-6 Jump Rate utilization curve type
 library JumpRateUtilizationCurve6Lib {
-    /**
-     * @notice Computes the corresponding rate for a utilization ratio
-     * @param utilization The utilization ratio
-     * @return The corresponding rate
-     */
+    /// @notice Computes the corresponding rate for a utilization ratio
+    /// @param utilization The utilization ratio
+    /// @return The corresponding rate
     function compute(JumpRateUtilizationCurve6 memory self, UFixed6 utilization) internal pure returns (UFixed6) {
         if (utilization.lt(self.targetUtilization)) {
             return CurveMath6.linearInterpolation(

@@ -10,11 +10,10 @@ import { UFixed6, UFixed18 } from "../number/types/UFixed6.sol";
 
 // manual code generation utility: scripts/console_codegen.ts
 
-/* solhint-disable no-console */
+// solhint-disable-next-line no-console
 import { console as fConsole } from "forge-std/console.sol";
-/* solhint-enable no-console */
 
-/* solhint-disable-next-line contract-name-camelcase, contract-name-capwords */
+// solhint-disable-next-line contract-name-camelcase, contract-name-capwords
 library console {
     function itoa(int256 value) internal pure returns (string memory) {
         if (value == 0) return "0";

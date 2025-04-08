@@ -4,11 +4,9 @@ pragma solidity ^0.8.13;
 import { Ownable, Ownable2Step } from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-/**
- * @title ProxyOwner
- * @notice ProxyAdmin with 2-step ownership transfer
- * @dev Adds 2-step ownership transfer to the OpenZeppelin ProxyAdmin contract for the owner of the ProxyAdmin.
- */
+/// @title ProxyOwner
+/// @notice ProxyAdmin with 2-step ownership transfer
+/// @dev Adds 2-step ownership transfer to the OpenZeppelin ProxyAdmin contract for the owner of the ProxyAdmin.
 contract ProxyOwner is ProxyAdmin, Ownable2Step {
     /// @dev Specify deployer as the initial owner
     constructor() ProxyAdmin(msg.sender) {}
