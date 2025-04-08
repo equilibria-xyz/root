@@ -9,11 +9,6 @@ struct UAccumulator6 {
 }
 
 using UAccumulator6Lib for UAccumulator6 global;
-struct StoredUAccumulator6 {
-    uint256 _value;
-}
-struct UAccumulator6Storage { StoredUAccumulator6 value; }
-using UAccumulator6StorageLib for UAccumulator6Storage global;
 
 
 /**
@@ -49,16 +44,5 @@ library UAccumulator6Lib {
     /// @param self The accumulator to reset
     function reset(UAccumulator6 memory self) internal pure {
         self._value = UFixed6Lib.ZERO;
-    }
-}
-
-library UAccumulator6StorageLib {
-    function read(UAccumulator6Storage storage self) internal view returns (UAccumulator6 memory) {
-        StoredUAccumulator6 memory storedValue = self.value;
-        return UAccumulator6(UFixed6.wrap(uint256(storedValue._value)));
-    }
-
-    function store(UAccumulator6Storage storage self, UAccumulator6 memory newValue) internal {
-        self.value = StoredUAccumulator6(UFixed6.unwrap(newValue._value));
     }
 }

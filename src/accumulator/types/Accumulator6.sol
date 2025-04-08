@@ -10,11 +10,6 @@ struct Accumulator6 {
 }
 
 using Accumulator6Lib for Accumulator6 global;
-struct StoredAccumulator6 {
-    int256 _value;
-}
-struct Accumulator6Storage { StoredAccumulator6 value; }
-using Accumulator6StorageLib for Accumulator6Storage global;
 
 
 /**
@@ -71,16 +66,5 @@ library Accumulator6Lib {
 
     function _mul(Fixed6 amount, UFixed6 total) private pure returns (Fixed6) {
         return amount.sign() == -1 ? amount.mulOut(Fixed6Lib.from(total)) : amount.mul(Fixed6Lib.from(total));
-    }
-}
-
-library Accumulator6StorageLib {
-    function read(Accumulator6Storage storage self) internal view returns (Accumulator6 memory) {
-        StoredAccumulator6 memory storedValue = self.value;
-        return Accumulator6(Fixed6.wrap(int256(storedValue._value)));
-    }
-
-    function store(Accumulator6Storage storage self, Accumulator6 memory newValue) internal {
-        self.value = StoredAccumulator6(Fixed6.unwrap(newValue._value));
     }
 }
