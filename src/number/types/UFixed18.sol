@@ -344,7 +344,7 @@ function div(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
 * @return Whether `a` is equal to `b`
 */
 function eq(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return UFixed18Lib.compare(a, b) == 1;
+    return UFixed18.unwrap(a) == UFixed18.unwrap(b);
 }
 
 /**
@@ -354,7 +354,7 @@ function eq(UFixed18 a, UFixed18 b) pure returns (bool) {
 * @return Whether `a` is not equal to `b`
 */
 function neq(UFixed18 a, UFixed18 b)  pure returns (bool) {
-    return UFixed18Lib.compare(a, b) != 1;
+    return UFixed18.unwrap(a) != UFixed18.unwrap(b);
 }
 
 /**

@@ -368,7 +368,7 @@ function div(Fixed18 a, Fixed18 b) pure returns (Fixed18) {
 * @return Whether `a` is equal to `b`
 */
 function eq(Fixed18 a, Fixed18 b) pure returns (bool) {
-    return Fixed18Lib.compare(a, b) == 1;
+    return Fixed18.unwrap(a) == Fixed18.unwrap(b);
 }
 
 /**
@@ -378,7 +378,7 @@ function eq(Fixed18 a, Fixed18 b) pure returns (bool) {
 * @return Whether `a` is not equal to `b`
 */
 function neq(Fixed18 a, Fixed18 b) pure returns (bool) {
-    return Fixed18Lib.compare(a, b) != 1;
+    return Fixed18.unwrap(a) != Fixed18.unwrap(b);
 }
 
 /**

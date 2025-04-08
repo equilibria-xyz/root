@@ -378,7 +378,7 @@ function div(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
 * @return Whether `a` is equal to `b`
 */
 function eq(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return Fixed6Lib.compare(a, b) == 1;
+    return Fixed6.unwrap(a) == Fixed6.unwrap(b);
 }
 
 /**
@@ -388,7 +388,7 @@ function eq(Fixed6 a, Fixed6 b) pure returns (bool) {
 * @return Whether `a` is not equal to `b`
 */
 function neq(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return Fixed6Lib.compare(a, b) != 1;
+    return Fixed6.unwrap(a) != Fixed6.unwrap(b);
 }
 
 /**

@@ -352,7 +352,7 @@ function div(UFixed6 a, UFixed6 b) pure returns (UFixed6) {
 * @return Whether `a` is equal to `b`
 */
 function eq(UFixed6 a, UFixed6 b) pure returns (bool) {
-    return UFixed6Lib.compare(a, b) == 1;
+    return UFixed6.unwrap(a) == UFixed6.unwrap(b);
 }
 
 /**
@@ -362,7 +362,7 @@ function eq(UFixed6 a, UFixed6 b) pure returns (bool) {
 * @return Whether `a` is not equal to `b`
 */
 function neq(UFixed6 a, UFixed6 b) pure returns (bool) {
-    return UFixed6Lib.compare(a, b) != 1;
+    return UFixed6.unwrap(a) != UFixed6.unwrap(b);
 }
 
 /**
