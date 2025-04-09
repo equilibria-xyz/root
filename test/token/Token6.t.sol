@@ -7,10 +7,9 @@ import {
     Token6,
     Token6Lib,
     Token6Storage,
-    Token6StorageLib,
-    UFixed6,
-    UFixed6Lib
+    Token6StorageLib
 } from "src/token/types/Token6.sol";
+import { UFixed6, UFixed6Lib } from "src/number/types/UFixed6.sol";
 import { Fixed6Lib } from "src/number/types/Fixed6.sol";
 
 abstract contract Token6Test is TokenTest {

@@ -4,9 +4,12 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 
-import { Fixed6, Fixed6Lib, Fixed18, Fixed18Lib } from "../../src/number/types/Fixed6.sol";
-import { UFixed6, UFixed6Lib, UFixed18, UFixed18Lib } from "../../src/number/types/UFixed6.sol";
+import { Fixed6, Fixed6Lib } from "../../src/number/types/Fixed6.sol";
+import { Fixed18, Fixed18Lib } from "../../src/number/types/Fixed18.sol";
+import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
+import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
 
+/* solhint-disable no-console */
 import { console } from "../../src/utils/console.sol";
 
 contract ConsoleTest is Test {
@@ -678,3 +681,4 @@ contract ConsoleTest is Test {
         console.log("      Fixed18 %s, Fixed18 %s and Fixed18 %s", f18, f18, f18);
     }
 }
+/* solhint-enable no-console */

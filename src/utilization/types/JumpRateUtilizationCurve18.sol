@@ -25,7 +25,7 @@ library JumpRateUtilizationCurve18Lib {
      * @return The corresponding rate
      */
     function compute(JumpRateUtilizationCurve18 memory self, UFixed18 utilization) internal pure returns (UFixed18) {
-        if (utilization.lt(self.targetUtilization)) {
+        if (utilization < self.targetUtilization) {
             return CurveMath18.linearInterpolation(
                 UFixed18Lib.ZERO,
                 self.minRate,
@@ -34,7 +34,7 @@ library JumpRateUtilizationCurve18Lib {
                 utilization
             );
         }
-        if (utilization.lt(UFixed18Lib.ONE)) {
+        if (utilization< UFixed18Lib.ONE) {
             return CurveMath18.linearInterpolation(
                 self.targetUtilization,
                 self.targetRate,
@@ -54,8 +54,8 @@ library JumpRateUtilizationCurve18Lib {
         UFixed18 notional
     ) internal pure returns (UFixed18) {
         return compute(self, utilization)
-            .mul(UFixed18Lib.from(toTimestamp - fromTimestamp))
-            .mul(notional)
-            .div(UFixed18Lib.from(365 days));
+            * UFixed18Lib.from(toTimestamp - fromTimestamp)
+            * notional
+            / UFixed18Lib.from(365 days);
     }
 }

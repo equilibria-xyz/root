@@ -71,6 +71,11 @@ python3 -m pip install slither-analyzer
 ```
 Other installation options available [here](https://github.com/crytic/slither?tab=readme-ov-file#how-to-install).
 
+Optionally, to install solhint:
+```sh
+sudo npm install -g solhint
+```
+
 ### Compile
 ```sh
 forge build
@@ -84,3 +89,10 @@ or for coverage report
 ```sh
 make coverage
 ```
+
+### Documentation
+To autogenerate Markdown documentation based on natspec comments:
+```sh
+forge doc
+```
+To run local server for browsing; add `--serve` option.  Details [here](https://book.getfoundry.sh/reference/forge/forge-doc?highlight=forge%20doc#forge-doc).

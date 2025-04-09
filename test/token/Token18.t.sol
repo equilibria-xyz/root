@@ -7,10 +7,9 @@ import {
     Token18,
     Token18Lib,
     Token18Storage,
-    Token18StorageLib,
-    UFixed18,
-    UFixed18Lib
+    Token18StorageLib
 } from "src/token/types/Token18.sol";
+import { UFixed18, UFixed18Lib } from "src/number/types/UFixed18.sol";
 import { Fixed18Lib } from "src/number/types/Fixed18.sol";
 
 abstract contract Token18Test is TokenTest {

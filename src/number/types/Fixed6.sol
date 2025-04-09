@@ -1,16 +1,29 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/utils/math/SignedMath.sol";
-import "../NumberMath.sol";
-import "./Fixed18.sol";
-import "./UFixed6.sol";
+import { SignedMath } from "@openzeppelin/contracts/utils/math/SignedMath.sol";
+import { NumberMath } from "../NumberMath.sol";
+import { Fixed18 } from "./Fixed18.sol";
+import { UFixed6 } from "./UFixed6.sol";
 
 /// @dev Fixed6 type
 type Fixed6 is int256;
 using Fixed6Lib for Fixed6 global;
 type Fixed6Storage is bytes32;
 using Fixed6StorageLib for Fixed6Storage global;
+
+using {
+    add as +,
+    sub as -,
+    mul as *,
+    div as /,
+    eq as ==,
+    neq as !=,
+    gt as >,
+    lt as <,
+    gte as >=,
+    lte as <=
+} for Fixed6 global;
 
 /**
  * @title Fixed6Lib
@@ -21,12 +34,12 @@ library Fixed6Lib {
     /// @custom:error Arithmetic overflow
     error Fixed6OverflowError(uint256 value);
 
-    int256 private constant BASE = 1e6;
-    Fixed6 public constant ZERO = Fixed6.wrap(0);
-    Fixed6 public constant ONE = Fixed6.wrap(BASE);
-    Fixed6 public constant NEG_ONE = Fixed6.wrap(-1 * BASE);
-    Fixed6 public constant MAX = Fixed6.wrap(type(int256).max);
-    Fixed6 public constant MIN = Fixed6.wrap(type(int256).min);
+    int256 internal constant BASE = 1e6;
+    Fixed6 internal constant ZERO = Fixed6.wrap(0);
+    Fixed6 internal constant ONE = Fixed6.wrap(BASE);
+    Fixed6 internal constant NEG_ONE = Fixed6.wrap(-1 * BASE);
+    Fixed6 internal constant MAX = Fixed6.wrap(type(int256).max);
+    Fixed6 internal constant MIN = Fixed6.wrap(type(int256).min);
 
     /**
      * @notice Creates a signed fixed-decimal from an unsigned fixed-decimal
@@ -92,8 +105,8 @@ library Fixed6Lib {
      */
     function from(Fixed6 significand, int256 exponent) internal pure returns (Fixed6) {
         return exponent < 0
-            ? significand.div(from(int256(10 ** uint256(-1 * exponent))))
-            : significand.mul(from(int256(10 ** uint256(exponent))));
+            ? significand / from(int256(10 ** uint256(-1 * exponent)))
+            : significand * from(int256(10 ** uint256(exponent)));
     }
 
     /**
@@ -106,36 +119,6 @@ library Fixed6Lib {
     }
 
     /**
-     * @notice Adds two signed fixed-decimals `a` and `b` together
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Resulting summed signed fixed-decimal
-     */
-    function add(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
-        return Fixed6.wrap(Fixed6.unwrap(a) + Fixed6.unwrap(b));
-    }
-
-    /**
-     * @notice Subtracts signed fixed-decimal `b` from `a`
-     * @param a Signed fixed-decimal to subtract from
-     * @param b Signed fixed-decimal to subtract
-     * @return Resulting subtracted signed fixed-decimal
-     */
-    function sub(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
-        return Fixed6.wrap(Fixed6.unwrap(a) - Fixed6.unwrap(b));
-    }
-
-    /**
-     * @notice Multiplies two signed fixed-decimals `a` and `b` together
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Resulting multiplied signed fixed-decimal
-     */
-    function mul(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
-        return Fixed6.wrap(Fixed6.unwrap(a) * Fixed6.unwrap(b) / BASE);
-    }
-
-    /**
      * @notice Multiplies two signed fixed-decimals `a` and `b` together, rounding the result away from zero if there is a remainder
      * @param a First signed fixed-decimal
      * @param b Second signed fixed-decimal
@@ -143,16 +126,6 @@ library Fixed6Lib {
      */
     function mulOut(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
         return Fixed6.wrap(NumberMath.divOut(Fixed6.unwrap(a) * Fixed6.unwrap(b), BASE));
-    }
-
-    /**
-     * @notice Divides signed fixed-decimal `a` by `b`
-     * @param a Signed fixed-decimal to divide
-     * @param b Signed fixed-decimal to divide by
-     * @return Resulting divided signed fixed-decimal
-     */
-    function div(Fixed6 a, Fixed6 b) internal pure returns (Fixed6) {
-        return Fixed6.wrap(Fixed6.unwrap(a) * BASE / Fixed6.unwrap(b));
     }
 
     /**
@@ -241,56 +214,6 @@ library Fixed6Lib {
      */
     function muldivOut(Fixed6 a, Fixed6 b, Fixed6 c) internal pure returns (Fixed6) {
         return Fixed6.wrap(NumberMath.divOut(Fixed6.unwrap(a) * Fixed6.unwrap(b), Fixed6.unwrap(c)));
-    }
-
-    /**
-     * @notice Returns whether signed fixed-decimal `a` is equal to `b`
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Whether `a` is equal to `b`
-     */
-    function eq(Fixed6 a, Fixed6 b) internal pure returns (bool) {
-        return compare(a, b) == 1;
-    }
-
-    /**
-     * @notice Returns whether signed fixed-decimal `a` is greater than `b`
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Whether `a` is greater than `b`
-     */
-    function gt(Fixed6 a, Fixed6 b) internal pure returns (bool) {
-        return compare(a, b) == 2;
-    }
-
-    /**
-     * @notice Returns whether signed fixed-decimal `a` is less than `b`
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Whether `a` is less than `b`
-     */
-    function lt(Fixed6 a, Fixed6 b) internal pure returns (bool) {
-        return compare(a, b) == 0;
-    }
-
-    /**
-     * @notice Returns whether signed fixed-decimal `a` is greater than or equal to `b`
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Whether `a` is greater than or equal to `b`
-     */
-    function gte(Fixed6 a, Fixed6 b) internal pure returns (bool) {
-        return gt(a, b) || eq(a, b);
-    }
-
-    /**
-     * @notice Returns whether signed fixed-decimal `a` is less than or equal to `b`
-     * @param a First signed fixed-decimal
-     * @param b Second signed fixed-decimal
-     * @return Whether `a` is less than or equal to `b`
-     */
-    function lte(Fixed6 a, Fixed6 b) internal pure returns (bool) {
-        return lt(a, b) || eq(a, b);
     }
 
     /**
@@ -406,4 +329,106 @@ library Fixed6StorageLib {
             sstore(self, value)
         }
     }
+}
+
+/**
+* @notice Adds two signed fixed-decimals `a` and `b` together
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Resulting summed signed fixed-decimal
+*/
+function add(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
+    return Fixed6.wrap(Fixed6.unwrap(a) + Fixed6.unwrap(b));
+}
+
+/**
+* @notice Subtracts signed fixed-decimal `b` from `a`
+* @param a Signed fixed-decimal to subtract from
+* @param b Signed fixed-decimal to subtract
+* @return Resulting subtracted signed fixed-decimal
+*/
+function sub(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
+    return Fixed6.wrap(Fixed6.unwrap(a) - Fixed6.unwrap(b));
+}
+
+/**
+* @notice Multiplies two signed fixed-decimals `a` and `b` together
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Resulting multiplied signed fixed-decimal
+*/
+function mul(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
+    return Fixed6.wrap(Fixed6.unwrap(a) * Fixed6.unwrap(b) / Fixed6Lib.BASE);
+}
+
+/**
+* @notice Divides signed fixed-decimal `a` by `b`
+* @param a Signed fixed-decimal to divide
+* @param b Signed fixed-decimal to divide by
+* @return Resulting divided signed fixed-decimal
+*/
+function div(Fixed6 a, Fixed6 b) pure returns (Fixed6) {
+    return Fixed6.wrap(Fixed6.unwrap(a) * Fixed6Lib.BASE / Fixed6.unwrap(b));
+}
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is equal to `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is equal to `b`
+*/
+function eq(Fixed6 a, Fixed6 b) pure returns (bool) {
+    return Fixed6.unwrap(a) == Fixed6.unwrap(b);
+}
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is not equal to `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is not equal to `b`
+*/
+function neq(Fixed6 a, Fixed6 b) pure returns (bool) {
+    return Fixed6.unwrap(a) != Fixed6.unwrap(b);
+}
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is greater than `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is greater than `b`
+*/
+function gt(Fixed6 a, Fixed6 b) pure returns (bool) {
+    (int256 au, int256 bu) = (Fixed6.unwrap(a), Fixed6.unwrap(b));
+    return au > bu;
+}
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is less than `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is less than `b`
+*/
+function lt(Fixed6 a, Fixed6 b) pure returns (bool) {
+    (int256 au, int256 bu) = (Fixed6.unwrap(a), Fixed6.unwrap(b));
+    return au < bu;
+}
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is greater than or equal to `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is greater than or equal to `b`
+*/
+function gte(Fixed6 a, Fixed6 b) pure returns (bool) {
+    return eq(a, b) || gt(a, b);
+}
+
+/**
+* @notice Returns whether signed fixed-decimal `a` is less than or equal to `b`
+* @param a First signed fixed-decimal
+* @param b Second signed fixed-decimal
+* @return Whether `a` is less than or equal to `b`
+*/
+function lte(Fixed6 a, Fixed6 b) pure returns (bool) {
+    return eq(a, b) || lt(a, b);
 }
