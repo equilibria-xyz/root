@@ -25,15 +25,16 @@ library SynBook6Lib {
     /// @param latest The latest skew in asset terms
     /// @param change The change in skew in asset terms
     /// @param price The price of the underlying asset
-    /// @return The spread in dollar terms
+    /// @return newPrice The price of a given order amount based on the synbook for the account.
     function compute(
         SynBook6 memory self,
         Fixed6 latest,
         Fixed6 change,
         UFixed6 price
-    ) internal pure returns (Fixed6) {
+    ) internal pure returns (UFixed6 newPrice) {
+        bool isSkewChangePositive = change.gt(Fixed6Lib.ZERO);
         // sign = 1 for buy / ask and -1 for sell / bid, use f(-x) for sell orders
-        if (change.lt(Fixed6Lib.ZERO)) {
+        if (!isSkewChangePositive) {
             latest = latest.mul(Fixed6Lib.NEG_ONE);
             change = change.mul(Fixed6Lib.NEG_ONE);
         }
@@ -42,8 +43,12 @@ library SynBook6Lib {
         Fixed6 to = latest.add(change).div(Fixed6Lib.from(self.scale));
         UFixed6 notional = change.abs().mul(price);
 
-        return _indefinite(self.d0, self.d1, self.d2, self.d3, to, notional)
+        Fixed6 spread = _indefinite(self.d0, self.d1, self.d2, self.d3, to, notional)
             .sub(_indefinite(self.d0, self.d1, self.d2, self.d3, from, notional));
+
+        newPrice = isSkewChangePositive
+            ? price.add(spread.abs().div(price))   // long, positive spread raises quote
+            : price.sub(spread.abs().div(price));  // short, positive spread lowers quote
     }
 
     /// @dev f(x) = d0 * x + d1 * x^2 / 2 + d2 * x^3 / 3 + d3 * x^4 / 4
