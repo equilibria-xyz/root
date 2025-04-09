@@ -26,7 +26,7 @@ library UAccumulator6Lib {
     /// @param from The starting point of the accumulation
     /// @param total Demoninator of the ratio (see `increment` function)
     function accumulated(UAccumulator6 memory self, UAccumulator6 memory from, UFixed6 total) internal pure returns (UFixed6) {
-        return self._value.sub(from._value).mul(total);
+        return (self._value - from._value) * total;
     }
 
     /// @notice Increments an accumulator by a given ratio
@@ -36,7 +36,7 @@ library UAccumulator6Lib {
     /// @param total Denominator of the ratio
     function increment(UAccumulator6 memory self, UFixed6 amount, UFixed6 total) internal pure {
         if (amount.isZero()) return;
-        self._value = self._value.add(amount.div(total));
+        self._value = self._value + (amount / total);
     }
 
     /// @notice Resets the accumulator to its initial state

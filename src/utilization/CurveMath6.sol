@@ -25,12 +25,12 @@ library CurveMath6 {
         Fixed6 endY,
         UFixed6 targetX
     ) internal pure returns (Fixed6) {
-        if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMath6OutOfBoundsError();
+        if (targetX < startX || targetX > endX) revert CurveMath6OutOfBoundsError();
 
-        UFixed6 xRange = endX.sub(startX);
-        Fixed6 yRange = endY.sub(startY);
-        UFixed6 xRatio = targetX.sub(startX).div(xRange);
-        return yRange.mul(Fixed6Lib.from(xRatio)).add(startY);
+        UFixed6 xRange = endX - startX;
+        Fixed6 yRange = endY - startY;
+        UFixed6 xRatio = (targetX - startX) / xRange;
+        return yRange * Fixed6Lib.from(xRatio) + startY;
     }
 
     /// @notice Computes a linear interpolation between two points

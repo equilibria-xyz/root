@@ -30,17 +30,17 @@ library SynBook6Lib {
         UFixed6 price
     ) internal pure returns (Fixed6) {
         // sign = 1 for buy / ask and -1 for sell / bid, use f(-x) for sell orders
-        if (change.lt(Fixed6Lib.ZERO)) {
-            latest = latest.mul(Fixed6Lib.NEG_ONE);
-            change = change.mul(Fixed6Lib.NEG_ONE);
+        if (change < Fixed6Lib.ZERO) {
+            latest = latest * Fixed6Lib.NEG_ONE;
+            change = change * Fixed6Lib.NEG_ONE;
         }
 
-        Fixed6 from = latest.div(Fixed6Lib.from(self.scale));
-        Fixed6 to = latest.add(change).div(Fixed6Lib.from(self.scale));
-        UFixed6 notional = change.abs().mul(price);
+        Fixed6 from = latest / Fixed6Lib.from(self.scale);
+        Fixed6 to = (latest + change) / Fixed6Lib.from(self.scale);
+        UFixed6 notional = change.abs() * price;
 
         return _indefinite(self.d0, self.d1, self.d2, self.d3, to, notional)
-            .sub(_indefinite(self.d0, self.d1, self.d2, self.d3, from, notional));
+            - _indefinite(self.d0, self.d1, self.d2, self.d3, from, notional);
     }
 
     /// @dev f(x) = d0 * x + d1 * x^2 / 2 + d2 * x^3 / 3 + d3 * x^4 / 4
@@ -53,15 +53,15 @@ library SynBook6Lib {
         UFixed6 notional
     ) private pure returns (Fixed6 result) {
         // d0 * x
-        result = Fixed6Lib.from(notional).mul(value).mul(Fixed6Lib.from(d0));
+        result = Fixed6Lib.from(notional) * value * Fixed6Lib.from(d0);
 
         // d1 * x^2 / 2
-        result = result.add(Fixed6Lib.from(notional).mul(value).mul(value).mul(Fixed6Lib.from(d1)).div(Fixed6Lib.from(2)));
+        result = result + (Fixed6Lib.from(notional) * value * value * Fixed6Lib.from(d1) / Fixed6Lib.from(2));
 
         // d2 * x^3 / 3
-        result = result.add(Fixed6Lib.from(notional).mul(value).mul(value).mul(value).mul(Fixed6Lib.from(d2)).div(Fixed6Lib.from(3)));
+        result = result + (Fixed6Lib.from(notional) * value * value * value *  Fixed6Lib.from(d2) / Fixed6Lib.from(3));
 
         // d3 * x^4 / 4
-        result = result.add(Fixed6Lib.from(notional).mul(value).mul(value).mul(value).mul(value).mul(Fixed6Lib.from(d3)).div(Fixed6Lib.from(4)));
+        result = result + (Fixed6Lib.from(notional) * value * value * value * value * Fixed6Lib.from(d3) / Fixed6Lib.from(4));
     }
 }

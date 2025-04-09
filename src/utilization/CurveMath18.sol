@@ -25,12 +25,12 @@ library CurveMath18 {
         Fixed18 endY,
         UFixed18 targetX
     ) internal pure returns (Fixed18) {
-        if (targetX.lt(startX) || targetX.gt(endX)) revert CurveMath18OutOfBoundsError();
+        if (targetX < startX || targetX > endX) revert CurveMath18OutOfBoundsError();
 
-        UFixed18 xRange = endX.sub(startX);
-        Fixed18 yRange = endY.sub(startY);
-        UFixed18 xRatio = targetX.sub(startX).div(xRange);
-        return yRange.mul(Fixed18Lib.from(xRatio)).add(startY);
+        UFixed18 xRange = endX - startX;
+        Fixed18 yRange = endY - startY;
+        UFixed18 xRatio = (targetX - startX) / xRange;
+        return yRange * Fixed18Lib.from(xRatio) + startY;
     }
 
     /// @notice Computes a linear interpolation between two points
