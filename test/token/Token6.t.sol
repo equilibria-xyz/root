@@ -5,10 +5,9 @@ import { TokenTest } from "./TokenTest.sol";
 
 import {
     Token6,
-    Token6Lib,
-    UFixed6,
-    UFixed6Lib
+    Token6Lib
 } from "../../src/token/types/Token6.sol";
+import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
 
 abstract contract Token6Test is TokenTest {
     Token6 public token;

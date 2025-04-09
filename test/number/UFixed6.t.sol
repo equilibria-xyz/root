@@ -87,20 +87,20 @@ contract UFixed6Test is Test {
     }
 
     function test_isZero() public pure {
-        assertEq(UFixed6Lib.isZero(UFixed6Lib.ZERO), true, "0 is zero");
-        assertEq(UFixed6Lib.isZero(UFixed6Lib.ONE), false, "1 is not zero");
+        assertEq(UFixed6Lib.ZERO.isZero(), true, "0 is zero");
+        assertEq(UFixed6Lib.ONE.isZero(), false, "1 is not zero");
     }
 
     function test_addition() public pure {
         UFixed6 a = UFixed6Lib.from(10);
         UFixed6 b = UFixed6Lib.from(20);
-        assertEq(UFixed6.unwrap(UFixed6Lib.add(a, b)), 30e6, "10 + 20 = 30");
+        assertEq(UFixed6.unwrap(a + b), 30e6, "10 + 20 = 30");
     }
 
     function test_subtraction() public pure {
         UFixed6 a = UFixed6Lib.from(20);
         UFixed6 b = UFixed6Lib.from(10);
-        assertEq(UFixed6.unwrap(UFixed6Lib.sub(a, b)), 10e6, "20 - 10 = 10");
+        assertEq(UFixed6.unwrap(a - b), 10e6, "20 - 10 = 10");
     }
 
     function test_subtractionRevertsIfNegative() public {
@@ -113,46 +113,46 @@ contract UFixed6Test is Test {
     function test_unsafeSubtraction() public pure {
         UFixed6 a = UFixed6Lib.from(10);
         UFixed6 b = UFixed6Lib.from(20);
-        assertEq(UFixed6.unwrap(UFixed6Lib.unsafeSub(a, b)), 0);
+        assertEq(UFixed6.unwrap(a.unsafeSub(b)), 0);
 
         a = UFixed6Lib.from(30);
-        assertEq(UFixed6.unwrap(UFixed6Lib.unsafeSub(a, b)), 10e6);
+        assertEq(UFixed6.unwrap(a.unsafeSub(b)), 10e6);
     }
 
     function test_multiplication() public pure {
         UFixed6 a = UFixed6Lib.from(20);
         UFixed6 b = UFixed6Lib.from(10);
-        assertEq(UFixed6.unwrap(UFixed6Lib.mul(a, b)), 200e6, "20 * 10 = 200");
+        assertEq(UFixed6.unwrap(a * b), 200e6, "20 * 10 = 200");
     }
 
     function test_MultiplicationRoundsTowardZero() public pure {
         UFixed6 a = UFixed6.wrap(1);
         UFixed6 b = UFixed6.wrap(2);
-        assertEq(UFixed6.unwrap(UFixed6Lib.mul(a, b)), 0, "0.0000001 * 0.0000002 = 0");
+        assertEq(UFixed6.unwrap(a * b), 0, "0.0000001 * 0.0000002 = 0");
     }
 
     function test_multiplicationOut() public pure {
         UFixed6 a = UFixed6Lib.from(20);
         UFixed6 b = UFixed6Lib.from(10);
-        assertEq(UFixed6.unwrap(UFixed6Lib.mulOut(a, b)), 200e6, "20 * 10 = 200");
+        assertEq(UFixed6.unwrap(a.mulOut(b)), 200e6, "20 * 10 = 200");
     }
 
     function test_multiplicationOutRoundsAwayFromZero() public pure {
         UFixed6 a = UFixed6.wrap(1);
         UFixed6 b = UFixed6.wrap(2);
-        assertEq(UFixed6.unwrap(UFixed6Lib.mulOut(a, b)), 1, "0.0000001 * 0.0000002 = 0.0000001");
+        assertEq(UFixed6.unwrap(a.mulOut(b)), 1, "0.0000001 * 0.0000002 = 0.0000001");
     }
 
     function test_division() public pure {
         UFixed6 a = UFixed6.wrap(20);
         UFixed6 b = UFixed6.wrap(10);
-        assertEq(UFixed6.unwrap(UFixed6Lib.div(a, b)), 2e6, "20 / 10 = 2");
+        assertEq(UFixed6.unwrap(a / b), 2e6, "20 / 10 = 2");
     }
 
     function test_divisionRoundsTowardsZero() public pure {
         UFixed6 a = UFixed6.wrap(21);
         UFixed6 b = UFixed6Lib.from(10);
-        assertEq(UFixed6.unwrap(UFixed6Lib.div(a, b)), 2, "0.000021 / 0.000010 = 2");
+        assertEq(UFixed6.unwrap(a / b), 2, "0.000021 / 0.000010 = 2");
     }
 
     function test_divisionZeroByZero() public {
@@ -217,25 +217,25 @@ contract UFixed6Test is Test {
 
     function test_mulDiv() public pure {
         UFixed6 a = UFixed6Lib.from(20);
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldiv(a, 10e6, 2e6)), 100e6, "muldiv(Fixed6, uint256, uint256)");
+        assertEq(UFixed6.unwrap(a.muldiv(10e6, 2e6)), 100e6, "muldiv(Fixed6, uint256, uint256)");
 
         UFixed6 b = UFixed6Lib.from(10);
         UFixed6 c = UFixed6Lib.from(2);
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldiv(a, b, c)), 100e6, "muldiv(uf6, uf6, uf6)");
+        assertEq(UFixed6.unwrap(a.muldivFixed(b, c)), 100e6, "muldiv(uf6, uf6, uf6)");
 
         a = UFixed6.wrap(1_111111);
         b = UFixed6.wrap(3_333333);
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldiv(a, b, b)), 1_111111, "muldiv(uf6, uf6, uf6) precision");
+        assertEq(UFixed6.unwrap(a.muldivFixed(b, b)), 1_111111, "muldiv(uf6, uf6, uf6) precision");
     }
 
     function test_mulDivRoundsTowardsZero() public pure {
         UFixed6 a = UFixed6.wrap(1);
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldiv(a, 21, 10)), 2, "muldiv(uf6, i, i) 1*21/10 = 2");
+        assertEq(UFixed6.unwrap(a.muldiv(21, 10)), 2, "muldiv(uf6, i, i) 1*21/10 = 2");
 
         a = UFixed6.wrap(1);
         UFixed6 b = UFixed6.wrap(21);
         UFixed6 c = UFixed6.wrap(10);
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldiv(a, b, c)), 2, "muldiv(uf6, uf6, uf6) 1*21/10 = 2");
+        assertEq(UFixed6.unwrap(a.muldivFixed(b, c)), 2, "muldiv(uf6, uf6, uf6) 1*21/10 = 2");
     }
 
     function test_mulDivSignedRevertsIfDivisorIsZero() public {
@@ -254,28 +254,28 @@ contract UFixed6Test is Test {
 
     function test_mulDivOutFixed() public pure {
         UFixed6 a = UFixed6Lib.from(20);
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldivOut(a, 10e6, 2e6)), 100e6, "muldivOut(uf6, uint256, uint256)");
+        assertEq(UFixed6.unwrap(a.muldivOut(10e6, 2e6)), 100e6, "muldivOut(uf6, uint256, uint256)");
 
         UFixed6 b = UFixed6Lib.from(10);
         UFixed6 c = UFixed6Lib.from(2);
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldivOut(a, b, c)), 100e6, "muldivOut(uf6, uf6, uf6)");
+        assertEq(UFixed6.unwrap(a.muldivOutFixed(b, c)), 100e6, "muldivOut(uf6, uf6, uf6)");
 
         a = UFixed6.wrap(1_111111);
         uint256 bi = 333333;
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldivOut(a, bi, bi)), 1_111111, "muldivOut(uf6, uint256, uint256) precision");
+        assertEq(UFixed6.unwrap(a.muldivOut(bi, bi)), 1_111111, "muldivOut(uf6, uint256, uint256) precision");
 
         b = UFixed6.wrap(333333);
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldivOut(a, b, b)), 1_111111, "muldivOut(uf6, uf6, uf6) precision");
+        assertEq(UFixed6.unwrap(a.muldivOutFixed(b, b)), 1_111111, "muldivOut(uf6, uf6, uf6) precision");
     }
 
     function test_mulDivOutRoundsAwayFromZero() public pure {
         UFixed6 a = UFixed6.wrap(1);
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldivOut(a, 21, 10)), 3, "muldivOut(uf6, uint256, uint256) 1*21/10 = 3");
+        assertEq(UFixed6.unwrap(a.muldivOut(21, 10)), 3, "muldivOut(uf6, uint256, uint256) 1*21/10 = 3");
 
         a = UFixed6.wrap(1);
         UFixed6 b = UFixed6.wrap(21);
         UFixed6 c = UFixed6.wrap(10);
-        assertEq(UFixed6.unwrap(UFixed6Lib.muldivOut(a, b, c)), 3, "muldivOut(uf6, uf6, uf6) 1*21/10 = 3");
+        assertEq(UFixed6.unwrap(a.muldivOutFixed(b, c)), 3, "muldivOut(uf6, uf6, uf6) 1*21/10 = 3");
     }
 
     function test_mulDivOutFixedRevertsIfDivisorIsZero() public {
@@ -289,67 +289,76 @@ contract UFixed6Test is Test {
     function test_equals() public pure {
         UFixed6 a = UFixed6.wrap(12);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.eq(a, b), true, "12 == 12");
+        assertEq(a == b, true, "12 == 12");
         a = UFixed6.wrap(11);
         b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.eq(a, b), false, "11 != 12");
+        assertEq(a == b, false, "11 != 12");
+    }
+
+    function test_notEquals() public pure {
+        UFixed6 a = UFixed6.wrap(12);
+        UFixed6 b = UFixed6.wrap(12);
+        assertEq(a != b, false, "12 != 12");
+        a = UFixed6.wrap(11);
+        b = UFixed6.wrap(12);
+        assertEq(a != b, true, "11 == 12");
     }
 
     function test_greaterThan() public pure {
         UFixed6 a = UFixed6.wrap(13);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.gt(a, b), true, "13 > 12");
+        assertEq(a > b, true, "13 > 12");
         a = UFixed6.wrap(12);
         b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.gt(a, b), false, "12 !> 12");
+        assertEq(a > b, false, "12 !> 12");
         a = UFixed6.wrap(11);
-        assertEq(UFixed6Lib.gt(a, b), false, "11 !> 12");
+        assertEq(a > b, false, "11 !> 12");
     }
 
     function test_lessThan() public pure {
         UFixed6 a = UFixed6.wrap(13);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.lt(a, b), false, "13 !< 12");
+        assertEq(a < b, false, "13 !< 12");
         a = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.lt(a, b), false, "12 !< 12");
+        assertEq(a < b, false, "12 !< 12");
         a = UFixed6.wrap(11);
         b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.lt(a, b), true, "11 < 12");
+        assertEq(a < b, true, "11 < 12");
     }
 
     function test_greaterThanOrEqualTo() public pure {
         UFixed6 a = UFixed6.wrap(13);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.gte(a, b), true, "13 >= 12");
+        assertEq(a >= b, true, "13 >= 12");
         a = UFixed6.wrap(12);
         b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.gte(a, b), true, "12 >= 12");
+        assertEq(a >= b, true, "12 >= 12");
         a = UFixed6.wrap(11);
         b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.gte(a, b), false, "11 !>= 12");
+        assertEq(a >= b, false, "11 !>= 12");
     }
 
     function test_lessThanOrEqualTo() public pure {
         UFixed6 a = UFixed6.wrap(13);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.lte(a, b), false, "13 !<= 12");
+        assertEq(a <= b, false, "13 !<= 12");
         a = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.lte(a, b), true, "12 <= 12");
+        assertEq(a <= b, true, "12 <= 12");
         a = UFixed6.wrap(11);
         b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.lte(a, b), true, "11 <= 12");
+        assertEq(a <= b, true, "11 <= 12");
     }
 
     function test_compare() public pure {
         UFixed6 a = UFixed6.wrap(13);
         UFixed6 b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.compare(a, b), 2, "compare positive");
+        assertEq(a.compare(b), 2, "compare positive");
         a = UFixed6.wrap(12);
         b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.compare(a, b), 1, "compare zero");
+        assertEq(a.compare(b), 1, "compare zero");
         a = UFixed6.wrap(11);
         b = UFixed6.wrap(12);
-        assertEq(UFixed6Lib.compare(a, b), 0, "compare negative");
+        assertEq(a.compare(b), 0, "compare negative");
     }
 
     function test_ratio() public pure {
@@ -359,54 +368,54 @@ contract UFixed6Test is Test {
     function test_min() public pure {
         UFixed6 a = UFixed6.wrap(2000);
         UFixed6 b = UFixed6.wrap(100);
-        assertEq(UFixed6.unwrap(UFixed6Lib.min(a, b)), 100, "min(2000, 100) = 100");
+        assertEq(UFixed6.unwrap(a.min(b)), 100, "min(2000, 100) = 100");
         a = UFixed6.wrap(100);
         b = UFixed6.wrap(2000);
-        assertEq(UFixed6.unwrap(UFixed6Lib.min(a, b)), 100, "min(100, 2000) = 100");
+        assertEq(UFixed6.unwrap(a.min(b)), 100, "min(100, 2000) = 100");
     }
 
     function test_max() public pure {
         UFixed6 a = UFixed6.wrap(2000);
         UFixed6 b = UFixed6.wrap(100);
-        assertEq(UFixed6.unwrap(UFixed6Lib.max(a, b)), 2000, "max(2000, 100) = 2000");
+        assertEq(UFixed6.unwrap(a.max(b)), 2000, "max(2000, 100) = 2000");
         a = UFixed6.wrap(100);
         b = UFixed6.wrap(2000);
-        assertEq(UFixed6.unwrap(UFixed6Lib.max(a, b)), 2000, "max(100, 2000) = 2000");
+        assertEq(UFixed6.unwrap(a.max(b)), 2000, "max(100, 2000) = 2000");
     }
 
     function test_truncate() public pure {
         UFixed6 a = UFixed6.wrap(123_456000);
-        assertEq(UFixed6Lib.truncate(a), 123, "truncate returns floor");
+        assertEq(a.truncate(), 123, "truncate returns floor");
     }
 
     function test_inside() public pure {
         UFixed6 a = UFixed6.wrap(12);
         UFixed6 b = UFixed6.wrap(10);
         UFixed6 c = UFixed6.wrap(15);
-        assertEq(UFixed6Lib.inside(a, b, c), true, "inside");
+        assertEq(a.inside(b, c), true, "inside");
         a = UFixed6.wrap(10);
-        assertEq(UFixed6Lib.inside(a, b, c), true, "on lower bound");
+        assertEq(a.inside(b, c), true, "on lower bound");
         a = UFixed6.wrap(15);
-        assertEq(UFixed6Lib.inside(a, b, c), true, "on upper bound");
+        assertEq(a.inside(b, c), true, "on upper bound");
         a = UFixed6.wrap(9);
-        assertEq(UFixed6Lib.inside(a, b, c), false, "below lower bound");
+        assertEq(a.inside(b, c), false, "below lower bound");
         a = UFixed6.wrap(16);
-        assertEq(UFixed6Lib.inside(a, b, c), false, "above upper bound");
+        assertEq(a.inside(b, c), false, "above upper bound");
     }
 
     function test_outside() public pure {
         UFixed6 a = UFixed6.wrap(12);
         UFixed6 b = UFixed6.wrap(10);
         UFixed6 c = UFixed6.wrap(15);
-        assertEq(UFixed6Lib.outside(a, b, c), false, "inside");
+        assertEq(a.outside(b, c), false, "inside");
         a = UFixed6.wrap(10);
-        assertEq(UFixed6Lib.outside(a, b, c), false, "on lower bound");
+        assertEq(a.outside(b, c), false, "on lower bound");
         a = UFixed6.wrap(15);
-        assertEq(UFixed6Lib.outside(a, b, c), false, "on upper bound");
+        assertEq(a.outside(b, c), false, "on upper bound");
         a = UFixed6.wrap(9);
-        assertEq(UFixed6Lib.outside(a, b, c), true, "below lower bound");
+        assertEq(a.outside(b, c), true, "below lower bound");
         a = UFixed6.wrap(16);
-        assertEq(UFixed6Lib.outside(a, b, c), true, "above upper bound");
+        assertEq(a.outside(b, c), true, "above upper bound");
     }
 }
 
@@ -420,38 +429,38 @@ contract MockUFixed6 {
     }
 
     function sub(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {
-        return UFixed6Lib.sub(a, b);
+        return a - b;
     }
 
     function div(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {
-        return UFixed6Lib.div(a, b);
+        return a / b;
     }
 
     function divOut(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {
-        return UFixed6Lib.divOut(a, b);
+        return a.divOut(b);
     }
 
     function unsafeDiv(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {
-        return UFixed6Lib.unsafeDiv(a, b);
+        return a.unsafeDiv(b);
     }
 
     function unsafeDivOut(UFixed6 a, UFixed6 b) external pure returns (UFixed6) {
-        return UFixed6Lib.unsafeDivOut(a, b);
+        return a.unsafeDivOut(b);
     }
 
     function mulDiv(UFixed6 a, uint256 b, uint256 c) external pure returns (UFixed6) {
-        return UFixed6Lib.muldiv(a, b, c);
+        return a.muldiv(b, c);
     }
 
     function muldivFixed(UFixed6 a, UFixed6 b, UFixed6 c) external pure returns (UFixed6) {
-        return UFixed6Lib.muldiv(a, b, c);
+        return a.muldivFixed(b, c);
     }
 
     function muldivOut(UFixed6 a, uint256 b, uint256 c) external pure returns (UFixed6) {
-        return UFixed6Lib.muldivOut(a, b, c);
+        return a.muldivOut(b, c);
     }
 
     function muldivOutFixed(UFixed6 a, UFixed6 b, UFixed6 c) external pure returns (UFixed6) {
-        return UFixed6Lib.muldivOut(a, b, c);
+        return a.muldivOutFixed(b, c);
     }
 }

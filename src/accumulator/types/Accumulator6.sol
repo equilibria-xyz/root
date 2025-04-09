@@ -27,7 +27,7 @@ library Accumulator6Lib {
      * @param total Demoninator of the ratio (see `increment` and `decrement` functions)
      */
     function accumulated(Accumulator6 memory self, Accumulator6 memory from, UFixed6 total) internal pure returns (Fixed6) {
-        return _mul(self._value.sub(from._value), total);
+        return _mul(self._value - from._value, total);
     }
 
     /**
@@ -39,7 +39,7 @@ library Accumulator6Lib {
      */
     function increment(Accumulator6 memory self, Fixed6 amount, UFixed6 total) internal pure {
         if (amount.isZero()) return;
-        self._value = self._value.add(_div(amount, total));
+        self._value = self._value + _div(amount, total);
     }
 
     /**
@@ -51,7 +51,7 @@ library Accumulator6Lib {
      */
     function decrement(Accumulator6 memory self, Fixed6 amount, UFixed6 total) internal pure {
         if (amount.isZero()) return;
-        self._value = self._value.add(_div(amount.mul(Fixed6Lib.NEG_ONE), total));
+        self._value = self._value + _div(amount * Fixed6Lib.NEG_ONE, total);
     }
 
     /// @notice Resets the accumulator to its initial state
@@ -61,10 +61,10 @@ library Accumulator6Lib {
     }
 
     function _div(Fixed6 amount, UFixed6 total) private pure returns (Fixed6) {
-        return amount.sign() == -1 ? amount.divOut(Fixed6Lib.from(total)) : amount.div(Fixed6Lib.from(total));
+        return amount.sign() == -1 ? amount.divOut(Fixed6Lib.from(total)) : amount / Fixed6Lib.from(total);
     }
 
     function _mul(Fixed6 amount, UFixed6 total) private pure returns (Fixed6) {
-        return amount.sign() == -1 ? amount.mulOut(Fixed6Lib.from(total)) : amount.mul(Fixed6Lib.from(total));
+        return amount.sign() == -1 ? amount.mulOut(Fixed6Lib.from(total)) : amount * Fixed6Lib.from(total);
     }
 }
