@@ -118,45 +118,45 @@ contract Fixed18Test is Test {
     function test_addition() public pure {
         Fixed18 a = Fixed18Lib.from(10);
         Fixed18 b = Fixed18Lib.from(20);
-        assertEq(Fixed18.unwrap(Fixed18Lib.add(a, b)), 30e18, "10 + 20 = 30");
+        assertEq(Fixed18.unwrap(a + b), 30e18, "10 + 20 = 30");
 
         a = Fixed18Lib.from(-10);
         b = Fixed18Lib.from(-20);
-        assertEq(Fixed18.unwrap(Fixed18Lib.add(a, b)), -30e18, "-10 + -20 = -30");
+        assertEq(Fixed18.unwrap(a + b), -30e18, "-10 + -20 = -30");
     }
 
     function test_subtraction() public pure {
         Fixed18 a = Fixed18Lib.from(20);
         Fixed18 b = Fixed18Lib.from(10);
-        assertEq(Fixed18.unwrap(Fixed18Lib.sub(a, b)), 10e18, "20 - 10 = 10");
+        assertEq(Fixed18.unwrap(a - b), 10e18, "20 - 10 = 10");
 
         a = Fixed18Lib.from(-20);
         b = Fixed18Lib.from(-10);
-        assertEq(Fixed18.unwrap(Fixed18Lib.sub(a, b)), -10e18, "-20 - -10 = -10");
+        assertEq(Fixed18.unwrap(a - b), -10e18, "-20 - -10 = -10");
     }
 
     function test_multiplication() public pure {
         Fixed18 a = Fixed18Lib.from(20);
         Fixed18 b = Fixed18Lib.from(10);
-        assertEq(Fixed18.unwrap(Fixed18Lib.mul(a, b)), 200e18, "20 * 10 = 200");
+        assertEq(Fixed18.unwrap(a * b), 200e18, "20 * 10 = 200");
         a = Fixed18Lib.from(-20);
-        assertEq(Fixed18.unwrap(Fixed18Lib.mul(a, b)), -200e18, "-20 * 10 = -200");
+        assertEq(Fixed18.unwrap(a * b), -200e18, "-20 * 10 = -200");
         b = Fixed18Lib.from(-10);
-        assertEq(Fixed18.unwrap(Fixed18Lib.mul(a, b)), 200e18, "-20 * -10 = 200");
+        assertEq(Fixed18.unwrap(a * b), 200e18, "-20 * -10 = 200");
         a = Fixed18Lib.from(20);
-        assertEq(Fixed18.unwrap(Fixed18Lib.mul(a, b)), -200e18, "20 * -10 = -200");
+        assertEq(Fixed18.unwrap(a * b), -200e18, "20 * -10 = -200");
     }
 
     function test_MultiplicationRoundsTowardZero() public pure {
         Fixed18 a = Fixed18.wrap(1);
         Fixed18 b = Fixed18.wrap(2);
-        assertEq(Fixed18.unwrap(Fixed18Lib.mul(a, b)), 0, "0.000000000_000000001 * 0.000000000_000000002 = 0");
+        assertEq(Fixed18.unwrap(a * b), 0, "0.000000000_000000001 * 0.000000000_000000002 = 0");
         a = Fixed18.wrap(-1);
-        assertEq(Fixed18.unwrap(Fixed18Lib.mul(a, b)), 0, "-0.000000000_000000001 * 0.000000000_000000002 = 0");
+        assertEq(Fixed18.unwrap(a * b), 0, "-0.000000000_000000001 * 0.000000000_000000002 = 0");
         b = Fixed18.wrap(-2);
-        assertEq(Fixed18.unwrap(Fixed18Lib.mul(a, b)), 0, "-0.000000000_000000001 * -0.000000000_000000002 = 0");
+        assertEq(Fixed18.unwrap(a * b), 0, "-0.000000000_000000001 * -0.000000000_000000002 = 0");
         a = Fixed18.wrap(1);
-        assertEq(Fixed18.unwrap(Fixed18Lib.mul(a, b)), 0, "0.000000000_000000001 * -0.000000000_000000002 = 0");
+        assertEq(Fixed18.unwrap(a * b), 0, "0.000000000_000000001 * -0.000000000_000000002 = 0");
     }
 
     function test_multiplicationOut() public pure {
@@ -186,21 +186,21 @@ contract Fixed18Test is Test {
     function test_division() public pure {
         Fixed18 a = Fixed18Lib.from(20);
         Fixed18 b = Fixed18Lib.from(10);
-        assertEq(Fixed18.unwrap(Fixed18Lib.div(a, b)), 2e18, "20 / 10 = 2");
+        assertEq(Fixed18.unwrap(a / b), 2e18, "20 / 10 = 2");
         a = Fixed18Lib.from(-20);
-        assertEq(Fixed18.unwrap(Fixed18Lib.div(a, b)), -2e18, "-20 / 10 = -2");
+        assertEq(Fixed18.unwrap(a / b), -2e18, "-20 / 10 = -2");
         b = Fixed18Lib.from(-10);
-        assertEq(Fixed18.unwrap(Fixed18Lib.div(a, b)), 2e18, "-20 / -10 = 2");
+        assertEq(Fixed18.unwrap(a / b), 2e18, "-20 / -10 = 2");
         a = Fixed18Lib.from(20);
-        assertEq(Fixed18.unwrap(Fixed18Lib.div(a, b)), -2e18, "20 / -10 = -2");
+        assertEq(Fixed18.unwrap(a / b), -2e18, "20 / -10 = -2");
     }
 
     function test_divisionRoundsTowardsZero() public pure {
         Fixed18 a = Fixed18.wrap(21);
         Fixed18 b = Fixed18Lib.from(10);
-        assertEq(Fixed18.unwrap(Fixed18Lib.div(a, b)), 2, "0.000000000_000000021 / 0.000000000_000000010 = 2");
+        assertEq(Fixed18.unwrap(a / b), 2, "0.000000000_000000021 / 0.000000000_000000010 = 2");
         a = Fixed18.wrap(-21);
-        assertEq(Fixed18.unwrap(Fixed18Lib.div(a, b)), -2, "-0.000000000_000000021 / 0.000000000_000000010 = -2");
+        assertEq(Fixed18.unwrap(a / b), -2, "-0.000000000_000000021 / 0.000000000_000000010 = -2");
     }
 
     function test_divisionZeroByZero() public {
@@ -407,76 +407,88 @@ contract Fixed18Test is Test {
     function test_equals() public pure {
         Fixed18 a = Fixed18.wrap(12);
         Fixed18 b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.eq(a, b), true, "12 == 12");
+        assertEq(a == b, true, "12 == 12");
         a = Fixed18.wrap(-12);
         b = Fixed18.wrap(-12);
-        assertEq(Fixed18Lib.eq(a, b), true, "-12 == -12");
+        assertEq(a == b, true, "-12 == -12");
         a = Fixed18.wrap(11);
         b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.eq(a, b), false, "11 != 12");
+        assertEq(a == b, false, "11 != 12");
+    }
+
+    function test_notEquals() public pure {
+        Fixed18 a = Fixed18.wrap(12);
+        Fixed18 b = Fixed18.wrap(12);
+        assertEq(a != b, false, "12 != 12");
+        a = Fixed18.wrap(-12);
+        b = Fixed18.wrap(-12);
+        assertEq(a != b, false, "-12 != -12");
+        a = Fixed18.wrap(11);
+        b = Fixed18.wrap(12);
+        assertEq(a != b, true, "11 == 12");
     }
 
     function test_greaterThan() public pure {
         Fixed18 a = Fixed18.wrap(13);
         Fixed18 b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.gt(a, b), true, "13 > 12");
+        assertEq(a > b, true, "13 > 12");
         a = Fixed18.wrap(-12);
         b = Fixed18.wrap(-13);
-        assertEq(Fixed18Lib.gt(a, b), true, "-12 > -13");
+        assertEq(a > b, true, "-12 > -13");
         a = Fixed18.wrap(12);
         b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.gt(a, b), false, "12 !> 12");
+        assertEq(a > b, false, "12 !> 12");
         a = Fixed18.wrap(11);
-        assertEq(Fixed18Lib.gt(a, b), false, "11 !> 12");
+        assertEq(a > b, false, "11 !> 12");
     }
 
     function test_lessThan() public pure {
         Fixed18 a = Fixed18.wrap(13);
         Fixed18 b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.lt(a, b), false, "13 !< 12");
+        assertEq(a < b, false, "13 !< 12");
         a = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.lt(a, b), false, "12 !< 12");
+        assertEq(a < b, false, "12 !< 12");
         a = Fixed18.wrap(11);
         b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.lt(a, b), true, "11 < 12");
+        assertEq(a < b, true, "11 < 12");
         a = Fixed18.wrap(-12);
         b = Fixed18.wrap(-11);
-        assertEq(Fixed18Lib.lt(a, b), true, "-12 < -11");
+        assertEq(a < b, true, "-12 < -11");
     }
 
     function test_greaterThanOrEqualTo() public pure {
         Fixed18 a = Fixed18.wrap(13);
         Fixed18 b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.gte(a, b), true, "13 >= 12");
+        assertEq(a >= b, true, "13 >= 12");
         a = Fixed18.wrap(-12);
         b = Fixed18.wrap(-13);
-        assertEq(Fixed18Lib.gte(a, b), true, "-12 >= -13");
+        assertEq(a >= b, true, "-12 >= -13");
         a = Fixed18.wrap(12);
         b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.gte(a, b), true, "12 >= 12");
+        assertEq(a >= b, true, "12 >= 12");
         a = Fixed18.wrap(-12);
         b = Fixed18.wrap(-12);
-        assertEq(Fixed18Lib.gte(a, b), true, "-12 >= -12");
+        assertEq(a >= b, true, "-12 >= -12");
         a = Fixed18.wrap(11);
         b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.gte(a, b), false, "11 !>= 12");
+        assertEq(a >= b, false, "11 !>= 12");
     }
 
     function test_lessThanOrEqualTo() public pure {
         Fixed18 a = Fixed18.wrap(13);
         Fixed18 b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.lte(a, b), false, "13 !<= 12");
+        assertEq(a <= b, false, "13 !<= 12");
         a = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.lte(a, b), true, "12 <= 12");
+        assertEq(a <= b, true, "12 <= 12");
         a = Fixed18.wrap(-12);
         b = Fixed18.wrap(-12);
-        assertEq(Fixed18Lib.lte(a, b), true, "-12 <= -12");
+        assertEq(a <= b, true, "-12 <= -12");
         a = Fixed18.wrap(11);
         b = Fixed18.wrap(12);
-        assertEq(Fixed18Lib.lte(a, b), true, "11 <= 12");
+        assertEq(a <= b, true, "11 <= 12");
         a = Fixed18.wrap(-12);
         b = Fixed18.wrap(-11);
-        assertEq(Fixed18Lib.lte(a, b), true, "-12 <= -11");
+        assertEq(a <= b, true, "-12 <= -11");
     }
 
     function test_compare() public pure {
@@ -613,7 +625,7 @@ contract MockFixed18 {
     }
 
     function div(Fixed18 a, Fixed18 b) external pure returns (Fixed18) {
-        return Fixed18Lib.div(a, b);
+        return a / b;
     }
 
     function divOut(Fixed18 a, Fixed18 b) external pure returns (Fixed18) {

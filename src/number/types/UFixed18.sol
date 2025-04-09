@@ -1,16 +1,29 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/utils/math/Math.sol";
-import "../NumberMath.sol";
-import "./Fixed18.sol";
-import "./UFixed6.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
+import { NumberMath } from "../NumberMath.sol";
+import { Fixed18, Fixed18Lib } from "./Fixed18.sol";
+import { UFixed6 } from "./UFixed6.sol";
 
 /// @dev UFixed18 type
 type UFixed18 is uint256;
 using UFixed18Lib for UFixed18 global;
 type UFixed18Storage is bytes32;
 using UFixed18StorageLib for UFixed18Storage global;
+
+using {
+    add as +,
+    sub as -,
+    mul as *,
+    div as /,
+    eq as ==,
+    neq as !=,
+    gt as >,
+    lt as <,
+    gte as >=,
+    lte as <=
+} for UFixed18 global;
 
 /**
  * @title UFixed18Lib
@@ -21,10 +34,10 @@ library UFixed18Lib {
     /// @custom:error Arithmetic underflow
     error UFixed18UnderflowError(int256 value);
 
-    uint256 private constant BASE = 1e18;
-    UFixed18 public constant ZERO = UFixed18.wrap(0);
-    UFixed18 public constant ONE = UFixed18.wrap(BASE);
-    UFixed18 public constant MAX = UFixed18.wrap(type(uint256).max);
+    uint256 internal constant BASE = 1e18;
+    UFixed18 internal constant ZERO = UFixed18.wrap(0);
+    UFixed18 internal constant ONE = UFixed18.wrap(BASE);
+    UFixed18 internal constant MAX = UFixed18.wrap(type(uint256).max);
 
     /**
      * @notice Creates a unsigned fixed-decimal from a signed fixed-decimal
@@ -44,7 +57,7 @@ library UFixed18Lib {
      * @return New unsigned fixed-decimal
      */
     function unsafeFrom(Fixed18 a) internal pure returns (UFixed18) {
-        return a.lt(Fixed18Lib.ZERO) ? ZERO : from(a);
+        return a < Fixed18Lib.ZERO ? ZERO : from(a);
     }
 
     /**
@@ -73,8 +86,8 @@ library UFixed18Lib {
      */
     function from(UFixed18 significand, int256 exponent) internal pure returns (UFixed18) {
         return exponent < 0
-            ? significand.div(from(10 ** uint256(-1 * exponent)))
-            : significand.mul(from(10 ** uint256(exponent)));
+            ? significand / from(10 ** uint256(-1 * exponent))
+            : significand * from(10 ** uint256(exponent));
     }
 
     /**
@@ -84,26 +97,6 @@ library UFixed18Lib {
      */
     function isZero(UFixed18 a) internal pure returns (bool) {
         return UFixed18.unwrap(a) == 0;
-    }
-
-    /**
-     * @notice Adds two unsigned fixed-decimals `a` and `b` together
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Resulting summed unsigned fixed-decimal
-     */
-    function add(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) + UFixed18.unwrap(b));
-    }
-
-    /**
-     * @notice Subtracts unsigned fixed-decimal `b` from `a`
-     * @param a Unsigned fixed-decimal to subtract from
-     * @param b Unsigned fixed-decimal to subtract
-     * @return Resulting subtracted unsigned fixed-decimal
-     */
-    function sub(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) - UFixed18.unwrap(b));
     }
 
     /**
@@ -118,16 +111,6 @@ library UFixed18Lib {
     }
 
     /**
-     * @notice Multiplies two unsigned fixed-decimals `a` and `b` together
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Resulting multiplied unsigned fixed-decimal
-     */
-    function mul(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) * UFixed18.unwrap(b) / BASE);
-    }
-
-    /**
      * @notice Multiplies two unsigned fixed-decimals `a` and `b` together, rounding the result up to the next integer if there is a remainder
      * @param a First unsigned fixed-decimal
      * @param b Second unsigned fixed-decimal
@@ -135,16 +118,6 @@ library UFixed18Lib {
      */
     function mulOut(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
         return UFixed18.wrap(NumberMath.divOut(UFixed18.unwrap(a) * UFixed18.unwrap(b), BASE));
-    }
-
-    /**
-     * @notice Divides unsigned fixed-decimal `a` by `b`
-     * @param a Unsigned fixed-decimal to divide
-     * @param b Unsigned fixed-decimal to divide by
-     * @return Resulting divided unsigned fixed-decimal
-     */
-    function div(UFixed18 a, UFixed18 b) internal pure returns (UFixed18) {
-        return UFixed18.wrap(UFixed18.unwrap(a) * BASE / UFixed18.unwrap(b));
     }
 
     /**
@@ -230,56 +203,6 @@ library UFixed18Lib {
      */
     function muldivOut(UFixed18 a, UFixed18 b, UFixed18 c) internal pure returns (UFixed18) {
         return UFixed18.wrap(NumberMath.divOut(UFixed18.unwrap(a) * UFixed18.unwrap(b), UFixed18.unwrap(c)));
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is equal to `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is equal to `b`
-     */
-    function eq(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return compare(a, b) == 1;
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is greater than `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is greater than `b`
-     */
-    function gt(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return compare(a, b) == 2;
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is less than `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is less than `b`
-     */
-    function lt(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return compare(a, b) == 0;
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is greater than or equal to `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is greater than or equal to `b`
-     */
-    function gte(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return gt(a, b) || eq(a, b);
-    }
-
-    /**
-     * @notice Returns whether unsigned fixed-decimal `a` is less than or equal to `b`
-     * @param a First unsigned fixed-decimal
-     * @param b Second unsigned fixed-decimal
-     * @return Whether `a` is less than or equal to `b`
-     */
-    function lte(UFixed18 a, UFixed18 b) internal pure returns (bool) {
-        return lt(a, b) || eq(a, b);
     }
 
     /**
@@ -372,4 +295,106 @@ library UFixed18StorageLib {
             sstore(self, value)
         }
     }
+}
+
+/**
+* @notice Adds two unsigned fixed-decimals `a` and `b` together
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Resulting summed unsigned fixed-decimal
+*/
+function add(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18.wrap(UFixed18.unwrap(a) + UFixed18.unwrap(b));
+}
+
+/**
+* @notice Subtracts unsigned fixed-decimal `b` from `a`
+* @param a Unsigned fixed-decimal to subtract from
+* @param b Unsigned fixed-decimal to subtract
+* @return Resulting subtracted unsigned fixed-decimal
+*/
+function sub(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18.wrap(UFixed18.unwrap(a) - UFixed18.unwrap(b));
+}
+
+/**
+* @notice Multiplies two unsigned fixed-decimals `a` and `b` together
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Resulting multiplied unsigned fixed-decimal
+*/
+function mul(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18.wrap(UFixed18.unwrap(a) * UFixed18.unwrap(b) / UFixed18Lib.BASE);
+}
+
+/**
+* @notice Divides unsigned fixed-decimal `a` by `b`
+* @param a Unsigned fixed-decimal to divide
+* @param b Unsigned fixed-decimal to divide by
+* @return Resulting divided unsigned fixed-decimal
+*/
+function div(UFixed18 a, UFixed18 b) pure returns (UFixed18) {
+    return UFixed18.wrap(UFixed18.unwrap(a) * UFixed18Lib.BASE / UFixed18.unwrap(b));
+}
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is equal to `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is equal to `b`
+*/
+function eq(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return UFixed18.unwrap(a) == UFixed18.unwrap(b);
+}
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is not equal to `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is not equal to `b`
+*/
+function neq(UFixed18 a, UFixed18 b)  pure returns (bool) {
+    return UFixed18.unwrap(a) != UFixed18.unwrap(b);
+}
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is greater than `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is greater than `b`
+*/
+function gt(UFixed18 a, UFixed18 b) pure returns (bool) {
+    (uint256 au, uint256 bu) = (UFixed18.unwrap(a), UFixed18.unwrap(b));
+    return au > bu;
+}
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is less than `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is less than `b`
+*/
+function lt(UFixed18 a, UFixed18 b) pure returns (bool) {
+    (uint256 au, uint256 bu) = (UFixed18.unwrap(a), UFixed18.unwrap(b));
+    return au < bu;
+}
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is greater than or equal to `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is greater than or equal to `b`
+*/
+function gte(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return eq(a, b) || gt(a, b);
+}
+
+/**
+* @notice Returns whether unsigned fixed-decimal `a` is less than or equal to `b`
+* @param a First unsigned fixed-decimal
+* @param b Second unsigned fixed-decimal
+* @return Whether `a` is less than or equal to `b`
+*/
+function lte(UFixed18 a, UFixed18 b) pure returns (bool) {
+    return eq(a, b) || lt(a, b);
 }
