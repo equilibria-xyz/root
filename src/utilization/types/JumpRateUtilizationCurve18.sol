@@ -14,16 +14,12 @@ struct JumpRateUtilizationCurve18 {
 }
 using JumpRateUtilizationCurve18Lib for JumpRateUtilizationCurve18 global;
 
-/**
- * @title JumpRateUtilizationCurve18Lib
- * @notice Library for the unsigned Jump Rate utilization curve type
- */
+/// @title JumpRateUtilizationCurve18Lib
+/// @notice Library for the unsigned Jump Rate utilization curve type
 library JumpRateUtilizationCurve18Lib {
-    /**
-     * @notice Computes the corresponding rate for a utilization ratio
-     * @param utilization The utilization ratio
-     * @return The corresponding rate
-     */
+    /// @notice Computes the corresponding rate for a utilization ratio
+    /// @param utilization The utilization ratio
+    /// @return The corresponding rate
     function compute(JumpRateUtilizationCurve18 memory self, UFixed18 utilization) internal pure returns (UFixed18) {
         if (utilization < self.targetUtilization) {
             return CurveMath18.linearInterpolation(
