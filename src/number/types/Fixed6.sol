@@ -398,7 +398,8 @@ function neq(Fixed6 a, Fixed6 b) pure returns (bool) {
 * @return Whether `a` is greater than `b`
 */
 function gt(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return Fixed6Lib.compare(a, b) == 2;
+    (int256 au, int256 bu) = (Fixed6.unwrap(a), Fixed6.unwrap(b));
+    return au > bu;
 }
 
 /**
@@ -408,7 +409,8 @@ function gt(Fixed6 a, Fixed6 b) pure returns (bool) {
 * @return Whether `a` is less than `b`
 */
 function lt(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return Fixed6Lib.compare(a, b) == 0;
+    (int256 au, int256 bu) = (Fixed6.unwrap(a), Fixed6.unwrap(b));
+    return au < bu;
 }
 
 /**
@@ -418,7 +420,7 @@ function lt(Fixed6 a, Fixed6 b) pure returns (bool) {
 * @return Whether `a` is greater than or equal to `b`
 */
 function gte(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return gt(a, b) || eq(a, b);
+    return eq(a, b) || gt(a, b);
 }
 
 /**
@@ -428,5 +430,5 @@ function gte(Fixed6 a, Fixed6 b) pure returns (bool) {
 * @return Whether `a` is less than or equal to `b`
 */
 function lte(Fixed6 a, Fixed6 b) pure returns (bool) {
-    return lt(a, b) || eq(a, b);
+    return eq(a, b) || lt(a, b);
 }

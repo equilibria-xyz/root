@@ -364,7 +364,8 @@ function neq(UFixed18 a, UFixed18 b)  pure returns (bool) {
 * @return Whether `a` is greater than `b`
 */
 function gt(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return UFixed18Lib.compare(a, b) == 2;
+    (uint256 au, uint256 bu) = (UFixed18.unwrap(a), UFixed18.unwrap(b));
+    return au > bu;
 }
 
 /**
@@ -374,7 +375,8 @@ function gt(UFixed18 a, UFixed18 b) pure returns (bool) {
 * @return Whether `a` is less than `b`
 */
 function lt(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return UFixed18Lib.compare(a, b) == 0;
+    (uint256 au, uint256 bu) = (UFixed18.unwrap(a), UFixed18.unwrap(b));
+    return au < bu;
 }
 
 /**
@@ -384,7 +386,7 @@ function lt(UFixed18 a, UFixed18 b) pure returns (bool) {
 * @return Whether `a` is greater than or equal to `b`
 */
 function gte(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return gt(a, b) || eq(a, b);
+    return eq(a, b) || gt(a, b);
 }
 
 /**
@@ -394,5 +396,5 @@ function gte(UFixed18 a, UFixed18 b) pure returns (bool) {
 * @return Whether `a` is less than or equal to `b`
 */
 function lte(UFixed18 a, UFixed18 b) pure returns (bool) {
-    return lt(a, b) || eq(a, b);
+    return eq(a, b) || lt(a, b);
 }
