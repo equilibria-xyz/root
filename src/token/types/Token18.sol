@@ -39,7 +39,7 @@ library Token18Lib {
      * @return Whether the two tokens are equal
      */
     function eq(Token18 a, Token18 b) internal pure returns (bool) {
-        return Token18.unwrap(a) ==  Token18.unwrap(b);
+        return Token18.unwrap(a) == Token18.unwrap(b);
     }
 
     /**

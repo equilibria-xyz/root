@@ -24,7 +24,7 @@ library JumpRateUtilizationCurve6Lib {
      * @return The corresponding rate
      */
     function compute(JumpRateUtilizationCurve6 memory self, UFixed6 utilization) internal pure returns (UFixed6) {
-        if (utilization.lt(self.targetUtilization)) {
+        if (utilization < self.targetUtilization) {
             return CurveMath6.linearInterpolation(
                 UFixed6Lib.ZERO,
                 self.minRate,
@@ -33,7 +33,7 @@ library JumpRateUtilizationCurve6Lib {
                 utilization
             );
         }
-        if (utilization.lt(UFixed6Lib.ONE)) {
+        if (utilization < UFixed6Lib.ONE) {
             return CurveMath6.linearInterpolation(
                 self.targetUtilization,
                 self.targetRate,
@@ -53,8 +53,8 @@ library JumpRateUtilizationCurve6Lib {
         UFixed6 notional
     ) internal pure returns (UFixed6) {
         return compute(self, utilization)
-            .mul(UFixed6Lib.from(toTimestamp - fromTimestamp))
-            .mul(notional)
-            .div(UFixed6Lib.from(365 days));
+            * UFixed6Lib.from(toTimestamp - fromTimestamp)
+            * notional
+            / UFixed6Lib.from(365 days);
     }
 }
