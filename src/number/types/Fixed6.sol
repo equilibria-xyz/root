@@ -9,8 +9,6 @@ import { UFixed6 } from "./UFixed6.sol";
 /// @dev Fixed6 type
 type Fixed6 is int256;
 using Fixed6Lib for Fixed6 global;
-type Fixed6Storage is bytes32;
-using Fixed6StorageLib for Fixed6Storage global;
 
 using {
     add as +,
@@ -264,20 +262,6 @@ library Fixed6Lib {
     /// @return Whether `value` is outside the range `min` and `max`
     function outside(Fixed6 value, Fixed6 min_, Fixed6 max_) internal pure returns (bool) {
         return lt(value, min_) || gt(value, max_);
-    }
-}
-
-library Fixed6StorageLib {
-    function read(Fixed6Storage self) internal view returns (Fixed6 value) {
-        assembly ("memory-safe") {
-            value := sload(self)
-        }
-    }
-
-    function store(Fixed6Storage self, Fixed6 value) internal {
-        assembly ("memory-safe") {
-            sstore(self, value)
-        }
     }
 }
 

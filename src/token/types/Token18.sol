@@ -9,8 +9,6 @@ import { UFixed18 } from "../../number/types/UFixed18.sol";
 /// @dev Token18
 type Token18 is address;
 using Token18Lib for Token18 global;
-type Token18Storage is bytes32;
-using Token18StorageLib for Token18Storage global;
 
 /// @title Token18Lib
 /// @notice Library to manage 18-decimal ERC20s that is compliant with the fixed-decimal types.
@@ -122,19 +120,5 @@ library Token18Lib {
     /// @return The total supply of the token
     function totalSupply(Token18 self) internal view returns (UFixed18) {
         return UFixed18.wrap(IERC20(Token18.unwrap(self)).totalSupply());
-    }
-}
-
-library Token18StorageLib {
-    function read(Token18Storage self) internal view returns (Token18 value) {
-        assembly ("memory-safe") {
-            value := sload(self)
-        }
-    }
-
-    function store(Token18Storage self, Token18 value) internal {
-        assembly ("memory-safe") {
-            sstore(self, value)
-        }
     }
 }

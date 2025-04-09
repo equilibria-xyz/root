@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import { stdError } from "forge-std/StdError.sol";
 import { Test } from "forge-std/Test.sol";
 
-import { UFixed6, UFixed6Lib, UFixed6Storage, UFixed6StorageLib } from "../../src/number/types/UFixed6.sol";
+import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
 import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
 import { Fixed6, Fixed6Lib } from "../../src/number/types/Fixed6.sol";
 import { NumberMath } from "../../src/number/NumberMath.sol";
@@ -416,12 +416,6 @@ contract UFixed6Test is Test {
         assertEq(a.outside(b, c), true, "below lower bound");
         a = UFixed6.wrap(16);
         assertEq(a.outside(b, c), true, "above upper bound");
-    }
-
-    function test_store() public {
-        UFixed6Storage SLOT = UFixed6Storage.wrap(keccak256("equilibria.root.UFixed6.testSlot"));
-        UFixed6StorageLib.store(SLOT, UFixed6.wrap(12));
-        assertEq(UFixed6.unwrap(SLOT.read()), 12, "stored and loaded");
     }
 }
 

@@ -9,8 +9,6 @@ import { UFixed6 } from "../../number/types/UFixed6.sol";
 /// @dev Token6
 type Token6 is address;
 using Token6Lib for Token6 global;
-type Token6Storage is bytes32;
-using Token6StorageLib for Token6Storage global;
 
 /// @title Token6Lib
 /// @notice Library to manage 6-decimal ERC20s that is compliant with the fixed-decimal types.
@@ -123,19 +121,5 @@ library Token6Lib {
     /// @return The total supply of the token
     function totalSupply(Token6 self) internal view returns (UFixed6) {
         return UFixed6.wrap(IERC20(Token6.unwrap(self)).totalSupply());
-    }
-}
-
-library Token6StorageLib {
-    function read(Token6Storage self) internal view returns (Token6 value) {
-        assembly ("memory-safe") {
-            value := sload(self)
-        }
-    }
-
-    function store(Token6Storage self, Token6 value) internal {
-        assembly ("memory-safe") {
-            sstore(self, value)
-        }
     }
 }

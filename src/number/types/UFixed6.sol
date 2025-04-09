@@ -8,8 +8,6 @@ import { UFixed18 } from "./UFixed18.sol";
 /// @dev UFixed6 type
 type UFixed6 is uint256;
 using UFixed6Lib for UFixed6 global;
-type UFixed6Storage is bytes32;
-using UFixed6StorageLib for UFixed6Storage global;
 
 using {
     add as +,
@@ -243,19 +241,6 @@ library UFixed6Lib {
     }
 }
 
-library UFixed6StorageLib {
-    function read(UFixed6Storage self) internal view returns (UFixed6 value) {
-        assembly ("memory-safe") {
-            value := sload(self)
-        }
-    }
-
-    function store(UFixed6Storage self, UFixed6 value) internal {
-        assembly ("memory-safe") {
-            sstore(self, value)
-        }
-    }
-}
 /// @notice Adds two unsigned fixed-decimals `a` and `b` together
 /// @param a First unsigned fixed-decimal
 /// @param b Second unsigned fixed-decimal
