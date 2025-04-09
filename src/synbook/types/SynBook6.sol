@@ -25,7 +25,7 @@ library SynBook6Lib {
     /// @param latest The latest skew in asset terms
     /// @param change The change in skew in asset terms
     /// @param price The price of the underlying asset
-    /// @return newPrice The price of a given order amount based on the synbook for the account.
+    /// @return newPrice The price of a given order amount based on the synbook for the account
     function compute(
         SynBook6 memory self,
         Fixed6 latest,
