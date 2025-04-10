@@ -96,12 +96,8 @@ library Token6Lib {
     /// @param amount Signed amount of tokens to transfer
     function update(Token6 self, address account, Fixed6 amount) internal {
         int256 sign = amount.sign();
-        if (sign < 0) {
-            push(self, account, amount.abs());
-        }
-        if (sign > 0) {
-            pull(self, account, amount.abs());
-        }
+        if (sign < 0) push(self, account, amount.abs());
+        if (sign > 0) pull(self, account, amount.abs());
     }
 
     /// @notice Returns the name of the token
