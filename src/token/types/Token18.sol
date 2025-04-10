@@ -95,8 +95,8 @@ library Token18Lib {
     /// @param amount Signed amount of tokens to transfer
     function update(Token18 self, address account, Fixed18 amount) internal {
         int256 sign = amount.sign();
-        if (sign < 0) push(self, account, amount.abs());
-        if (sign > 0) pull(self, account, amount.abs());
+        if (sign == -1) push(self, account, amount.abs());
+        else if (sign == 1) pull(self, account, amount.abs());
     }
 
     /// @notice Returns the name of the token
