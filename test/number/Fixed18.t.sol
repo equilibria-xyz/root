@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import { stdError } from "forge-std/StdError.sol";
 import { Test } from "forge-std/Test.sol";
 
-import { Fixed18, Fixed18Lib, Fixed18Storage, Fixed18StorageLib } from "src/number/types/Fixed18.sol";
+import { Fixed18, Fixed18Lib } from "src/number/types/Fixed18.sol";
 import { UFixed18, UFixed18Lib } from "src/number/types/UFixed18.sol";
 import { Fixed6, Fixed6Lib } from "src/number/types/Fixed6.sol";
 import { NumberMath } from "src/number/NumberMath.sol";
@@ -594,12 +594,6 @@ contract Fixed18Test is Test {
         assertEq(Fixed18Lib.outside(a, b, c), true, "below lower bound");
         a = Fixed18.wrap(16);
         assertEq(Fixed18Lib.outside(a, b, c), true, "above upper bound");
-    }
-
-    function test_store() public {
-        Fixed18Storage SLOT = Fixed18Storage.wrap(keccak256("equilibria.root.Fixed18.testSlot"));
-        Fixed18StorageLib.store(SLOT, Fixed18.wrap(-12));
-        assertEq(Fixed18.unwrap(SLOT.read()), -12, "stored and loaded");
     }
 }
 
