@@ -303,6 +303,6 @@ contract VerifierBaseTester is VerifierBase {
     }
 
     function _authorized(address account, address signer) internal view override returns (bool) {
-        return account == signer || signers[account] == signer;
+        return super._authorized(account, signer) || signers[account] == signer;
     }
 }
