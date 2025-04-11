@@ -6,6 +6,7 @@ import { Test } from "forge-std/Test.sol";
 
 import { IOwnable, Ownable } from "src/attribute/Ownable.sol";
 import { IProxy } from "src/proxy/interfaces/IProxy.sol";
+import { IProxyIdentificationCallbackReceiver } from "src/proxy/interfaces/IProxyIdentificationCallbackReceiver.sol";
 import { Proxy, ProxyAdmin } from "src/proxy/Proxy.sol";
 
 /// @dev Tests both Proxy and ProxyAdmin
@@ -108,6 +109,12 @@ contract ProxyTestV1 is ProxyTest {
         instance1.setValue(106);
     }
 
+    function test_nonProxyAdminCannotUpgrade() public {
+        SampleContractV2 impl2 = new SampleContractV2(204);
+        vm.expectRevert(Proxy.ProxyDeniedAdminAccess.selector);
+        proxy.upgradeToAndCall(address(impl2), "", "SampleContract", 2);
+    }
+
     function test_revertsIfNameMismatch() public {
         SampleContractV2 impl2 = new SampleContractV2(204);
         vm.expectRevert(abi.encodeWithSelector(Proxy.ProxyNameMismatch.selector, "SampleContract", "OtherName"));
@@ -203,6 +210,11 @@ contract ProxyAdminTest is ProxyTest {
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
         proxyAdmin.upgradeToAndCall(proxy, address(impl2), "", "SampleContract", 2);
+    }
+
+    function test_onlyProxyCanFireIdentifyCallback() public {
+        vm.expectRevert(IProxyIdentificationCallbackReceiver.ProxyNotIdentifier.selector);
+        proxyAdmin.onIdentify("SampleContract", 1);
     }
 }
 
