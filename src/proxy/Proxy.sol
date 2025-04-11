@@ -5,10 +5,9 @@ import { ERC1967Proxy, ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC196
 import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import { Ownable } from "src/attribute/Ownable.sol";
+import { ProxyAdmin } from "./ProxyAdmin.sol";
 
 interface IProxy is IERC1967 {
-    // TODO: move this to proxyAdmin
     /// @dev Emits name and version as event (since it cannot be returned)
     function identify() external;
 
@@ -21,10 +20,9 @@ interface IProxy is IERC1967 {
     ) external payable;
 }
 
-/**
- * NOTE: The real interface of this proxy is that defined in `IProxy`. This contract does not
- * inherit from that interface for reasons explained in baseclass TransparentUpgradeableProxy.
- */
+/// @dev The real interface of this proxy is that defined in `IProxy`. This contract does not
+/// inherit from that interface to maintain transparency.  Upgradability is implemented using an
+/// internal dispatch mechanism.
 contract Proxy is ERC1967Proxy {
     bytes32 internal constant NAME_SLOT = keccak256("equilibria.root.proxy.name");
     bytes32 internal constant VERSION_SLOT = keccak256("equilibria.root.proxy.version");
@@ -34,14 +32,19 @@ contract Proxy is ERC1967Proxy {
     // TODO: should this be in IProxy instead?
     event Identify(string name, uint256 version);
 
+    /// @dev An upgrade attempt was made by someone other than the proxy administrator.
     error ProxyDeniedAdminAccess();
 
-    /// @dev The name provided in the upgrade request does not match the name of this proxy
+    /// @dev The name provided in the upgrade request does not match the name of this proxy.
     error ProxyNameMismatch(string proxyName, string requestName);
 
-    /// @dev The upgraded version is not greater than the current version
+    /// @dev The upgraded version is not greater than the current version.
     error ProxyVersionMismatch(uint256 proxyCurrentVersion, uint256 requestVersion);
 
+    /// @dev Initializes an upgradeable proxy managed by an instance of a {ProxyAdmin}.
+    /// @param _logic The address of the implementation to be used by the proxy.
+    /// @param proxyAdmin Administrator who can upgrade the proxy.
+    /// @param _data Optional data to send as msg.data to the implementation.
     constructor(address _logic, ProxyAdmin proxyAdmin, bytes memory _data, string memory name) payable
         ERC1967Proxy(_logic, _data)
     {
@@ -51,10 +54,12 @@ contract Proxy is ERC1967Proxy {
         StorageSlot.getStringSlot(NAME_SLOT).value = name;
     }
 
+    /// @dev Returns the administrator of the proxy.
     function _proxyAdmin() internal view virtual returns (address) {
         return _admin;
     }
 
+    /// @dev Handles any non-administrative calls to the proxy.
     function _fallback() internal virtual override {
         // anyone can identify the proxy
         if (msg.sig == IProxy.identify.selector) {
@@ -74,6 +79,7 @@ contract Proxy is ERC1967Proxy {
         }
     }
 
+    /// @dev Updates the implementation of the proxy.
     function _dispatchUpgrade() private {
         // get arguments from the upgrade request
         (
@@ -95,23 +101,5 @@ contract Proxy is ERC1967Proxy {
 
         // update the version
         StorageSlot.getUint256Slot(VERSION_SLOT).value = version;
-    }
-}
-
-// TODO: move this to a separate file
-contract ProxyAdmin is Ownable {
-    /// @notice Sets initial owner to the sender
-    function initialize() external initializer(1) {
-        __Ownable__initialize();
-    }
-
-    function upgradeToAndCall(
-        IProxy proxy,
-        address implementation,
-        bytes memory data,
-        string calldata name,
-        uint256 version
-    ) public payable virtual onlyOwner {
-        proxy.upgradeToAndCall{value: msg.value}(implementation, data, name, version);
     }
 }

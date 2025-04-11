@@ -84,6 +84,24 @@ contract ProxyTest is Test {
         assertEq(value2, 0, "Value2 was never set");
     }
 
+    function test_nonOwnerCannotInteract() public {
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, address(this)));
+        instance1.setValue(106);
+    }
+
+    function test_proxyAdminCannotInteract() public {
+        vm.prank(address(proxyAdmin));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, address(proxyAdmin)));
+        instance1.setValue(106);
+    }
+
+    function test_proxyAdminOwnerCannotInteract() public {
+        assertEq(proxyAdmin.owner(), proxyOwner, "ProxyAdmin owner should be proxyOwner");
+        vm.prank(proxyOwner);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, address(proxyOwner)));
+        instance1.setValue(106);
+    }
+
     /* TODO:
     - storage
     - permissions and ProxyOwner
