@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
+import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 import { Test } from "forge-std/Test.sol";
 
 import { IOwnable, Ownable } from "src/attribute/Ownable.sol";
-import { IProxy, Proxy, ProxyAdmin } from "src/proxy/Proxy.sol";
+import { IProxy } from "src/proxy/interfaces/IProxy.sol";
+import { Proxy, ProxyAdmin } from "src/proxy/Proxy.sol";
 
-contract ProxyTest is Test {
+/// @dev Tests both Proxy and ProxyAdmin
+abstract contract ProxyTest is Test {
     address public immutable proxyOwner;
     address public immutable implementationOwner;
     IProxy public proxy;
@@ -18,7 +21,7 @@ contract ProxyTest is Test {
         implementationOwner = makeAddr("implementationOwner");
     }
 
-    function setUp() public {
+    function setUp() public virtual {
         // create the proxy admin
         proxyAdmin = new ProxyAdmin();
         vm.prank(proxyOwner);
@@ -42,8 +45,9 @@ contract ProxyTest is Test {
 
     function upgrade() internal returns (SampleContractV2) {
         SampleContractV2 impl2 = new SampleContractV2(201);
-        assertEq(proxyAdmin.owner(), proxyOwner, "ProxyAdmin owner should be proxyOwner");
         vm.prank(proxyOwner);
+        vm.expectEmit();
+        emit IERC1967.Upgraded(address(impl2));
         proxyAdmin.upgradeToAndCall(
             proxy,
             address(impl2),
@@ -53,16 +57,18 @@ contract ProxyTest is Test {
         );
         return SampleContractV2(address(proxy));
     }
+}
 
+contract ProxyTestV1 is ProxyTest {
     function test_creation() public view {
         assertEq(instance1.immutableValue(), 101, "Immutable value should be 101");
         assertEq(instance1.getValue(), 0, "Initial value should be 0");
     }
 
     function test_identify() public {
-        vm.expectEmit();
-        emit Proxy.Identify("SampleContract", 0);
-        proxy.identify();
+        (string memory name, uint256 version) = proxyAdmin.identify(proxy);
+        assertEq(name, "SampleContract", "Identified name should be SampleContract");
+        assertEq(version, 1, "Identified version should be 0");
     }
 
     function test_interaction() public {
@@ -102,13 +108,102 @@ contract ProxyTest is Test {
         instance1.setValue(106);
     }
 
-    /* TODO:
-    - storage
-    - permissions and ProxyOwner
-    - test all the failure cases
-    - ensure exceptions raised on sample contract make it to caller
-    - confirm IERC1967 Upgraded and AdminChanged events are emitted
-    */
+    function test_revertsIfNameMismatch() public {
+        SampleContractV2 impl2 = new SampleContractV2(204);
+        vm.expectRevert(abi.encodeWithSelector(Proxy.ProxyNameMismatch.selector, "SampleContract", "OtherName"));
+        vm.prank(proxyOwner);
+        proxyAdmin.upgradeToAndCall(proxy, address(impl2), "", "OtherName", 2);
+    }
+}
+
+contract ProxyTestV2 is ProxyTest {
+    SampleContractV2 instance2;
+
+    function setUp() public override {
+        super.setUp();
+        // upgrade the proxy
+        instance2 = upgrade();
+        vm.prank(implementationOwner);
+        instance2.setValues(153, -1);
+    }
+
+    function test_identify() public {
+        (string memory name, uint256 version) = proxyAdmin.identify(proxy);
+        assertEq(name, "SampleContract", "Identified name should be SampleContract");
+        assertEq(version, 2, "Identified version should be 2");
+    }
+
+    function test_interactionPostUpgrade() public {
+        vm.prank(implementationOwner);
+        instance2.setValues(253, -254);
+        (uint256 val1, int256 val2) = instance2.getValues();
+        assertEq(instance2.immutableValue(), 201, "Immutable value should still be 201");
+        assertEq(val1, 253, "Value1 should be 253");
+        assertEq(val2, -254, "Value2 should be -254");
+    }
+
+    function test_revertsOnDowngradeAttempt() public {
+        SampleContractV1 impl1 = new SampleContractV1(104);
+        vm.expectRevert(abi.encodeWithSelector(Proxy.ProxyVersionMismatch.selector, 2, 1));
+        vm.prank(proxyOwner);
+        proxyAdmin.upgradeToAndCall(proxy, address(impl1), "", "SampleContract", 1);
+    }
+
+    function test_implementationCanRevert() public {
+        vm.expectRevert(SampleContractV2.CustomError.selector);
+        instance2.revertWhenCalled();
+    }
+}
+
+contract ProxyAdminTest is ProxyTest {
+    address newOwner;
+
+    function setUp() public override {
+        super.setUp();
+
+        // start with a pending update
+        newOwner = makeAddr("newOwner");
+        vm.prank(proxyOwner);
+        vm.expectEmit();
+        emit IOwnable.PendingOwnerUpdated(newOwner);
+        proxyAdmin.updatePendingOwner(newOwner);
+    }
+
+    function test_oldOwnerCanUpgradeBeforeNewOwnerAccepts() public {
+        SampleContractV2 impl2 = new SampleContractV2(201);
+        vm.prank(proxyOwner);
+        vm.expectEmit();
+        emit IERC1967.Upgraded(address(impl2));
+        proxyAdmin.upgradeToAndCall(proxy, address(impl2), "", "SampleContract", 2);
+    }
+
+    function test_newOwnerMustAcceptChange() public {
+        assertEq(proxyAdmin.owner(), proxyOwner, "ProxyAdmin owner unchanged until accepted");
+
+        vm.prank(newOwner);
+        vm.expectEmit();
+        emit IOwnable.OwnerUpdated(newOwner);
+        proxyAdmin.acceptOwner();
+        assertEq(proxyAdmin.owner(), newOwner, "ProxyAdmin owner changed");
+    }
+
+    function test_newOwnerCanUpgrade() public {
+        vm.prank(newOwner);
+        proxyAdmin.acceptOwner();
+        assertEq(proxyAdmin.owner(), newOwner, "ProxyAdmin owner should be newOwner");
+
+        // old owner cannot upgrade
+        SampleContractV2 impl2 = new SampleContractV2(201);
+        vm.prank(proxyOwner);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, proxyOwner));
+        proxyAdmin.upgradeToAndCall(proxy, address(impl2), "", "SampleContract", 2);
+
+        // new owner can upgrade
+        vm.prank(newOwner);
+        vm.expectEmit();
+        emit IERC1967.Upgraded(address(impl2));
+        proxyAdmin.upgradeToAndCall(proxy, address(impl2), "", "SampleContract", 2);
+    }
 }
 
 contract SampleContractV1 is Ownable {
@@ -137,6 +232,8 @@ contract SampleContractV2 is Ownable {
     uint256 public value1; // same storage location as `value` in V1
     int256 public value2;
 
+    error CustomError();
+
     constructor(uint256 immutableValue_) {
         immutableValue = immutableValue_;
     }
@@ -152,5 +249,9 @@ contract SampleContractV2 is Ownable {
 
     function getValues() external view returns (uint256, int256) {
         return (value1, value2);
+    }
+
+    function revertWhenCalled() external pure {
+        revert CustomError();
     }
 }

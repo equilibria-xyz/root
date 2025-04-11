@@ -2,35 +2,21 @@
 pragma solidity ^0.8.20;
 
 import { ERC1967Proxy, ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
+import { IProxy } from "./interfaces/IProxy.sol";
+import { IProxyIdentificationCallbackReceiver } from "./interfaces/IProxyIdentificationCallbackReceiver.sol";
 import { ProxyAdmin } from "./ProxyAdmin.sol";
-
-interface IProxy is IERC1967 {
-    /// @dev Emits name and version as event (since it cannot be returned)
-    function identify() external;
-
-    /// @dev Replaces the implementation, validating name and version
-    function upgradeToAndCall(
-        address newImplementation,
-        bytes calldata data,
-        string calldata name,
-        uint256 version
-    ) external payable;
-}
 
 /// @dev The real interface of this proxy is that defined in `IProxy`. This contract does not
 /// inherit from that interface to maintain transparency.  Upgradability is implemented using an
 /// internal dispatch mechanism.
 contract Proxy is ERC1967Proxy {
+    // TODO: Should we hardcode to reduce deployment cost?  This seems more readable.
     bytes32 internal constant NAME_SLOT = keccak256("equilibria.root.proxy.name");
     bytes32 internal constant VERSION_SLOT = keccak256("equilibria.root.proxy.version");
 
     address private immutable _admin;
-
-    // TODO: should this be in IProxy instead?
-    event Identify(string name, uint256 version);
 
     /// @dev An upgrade attempt was made by someone other than the proxy administrator.
     error ProxyDeniedAdminAccess();
@@ -52,6 +38,7 @@ contract Proxy is ERC1967Proxy {
         ERC1967Utils.changeAdmin(address(proxyAdmin));
 
         StorageSlot.getStringSlot(NAME_SLOT).value = name;
+        StorageSlot.getUint256Slot(VERSION_SLOT).value = 1;
     }
 
     /// @dev Returns the administrator of the proxy.
@@ -61,9 +48,9 @@ contract Proxy is ERC1967Proxy {
 
     /// @dev Handles any non-administrative calls to the proxy.
     function _fallback() internal virtual override {
-        // anyone can identify the proxy
+        // anyone implementing the interface can identify the proxy
         if (msg.sig == IProxy.identify.selector) {
-            emit Identify(
+            IProxyIdentificationCallbackReceiver(msg.sender).onIdentify(
                 StorageSlot.getStringSlot(NAME_SLOT).value,
                 StorageSlot.getUint256Slot(VERSION_SLOT).value
             );
