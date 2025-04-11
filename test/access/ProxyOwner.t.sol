@@ -8,7 +8,7 @@ import { Test } from "forge-std/Test.sol";
 import { ERC20TestToken } from "../token/TokenTest.sol";
 import { ProxyOwner } from "../../src/access/ProxyOwner.sol";
 
-contract ProxyOwnerTest is Test {
+abstract contract ProxyOwnerTest is Test {
     address public immutable owner;
     ERC20TestToken public impl;
     ProxyAdmin public proxyAdmin;
