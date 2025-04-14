@@ -2,11 +2,11 @@
 pragma solidity ^0.8.13;
 
 import { stdError } from "forge-std/StdError.sol";
-import { RootTest } from "../RootTest.sol";
 
-import { UAccumulator6, UAccumulator6Storage } from "../../src/accumulator/types/UAccumulator6.sol";
-import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
-import { NumberMath } from "../../src/number/NumberMath.sol";
+import { UAccumulator6 } from "src/accumulator/types/UAccumulator6.sol";
+import { UFixed6, UFixed6Lib } from "src/number/types/UFixed6.sol";
+import { NumberMath } from "src/number/NumberMath.sol";
+import { RootTest } from "../RootTest.sol";
 
 contract UAccumulator6Test is RootTest {
     MockUAccumulator6 private acc;
@@ -16,7 +16,7 @@ contract UAccumulator6Test is RootTest {
     }
 
     function _value() private view returns (UFixed6) {
-        return acc.accumulator()._value;
+        return acc.value();
     }
 
     // increment
@@ -49,13 +49,13 @@ contract UAccumulator6Test is RootTest {
     // accumulated
 
     function test_returnsAccumulatedNoRounding() public {
-        UAccumulator6 memory from = acc.accumulator();
+        UAccumulator6 memory from = acc.getAccumulator();
         acc.increment(UFixed6Lib.from(2), UFixed6Lib.from(5));
         assertUFixed6Eq(acc.accumulated(from, UFixed6Lib.from(5)), UFixed6Lib.from(2));
     }
 
     function test_returnsAccumulatedRoundingDown() public {
-        UAccumulator6 memory from = acc.accumulator();
+        UAccumulator6 memory from = acc.getAccumulator();
         acc.increment(UFixed6.wrap(1), UFixed6Lib.from(1));
         assertUFixed6Eq(acc.accumulated(from, UFixed6Lib.ZERO), UFixed6Lib.ZERO);
     }
@@ -71,25 +71,29 @@ contract UAccumulator6Test is RootTest {
 
 contract MockUAccumulator6 {
     /// @dev Give tests an accumulator that they can mutate
-    UAccumulator6Storage private accumulatorStorage;
+    UAccumulator6 private accumulator;
 
-    function accumulator() external view returns (UAccumulator6 memory) {
-        return accumulatorStorage.read();
+    function getAccumulator() external view returns (UAccumulator6 memory) {
+        return accumulator;
+    }
+
+    function value() external view returns (UFixed6) {
+        return accumulator._value;
     }
 
     function accumulated(UAccumulator6 memory from, UFixed6 total) external view returns (UFixed6) {
-        return accumulatorStorage.read().accumulated(from, total);
+        return accumulator.accumulated(from, total);
     }
 
     function increment(UFixed6 amount, UFixed6 total) external {
-        UAccumulator6 memory self = accumulatorStorage.read();
+        UAccumulator6 memory self = accumulator;
         self.increment(amount, total);
-        accumulatorStorage.store(self);
+        accumulator = self;
     }
 
     function reset() external {
-        UAccumulator6 memory self = accumulatorStorage.read();
+        UAccumulator6 memory self = accumulator;
         self.reset();
-        accumulatorStorage.store(self);
+        accumulator = self;
     }
 }

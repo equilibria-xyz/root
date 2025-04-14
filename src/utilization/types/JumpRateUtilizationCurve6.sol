@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../CurveMath6.sol";
-import "../../number/types/UFixed6.sol";
+import { CurveMath6 } from "src/utilization/CurveMath6.sol";
+import { UFixed6, UFixed6Lib } from "src/number/types/UFixed6.sol";
 
 /// @dev JumpRateUtilizationCurve6 type
 struct JumpRateUtilizationCurve6 {
@@ -13,18 +13,14 @@ struct JumpRateUtilizationCurve6 {
 }
 using JumpRateUtilizationCurve6Lib for JumpRateUtilizationCurve6 global;
 
-/**
- * @title JumpRateUtilizationCurve6Lib
- * @notice Library for the unsigned base-6 Jump Rate utilization curve type
- */
+/// @title JumpRateUtilizationCurve6Lib
+/// @notice Library for the unsigned base-6 Jump Rate utilization curve type
 library JumpRateUtilizationCurve6Lib {
-    /**
-     * @notice Computes the corresponding rate for a utilization ratio
-     * @param utilization The utilization ratio
-     * @return The corresponding rate
-     */
+    /// @notice Computes the corresponding rate for a utilization ratio
+    /// @param utilization The utilization ratio
+    /// @return The corresponding rate
     function compute(JumpRateUtilizationCurve6 memory self, UFixed6 utilization) internal pure returns (UFixed6) {
-        if (utilization.lt(self.targetUtilization)) {
+        if (utilization < self.targetUtilization) {
             return CurveMath6.linearInterpolation(
                 UFixed6Lib.ZERO,
                 self.minRate,
@@ -33,7 +29,7 @@ library JumpRateUtilizationCurve6Lib {
                 utilization
             );
         }
-        if (utilization.lt(UFixed6Lib.ONE)) {
+        if (utilization < UFixed6Lib.ONE) {
             return CurveMath6.linearInterpolation(
                 self.targetUtilization,
                 self.targetRate,
@@ -53,8 +49,8 @@ library JumpRateUtilizationCurve6Lib {
         UFixed6 notional
     ) internal pure returns (UFixed6) {
         return compute(self, utilization)
-            .mul(UFixed6Lib.from(toTimestamp - fromTimestamp))
-            .mul(notional)
-            .div(UFixed6Lib.from(365 days));
+            * UFixed6Lib.from(toTimestamp - fromTimestamp)
+            * notional
+            / UFixed6Lib.from(365 days);
     }
 }

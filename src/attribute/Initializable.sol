@@ -1,16 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./interfaces/IInitializable.sol";
+import { IInitializable } from "src/attribute/interfaces/IInitializable.sol";
 
-/**
- * @title Initializable
- * @notice Library to manage the initialization lifecycle of upgradeable contracts
- * @dev `Initializable.sol` allows the creation of pseudo-constructors for upgradeable contracts. One
- *      `initializer` should be declared per top-level contract. Child contracts can use the `onlyInitializer`
- *      modifier to tag their internal initialization functions to ensure that they can only be called
- *      from a top-level `initializer` or a constructor.
- */
+/// @title Initializable
+/// @notice Library to manage the initialization lifecycle of upgradeable contracts
+/// @dev `Initializable.sol` allows the creation of pseudo-constructors for upgradeable contracts. One
+///      `initializer` should be declared per top-level contract. Child contracts can use the `onlyInitializer`
+///      modifier to tag their internal initialization functions to ensure that they can only be called
+///      from a top-level `initializer` or a constructor.
 abstract contract Initializable is IInitializable {
     /// @dev The initialized flag
     uint256 private _version;
@@ -38,10 +36,8 @@ abstract contract Initializable is IInitializable {
         _;
     }
 
-    /**
-     * @notice Returns whether the contract is currently being constructed
-     * @return Whether the contract is currently being constructed
-     */
+    /// @notice Returns whether the contract is currently being constructed
+    /// @return Whether the contract is currently being constructed
     function _constructing() private view returns (bool) {
         return !(address(this).code.length > 0);
     }

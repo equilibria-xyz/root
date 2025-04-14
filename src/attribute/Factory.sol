@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/utils/Create2.sol";
-import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "./interfaces/IFactory.sol";
-import "./interfaces/IInstance.sol";
-import "./Pausable.sol";
+import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+import { BeaconProxy } from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+
+import { IFactory } from "src/attribute/interfaces/IFactory.sol";
+import { IInstance } from "src/attribute/interfaces/IInstance.sol";
+import { Pausable } from "src/attribute/Pausable.sol";
+import { Ownable } from "src/attribute/Ownable.sol";
 
 /// @title Factory
 /// @notice An abstract factory that manages creates and manages instances

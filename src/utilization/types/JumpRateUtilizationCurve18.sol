@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../CurveMath18.sol";
-import "../../number/types/UFixed18.sol";
-import "../../number/types/Fixed18.sol";
+import { CurveMath18 } from "src/utilization/CurveMath18.sol";
+import { UFixed18, UFixed18Lib } from "src/number/types/UFixed18.sol";
 
 /// @dev JumpRateUtilizationCurve18 type
 struct JumpRateUtilizationCurve18 {
@@ -14,18 +13,14 @@ struct JumpRateUtilizationCurve18 {
 }
 using JumpRateUtilizationCurve18Lib for JumpRateUtilizationCurve18 global;
 
-/**
- * @title JumpRateUtilizationCurve18Lib
- * @notice Library for the unsigned Jump Rate utilization curve type
- */
+/// @title JumpRateUtilizationCurve18Lib
+/// @notice Library for the unsigned Jump Rate utilization curve type
 library JumpRateUtilizationCurve18Lib {
-    /**
-     * @notice Computes the corresponding rate for a utilization ratio
-     * @param utilization The utilization ratio
-     * @return The corresponding rate
-     */
+    /// @notice Computes the corresponding rate for a utilization ratio
+    /// @param utilization The utilization ratio
+    /// @return The corresponding rate
     function compute(JumpRateUtilizationCurve18 memory self, UFixed18 utilization) internal pure returns (UFixed18) {
-        if (utilization.lt(self.targetUtilization)) {
+        if (utilization < self.targetUtilization) {
             return CurveMath18.linearInterpolation(
                 UFixed18Lib.ZERO,
                 self.minRate,
@@ -34,7 +29,7 @@ library JumpRateUtilizationCurve18Lib {
                 utilization
             );
         }
-        if (utilization.lt(UFixed18Lib.ONE)) {
+        if (utilization< UFixed18Lib.ONE) {
             return CurveMath18.linearInterpolation(
                 self.targetUtilization,
                 self.targetRate,
@@ -54,8 +49,8 @@ library JumpRateUtilizationCurve18Lib {
         UFixed18 notional
     ) internal pure returns (UFixed18) {
         return compute(self, utilization)
-            .mul(UFixed18Lib.from(toTimestamp - fromTimestamp))
-            .mul(notional)
-            .div(UFixed18Lib.from(365 days));
+            * UFixed18Lib.from(toTimestamp - fromTimestamp)
+            * notional
+            / UFixed18Lib.from(365 days);
     }
 }

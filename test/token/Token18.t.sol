@@ -1,16 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import { Token18, Token18Lib } from "src/token/types/Token18.sol";
+import { UFixed18, UFixed18Lib } from "src/number/types/UFixed18.sol";
 import { TokenTest } from "./TokenTest.sol";
-
-import {
-    Token18,
-    Token18Lib,
-    Token18Storage,
-    Token18StorageLib,
-    UFixed18,
-    UFixed18Lib
-} from "../../src/token/types/Token18.sol";
 
 abstract contract Token18Test is TokenTest {
     Token18 public token;
@@ -50,12 +43,6 @@ contract Token18UnfundedUserTest is Token18Test {
     function test_nameAndSymbol() public view{
         assertEq(token.name(), "Test MiNted Token", "name");
         assertEq(token.symbol(), "TMNT", "symbol");
-    }
-
-    function test_store() public {
-        Token18Storage SLOT = Token18Storage.wrap(keccak256("equilibria.root.Token18.testSlot"));
-        Token18StorageLib.store(SLOT, token);
-        assertEq(Token18.unwrap(SLOT.read()), address(erc20), "stored and loaded");
     }
 }
 

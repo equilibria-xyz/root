@@ -4,10 +4,10 @@ pragma solidity ^0.8.13;
 import { stdError } from "forge-std/StdError.sol";
 import { Test } from "forge-std/Test.sol";
 
-import { Fixed6, Fixed6Lib, Fixed6Storage, Fixed6StorageLib } from "../../src/number/types/Fixed6.sol";
-import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
-import { Fixed18, Fixed18Lib } from "../../src/number/types/Fixed18.sol";
-import { NumberMath } from "../../src/number/NumberMath.sol";
+import { Fixed6, Fixed6Lib } from "src/number/types/Fixed6.sol";
+import { UFixed6, UFixed6Lib } from "src/number/types/UFixed6.sol";
+import { Fixed18, Fixed18Lib } from "src/number/types/Fixed18.sol";
+import { NumberMath } from "src/number/NumberMath.sol";
 
 contract Fixed6Test is Test {
     MockFixed6 m = new MockFixed6();
@@ -126,45 +126,45 @@ contract Fixed6Test is Test {
     function test_addition() public pure {
         Fixed6 a = Fixed6Lib.from(10);
         Fixed6 b = Fixed6Lib.from(20);
-        assertEq(Fixed6.unwrap(Fixed6Lib.add(a, b)), 30e6, "10 + 20 = 30");
+        assertEq(Fixed6.unwrap(a + b), 30e6, "10 + 20 = 30");
 
         a = Fixed6Lib.from(-10);
         b = Fixed6Lib.from(-20);
-        assertEq(Fixed6.unwrap(Fixed6Lib.add(a, b)), -30e6, "-10 + -20 = -30");
+        assertEq(Fixed6.unwrap(a + b), -30e6, "-10 + -20 = -30");
     }
 
     function test_subtraction() public pure {
         Fixed6 a = Fixed6Lib.from(20);
         Fixed6 b = Fixed6Lib.from(10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.sub(a, b)), 10e6, "20 - 10 = 10");
+        assertEq(Fixed6.unwrap(a - b), 10e6, "20 - 10 = 10");
 
         a = Fixed6Lib.from(-20);
         b = Fixed6Lib.from(-10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.sub(a, b)), -10e6, "-20 - -10 = -10");
+        assertEq(Fixed6.unwrap(a - b), -10e6, "-20 - -10 = -10");
     }
 
     function test_multiplication() public pure {
         Fixed6 a = Fixed6Lib.from(20);
         Fixed6 b = Fixed6Lib.from(10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), 200e6, "20 * 10 = 200");
+        assertEq(Fixed6.unwrap(a * b), 200e6, "20 * 10 = 200");
         a = Fixed6Lib.from(-20);
-        assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), -200e6, "-20 * 10 = -200");
+        assertEq(Fixed6.unwrap(a * b), -200e6, "-20 * 10 = -200");
         b = Fixed6Lib.from(-10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), 200e6, "-20 * -10 = 200");
+        assertEq(Fixed6.unwrap(a * b), 200e6, "-20 * -10 = 200");
         a = Fixed6Lib.from(20);
-        assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), -200e6, "20 * -10 = -200");
+        assertEq(Fixed6.unwrap(a * b), -200e6, "20 * -10 = -200");
     }
 
     function test_MultiplicationRoundsTowardZero() public pure {
         Fixed6 a = Fixed6.wrap(1);
         Fixed6 b = Fixed6.wrap(2);
-        assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), 0, "0.0000001 * 0.0000002 = 0");
+        assertEq(Fixed6.unwrap(a * b), 0, "0.0000001 * 0.0000002 = 0");
         a = Fixed6.wrap(-1);
-        assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), 0, "-0.0000001 * 0.0000002 = 0");
+        assertEq(Fixed6.unwrap(a * b), 0, "-0.0000001 * 0.0000002 = 0");
         b = Fixed6.wrap(-2);
-        assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), 0, "-0.0000001 * -0.0000002 = 0");
+        assertEq(Fixed6.unwrap(a * b), 0, "-0.0000001 * -0.0000002 = 0");
         a = Fixed6.wrap(1);
-        assertEq(Fixed6.unwrap(Fixed6Lib.mul(a, b)), 0, "0.0000001 * -0.0000002 = 0");
+        assertEq(Fixed6.unwrap(a * b), 0, "0.0000001 * -0.0000002 = 0");
     }
 
     function test_multiplicationOut() public pure {
@@ -194,21 +194,21 @@ contract Fixed6Test is Test {
     function test_division() public pure {
         Fixed6 a = Fixed6.wrap(20);
         Fixed6 b = Fixed6.wrap(10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.div(a, b)), 2e6, "20 / 10 = 2");
+        assertEq(Fixed6.unwrap(a / b), 2e6, "20 / 10 = 2");
         a = Fixed6.wrap(-20);
-        assertEq(Fixed6.unwrap(Fixed6Lib.div(a, b)), -2e6, "-20 / 10 = -2");
+        assertEq(Fixed6.unwrap(a / b), -2e6, "-20 / 10 = -2");
         b = Fixed6.wrap(-10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.div(a, b)), 2e6, "-20 / -10 = 2");
+        assertEq(Fixed6.unwrap(a / b), 2e6, "-20 / -10 = 2");
         a = Fixed6.wrap(20);
-        assertEq(Fixed6.unwrap(Fixed6Lib.div(a, b)), -2e6, "20 / -10 = -2");
+        assertEq(Fixed6.unwrap(a / b), -2e6, "20 / -10 = -2");
     }
 
     function test_divisionRoundsTowardsZero() public pure {
         Fixed6 a = Fixed6.wrap(21);
         Fixed6 b = Fixed6Lib.from(10);
-        assertEq(Fixed6.unwrap(Fixed6Lib.div(a, b)), 2, "0.000021 / 0.000010 = 2");
+        assertEq(Fixed6.unwrap(a / b), 2, "0.000021 / 0.000010 = 2");
         a = Fixed6.wrap(-21);
-        assertEq(Fixed6.unwrap(Fixed6Lib.div(a, b)), -2, "-0.000021 / 0.000010 = -2");
+        assertEq(Fixed6.unwrap(a / b), -2, "-0.000021 / 0.000010 = -2");
     }
 
     function test_divisionZeroByZero() public {
@@ -415,76 +415,88 @@ contract Fixed6Test is Test {
     function test_equals() public pure {
         Fixed6 a = Fixed6.wrap(12);
         Fixed6 b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.eq(a, b), true, "12 == 12");
+        assertEq(a == b, true, "12 == 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-12);
-        assertEq(Fixed6Lib.eq(a, b), true, "-12 == -12");
+        assertEq(a == b, true, "-12 == -12");
         a = Fixed6.wrap(11);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.eq(a, b), false, "11 != 12");
+        assertEq(a == b, false, "11 != 12");
+    }
+
+    function test_notEquals() public pure {
+        Fixed6 a = Fixed6.wrap(12);
+        Fixed6 b = Fixed6.wrap(12);
+        assertEq(a != b, false, "12 != 12");
+        a = Fixed6.wrap(-12);
+        b = Fixed6.wrap(-12);
+        assertEq(a != b, false, "-12 != -12");
+        a = Fixed6.wrap(11);
+        b = Fixed6.wrap(12);
+        assertEq(a != b, true, "11 == 12");
     }
 
     function test_greaterThan() public pure {
         Fixed6 a = Fixed6.wrap(13);
         Fixed6 b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.gt(a, b), true, "13 > 12");
+        assertEq(a > b, true, "13 > 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-13);
-        assertEq(Fixed6Lib.gt(a, b), true, "-12 > -13");
+        assertEq(a > b, true, "-12 > -13");
         a = Fixed6.wrap(12);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.gt(a, b), false, "12 !> 12");
+        assertEq(a > b, false, "12 !> 12");
         a = Fixed6.wrap(11);
-        assertEq(Fixed6Lib.gt(a, b), false, "11 !> 12");
+        assertEq(a > b, false, "11 !> 12");
     }
 
     function test_lessThan() public pure {
         Fixed6 a = Fixed6.wrap(13);
         Fixed6 b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.lt(a, b), false, "13 !< 12");
+        assertEq(a < b, false, "13 !< 12");
         a = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.lt(a, b), false, "12 !< 12");
+        assertEq(a < b, false, "12 !< 12");
         a = Fixed6.wrap(11);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.lt(a, b), true, "11 < 12");
+        assertEq(a < b, true, "11 < 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-11);
-        assertEq(Fixed6Lib.lt(a, b), true, "-12 < -11");
+        assertEq(a < b, true, "-12 < -11");
     }
 
     function test_greaterThanOrEqualTo() public pure {
         Fixed6 a = Fixed6.wrap(13);
         Fixed6 b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.gte(a, b), true, "13 >= 12");
+        assertEq(a >= b, true, "13 >= 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-13);
-        assertEq(Fixed6Lib.gte(a, b), true, "-12 >= -13");
+        assertEq(a >= b, true, "-12 >= -13");
         a = Fixed6.wrap(12);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.gte(a, b), true, "12 >= 12");
+        assertEq(a >= b, true, "12 >= 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-12);
-        assertEq(Fixed6Lib.gte(a, b), true, "-12 >= -12");
+        assertEq(a >= b, true, "-12 >= -12");
         a = Fixed6.wrap(11);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.gte(a, b), false, "11 !>= 12");
+        assertEq(a >= b, false, "11 !>= 12");
     }
 
     function test_lessThanOrEqualTo() public pure {
         Fixed6 a = Fixed6.wrap(13);
         Fixed6 b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.lte(a, b), false, "13 !<= 12");
+        assertEq(a <= b, false, "13 !<= 12");
         a = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.lte(a, b), true, "12 <= 12");
+        assertEq(a <= b, true, "12 <= 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-12);
-        assertEq(Fixed6Lib.lte(a, b), true, "-12 <= -12");
+        assertEq(a <= b, true, "-12 <= -12");
         a = Fixed6.wrap(11);
         b = Fixed6.wrap(12);
-        assertEq(Fixed6Lib.lte(a, b), true, "11 <= 12");
+        assertEq(a <= b, true, "11 <= 12");
         a = Fixed6.wrap(-12);
         b = Fixed6.wrap(-11);
-        assertEq(Fixed6Lib.lte(a, b), true, "-12 <= -11");
+        assertEq(a <= b, true, "-12 <= -11");
     }
 
     function test_compare() public pure {
@@ -591,12 +603,6 @@ contract Fixed6Test is Test {
         a = Fixed6.wrap(16);
         assertEq(Fixed6Lib.outside(a, b, c), true, "above upper bound");
     }
-
-    function test_store() public {
-        Fixed6Storage SLOT = Fixed6Storage.wrap(keccak256("equilibria.root.Fixed6.testSlot"));
-        Fixed6StorageLib.store(SLOT, Fixed6.wrap(-12));
-        assertEq(Fixed6.unwrap(SLOT.read()), -12, "stored and loaded");
-    }
 }
 
 contract MockFixed6 {
@@ -621,7 +627,7 @@ contract MockFixed6 {
     }
 
     function div(Fixed6 a, Fixed6 b) external pure returns (Fixed6) {
-        return Fixed6Lib.div(a, b);
+        return a / b;
     }
 
     function divOut(Fixed6 a, Fixed6 b) external pure returns (Fixed6) {

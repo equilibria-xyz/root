@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Fixed6, Fixed18 } from "../number/types/Fixed6.sol";
-import { UFixed6, UFixed18 } from "../number/types/UFixed6.sol";
+import { Fixed6, Fixed18 } from "src/number/types/Fixed6.sol";
+import { UFixed6, UFixed18 } from "src/number/types/UFixed6.sol";
 
 // reference material:
 // https://github.com/foundry-rs/forge-std/blob/master/src/console.sol and
@@ -10,11 +10,10 @@ import { UFixed6, UFixed18 } from "../number/types/UFixed6.sol";
 
 // manual code generation utility: scripts/console_codegen.ts
 
-/* solhint-disable no-console */
+// solhint-disable-next-line no-console
 import { console as fConsole } from "forge-std/console.sol";
-/* solhint-enable no-console */
 
-/* solhint-disable-next-line contract-name-camelcase, contract-name-capwords */
+// solhint-disable-next-line contract-name-camelcase, contract-name-capwords
 library console {
     function itoa(int256 value) internal pure returns (string memory) {
         if (value == 0) return "0";

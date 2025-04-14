@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../../number/types/Fixed6.sol";
-import "../../number/types/UFixed6.sol";
+import { Fixed6, Fixed6Lib } from "src/number/types/Fixed6.sol";
+import { UFixed6, UFixed6Lib } from "src/number/types/UFixed6.sol";
 
 /// @dev SynBook6 type
 struct SynBook6 {
@@ -14,11 +14,8 @@ struct SynBook6 {
 }
 using SynBook6Lib for SynBook6 global;
 
-/**
- * @title SynBook6Lib
- * @notice Library that that manages the synthetic orderbook mechanism
- * @dev
- */
+/// @title SynBook6Lib
+/// @notice Library that that manages the synthetic orderbook mechanism
 library SynBook6Lib {
     /// @notice Computes the spread from the synthetic orderbook
     /// @param self The synthetic orderbook configuration
@@ -32,12 +29,12 @@ library SynBook6Lib {
         Fixed6 change,
         UFixed6 price
     ) internal pure returns (UFixed6 newPrice) {
-        Fixed6 from = latest.div(Fixed6Lib.from(self.scale));
-        Fixed6 to = latest.add(change).div(Fixed6Lib.from(self.scale));
+        Fixed6 from = latest / (Fixed6Lib.from(self.scale));
+        Fixed6 to = (latest + change) / (Fixed6Lib.from(self.scale));
 
         newPrice = UFixed6Lib.from(Fixed6Lib.from(price)
-            .add(_indefinite(self.d0, self.d1, self.d2, self.d3, to, price))
-            .sub(_indefinite(self.d0, self.d1, self.d2, self.d3, from, price)));
+            + (_indefinite(self.d0, self.d1, self.d2, self.d3, to, price))
+            - (_indefinite(self.d0, self.d1, self.d2, self.d3, from, price)));
     }
 
     /// @dev f(x) = d0 * x + d1 * x^2 / 2 + d2 * x^3 / 3 + d3 * x^4 / 4
@@ -50,15 +47,15 @@ library SynBook6Lib {
         UFixed6 price
     ) private pure returns (Fixed6 result) {
         // d0 * x
-        result = Fixed6Lib.from(price).mul(value).mul(Fixed6Lib.from(d0));
+        result = Fixed6Lib.from(price) * value * Fixed6Lib.from(d0);
 
         // d1 * x^2 / 2
-        result = result.add(Fixed6Lib.from(price).mul(value).mul(value).mul(Fixed6Lib.from(d1)).div(Fixed6Lib.from(2)));
+        result = result + (Fixed6Lib.from(price) * value * value * Fixed6Lib.from(d1) / Fixed6Lib.from(2));
 
         // d2 * x^3 / 3
-        result = result.add(Fixed6Lib.from(price).mul(value).mul(value).mul(value).mul(Fixed6Lib.from(d2)).div(Fixed6Lib.from(3)));
+        result = result + (Fixed6Lib.from(price) * value * value * value *  Fixed6Lib.from(d2) / Fixed6Lib.from(3));
 
         // d3 * x^4 / 4
-        result = result.add(Fixed6Lib.from(price).mul(value).mul(value).mul(value).mul(value).mul(Fixed6Lib.from(d3)).div(Fixed6Lib.from(4)));
+        result = result + (Fixed6Lib.from(price) * value * value * value * value * Fixed6Lib.from(d3) / Fixed6Lib.from(4));
     }
 }
