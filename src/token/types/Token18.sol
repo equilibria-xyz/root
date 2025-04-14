@@ -4,8 +4,8 @@ pragma solidity ^0.8.13;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-
 import { UFixed18 } from "src/number/types/UFixed18.sol";
+import { Fixed18, Fixed18Lib } from "src/number/types/Fixed18.sol";
 
 /// @dev Token18
 type Token18 is address;
@@ -85,6 +85,17 @@ library Token18Lib {
     /// @param amount Amount of tokens to transfer
     function pullTo(Token18 self, address benefactor, address recipient, UFixed18 amount) internal {
         IERC20(Token18.unwrap(self)).safeTransferFrom(benefactor, recipient, UFixed18.unwrap(amount));
+    }
+
+    /// @notice Processes a token transfer based on the sign of the amount
+    /// @dev If amount is positive, pulls tokens from the account to the caller
+    ///      If amount is negative, pushes tokens from the caller to the account
+    /// @param self Token to transfer
+    /// @param account Address to pull from or push to
+    /// @param amount Signed amount of tokens to transfer
+    function update(Token18 self, address account, Fixed18 amount) internal {
+        if (amount < Fixed18Lib.ZERO) push(self, account, amount.abs());
+        else if (amount > Fixed18Lib.ZERO) pull(self, account, amount.abs());
     }
 
     /// @notice Returns the name of the token
