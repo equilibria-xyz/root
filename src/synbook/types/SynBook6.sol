@@ -32,23 +32,12 @@ library SynBook6Lib {
         Fixed6 change,
         UFixed6 price
     ) internal pure returns (UFixed6 newPrice) {
-        bool isSkewChangePositive = change.gt(Fixed6Lib.ZERO);
-        // sign = 1 for buy / ask and -1 for sell / bid, use f(-x) for sell orders
-        if (!isSkewChangePositive) {
-            latest = latest.mul(Fixed6Lib.NEG_ONE);
-            change = change.mul(Fixed6Lib.NEG_ONE);
-        }
-
         Fixed6 from = latest.div(Fixed6Lib.from(self.scale));
         Fixed6 to = latest.add(change).div(Fixed6Lib.from(self.scale));
-        UFixed6 notional = change.abs().mul(price);
 
-        Fixed6 spread = _indefinite(self.d0, self.d1, self.d2, self.d3, to, notional)
-            .sub(_indefinite(self.d0, self.d1, self.d2, self.d3, from, notional));
-
-        newPrice = isSkewChangePositive
-            ? price.add(spread.abs().div(price))   // long, positive spread raises quote
-            : price.sub(spread.abs().div(price));  // short, positive spread lowers quote
+        newPrice = UFixed6Lib.from(Fixed6Lib.from(price)
+            .add(_indefinite(self.d0, self.d1, self.d2, self.d3, to, price))
+            .sub(_indefinite(self.d0, self.d1, self.d2, self.d3, from, price)));
     }
 
     /// @dev f(x) = d0 * x + d1 * x^2 / 2 + d2 * x^3 / 3 + d3 * x^4 / 4
@@ -58,18 +47,18 @@ library SynBook6Lib {
         UFixed6 d2,
         UFixed6 d3,
         Fixed6 value,
-        UFixed6 notional
+        UFixed6 price
     ) private pure returns (Fixed6 result) {
         // d0 * x
-        result = Fixed6Lib.from(notional).mul(value).mul(Fixed6Lib.from(d0));
+        result = Fixed6Lib.from(price).mul(value).mul(Fixed6Lib.from(d0));
 
         // d1 * x^2 / 2
-        result = result.add(Fixed6Lib.from(notional).mul(value).mul(value).mul(Fixed6Lib.from(d1)).div(Fixed6Lib.from(2)));
+        result = result.add(Fixed6Lib.from(price).mul(value).mul(value).mul(Fixed6Lib.from(d1)).div(Fixed6Lib.from(2)));
 
         // d2 * x^3 / 3
-        result = result.add(Fixed6Lib.from(notional).mul(value).mul(value).mul(value).mul(Fixed6Lib.from(d2)).div(Fixed6Lib.from(3)));
+        result = result.add(Fixed6Lib.from(price).mul(value).mul(value).mul(value).mul(Fixed6Lib.from(d2)).div(Fixed6Lib.from(3)));
 
         // d3 * x^4 / 4
-        result = result.add(Fixed6Lib.from(notional).mul(value).mul(value).mul(value).mul(value).mul(Fixed6Lib.from(d3)).div(Fixed6Lib.from(4)));
+        result = result.add(Fixed6Lib.from(price).mul(value).mul(value).mul(value).mul(value).mul(Fixed6Lib.from(d3)).div(Fixed6Lib.from(4)));
     }
 }
