@@ -3,10 +3,10 @@ pragma solidity ^0.8.13;
 
 import { ProxyAdmin, Ownable } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-
 import { Test } from "forge-std/Test.sol";
+
+import { ProxyOwner } from "src/access/ProxyOwner.sol";
 import { ERC20TestToken } from "../token/TokenTest.sol";
-import { ProxyOwner } from "../../src/access/ProxyOwner.sol";
 
 contract ProxyOwnerTest is Test {
     address public immutable owner;

@@ -4,10 +4,10 @@ pragma solidity ^0.8.13;
 import { stdError } from "forge-std/StdError.sol";
 import { Test } from "forge-std/Test.sol";
 
-import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
-import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
-import { Fixed6, Fixed6Lib } from "../../src/number/types/Fixed6.sol";
-import { NumberMath } from "../../src/number/NumberMath.sol";
+import { UFixed6, UFixed6Lib } from "src/number/types/UFixed6.sol";
+import { UFixed18, UFixed18Lib } from "src/number/types/UFixed18.sol";
+import { Fixed6, Fixed6Lib } from "src/number/types/Fixed6.sol";
+import { NumberMath } from "src/number/NumberMath.sol";
 
 contract UFixed6Test is Test {
     MockUFixed6 m = new MockUFixed6();

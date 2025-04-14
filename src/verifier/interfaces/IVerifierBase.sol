@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Common } from "../types/Common.sol";
-import { GroupCancellation } from "../types/GroupCancellation.sol";
+import { Common } from "src/verifier/types/Common.sol";
+import { GroupCancellation } from "src/verifier/types/GroupCancellation.sol";
 
 interface IVerifierBase {
     // sig: 0xfec563a0
