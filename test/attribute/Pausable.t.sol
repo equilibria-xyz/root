@@ -174,7 +174,7 @@ contract PausableTest is Test {
 contract MockPausable is Pausable {
     uint256 public counter;
 
-    function __initialize() external initializer(1) {
+    function __initialize() external initializer("MockPausable", 1) {
         super.__Pausable__initialize();
     }
 

@@ -4,18 +4,18 @@ pragma solidity ^0.8.20;
 import { ERC1967Proxy, ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
+import { Initializable } from "src/attribute/Initializable.sol";
 import { IProxy } from "./interfaces/IProxy.sol";
-import { IProxyIdentificationCallbackReceiver } from "./interfaces/IProxyIdentificationCallbackReceiver.sol";
 import { ProxyAdmin } from "./ProxyAdmin.sol";
 
+/// @title Proxy
+/// @notice A transparent upgradeable proxy with facilities to prevent deployment errors.
 /// @dev The real interface of this proxy is that defined in `IProxy`. This contract does not
 /// inherit from that interface to maintain transparency.  Upgradability is implemented using an
-/// internal dispatch mechanism.
+/// internal dispatch mechanism.  Proxied contracts must implement `Initializable` (not just the
+/// interface) and must return a constant `name` string used for identification.
+/// Implementations must be initialized using calldata during deployment and upgrade.
 contract Proxy is ERC1967Proxy {
-    // TODO: Should we hardcode to reduce deployment cost?  This seems more readable.
-    bytes32 internal constant NAME_SLOT = keccak256("equilibria.root.proxy.name");
-    bytes32 internal constant VERSION_SLOT = keccak256("equilibria.root.proxy.version");
-
     address private immutable _admin;
 
     /// @dev An upgrade attempt was made by someone other than the proxy administrator.
@@ -28,17 +28,14 @@ contract Proxy is ERC1967Proxy {
     error ProxyVersionMismatch(uint256 proxyCurrentVersion, uint256 requestVersion);
 
     /// @dev Initializes an upgradeable proxy managed by an instance of a {ProxyAdmin}.
-    /// @param _logic The address of the implementation to be used by the proxy.
+    /// @param implementation The first version of the contract to be proxied.
     /// @param proxyAdmin Administrator who can upgrade the proxy.
-    /// @param _data Optional data to send as msg.data to the implementation.
-    constructor(address _logic, ProxyAdmin proxyAdmin, bytes memory _data, string memory name) payable
-        ERC1967Proxy(_logic, _data)
+    /// @param initData Calldata to invoke the instance's initializer.
+    constructor(Initializable implementation, ProxyAdmin proxyAdmin, bytes memory initData) payable
+        ERC1967Proxy(address(implementation), initData)
     {
         _admin = address(proxyAdmin);
         ERC1967Utils.changeAdmin(address(proxyAdmin));
-
-        StorageSlot.getStringSlot(NAME_SLOT).value = name;
-        StorageSlot.getUint256Slot(VERSION_SLOT).value = 1;
     }
 
     /// @dev Returns the administrator of the proxy.
@@ -48,19 +45,14 @@ contract Proxy is ERC1967Proxy {
 
     /// @dev Handles any non-administrative calls to the proxy.
     function _fallback() internal virtual override {
-        // anyone implementing the interface can identify the proxy
-        if (msg.sig == IProxy.identify.selector) {
-            IProxyIdentificationCallbackReceiver(msg.sender).onIdentify(
-                StorageSlot.getStringSlot(NAME_SLOT).value,
-                StorageSlot.getUint256Slot(VERSION_SLOT).value
-            );
-        // only the proxy admin may upgrade
-        } else if (msg.sig == IProxy.upgradeToAndCall.selector) {
-            if (msg.sender == _proxyAdmin())
-                _dispatchUpgrade();
-            else
+        // only admin may interact with the proxy
+        if (msg.sender == _proxyAdmin()) {
+            if (msg.sig != IProxy.upgradeToAndCall.selector) {
                 revert ProxyDeniedAdminAccess();
-        // all other calls passed to the implementation
+            } else {
+                _dispatchUpgrade();
+            }
+        // all other callers interact only with the implementation
         } else {
             super._fallback();
         }
@@ -70,23 +62,23 @@ contract Proxy is ERC1967Proxy {
     function _dispatchUpgrade() private {
         // get arguments from the upgrade request
         (
-            address newImplementation,
-            bytes memory data,
-            string memory name,
-            uint256 version
-        ) = abi.decode(msg.data[4:], (address, bytes, string, uint256));
+            Initializable newImplementation,
+            bytes memory initData
+        ) = abi.decode(msg.data[4:], (Initializable, bytes));
+
+        // read the current name and version from storage before calling new initializer
+        Initializable instance = Initializable(address(this));
+        string memory oldName = instance.name();
+        uint256 oldVersion = instance.version();
+
+        // update the implementation and call initializer to update storage
+        ERC1967Utils.upgradeToAndCall(address(newImplementation), initData);
 
         // ensure name and version are appropriate
-        string memory proxyName = StorageSlot.getStringSlot(NAME_SLOT).value;
-        if (keccak256(bytes(name)) != keccak256(bytes(proxyName)))
-            revert ProxyNameMismatch(proxyName, name);
-        uint256 currentVersion = StorageSlot.getUint256Slot(VERSION_SLOT).value;
-        if (version <= currentVersion)
-            revert ProxyVersionMismatch(currentVersion, version);
+        if (keccak256(bytes(oldName)) != keccak256(bytes(instance.name())))
+            revert ProxyNameMismatch(oldName, instance.name());
+        if (oldVersion >= instance.version())
+            revert ProxyVersionMismatch(oldVersion, instance.version());
 
-        ERC1967Utils.upgradeToAndCall(newImplementation, data);
-
-        // update the version
-        StorageSlot.getUint256Slot(VERSION_SLOT).value = version;
     }
 }

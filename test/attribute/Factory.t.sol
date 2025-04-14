@@ -90,7 +90,7 @@ contract FactoryTest is Test {
 contract MockFactory is Factory {
     constructor(address implementation_) Factory(implementation_) {}
 
-    function initialize() external initializer(1) {
+    function initialize() external initializer("MockFactory", 1) {
         __Factory__initialize();
     }
 

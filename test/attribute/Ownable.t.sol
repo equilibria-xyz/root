@@ -42,7 +42,7 @@ contract OwnableTest is Test {
         assertEq(ownable.owner(), owner);
     }
 
-    function test_initializeRevertsOnReinitialize() public {
+    function test_initializeDoesNotChangeOwnerOnReinitialize() public {
         // Initially, owner is zero.
         assertEq(ownable.owner(), address(0));
 
@@ -50,12 +50,11 @@ contract OwnableTest is Test {
         vm.prank(owner);
         ownable.__initializeV(1);
 
-        // Reinitializing with a new version should revert.
-        vm.prank(owner);
-        vm.expectRevert(abi.encodeWithSelector(OwnableAlreadyInitializedError.selector));
+        // Reinitializing with a new version should not change the owner.
+        vm.prank(user);
         ownable.__initializeV(2);
 
-        // Ensure the owner remains set.
+        // Ensure the owner remains unchanged.
         assertEq(ownable.owner(), owner);
     }
 
@@ -159,7 +158,7 @@ contract OwnableTest is Test {
 contract MockOwnable is Ownable {
     bool public beforeCalled;
 
-    function __initialize() external initializer(1) {
+    function __initialize() external initializer("MockOwnable", 1) {
         super.__Ownable__initialize();
     }
 
@@ -167,7 +166,7 @@ contract MockOwnable is Ownable {
         super.__Ownable__initialize();
     }
 
-    function __initializeV(uint256 version) external initializer(version) {
+    function __initializeV(uint256 version) external initializer("MockOwnable", version) {
         super.__Ownable__initialize();
     }
 
