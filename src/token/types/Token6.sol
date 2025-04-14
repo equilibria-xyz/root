@@ -5,7 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { UFixed6 } from "src/number/types/UFixed6.sol";
-import { Fixed6 } from "src/number/types/Fixed6.sol";
+import { Fixed6, Fixed6Lib } from "src/number/types/Fixed6.sol";
 
 /// @dev Token6
 type Token6 is address;
@@ -95,9 +95,8 @@ library Token6Lib {
     /// @param account Address to pull from or push to
     /// @param amount Signed amount of tokens to transfer
     function update(Token6 self, address account, Fixed6 amount) internal {
-        int256 sign = amount.sign();
-        if (sign == -1) push(self, account, amount.abs());
-        else if (sign == 1) pull(self, account, amount.abs());
+        if (amount < Fixed6Lib.ZERO) push(self, account, amount.abs());
+        else if (amount > Fixed6Lib.ZERO) pull(self, account, amount.abs());
     }
 
     /// @notice Returns the name of the token
