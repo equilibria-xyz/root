@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
-import { NumberMath } from "../NumberMath.sol";
-import { Fixed18, Fixed18Lib } from "./Fixed18.sol";
-import { UFixed6 } from "./UFixed6.sol";
+import { Math, NumberMath } from "src/number/NumberMath.sol";
+import { Fixed18, Fixed18Lib } from "src/number/types/Fixed18.sol";
+import { UFixed6 } from "src/number/types/UFixed6.sol";
 
 /// @dev UFixed18 type
 type UFixed18 is uint256;

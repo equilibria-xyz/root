@@ -1,13 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import { Token18, Token18Lib } from "src/token/types/Token18.sol";
+import { UFixed18, UFixed18Lib } from "src/number/types/UFixed18.sol";
 import { TokenTest } from "./TokenTest.sol";
-
-import {
-    Token18,
-    Token18Lib
-} from "../../src/token/types/Token18.sol";
-import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
 
 abstract contract Token18Test is TokenTest {
     Token18 public token;
