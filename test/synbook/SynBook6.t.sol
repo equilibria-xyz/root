@@ -30,109 +30,109 @@ contract SynBook6Test is RootTest {
     }
 
     function test_computeCurve1ZeroSkew() public view {
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve1.compute(Fixed6Lib.ZERO, Fixed6Lib.ZERO, price),
-            Fixed6Lib.ZERO,
+            price,
             "zero skew, zero change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve1.compute(Fixed6Lib.ZERO, Fixed6Lib.from(100), price),
-            Fixed6.wrap(2467175), // 2.467175
+            price + UFixed6.wrap(24611), // price + (2.467175 / price)
             "zero skew, positive change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve1.compute(Fixed6Lib.ZERO, Fixed6Lib.from(-100), price),
-            Fixed6.wrap(2467175), // 2.467175
+            price - UFixed6.wrap(24611), // price - (2.467175 / price)
             "zero skew, negative change"
         );
     }
 
     function test_computeCurve1PositiveSkew() public view {
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve1.compute(Fixed6Lib.from(200), Fixed6Lib.ZERO, price),
-            Fixed6Lib.ZERO,
+            price,
             "positive skew, zero change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve1.compute(Fixed6Lib.from(200), Fixed6Lib.from(100), price),
-            Fixed6.wrap(2737775), // 2.737775
+            price + UFixed6.wrap(23381), // price + (2.737775 / price)
             "positive skew, positive change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve1.compute(Fixed6Lib.from(200), Fixed6Lib.from(-100), price),
-            Fixed6.wrap(2442575), // 2.442575
+            price - UFixed6.wrap(25349), // price - (2.442575 / price)
             "positive skew, negative change"
         );
     }
 
     function test_computeCurve1NegativeSkew() public view {
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve1.compute(Fixed6Lib.from(-200), Fixed6Lib.ZERO, price),
-            Fixed6Lib.ZERO,
+            price,
             "negative skew, zero change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve1.compute(Fixed6Lib.from(-200), Fixed6Lib.from(100), price),
-            Fixed6.wrap(2442575), // 2.442575
+            price + UFixed6.wrap(25349), // price + (2.442575 / price)
             "negative skew, positive change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve1.compute(Fixed6Lib.from(-200), Fixed6Lib.from(-100), price),
-            Fixed6.wrap(2737775), // 2.737775
+            price - UFixed6.wrap(23381), // price - (2.737775 / price)
             "negative skew, negative change"
         );
     }
 
     function test_computeCurve2ZeroSkew() public view {
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve2.compute(Fixed6Lib.ZERO, Fixed6Lib.ZERO, price),
-            Fixed6Lib.ZERO,
+            price,
             "zero skew, zero change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve2.compute(Fixed6Lib.ZERO, Fixed6Lib.from(100), price),
-            Fixed6.wrap(2713175), // 2.713175
+            price + UFixed6.wrap(22151), // price + (2.713175 / price)
             "zero skew, positive change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve2.compute(Fixed6Lib.ZERO, Fixed6Lib.from(-100), price),
-            Fixed6.wrap(2713175), // 2.713175
+            price - UFixed6.wrap(22151), // price - (2.713175 / price)
             "zero skew, negative change"
         );
     }
 
     function test_computeCurve2PositiveSkew() public view {
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve2.compute(Fixed6Lib.from(200), Fixed6Lib.ZERO, price),
-            Fixed6Lib.ZERO,
+            price,
             "positive skew, zero change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve2.compute(Fixed6Lib.from(200), Fixed6Lib.from(100), price),
-            Fixed6.wrap(3967775), // 3.967775
+            price + UFixed6.wrap(11081), // price + (3.967775 / price)
             "positive skew, positive change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve2.compute(Fixed6Lib.from(200), Fixed6Lib.from(-100), price),
-            Fixed6.wrap(1704575), // 1.704575
+            price - UFixed6.wrap(32729), // price - (1.704575 / price)
             "positive skew, negative change"
         );
     }
 
     function test_computeCurve2NegativeSkew() public view {
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve2.compute(Fixed6Lib.from(-200), Fixed6Lib.ZERO, price),
-            Fixed6Lib.ZERO,
+            price,
             "negative skew, zero change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve2.compute(Fixed6Lib.from(-200), Fixed6Lib.from(100), price),
-            Fixed6.wrap(1704575), // 1.704575
+            price + UFixed6.wrap(32729), // price + (1.704575 / price)
             "negative skew, positive change"
         );
-        assertFixed6Eq(
+        assertUFixed6Eq(
             curve2.compute(Fixed6Lib.from(-200), Fixed6Lib.from(-100), price),
-            Fixed6.wrap(3967775), // 3.967775
+            price - UFixed6.wrap(11081), // price - (3.967775 / price)
             "negative skew, negative change"
         );
     }

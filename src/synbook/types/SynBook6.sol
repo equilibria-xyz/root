@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { Fixed6, Fixed6Lib } from "../../number/types/Fixed6.sol";
-import { UFixed6 } from "../../number/types/UFixed6.sol";
+import { UFixed6, UFixed6Lib } from "../../number/types/UFixed6.sol";
 
 /// @dev SynBook6 type
 struct SynBook6 {
@@ -22,25 +22,33 @@ library SynBook6Lib {
     /// @param latest The latest skew in asset terms
     /// @param change The change in skew in asset terms
     /// @param price The price of the underlying asset
-    /// @return The spread in dollar terms
+    /// @return newPrice The price of a given order amount based on the synbook for the account
     function compute(
         SynBook6 memory self,
         Fixed6 latest,
         Fixed6 change,
         UFixed6 price
-    ) internal pure returns (Fixed6) {
-        // sign = 1 for buy / ask and -1 for sell / bid, use f(-x) for sell orders
-        if (change < Fixed6Lib.ZERO) {
-            latest = latest * Fixed6Lib.NEG_ONE;
-            change = change * Fixed6Lib.NEG_ONE;
-        }
+    ) internal pure returns (UFixed6) {
+        // sign = 1 for buy / ask and -1 for sell / bid
+        bool isAsk = change > Fixed6Lib.ZERO;
+
+        // use -f(-x) for ask orders
+        latest = _flipIfAsk(latest, isAsk);
+        change = _flipIfAsk(change, isAsk);
 
         Fixed6 from = latest / Fixed6Lib.from(self.scale);
         Fixed6 to = (latest + change) / Fixed6Lib.from(self.scale);
-        UFixed6 notional = change.abs() * price;
+        Fixed6 spread = _indefinite(self.d0, self.d1, self.d2, self.d3, to, price)
+            - _indefinite(self.d0, self.d1, self.d2, self.d3, from, price);
 
-        return _indefinite(self.d0, self.d1, self.d2, self.d3, to, notional)
-            - _indefinite(self.d0, self.d1, self.d2, self.d3, from, notional);
+        // use -f(-x) for ask orders
+        spread = _flipIfAsk(spread, isAsk);
+
+        return UFixed6Lib.unsafeFrom(Fixed6Lib.from(price) + spread);
+    }
+
+    function _flipIfAsk(Fixed6 value, bool isAsk) private pure returns (Fixed6) {
+        return isAsk ? value * Fixed6Lib.NEG_ONE : value;
     }
 
     /// @dev f(x) = d0 * x + d1 * x^2 / 2 + d2 * x^3 / 3 + d3 * x^4 / 4
@@ -50,18 +58,18 @@ library SynBook6Lib {
         UFixed6 d2,
         UFixed6 d3,
         Fixed6 value,
-        UFixed6 notional
+        UFixed6 price
     ) private pure returns (Fixed6 result) {
         // d0 * x
-        result = Fixed6Lib.from(notional) * value * Fixed6Lib.from(d0);
+        result = Fixed6Lib.from(price) * value * Fixed6Lib.from(d0);
 
         // d1 * x^2 / 2
-        result = result + (Fixed6Lib.from(notional) * value * value * Fixed6Lib.from(d1) / Fixed6Lib.from(2));
+        result = result + (Fixed6Lib.from(price) * value * value * Fixed6Lib.from(d1) / Fixed6Lib.from(2));
 
         // d2 * x^3 / 3
-        result = result + (Fixed6Lib.from(notional) * value * value * value *  Fixed6Lib.from(d2) / Fixed6Lib.from(3));
+        result = result + (Fixed6Lib.from(price) * value * value * value *  Fixed6Lib.from(d2) / Fixed6Lib.from(3));
 
         // d3 * x^4 / 4
-        result = result + (Fixed6Lib.from(notional) * value * value * value * value * Fixed6Lib.from(d3) / Fixed6Lib.from(4));
+        result = result + (Fixed6Lib.from(price) * value * value * value * value * Fixed6Lib.from(d3) / Fixed6Lib.from(4));
     }
 }
