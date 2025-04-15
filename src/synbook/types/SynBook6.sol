@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Fixed6, Fixed6Lib } from "src/number/types/Fixed6.sol";
-import { UFixed6 } from "src/number/types/UFixed6.sol";
+import { Fixed6, Fixed6Lib } from "../../number/types/Fixed6.sol";
+import { UFixed6 } from "../../number/types/UFixed6.sol";
 
 /// @dev SynBook6 type
 struct SynBook6 {

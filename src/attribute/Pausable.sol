@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Initializable } from "src/attribute/Initializable.sol";
-import { Ownable } from "src/attribute/Ownable.sol";
-import { IPausable } from "src/attribute/interfaces/IPausable.sol";
+import { Initializable } from "./Initializable.sol";
+import { Ownable } from "./Ownable.sol";
+import { IPausable } from "./interfaces/IPausable.sol";
 
 /// @title Pausable
 /// @notice Library to allow for the emergency pausing and unpausing of contract functions

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { IInitializable } from "src/attribute/interfaces/IInitializable.sol";
-import { IOwnable } from "src/attribute/interfaces/IOwnable.sol";
+import { IInitializable } from "./IInitializable.sol";
+import { IOwnable } from "./IOwnable.sol";
 
 interface IPausable is IInitializable, IOwnable {
     event PauserUpdated(address indexed newPauser);

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Fixed6, Fixed18 } from "src/number/types/Fixed6.sol";
-import { UFixed6, UFixed18 } from "src/number/types/UFixed6.sol";
+import { Fixed6, Fixed18 } from "../number/types/Fixed6.sol";
+import { UFixed6, UFixed18 } from "../number/types/UFixed6.sol";
 
 // reference material:
 // https://github.com/foundry-rs/forge-std/blob/master/src/console.sol and

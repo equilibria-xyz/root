@@ -2,9 +2,9 @@
 pragma solidity ^0.8.19;
 
 import { SignedMath } from "@openzeppelin/contracts/utils/math/SignedMath.sol";
-import { NumberMath } from "src/number/NumberMath.sol";
-import { Fixed6 } from "src/number/types/Fixed6.sol";
-import { UFixed18 } from "src/number/types/UFixed18.sol";
+import { NumberMath } from "../NumberMath.sol";
+import { Fixed6 } from "./Fixed6.sol";
+import { UFixed18 } from "./UFixed18.sol";
 
 /// @dev Fixed18 type
 type Fixed18 is int256;

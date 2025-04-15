@@ -5,7 +5,7 @@ import { ProxyAdmin, Ownable } from "@openzeppelin/contracts/proxy/transparent/P
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { Test } from "forge-std/Test.sol";
 
-import { ProxyOwner } from "src/access/ProxyOwner.sol";
+import { ProxyOwner } from "../../src/access/ProxyOwner.sol";
 import { ERC20TestToken } from "../token/TokenTest.sol";
 
 contract ProxyOwnerTest is Test {

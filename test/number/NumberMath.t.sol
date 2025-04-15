@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import { stdError } from "forge-std/StdError.sol";
 import { Test } from "forge-std/Test.sol";
 
-import { NumberMath } from "src/number/NumberMath.sol";
+import { NumberMath } from "../../src/number/NumberMath.sol";
 
 contract NumberMathTest is Test {
     MockNumberMath m = new MockNumberMath();

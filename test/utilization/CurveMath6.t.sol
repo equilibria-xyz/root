@@ -4,9 +4,9 @@ pragma solidity ^0.8.13;
 import { stdError } from "forge-std/StdError.sol";
 import { RootTest } from "../RootTest.sol";
 
-import { CurveMath6 } from "src/utilization/CurveMath6.sol";
-import { Fixed6, Fixed6Lib } from "src/number/types/Fixed6.sol";
-import { UFixed6, UFixed6Lib } from "src/number/types/UFixed6.sol";
+import { CurveMath6 } from "../../src/utilization/CurveMath6.sol";
+import { Fixed6, Fixed6Lib } from "../../src/number/types/Fixed6.sol";
+import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
 
 contract CurveMath6Test is RootTest {
     MockCurveMath6 m = new MockCurveMath6();

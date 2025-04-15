@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 
-import { Initializable } from "src/attribute/Initializable.sol";
+import { Initializable } from "../../src/attribute/Initializable.sol";
 
 contract InitializableTest is Test {
     event NoOp();

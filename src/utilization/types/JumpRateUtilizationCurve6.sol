@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { CurveMath6 } from "src/utilization/CurveMath6.sol";
-import { UFixed6, UFixed6Lib } from "src/number/types/UFixed6.sol";
+import { CurveMath6 } from "../CurveMath6.sol";
+import { UFixed6, UFixed6Lib } from "../../number/types/UFixed6.sol";
 
 /// @dev JumpRateUtilizationCurve6 type
 struct JumpRateUtilizationCurve6 {
