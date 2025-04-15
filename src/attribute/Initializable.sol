@@ -23,10 +23,9 @@ abstract contract Initializable is IInitializable {
     /// @dev Can only be called once per version, `version` is 1-indexed
     /// @param name_ Identifies the contract, must not change
     modifier initializer(string memory name_, uint256 version_) {
-        if (version_ == 0) revert InitializableZeroVersionError();
-
         name = name_;
         version = version_;
+
         _initializing = true;
 
         _;

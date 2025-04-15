@@ -11,7 +11,6 @@ contract InitializableTest is Test {
     event Initialized(uint256 version);
     event NoOpChild();
 
-    error InitializableZeroVersionError();
     error InitializableAlreadyInitializedError(uint256 version);
     error InitializableNotInitializingError();
 
@@ -72,12 +71,6 @@ contract InitializableTest is Test {
         vm.expectRevert(abi.encodeWithSelector(InitializableAlreadyInitializedError.selector, 1));
         initializable.doubleInitialize();
     }*/
-
-    function test_revertInvalidVersion() public {
-        initializable = new MockInitializable();
-        vm.expectRevert(abi.encodeWithSelector(InitializableZeroVersionError.selector));
-        initializable.customInitializer("CustomInitializerTestSubject", 0);
-    }
 
     function test_customInitializer_validVersion() public {
         initializable = new MockInitializable();
