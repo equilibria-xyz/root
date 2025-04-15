@@ -269,9 +269,4 @@ contract SampleContractV2 is Ownable {
 /// @dev Contract whose name does not match that expected by the proxy
 contract NonSampleContract is Ownable {
     constructor(uint256 version) Ownable("NonSampleContract", version) {}
-
-    // TODO: can probably eliminate this
-    function initialize() external initializer() {
-        __Ownable__initialize();
-    }
 }

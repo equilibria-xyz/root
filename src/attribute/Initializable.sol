@@ -31,8 +31,7 @@ abstract contract Initializable is IInitializable {
         _;
 
         _initializing = false;
-        // TODO: Remove version from the event; has nothing to do with initialization.
-        emit Initialized(version);
+        emit Initialized();
     }
 
     /// @dev Can only be called from an initializer or constructor
