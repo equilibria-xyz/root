@@ -13,8 +13,6 @@ import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
 import { console } from "../../src/utils/console.sol";
 
 contract ConsoleTest is Test {
-    // TODO: Why aren't these defined directly in the fixed types?
-    // Calling FixedLib.from() with a value outside the bounds will panic 0x11.
     uint256 constant MAX_UFIXED6 = type(uint256).max / 1e6;
     uint256 constant MAX_UFIXED18 = type(uint256).max / 1e18;
     int256 constant MIN_FIXED6 = type(int256).min / 1e6;

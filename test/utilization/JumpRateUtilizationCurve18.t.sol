@@ -179,8 +179,6 @@ contract JumpRateUtilizationCurve18Test is RootTest {
         );
     }
 
-    // TODO: confirm results of accumulation tests are appropriate; old tests used 6-decimal inputs
-
     function test_accumulateCurve1() public view {
         assertUFixed18Eq(
             curve1.accumulate(UFixed18Lib.ZERO, FROM_TIMESTAMP, TO_TIMESTAMP, NOTIONAL),
