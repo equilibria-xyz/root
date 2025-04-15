@@ -3,9 +3,9 @@ pragma solidity ^0.8.13;
 
 import { stdError } from "forge-std/StdError.sol";
 
-import { UAccumulator6 } from "src/accumulator/types/UAccumulator6.sol";
-import { UFixed6, UFixed6Lib } from "src/number/types/UFixed6.sol";
-import { NumberMath } from "src/number/NumberMath.sol";
+import { UAccumulator6 } from "../../src/accumulator/types/UAccumulator6.sol";
+import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
+import { NumberMath } from "../../src/number/NumberMath.sol";
 import { RootTest } from "../RootTest.sol";
 
 contract UAccumulator6Test is RootTest {

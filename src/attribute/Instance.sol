@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { IInstance } from "src/attribute/interfaces/IInstance.sol";
-import { IFactory } from "src/attribute/interfaces/IFactory.sol";
-import { Initializable } from "src/attribute/Initializable.sol";
+import { IInstance } from "./interfaces/IInstance.sol";
+import { IFactory } from "./interfaces/IFactory.sol";
+import { Initializable } from "./Initializable.sol";
 
 /// @title Instance
 /// @notice An abstract contract that is created and managed by a factory

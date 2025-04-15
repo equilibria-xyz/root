@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Initializable } from "src/attribute/Initializable.sol";
-import { IOwnable } from "src/attribute/interfaces/IOwnable.sol";
+import { Initializable } from "./Initializable.sol";
+import { IOwnable } from "./interfaces/IOwnable.sol";
 
 /// @title Ownable
 /// @notice Library to manage the ownership lifecycle of upgradeable contracts.

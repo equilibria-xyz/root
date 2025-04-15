@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.19;
 
-import { Math, NumberMath } from "src/number/NumberMath.sol";
-import { Fixed6, Fixed6Lib } from "src/number/types/Fixed6.sol";
-import { UFixed18 } from "src/number/types/UFixed18.sol";
+import { Math, NumberMath } from "../NumberMath.sol";
+import { Fixed6, Fixed6Lib } from "./Fixed6.sol";
+import { UFixed18 } from "./UFixed18.sol";
 
 /// @dev UFixed6 type
 type UFixed6 is uint256;

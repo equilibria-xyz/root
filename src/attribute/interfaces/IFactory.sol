@@ -3,9 +3,9 @@ pragma solidity ^0.8.13;
 
 import { IBeacon } from "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
-import { IOwnable } from "src/attribute/interfaces/IOwnable.sol";
-import { IPausable } from "src/attribute/interfaces/IPausable.sol";
-import { IInstance } from "src/attribute/interfaces/IInstance.sol";
+import { IOwnable } from "./IOwnable.sol";
+import { IPausable } from "./IPausable.sol";
+import { IInstance } from "./IInstance.sol";
 
 interface IFactory is IBeacon, IOwnable, IPausable {
     event InstanceRegistered(IInstance indexed instance);

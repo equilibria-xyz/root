@@ -4,10 +4,10 @@ pragma solidity ^0.8.13;
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { BeaconProxy } from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 
-import { IFactory } from "src/attribute/interfaces/IFactory.sol";
-import { IInstance } from "src/attribute/interfaces/IInstance.sol";
-import { Pausable } from "src/attribute/Pausable.sol";
-import { Ownable } from "src/attribute/Ownable.sol";
+import { IFactory } from "./interfaces/IFactory.sol";
+import { IInstance } from "./interfaces/IInstance.sol";
+import { Pausable } from "./Pausable.sol";
+import { Ownable } from "./Ownable.sol";
 
 /// @title Factory
 /// @notice An abstract factory that manages creates and manages instances

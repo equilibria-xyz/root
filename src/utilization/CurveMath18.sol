@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { UFixed18, UFixed18Lib } from "src/number/types/UFixed18.sol";
-import { Fixed18, Fixed18Lib } from "src/number/types/Fixed18.sol";
+import { UFixed18, UFixed18Lib } from "../number/types/UFixed18.sol";
+import { Fixed18, Fixed18Lib } from "../number/types/Fixed18.sol";
 
 /// @title CurveMath18
 /// @notice Library for managing math operations for utilization curves.

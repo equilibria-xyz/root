@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Common, CommonLib } from "src/verifier/types/Common.sol";
+import { Common, CommonLib } from "./Common.sol";
 
 struct GroupCancellation {
     /// @dev The group to cancel

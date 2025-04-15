@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import { Ownable } from "src/attribute/Ownable.sol";
+import { Ownable } from "./Ownable.sol";
 
 /// @title OwnerExecutable
 /// @notice Allows the owner to execute calls to other contracts

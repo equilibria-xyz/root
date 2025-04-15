@@ -7,7 +7,7 @@ import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import { EIP712 } from "@openzeppelin/contracts/governance/utils/Votes.sol";
 import { Test } from "forge-std/Test.sol";
 
-import { OwnerDelegatable, Ownable } from "src/attribute/OwnerDelegatable.sol";
+import { OwnerDelegatable, Ownable } from "../../src/attribute/OwnerDelegatable.sol";
 import { MockOwnable } from "./Ownable.t.sol";
 
 contract OwnerDelegatableTest is Test {

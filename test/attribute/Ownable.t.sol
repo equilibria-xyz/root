@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 
-import { Ownable } from "src/attribute/Ownable.sol";
+import { Ownable } from "../../src/attribute/Ownable.sol";
 
 contract OwnableTest is Test {
     error OwnableNotOwnerError(address owner);
