@@ -10,7 +10,7 @@ import "./Pausable.sol";
 /// @title Factory
 /// @notice An abstract factory that manages creates and manages instances
 /// @dev Ownable and Pausable, and satisfies the IBeacon interface by default.
-abstract contract Factory is IFactory, Ownable, Pausable {
+abstract contract Factory is IFactory, Pausable {
     /// @notice The instances mapping storage slot
     bytes32 private constant INSTANCE_MAP_SLOT = keccak256("equilibria.root.Factory.instances");
 
@@ -19,7 +19,11 @@ abstract contract Factory is IFactory, Ownable, Pausable {
 
     /// @notice Constructs the contract
     /// @param implementation_ The instance implementation address
-    constructor(address implementation_) { implementation = implementation_; }
+    constructor(string memory name, uint256 version, address implementation_)
+        Pausable(name, version)
+    {
+        implementation = implementation_;
+    }
 
     /// @notice Initializes the contract state
     function __Factory__initialize() internal onlyInitializer {

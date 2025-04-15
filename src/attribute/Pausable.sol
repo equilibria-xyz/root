@@ -20,6 +20,9 @@ abstract contract Pausable is IPausable, Ownable {
     bool private _paused;
     function paused() public view returns (bool) { return _paused; }
 
+    /// @dev Pass name and version to the Ownable constructor
+    constructor(string memory name, uint256 version) Ownable(name, version) {}
+
     /// @notice Initializes the contract setting `msg.sender` as the initial pauser
     function __Pausable__initialize() internal onlyInitializer {
         __Ownable__initialize();

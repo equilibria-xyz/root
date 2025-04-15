@@ -6,8 +6,10 @@ import { IProxy } from "./interfaces/IProxy.sol";
 import { Ownable } from "src/attribute/Ownable.sol";
 
 contract ProxyAdmin is Ownable {
+    constructor() Ownable("ProxyAdmin", 1) {}
+
     /// @notice Sets initial owner to the sender
-    function initialize() external initializer("ProxyAdmin", 1) {
+    function initialize() external initializer() {
         __Ownable__initialize();
     }
 

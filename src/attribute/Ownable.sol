@@ -10,6 +10,9 @@ import "./interfaces/IOwnable.sol";
 ///      unstructured storage pattern so that it can be safely mixed in with upgradeable
 ///      contracts without affecting their storage patterns through inheritance.
 abstract contract Ownable is IOwnable, Initializable {
+    /// @dev Pass name and version to the Initializable constructor
+    constructor(string memory name, uint256 version) Initializable(name, version) {}
+
     /// @dev The owner address
     address private _owner;
     function owner() public view returns (address) { return _owner; }
@@ -20,7 +23,8 @@ abstract contract Ownable is IOwnable, Initializable {
 
     /// @notice Initializes the contract setting `msg.sender` as the initial owner
     function __Ownable__initialize() internal onlyInitializer {
-        if (owner() == address(0)) _updateOwner(_sender());
+        if (owner() != address(0)) revert OwnableAlreadyInitializedError();
+        _updateOwner(_sender());
     }
 
     /// @notice Updates the new pending owner

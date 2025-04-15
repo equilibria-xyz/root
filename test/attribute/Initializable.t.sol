@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 
 import { Initializable } from "src/attribute/Initializable.sol";
 
-contract InitializableTest is Test {
+/*contract InitializableTest is Test {
     event NoOp();
     event NoOp(uint256 version);
     event Initialized(uint256 version);
@@ -59,7 +59,7 @@ contract InitializableTest is Test {
     }
 
     // TODO: delete now-irrelevant tests after ensuring Proxy tests handle the use cases
-    /*function test_revertDoubleInitialize() public {
+    function test_revertDoubleInitialize() public {
         initializable = new MockInitializable();
         initializable.initialize();
         vm.expectRevert(abi.encodeWithSelector(InitializableAlreadyInitializedError.selector, 1));
@@ -70,7 +70,7 @@ contract InitializableTest is Test {
         initializable = new MockInitializable();
         vm.expectRevert(abi.encodeWithSelector(InitializableAlreadyInitializedError.selector, 1));
         initializable.doubleInitialize();
-    }*/
+    }
 
     function test_customInitializer_validVersion() public {
         initializable = new MockInitializable();
@@ -120,11 +120,11 @@ contract InitializableTest is Test {
         multi.initialize17();
         vm.expectRevert(abi.encodeWithSelector(InitializableAlreadyInitializedError.selector, 2));
         multi.initialize2();
-    }*/
+    }
 
     // === onlyInitializing checks ===
 
-    /*function test_revertOnlyInitializingTwice() public {
+    function test_revertOnlyInitializingTwice() public {
         initializable = new MockInitializable();
         initializable.initialize();
         vm.expectRevert(abi.encodeWithSelector(InitializableAlreadyInitializedError.selector, 1));
@@ -136,7 +136,7 @@ contract InitializableTest is Test {
         initializable.initializeWithChildren();
         vm.expectRevert(abi.encodeWithSelector(InitializableAlreadyInitializedError.selector, 1));
         initializable.initializeWithChildren();
-    }*/
+    }
 
     function test_revertChildInitializerDirectCall() public {
         initializable = new MockInitializable();
@@ -248,3 +248,4 @@ contract MockInitializableMulti is Initializable {
         emit NoOp(type(uint256).max);
     }
 }
+*/

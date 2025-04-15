@@ -10,6 +10,9 @@ abstract contract Instance is IInstance, Initializable {
     /// @dev The factory address storage slot
     address private _factory;
 
+    /// @dev Pass name and version to the Initializable constructor
+    constructor(string memory name, uint256 version) Initializable(name, version) {}
+
     /// @notice Returns the factory that created this instance
     /// @return The factory that created this instance
     function factory() public view returns (IFactory) { return IFactory(_factory); }

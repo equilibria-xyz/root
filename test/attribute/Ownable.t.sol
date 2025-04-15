@@ -42,20 +42,12 @@ contract OwnableTest is Test {
         assertEq(ownable.owner(), owner);
     }
 
-    function test_initializeDoesNotChangeOwnerOnReinitialize() public {
-        // Initially, owner is zero.
-        assertEq(ownable.owner(), address(0));
+    function test_cannotReinitialize() public {
+        vm.startPrank(owner);
+        ownable.__initialize();
 
-        // Set the owner using __initializeV with a dummy version (simulate previous initialization).
-        vm.prank(owner);
-        ownable.__initializeV(1);
-
-        // Reinitializing with a new version should not change the owner.
-        vm.prank(user);
-        ownable.__initializeV(2);
-
-        // Ensure the owner remains unchanged.
-        assertEq(ownable.owner(), owner);
+        vm.expectRevert(OwnableAlreadyInitializedError.selector);
+        ownable.__initialize();
     }
 
     function test_setPendingOwnerUpdatesPendingOwner() public {
@@ -158,15 +150,13 @@ contract OwnableTest is Test {
 contract MockOwnable is Ownable {
     bool public beforeCalled;
 
-    function __initialize() external initializer("MockOwnable", 1) {
+    constructor() Ownable("MockOwnable", 1) {}
+
+    function __initialize() external initializer() {
         super.__Ownable__initialize();
     }
 
     function initializeIncorrect() external {
-        super.__Ownable__initialize();
-    }
-
-    function __initializeV(uint256 version) external initializer("MockOwnable", version) {
         super.__Ownable__initialize();
     }
 

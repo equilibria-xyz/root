@@ -55,7 +55,7 @@ abstract contract ProxyTest is Test {
         vm.prank(proxyOwner);
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, abi.encodeWithSignature("initialize()"));
+        proxyAdmin.upgradeToAndCall(proxy, impl2, "");
         return SampleContractV2(address(proxy));
     }
 }
@@ -68,7 +68,7 @@ contract ProxyTestV1 is ProxyTest {
     }
 
     function test_identify() public view {
-        assertEq(instance1.name(), "SampleContract", "Implementation name should be SampleContract");
+        assertEq(instance1.nameHash(), keccak256(bytes("SampleContract")), "Implementation name should be SampleContract");
         assertEq(instance1.version(), 1, "Implementation version should be 1");
     }
 
@@ -116,10 +116,10 @@ contract ProxyTestV1 is ProxyTest {
     }
 
     function test_revertsIfNameMismatch() public {
-        NonSampleContract wrongContract = new NonSampleContract();
-        vm.expectRevert(abi.encodeWithSelector(Proxy.ProxyNameMismatch.selector, "SampleContract", "NonSampleContract"));
+        NonSampleContract wrongContract = new NonSampleContract(2);
+        vm.expectRevert(Proxy.ProxyNameMismatch.selector);
         vm.prank(proxyOwner);
-        proxyAdmin.upgradeToAndCall(proxy, wrongContract, abi.encodeWithSignature("initialize(uint256)", 2));
+        proxyAdmin.upgradeToAndCall(proxy, wrongContract, "");
     }
 }
 
@@ -135,7 +135,7 @@ contract ProxyTestV2 is ProxyTest {
     }
 
     function test_identify() public view {
-        assertEq(instance2.name(), "SampleContract", "Implementation name should be SampleContract");
+        assertEq(instance2.nameHash(), keccak256(bytes("SampleContract")), "Implementation name should be SampleContract2");
         assertEq(instance2.version(), 2, "Implementation version should be 2");
     }
 
@@ -152,7 +152,7 @@ contract ProxyTestV2 is ProxyTest {
         SampleContractV1 impl1 = new SampleContractV1(104);
         vm.expectRevert(abi.encodeWithSelector(Proxy.ProxyVersionMismatch.selector, 2, 1));
         vm.prank(proxyOwner);
-        proxyAdmin.upgradeToAndCall(proxy, impl1, abi.encodeWithSignature("initialize()"));
+        proxyAdmin.upgradeToAndCall(proxy, impl1, "");
     }
 
     function test_implementationCanRevert() public {
@@ -180,7 +180,7 @@ contract ProxyAdminTest is ProxyTest {
         vm.prank(proxyOwner);
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, abi.encodeWithSignature("initialize()"));
+        proxyAdmin.upgradeToAndCall(proxy, impl2, "");
     }
 
     function test_newOwnerMustAcceptChange() public {
@@ -202,13 +202,13 @@ contract ProxyAdminTest is ProxyTest {
         SampleContractV2 impl2 = new SampleContractV2(201);
         vm.prank(proxyOwner);
         vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, proxyOwner));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, abi.encodeWithSignature("initialize()"));
+        proxyAdmin.upgradeToAndCall(proxy, impl2, "");
 
         // new owner can upgrade
         vm.prank(newOwner);
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, abi.encodeWithSignature("initialize()"));
+        proxyAdmin.upgradeToAndCall(proxy, impl2, "");
     }
 }
 
@@ -217,11 +217,12 @@ contract SampleContractV1 is Ownable {
     uint256 public immutable immutableValue;
     uint256 public value;
 
-    constructor(uint256 immutableValue_) {
+    constructor(uint256 immutableValue_) Ownable("SampleContract", 1) {
         immutableValue = immutableValue_;
     }
 
-    function initialize() external initializer("SampleContract", 1) {
+    // TODO: test initializer on deployment
+    function initialize() external initializer() {
         __Ownable__initialize();
     }
 
@@ -242,11 +243,12 @@ contract SampleContractV2 is Ownable {
 
     error CustomError();
 
-    constructor(uint256 immutableValue_) {
+    constructor(uint256 immutableValue_) Ownable("SampleContract", 2) {
         immutableValue = immutableValue_;
     }
 
-    function initialize() external initializer("SampleContract", 2) {
+    // TODO: test initializer on upgrade
+    function initialize() external initializer() {
         __Ownable__initialize();
     }
 
@@ -266,7 +268,10 @@ contract SampleContractV2 is Ownable {
 
 /// @dev Contract whose name does not match that expected by the proxy
 contract NonSampleContract is Ownable {
-    function initialize(uint256 version) external initializer("NonSampleContract", version) {
+    constructor(uint256 version) Ownable("NonSampleContract", version) {}
+
+    // TODO: can probably eliminate this
+    function initialize() external initializer() {
         __Ownable__initialize();
     }
 }

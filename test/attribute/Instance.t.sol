@@ -84,7 +84,9 @@ contract InstanceTest is Test {
 }
 
 contract MockInstance is Instance {
-    function initialize() external initializer("MockInstance", 1) {
+    constructor() Instance("MockInstance", 1) {}
+
+    function initialize() external initializer() {
         __Instance__initialize();
     }
 

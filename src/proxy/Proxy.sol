@@ -22,7 +22,7 @@ contract Proxy is ERC1967Proxy {
     error ProxyDeniedAdminAccess();
 
     /// @dev The name provided in the upgrade request does not match the name of this proxy.
-    error ProxyNameMismatch(string proxyName, string requestName);
+    error ProxyNameMismatch();
 
     /// @dev The upgraded version is not greater than the current version.
     error ProxyVersionMismatch(uint256 proxyCurrentVersion, uint256 requestVersion);
@@ -67,18 +67,17 @@ contract Proxy is ERC1967Proxy {
         ) = abi.decode(msg.data[4:], (Initializable, bytes));
 
         // read the current name and version from storage before calling new initializer
-        Initializable instance = Initializable(address(this));
-        string memory oldName = instance.name();
-        uint256 oldVersion = instance.version();
+        Initializable old = Initializable(_implementation());
+        bytes32 oldNameHash = old.nameHash();
+        uint256 oldVersion = old.version();
 
-        // update the implementation and call initializer to update storage
+        // update the implementation and call initializer
         ERC1967Utils.upgradeToAndCall(address(newImplementation), initData);
 
-        // ensure name and version are appropriate
-        if (keccak256(bytes(oldName)) != keccak256(bytes(instance.name())))
-            revert ProxyNameMismatch(oldName, instance.name());
-        if (oldVersion >= instance.version())
-            revert ProxyVersionMismatch(oldVersion, instance.version());
-
+        // ensure name hash and version are appropriate
+        if (oldNameHash != newImplementation.nameHash())
+            revert ProxyNameMismatch();
+        if (oldVersion >= newImplementation.version())
+            revert ProxyVersionMismatch(oldVersion, newImplementation.version());
     }
 }

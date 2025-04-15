@@ -13,6 +13,9 @@ interface IOwnable is IInitializable {
     // sig: 0xd0d5e1b0
     /// @custom:error Caller is not the pending owner
     error OwnableNotPendingOwnerError(address sender);
+    // sig: 0xe43bdd4e
+    /// @custom:error Contract is already initialized
+    error OwnableAlreadyInitializedError();
 
     function owner() external view returns (address);
     function pendingOwner() external view returns (address);

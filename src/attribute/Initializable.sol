@@ -11,27 +11,28 @@ import { IInitializable } from "./interfaces/IInitializable.sol";
 ///      from a top-level `initializer` or a constructor.
 ///      Name and Version are used by Proxy to validate contract upgrades.
 abstract contract Initializable is IInitializable {
-    /// @dev Identifies the contract
-    string public name;
+    bytes32 public immutable nameHash;
 
     /// @dev Nonzero indicates contract is initialized
-    uint256 public version;
+    uint256 public immutable version;
 
     /// @dev The initializing flag
     bool private _initializing;
 
-    /// @dev Can only be called once per version, `version` is 1-indexed
-    /// @param name_ Identifies the contract, must not change
-    modifier initializer(string memory name_, uint256 version_) {
-        name = name_;
+    constructor(string memory name_, uint256 version_) {
+        nameHash = keccak256(bytes(name_));
         version = version_;
+    }
 
+    /// @dev Can only be called once per version, `version` is 1-indexed
+    modifier initializer() {
         _initializing = true;
 
         _;
 
         _initializing = false;
-        emit Initialized(version_);
+        // TODO: Remove version from the event; has nothing to do with initialization.
+        emit Initialized(version);
     }
 
     /// @dev Can only be called from an initializer or constructor
