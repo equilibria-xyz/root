@@ -14,6 +14,10 @@ contract ProxyAdmin is Ownable {
         __Ownable__initialize();
     }
 
+    /// @notice Upgrades the implementation of a proxy and optionally calls its initializer
+    /// @param proxy Target to upgrade
+    /// @param implementation New version of contract to be proxied
+    /// @param data Calldata to invoke the instance's initializer
     function upgradeToAndCall(
         IProxy proxy,
         Initializable implementation,
@@ -22,6 +26,18 @@ contract ProxyAdmin is Ownable {
         proxy.upgradeToAndCall{value: msg.value}(implementation, data);
     }
 
+    /// @notice Prevents interaction with the proxied contract
+    function pause(IProxy proxy) public onlyOwner {
+        proxy.pause();
+    }
+
+    /// @notice Allows interaction with the proxied contract
+    function unpause(IProxy proxy) public onlyOwner {
+        proxy.unpause();
+    }
+
+    /// @notice Points proxy to previous implementation, if available
+    /// @custom:error ProxyCannotRollBackError No rollback implementation available
     function rollback(IProxy proxy) public onlyOwner {
         proxy.rollback();
     }

@@ -123,6 +123,31 @@ contract ProxyTestV1 is ProxyTest {
         vm.prank(proxyOwner);
         proxyAdmin.upgradeToAndCall(proxy, wrongContract, "");
     }
+
+    function test_canPause() public {
+        vm.prank(proxyOwner);
+        vm.expectEmit();
+        emit Proxy.Paused();
+        proxyAdmin.pause(proxy);
+
+        // user cannot interact
+        vm.prank(implementationOwner);
+        vm.expectRevert(Proxy.ProxyPausedError.selector);
+        instance1.setValue(444);
+    }
+
+    function test_canUnpause() public {
+        vm.startPrank(proxyOwner);
+        proxyAdmin.pause(proxy);
+        vm.expectEmit();
+        emit Proxy.Unpaused();
+        proxyAdmin.unpause(proxy);
+        vm.stopPrank();
+
+        vm.prank(implementationOwner);
+        instance1.setValue(555);
+        assertEq(instance1.getValue(), 555, "User interacted after unpaused");
+    }
 }
 
 contract ProxyTestV2 is ProxyTest {

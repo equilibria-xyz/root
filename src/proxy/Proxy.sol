@@ -9,17 +9,26 @@ import { IProxy } from "./interfaces/IProxy.sol";
 import { ProxyAdmin } from "./ProxyAdmin.sol";
 
 /// @title Proxy
-/// @notice A transparent upgradeable proxy with facilities to prevent deployment errors.
+/// @notice A mostly-transparent upgradeable proxy with facilities to prevent deployment errors.
 /// @dev The real interface of this proxy is that defined in `IProxy`. This contract does not
 /// inherit from that interface to maintain transparency.  Upgradability is implemented using an
 /// internal dispatch mechanism.  Proxied contracts must implement `Initializable` (not just the
 /// interface) and must return a constant `name` string used for identification.
 /// Implementations must be initialized using calldata during deployment and upgrade.
+/// Users are exposed to ProxyPausedError when the proxied contract is paused. 
 contract Proxy is ERC1967Proxy {
     address private immutable _admin;
 
-    // @dev Stored in named slot to avoid storage collision with implementation
-    bytes32 private constant ROLLBACK_SLOT = keccak256("equilibria.root.rollback");
+    // Stored in named slots to avoid storage collision with implementation
+    // @dev Prevents any interaction with the proxied contract
+    bytes32 private constant PAUSED_SLOT = keccak256("equilibria.root.proxy.paused");
+    // @dev Stores previously proxied contract, cleared after a rollback is performed
+    bytes32 private constant ROLLBACK_SLOT = keccak256("equilibria.root.proxy.rollback");
+
+    /// @notice Proxy will ignore calls to the proxied contract
+    event Paused();
+    /// @notice Proxy will allow calls to the proxied contract
+    event Unpaused();
 
     // sig: 0x05b0d206
     /// @dev The active implementation was already rolled back or no rollback implementation is available.
@@ -32,6 +41,10 @@ contract Proxy is ERC1967Proxy {
     // sig: 0x73df0fec
     /// @dev The name provided in the upgrade request does not match the name of this proxy.
     error ProxyNameMismatchError();
+
+    // sig: 0x9419684e
+    /// @dev Interactions with contract are not allowed while paused.
+    error ProxyPausedError();
 
     // sig: 0x3f7d07d5
     /// @dev The upgraded version is not greater than the current version.
@@ -59,6 +72,16 @@ contract Proxy is ERC1967Proxy {
         if (msg.sender == _proxyAdmin()) {
             if (msg.sig == IProxy.upgradeToAndCall.selector) {
                 _dispatchUpgrade();
+            } else if (msg.sig == IProxy.pause.selector
+                && !StorageSlot.getBooleanSlot(PAUSED_SLOT).value
+            ) {
+                StorageSlot.getBooleanSlot(PAUSED_SLOT).value = true;
+                emit Paused();
+            } else if (msg.sig == IProxy.unpause.selector
+                && StorageSlot.getBooleanSlot(PAUSED_SLOT).value
+            ) {
+                StorageSlot.getBooleanSlot(PAUSED_SLOT).value = false;
+                emit Unpaused();
             } else if (msg.sig == IProxy.rollback.selector) {
                 _dispatchRollback();
             } else {
@@ -66,6 +89,8 @@ contract Proxy is ERC1967Proxy {
             }
         // all other callers interact only with the implementation
         } else {
+            if (StorageSlot.getBooleanSlot(PAUSED_SLOT).value)
+                revert ProxyPausedError();
             super._fallback();
         }
     }

@@ -14,6 +14,13 @@ interface IProxy is IERC1967 {
         bytes calldata initData
     ) external payable;
 
+    /// @dev Prevents any interaction with the proxied contract.
+    /// Implementation may be upgraded when paused.
+    function pause() external;
+
+    /// @dev Allows interaction with the proxied contract
+    function unpause() external;
+
     /// @dev Points proxy to previous implementation, if available
     function rollback() external;
 }
