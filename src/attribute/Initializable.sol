@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { IInitializable } from "./interfaces/IInitializable.sol";
+import { IInitializable, Version } from "./interfaces/IInitializable.sol";
 
 /// @title Initializable
 /// @notice Library to manage the initialization lifecycle of upgradeable contracts
@@ -11,17 +11,41 @@ import { IInitializable } from "./interfaces/IInitializable.sol";
 ///      from a top-level `initializer` or a constructor.
 ///      Name and Version are used by Proxy to validate contract upgrades.
 abstract contract Initializable is IInitializable {
+    /// @dev Hash of the contract name, used to ensure the correct contract is being upgraded.
     bytes32 public immutable nameHash;
 
-    /// @dev Nonzero indicates contract is initialized
-    uint256 public immutable version;
+    /// @dev Version of this contract
+    uint32 public immutable versionMajor;
+    uint32 public immutable versionMinor;
+    uint32 public immutable versionPatch;
+
+    /// @dev Version of the contract this contract is being upgraded from.
+    uint32 public immutable versionFromMajor;
+    uint32 public immutable versionFromMinor;
+    uint32 public immutable versionFromPatch;
 
     /// @dev The initializing flag
     bool private _initializing;
+    bytes24 private constant INITIALIZABLE_SLOT0_PADDING = 0x0;
 
-    constructor(string memory name_, uint256 version_) {
+    constructor(string memory name_, Version memory version_, Version memory versionFrom_) {
         nameHash = keccak256(bytes(name_));
-        version = version_;
+
+        versionMajor = version_.major;
+        versionMinor = version_.minor;
+        versionPatch = version_.patch;
+
+        versionFromMajor = versionFrom_.major;
+        versionFromMinor = versionFrom_.minor;
+        versionFromPatch = versionFrom_.patch;
+    }
+
+    function version() public view returns (Version memory) {
+        return Version(versionMajor, versionMinor, versionPatch);
+    }
+
+    function versionFrom() public view returns (Version memory) {
+        return Version(versionFromMajor, versionFromMinor, versionFromPatch);
     }
 
     /// @dev Can only be called once per version, `version` is 1-indexed

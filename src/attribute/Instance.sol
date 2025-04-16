@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import "./interfaces/IInstance.sol";
 import "./Initializable.sol";
+import { Version } from "./interfaces/IInitializable.sol";
 
 /// @title Instance
 /// @notice An abstract contract that is created and managed by a factory
@@ -11,7 +12,11 @@ abstract contract Instance is IInstance, Initializable {
     address private _factory;
 
     /// @dev Pass name and version to the Initializable constructor
-    constructor(string memory name, uint256 version) Initializable(name, version) {}
+    constructor(
+        string memory name,
+        Version memory version,
+        Version memory versionFrom
+    ) Initializable(name, version, versionFrom) {}
 
     /// @notice Returns the factory that created this instance
     /// @return The factory that created this instance

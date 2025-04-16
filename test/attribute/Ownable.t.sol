@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { Ownable } from "src/attribute/Ownable.sol";
+import { Version } from "src/attribute/interfaces/IInitializable.sol";
 
 contract OwnableTest is Test {
     error OwnableNotOwnerError(address owner);
@@ -150,7 +151,7 @@ contract OwnableTest is Test {
 contract MockOwnable is Ownable {
     bool public beforeCalled;
 
-    constructor() Ownable("MockOwnable", 1) {}
+    constructor() Ownable("MockOwnable", Version(0,0,1), Version(0,0,0)) {}
 
     function __initialize() external initializer() {
         super.__Ownable__initialize();

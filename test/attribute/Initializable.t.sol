@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { Initializable } from "src/attribute/Initializable.sol";
+import { Version } from "src/attribute/interfaces/IInitializable.sol";
 
 contract InitializableTest is Test {
     event CustomInitializer(uint256 value);
@@ -17,11 +18,21 @@ contract InitializableTest is Test {
 
     MockInitializable public initializable;
 
+    function test_constructor() public {
+        initializable = new MockInitializable();
+        assertEq(initializable.nameHash(), keccak256("MockInitializable"));
+        assertEq(initializable.version().major, 2);
+        assertEq(initializable.version().minor, 6);
+        assertEq(initializable.version().patch, 4);
+        assertEq(initializable.versionFrom().major, 1);
+        assertEq(initializable.versionFrom().minor, 5);
+        assertEq(initializable.versionFrom().patch, 3);
+    }
+
     function test_initializeSuccessfully() public {
         initializable = new MockInitializable();
-        vm.expectEmit(true, true, true, true);
+        vm.expectEmit();
         emit NoOp();
-        vm.expectEmit(true, true, true, true);
         emit Initialized();
         initializable.initialize();
     }
@@ -73,7 +84,7 @@ contract InitializableTest is Test {
         initializable.initialize();
     }
 
-    function test_customInitializer_validVersion() public {
+    function test_customInitializer() public {
         initializable = new MockInitializable();
         initializable.customInitializer("CustomInitializerTestSubject", 1);
         assertEq(initializable.stringValue(), "CustomInitializerTestSubject");
@@ -142,7 +153,7 @@ contract MockInitializable is Initializable {
     string internal _stringValue;
     uint256 internal _unsignedValue;
 
-    constructor() Initializable("MockInitializable", 1) {}
+    constructor() Initializable("MockInitializable", Version(2, 6, 4), Version(1, 5, 3)) {}
 
     function unsignedValue() external view returns (uint256) {
         return _unsignedValue;
@@ -209,7 +220,7 @@ contract MockInitializableMulti is Initializable {
     event CustomInitializer(uint256 value);
     event NoOp(uint256 value);
 
-    constructor() Initializable("MockInitializableMulti", 1) {}
+    constructor() Initializable("MockInitializableMulti", Version(0, 0, 1), Version(0, 0, 0)) {}
 
     function initialize(uint256 value) initializer() public {
         _unsignedValue = value;

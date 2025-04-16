@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import { ERC1967Proxy, ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import { Initializable } from "src/attribute/Initializable.sol";
+import { Initializable, Version } from "src/attribute/Initializable.sol";
 import { IProxy } from "./interfaces/IProxy.sol";
 import { ProxyAdmin } from "./ProxyAdmin.sol";
 
@@ -69,7 +69,7 @@ contract Proxy is ERC1967Proxy {
         // read the current name and version from storage before calling new initializer
         Initializable old = Initializable(_implementation());
         bytes32 oldNameHash = old.nameHash();
-        uint256 oldVersion = old.version();
+        Version memory oldVersion = old.version();
 
         // update the implementation and call initializer
         ERC1967Utils.upgradeToAndCall(address(newImplementation), initData);
@@ -77,7 +77,8 @@ contract Proxy is ERC1967Proxy {
         // ensure name hash and version are appropriate
         if (oldNameHash != newImplementation.nameHash())
             revert ProxyNameMismatch();
-        if (oldVersion >= newImplementation.version())
-            revert ProxyVersionMismatch(oldVersion, newImplementation.version());
+        // TODO: lib, operator overload, and tests
+        // if (oldVersion != newImplementation.version())
+        //     revert ProxyVersionMismatch(oldVersion, newImplementation.version());
     }
 }

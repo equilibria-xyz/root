@@ -2,19 +2,20 @@
 pragma solidity ^0.8.20;
 
 import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
-import { Test } from "forge-std/Test.sol";
 
+import { RootTest } from "test/RootTest.sol";
+import { Version } from "src/attribute/interfaces/IInitializable.sol";
 import { IOwnable, Ownable } from "src/attribute/Ownable.sol";
 import { IProxy } from "src/proxy/interfaces/IProxy.sol";
 import { Proxy, ProxyAdmin } from "src/proxy/Proxy.sol";
 
 /// @dev Tests both Proxy and ProxyAdmin
-abstract contract ProxyTest is Test {
+abstract contract ProxyTest is RootTest {
     address public immutable proxyOwner;
     address public immutable implementationOwner;
     IProxy public proxy;
     ProxyAdmin public proxyAdmin;
-    SampleContractV1 instance1;
+    SampleContractV1 public instance1;
 
     constructor() {
         proxyOwner = makeAddr("owner");
@@ -62,14 +63,14 @@ abstract contract ProxyTest is Test {
 
 contract ProxyTestV1 is ProxyTest {
     function test_creation() public view {
-        assertEq(instance1.version(), 1, "Version should be 1 after deployment");
+        assertEq(instance1.version(), Version(1, 0, 1), "Version should be 1.0.1 after deployment");
         assertEq(instance1.immutableValue(), 101, "Immutable value should be 101");
         assertEq(instance1.getValue(), 0, "Initial value should be 0");
     }
 
     function test_identify() public view {
         assertEq(instance1.nameHash(), keccak256(bytes("SampleContract")), "Implementation name should be SampleContract");
-        assertEq(instance1.version(), 1, "Implementation version should be 1");
+        assertEq(instance1.version(), Version(1, 0, 1), "Implementation version should be 1.0.1");
     }
 
     function test_interaction() public {
@@ -116,7 +117,7 @@ contract ProxyTestV1 is ProxyTest {
     }
 
     function test_revertsIfNameMismatch() public {
-        NonSampleContract wrongContract = new NonSampleContract(2);
+        NonSampleContract wrongContract = new NonSampleContract();
         vm.expectRevert(Proxy.ProxyNameMismatch.selector);
         vm.prank(proxyOwner);
         proxyAdmin.upgradeToAndCall(proxy, wrongContract, "");
@@ -136,7 +137,7 @@ contract ProxyTestV2 is ProxyTest {
 
     function test_identify() public view {
         assertEq(instance2.nameHash(), keccak256(bytes("SampleContract")), "Implementation name should be SampleContract2");
-        assertEq(instance2.version(), 2, "Implementation version should be 2");
+        assertEq(instance2.version(), Version(2, 0, 1), "Implementation version should be 2");
     }
 
     function test_interactionPostUpgrade() public {
@@ -217,7 +218,9 @@ contract SampleContractV1 is Ownable {
     uint256 public immutable immutableValue;
     uint256 public value;
 
-    constructor(uint256 immutableValue_) Ownable("SampleContract", 1) {
+    constructor(uint256 immutableValue_)
+        Ownable("SampleContract", Version(1, 0, 1), Version(0, 0, 0))
+    {
         immutableValue = immutableValue_;
     }
 
@@ -243,7 +246,9 @@ contract SampleContractV2 is Ownable {
 
     error CustomError();
 
-    constructor(uint256 immutableValue_) Ownable("SampleContract", 2) {
+    constructor(uint256 immutableValue_)
+    Ownable("SampleContract", Version(2, 0, 1), Version(1, 0, 1))
+    {
         immutableValue = immutableValue_;
     }
 
@@ -268,5 +273,5 @@ contract SampleContractV2 is Ownable {
 
 /// @dev Contract whose name does not match that expected by the proxy
 contract NonSampleContract is Ownable {
-    constructor(uint256 version) Ownable("NonSampleContract", version) {}
+    constructor() Ownable("NonSampleContract", Version(1, 1, 0), Version (1, 0, 0)) {}
 }

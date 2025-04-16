@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "./interfaces/IFactory.sol";
 import "./interfaces/IInstance.sol";
 import "./Pausable.sol";
+import { Version } from "./interfaces/IInitializable.sol";
 
 /// @title Factory
 /// @notice An abstract factory that manages creates and manages instances
@@ -17,10 +18,16 @@ abstract contract Factory is IFactory, Pausable {
     /// @notice The instance implementation address
     address public immutable implementation;
 
+    // TODO: uncomfortable with parameter order here; seems like versions should be together,
+    // but new implementation shouldn't be near the old version
     /// @notice Constructs the contract
     /// @param implementation_ The instance implementation address
-    constructor(string memory name, uint256 version, address implementation_)
-        Pausable(name, version)
+    constructor(
+        string memory name,
+        Version memory version,
+        address implementation_,
+        Version memory versionFrom
+    ) Pausable(name, version, versionFrom)
     {
         implementation = implementation_;
     }

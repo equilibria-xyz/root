@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import "./Initializable.sol";
 import "./interfaces/IOwnable.sol";
+import { Version } from "./interfaces/IInitializable.sol";
 
 /// @title Ownable
 /// @notice Library to manage the ownership lifecycle of upgradeable contracts.
@@ -11,7 +12,11 @@ import "./interfaces/IOwnable.sol";
 ///      contracts without affecting their storage patterns through inheritance.
 abstract contract Ownable is IOwnable, Initializable {
     /// @dev Pass name and version to the Initializable constructor
-    constructor(string memory name, uint256 version) Initializable(name, version) {}
+    constructor(
+        string memory name,
+        Version memory version,
+        Version memory versionFrom
+    ) Initializable(name, version, versionFrom) {}
 
     /// @dev The owner address
     address private _owner;

@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { Pausable } from "src/attribute/Pausable.sol";
+import { Version } from "src/attribute/interfaces/IInitializable.sol";
 
 contract PausableTest is Test {
     event PauserUpdated(address indexed newPauser);
@@ -174,7 +175,7 @@ contract PausableTest is Test {
 contract MockPausable is Pausable {
     uint256 public counter;
 
-    constructor() Pausable("MockPausable", 1) {}
+    constructor() Pausable("MockPausable", Version(0,0,1), Version(0,0,0)) {}
 
     function __initialize() external initializer() {
         super.__Pausable__initialize();

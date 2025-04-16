@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import "./Initializable.sol";
 import "./Ownable.sol";
 import "./interfaces/IPausable.sol";
+import { Version } from "./interfaces/IInitializable.sol";
 
 /// @title Pausable
 /// @notice Library to allow for the emergency pausing and unpausing of contract functions
@@ -21,7 +22,11 @@ abstract contract Pausable is IPausable, Ownable {
     function paused() public view returns (bool) { return _paused; }
 
     /// @dev Pass name and version to the Ownable constructor
-    constructor(string memory name, uint256 version) Ownable(name, version) {}
+    constructor(
+        string memory name,
+        Version memory version,
+        Version memory versionFrom
+    ) Ownable(name, version, versionFrom) {}
 
     /// @notice Initializes the contract setting `msg.sender` as the initial pauser
     function __Pausable__initialize() internal onlyInitializer {

@@ -5,6 +5,7 @@ import { Test } from "forge-std/Test.sol";
 
 import { Instance } from "src/attribute/Instance.sol";
 import { MockFactory } from "./Factory.t.sol";
+import { Version } from "src/attribute/interfaces/IInitializable.sol";
 
 contract InstanceTest is Test {
     error InitializableNotInitializingError();
@@ -84,7 +85,7 @@ contract InstanceTest is Test {
 }
 
 contract MockInstance is Instance {
-    constructor() Instance("MockInstance", 1) {}
+    constructor() Instance("MockInstance", Version(0,0,1), Version(0,0,0)) {}
 
     function initialize() external initializer() {
         __Instance__initialize();
