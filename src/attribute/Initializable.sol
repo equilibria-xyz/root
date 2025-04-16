@@ -19,6 +19,7 @@ abstract contract Initializable is IInitializable {
     /// @dev Hash of the contract name, used to ensure the correct contract is being upgraded.
     bytes32 public immutable nameHash;
 
+    // TODO: Check whether converting these 6 unit32s to 6 uint256s will save code size
     /// @dev Version of this contract
     uint32 public immutable versionMajor;
     uint32 public immutable versionMinor;
@@ -54,13 +55,16 @@ abstract contract Initializable is IInitializable {
         return Version(versionFromMajor, versionFromMinor, versionFromPatch);
     }
 
+    // TODO: Only run if version passed to initializer matches current version; find better name for variable
     /// @dev Can only be called once per version, `version` is 1-indexed
-    modifier initializer() {
+    modifier initializer(/*Version memory version_*/) {
+        // TODO: Do a code size analysis on hashing the version rather than bit fiddling.
         uint256 initializedVersion = StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value;
         if (initializedVersion != 0 && initializedVersion == version().toUnsigned())
             revert InitializableAlreadyInitializedError();
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = true;
 
+        // TODO: only run this if version_ parameter matches
         _;
 
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = false;

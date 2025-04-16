@@ -15,7 +15,7 @@ import { ProxyAdmin } from "./ProxyAdmin.sol";
 /// internal dispatch mechanism.  Proxied contracts must implement `Initializable` (not just the
 /// interface) and must return a constant `name` string used for identification.
 /// Implementations must be initialized using calldata during deployment and upgrade.
-/// Users are exposed to ProxyPausedError when the proxied contract is paused. 
+/// Users are exposed to ProxyPausedError when the proxied contract is paused.
 contract Proxy is ERC1967Proxy {
     address private immutable _admin;
 
@@ -89,6 +89,8 @@ contract Proxy is ERC1967Proxy {
             }
         // all other callers interact only with the implementation
         } else {
+            // TODO: see if we can staticcall to access views on the proxied contract
+            // TODO: see if there's a clean way to avoid an expensive storage read here, perhaps using a stub contract
             if (StorageSlot.getBooleanSlot(PAUSED_SLOT).value)
                 revert ProxyPausedError();
             super._fallback();

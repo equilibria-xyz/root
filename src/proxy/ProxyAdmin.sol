@@ -8,6 +8,7 @@ import { Version } from "src/attribute/types/Version.sol";
 
 contract ProxyAdmin is Ownable {
     constructor() Ownable("ProxyAdmin", Version(0,0,0), Version(0,0,0)) {}
+    // TODO: Introduce a Pauser role to allow pausing and unpausing of the proxied contract
 
     /// @notice Sets initial owner to the sender
     function initialize() external initializer() {

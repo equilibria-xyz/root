@@ -11,4 +11,7 @@ interface IInitializable {
     error InitializableNotInitializingError();
 
     event Initialized();
+
+    // TODO: Ensure all implementations implement an initialize method
+    // function initialize(bytes memory initData, Version version) external;
 }

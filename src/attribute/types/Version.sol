@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
+// TODO: Check code size making these each uint256s
 struct Version {
     uint32 major;
     uint32 minor;
