@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { Ownable } from "src/attribute/Ownable.sol";
-import { Version } from "src/attribute/interfaces/IInitializable.sol";
+import { Version } from "src/attribute/types/Version.sol";
 
 contract OwnableTest is Test {
     error OwnableNotOwnerError(address owner);

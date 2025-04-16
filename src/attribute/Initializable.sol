@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { IInitializable, Version } from "./interfaces/IInitializable.sol";
+import { IInitializable } from "./interfaces/IInitializable.sol";
+import { Version } from "./types/Version.sol";
 
 /// @title Initializable
 /// @notice Library to manage the initialization lifecycle of upgradeable contracts

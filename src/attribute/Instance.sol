@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import "./interfaces/IInstance.sol";
 import "./Initializable.sol";
-import { Version } from "./interfaces/IInitializable.sol";
+import { Version } from "./types/Version.sol";
 
 /// @title Instance
 /// @notice An abstract contract that is created and managed by a factory

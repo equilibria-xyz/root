@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import "./Initializable.sol";
 import "./interfaces/IOwnable.sol";
-import { Version } from "./interfaces/IInitializable.sol";
+import { Version } from "./types/Version.sol";
 
 /// @title Ownable
 /// @notice Library to manage the ownership lifecycle of upgradeable contracts.

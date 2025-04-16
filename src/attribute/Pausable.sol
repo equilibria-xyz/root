@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "./Initializable.sol";
 import "./Ownable.sol";
 import "./interfaces/IPausable.sol";
-import { Version } from "./interfaces/IInitializable.sol";
+import { Version } from "./types/Version.sol";
 
 /// @title Pausable
 /// @notice Library to allow for the emergency pausing and unpausing of contract functions

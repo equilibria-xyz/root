@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import { Initializable } from "src/attribute/Initializable.sol";
 import { IProxy } from "./interfaces/IProxy.sol";
 import { Ownable } from "src/attribute/Ownable.sol";
-import { Version } from "src/attribute/interfaces/IInitializable.sol";
+import { Version } from "src/attribute/types/Version.sol";
 
 contract ProxyAdmin is Ownable {
     constructor() Ownable("ProxyAdmin", Version(0,0,0), Version(0,0,0)) {}

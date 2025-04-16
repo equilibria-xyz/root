@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "./interfaces/IFactory.sol";
 import "./interfaces/IInstance.sol";
 import "./Pausable.sol";
-import { Version } from "./interfaces/IInitializable.sol";
+import { Version } from "./types/Version.sol";
 
 /// @title Factory
 /// @notice An abstract factory that manages creates and manages instances

@@ -4,8 +4,8 @@ pragma solidity ^0.8.20;
 import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 
 import { RootTest } from "test/RootTest.sol";
-import { Version } from "src/attribute/interfaces/IInitializable.sol";
 import { IOwnable, Ownable } from "src/attribute/Ownable.sol";
+import { Version } from "src/attribute/types/Version.sol";
 import { IProxy } from "src/proxy/interfaces/IProxy.sol";
 import { Proxy, ProxyAdmin } from "src/proxy/Proxy.sol";
 
@@ -151,7 +151,11 @@ contract ProxyTestV2 is ProxyTest {
 
     function test_revertsOnDowngradeAttempt() public {
         SampleContractV1 impl1 = new SampleContractV1(104);
-        vm.expectRevert(abi.encodeWithSelector(Proxy.ProxyVersionMismatch.selector, 2, 1));
+        vm.expectRevert(abi.encodeWithSelector(
+            Proxy.ProxyVersionMismatch.selector,
+            Version(2, 0, 1),
+            Version(1, 0, 1)
+        ));
         vm.prank(proxyOwner);
         proxyAdmin.upgradeToAndCall(proxy, impl1, "");
     }

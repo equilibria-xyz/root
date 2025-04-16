@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-struct Version {
-    uint32 major;
-    uint32 minor;
-    uint32 patch;
-}
-
 // TODO: lib with comparison
 
 interface IInitializable {

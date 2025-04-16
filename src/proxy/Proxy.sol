@@ -18,6 +18,8 @@ import { ProxyAdmin } from "./ProxyAdmin.sol";
 contract Proxy is ERC1967Proxy {
     address private immutable _admin;
 
+    // TODO: document error hashes for these
+
     /// @dev An upgrade attempt was made by someone other than the proxy administrator.
     error ProxyDeniedAdminAccess();
 
@@ -25,7 +27,7 @@ contract Proxy is ERC1967Proxy {
     error ProxyNameMismatch();
 
     /// @dev The upgraded version is not greater than the current version.
-    error ProxyVersionMismatch(uint256 proxyCurrentVersion, uint256 requestVersion);
+    error ProxyVersionMismatch(Version proxyCurrentVersion, Version requestVersion);
 
     /// @dev Initializes an upgradeable proxy managed by an instance of a {ProxyAdmin}.
     /// @param implementation The first version of the contract to be proxied.
@@ -77,8 +79,7 @@ contract Proxy is ERC1967Proxy {
         // ensure name hash and version are appropriate
         if (oldNameHash != newImplementation.nameHash())
             revert ProxyNameMismatch();
-        // TODO: lib, operator overload, and tests
-        // if (oldVersion != newImplementation.version())
-        //     revert ProxyVersionMismatch(oldVersion, newImplementation.version());
+        if (!oldVersion.eq(newImplementation.versionFrom()))
+            revert ProxyVersionMismatch(oldVersion, newImplementation.version());
     }
 }

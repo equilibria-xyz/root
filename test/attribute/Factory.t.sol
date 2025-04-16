@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 
 import { IInstance, Factory } from "src/attribute/Factory.sol";
 import { MockInstance } from "./Instance.t.sol";
-import { Version } from "src/attribute/interfaces/IInitializable.sol";
+import { Version } from "src/attribute/types/Version.sol";
 
 contract FactoryTest is Test {
     error InitializableNotInitializingError();
