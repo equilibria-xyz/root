@@ -4,7 +4,9 @@ pragma solidity ^0.8.13;
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
 import { IInitializable } from "./interfaces/IInitializable.sol";
-import { Version } from "./types/Version.sol";
+import { Version, VersionLib } from "./types/Version.sol";
+
+import { console } from "forge-std/console.sol";
 
 /// @title Initializable
 /// @notice Library to manage the initialization lifecycle of upgradeable contracts
@@ -29,8 +31,8 @@ abstract contract Initializable is IInitializable {
 
     /// @dev True while initializing
     bytes32 private constant INITIALIZING_SLOT = keccak256("equilibria.root.initializing");
-    /// @dev True after contract has been initialized
-    bytes32 private constant INITIALIZED_SLOT = keccak256("equilibria.root.initialized");
+    /// @dev Populated with version after contract has been initialized
+    bytes32 private constant INITIALIZED_VERSION_SLOT = keccak256("equilibria.root.initializedVersion");
 
     constructor(string memory name_, Version memory version_, Version memory versionFrom_) {
         nameHash = keccak256(bytes(name_));
@@ -54,14 +56,15 @@ abstract contract Initializable is IInitializable {
 
     /// @dev Can only be called once per version, `version` is 1-indexed
     modifier initializer() {
-        if (StorageSlot.getBooleanSlot(INITIALIZED_SLOT).value)
+        uint256 initializedVersion = StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value;
+        if (initializedVersion != 0 && initializedVersion == version().toUnsigned())
             revert InitializableAlreadyInitializedError();
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = true;
 
         _;
 
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = false;
-        StorageSlot.getBooleanSlot(INITIALIZED_SLOT).value = true;
+        StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value = version().toUnsigned();
         emit Initialized();
     }
 
@@ -70,6 +73,10 @@ abstract contract Initializable is IInitializable {
         if (!_constructing() && !StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value)
             revert InitializableNotInitializingError();
         _;
+    }
+
+    function initializing() internal view returns (bool) {
+        return StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value;
     }
 
     /// @notice Returns whether the contract is currently being constructed

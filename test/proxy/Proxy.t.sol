@@ -149,6 +149,11 @@ contract ProxyTestV2 is ProxyTest {
         assertEq(val2, -254, "Value2 should be -254");
     }
 
+    function test_canInitializeAfterUpgrade() public {
+        vm.prank(implementationOwner);
+        instance2.initialize();
+    }
+
     function test_revertsOnDowngradeAttempt() public {
         SampleContractV1 impl1 = new SampleContractV1(104);
         vm.expectRevert(abi.encodeWithSelector(
@@ -259,6 +264,7 @@ contract SampleContractV2 is Ownable {
     // TODO: test initializer on upgrade
     function initialize() external initializer() {
         __Ownable__initialize();
+        value2 = -3;
     }
 
     function setValues(uint256 value1_, int256 value2_) external onlyOwner() {

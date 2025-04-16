@@ -22,11 +22,17 @@ using {
     lt
 } for Version global;
 
-// TODO: unit tests
 library VersionLib {
-    // TODO: Is this needed/useful?
-    function toString(Version memory self) internal pure returns (string memory) {
-        return string(abi.encodePacked(self.major, ".", self.minor, ".", self.patch));
+    function toUnsigned(Version memory self) internal pure returns (uint96) {
+        return uint96((uint96(self.major) << 64) | uint96(self.minor) << 32 | self.patch);
+    }
+
+    function from(uint96 value) internal pure returns (Version memory) {
+        return Version(
+            uint32(value >> 64),
+            uint32((value >> 32) & 0xFFFFFFFF),
+            uint32(value & 0xFFFFFFFF)
+        );
     }
 
     /// @notice Compares two versions; returns 1 if equal, 2 if self > other, 0 if self < other

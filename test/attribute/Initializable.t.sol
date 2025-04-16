@@ -53,6 +53,12 @@ contract InitializableTest is Test {
         new MockInitializableConstructor1();
     }
 
+    function test_subclassKnowsWhenInitializing() public {
+        initializable = new MockInitializable();
+        initializable.conditionalInitializer();
+        assertEq(initializable.unsignedValue(), 2);
+    }
+
     function test_constructorWithInitializer_3() public {
         new MockInitializableConstructor3();
     }
@@ -138,6 +144,10 @@ contract MockInitializable is Initializable {
 
     function childInitializer() public onlyInitializer {
         emit NoOpChild();
+    }
+
+    function conditionalInitializer() public initializer() {
+        _unsignedValue = initializing() ? 2 : 4;
     }
 
     function customInitializer(string memory stringValue_, uint256 unsignedValue_) public initializer() {
