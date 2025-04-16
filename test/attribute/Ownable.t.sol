@@ -7,9 +7,9 @@ import { Ownable } from "src/attribute/Ownable.sol";
 import { Version } from "src/attribute/types/Version.sol";
 
 contract OwnableTest is Test {
+    error InitializableAlreadyInitializedError();
     error OwnableNotOwnerError(address owner);
     error OwnableNotPendingOwnerError(address pendingOwner);
-    error OwnableAlreadyInitializedError();
 
     event OwnerUpdated(address indexed newOwner);
     event PendingOwnerUpdated(address indexed newPendingOwner);
@@ -43,11 +43,17 @@ contract OwnableTest is Test {
         assertEq(ownable.owner(), owner);
     }
 
-    function test_cannotReinitialize() public {
-        vm.startPrank(owner);
+    function test_initializeRevertsOnReinitialize() public {
+        // Initially, owner is zero.
+        assertEq(ownable.owner(), address(0));
+
+        // Set the owner using __initializeV with a dummy version (simulate previous initialization).
+        vm.prank(owner);
         ownable.__initialize();
 
-        vm.expectRevert(OwnableAlreadyInitializedError.selector);
+        // Reinitializing with a new version should revert.
+        vm.prank(owner);
+        vm.expectRevert(abi.encodeWithSelector(InitializableAlreadyInitializedError.selector));
         ownable.__initialize();
     }
 

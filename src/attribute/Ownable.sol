@@ -28,7 +28,6 @@ abstract contract Ownable is IOwnable, Initializable {
 
     /// @notice Initializes the contract setting `msg.sender` as the initial owner
     function __Ownable__initialize() internal onlyInitializer {
-        if (owner() != address(0)) revert OwnableAlreadyInitializedError();
         _updateOwner(_sender());
     }
 

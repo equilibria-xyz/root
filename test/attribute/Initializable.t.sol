@@ -14,6 +14,7 @@ contract InitializableTest is Test {
     event NoOpChild();
 
     error AlreadyInitializedError();
+    error InitializableAlreadyInitializedError();
     error InitializableNotInitializingError();
 
     MockInitializable public initializable;
@@ -71,16 +72,16 @@ contract InitializableTest is Test {
     }
 
     function test_revertDoubleInitialize() public {
-        initializable = new MockInitializableSingle();
+        initializable = new MockInitializable();
         initializable.initialize();
-        vm.expectRevert(AlreadyInitializedError.selector);
+        vm.expectRevert(InitializableAlreadyInitializedError.selector);
         initializable.initialize();
     }
 
     function test_revertDoubleInitializeFunction() public {
-        initializable = new MockInitializableSingle();
+        initializable = new MockInitializable();
         initializable.initialize();
-        vm.expectRevert(AlreadyInitializedError.selector);
+        vm.expectRevert(InitializableAlreadyInitializedError.selector);
         initializable.initialize();
     }
 
@@ -89,45 +90,6 @@ contract InitializableTest is Test {
         initializable.customInitializer("CustomInitializerTestSubject", 1);
         assertEq(initializable.stringValue(), "CustomInitializerTestSubject");
         assertEq(initializable.unsignedValue(), 1);
-    }
-
-    function test_multiInitialize_newVersion() public {
-        MockInitializableMulti multi = new MockInitializableMulti();
-
-        vm.expectEmit();
-        emit CustomInitializer(1);
-        emit Initialized();
-        emit NoOp(1);
-        multi.initialize1();
-
-        vm.expectEmit();
-        emit CustomInitializer(2);
-        emit Initialized();
-        emit NoOp(2);
-        multi.initialize2();
-    }
-
-    function test_multiInitialize_version17() public {
-        MockInitializableMulti multi = new MockInitializableMulti();
-        multi.initialize1();
-
-        vm.expectEmit();
-        emit CustomInitializer(17);
-        emit Initialized();
-        emit NoOp(17);
-        multi.initialize17();
-    }
-
-    function test_multiInitialize_maxVersion() public {
-        MockInitializableMulti multi = new MockInitializableMulti();
-        multi.initialize1();
-        uint256 max = type(uint256).max;
-        vm.expectEmit(true, true, true, true);
-        emit NoOp(max);
-        vm.expectEmit(true, true, true, true);
-        emit Initialized();
-        emit NoOp(max);
-        multi.initializeMax();
     }
 
     // === onlyInitializing checks ===
@@ -212,53 +174,4 @@ contract MockInitializableConstructor6 is MockInitializableConstructor1 {
 
 contract MockInitializableConstructor8 is MockInitializableConstructor3 {
     constructor() MockInitializableConstructor3() {}
-}
-
-contract MockInitializableMulti is Initializable {
-    uint256 private _unsignedValue;
-
-    event CustomInitializer(uint256 value);
-    event NoOp(uint256 value);
-
-    constructor() Initializable("MockInitializableMulti", Version(0, 0, 1), Version(0, 0, 0)) {}
-
-    function initialize(uint256 value) initializer() public {
-        _unsignedValue = value;
-        emit CustomInitializer(value);
-    }
-
-    function __unsignedValue() external view returns (uint256) {
-        return _unsignedValue;
-    }
-
-    function initialize1() public {
-        initialize(1);
-        emit NoOp(1);
-    }
-
-    function initialize2() public {
-        initialize(2);
-        emit NoOp(2);
-    }
-
-    function initialize17() public {
-        initialize(17);
-        emit NoOp(17);
-    }
-
-    function initializeMax() public {
-        initialize(type(uint256).max);
-        emit NoOp(type(uint256).max);
-    }
-}
-
-contract MockInitializableSingle is MockInitializable {
-    bool private _alreadyInitialized;
-
-    error AlreadyInitializedError();
-
-    function initialize() public override initializer() {
-        if (_alreadyInitialized) revert AlreadyInitializedError();
-        _alreadyInitialized = true;
-    }
 }

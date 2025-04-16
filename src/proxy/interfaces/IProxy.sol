@@ -13,4 +13,6 @@ interface IProxy is IERC1967 {
         Initializable newImplementation,
         bytes calldata initData
     ) external payable;
+
+    // TODO: rollback mechanism
 }

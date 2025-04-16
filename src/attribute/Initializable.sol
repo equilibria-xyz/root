@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
+import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
+
 import { IInitializable } from "./interfaces/IInitializable.sol";
 import { Version } from "./types/Version.sol";
 
@@ -25,9 +27,10 @@ abstract contract Initializable is IInitializable {
     uint32 public immutable versionFromMinor;
     uint32 public immutable versionFromPatch;
 
-    /// @dev The initializing flag
-    bool private _initializing;
-    bytes24 private constant INITIALIZABLE_SLOT0_PADDING = 0x0;
+    /// @dev True while initializing
+    bytes32 private constant INITIALIZING_SLOT = keccak256("equilibria.root.initializing");
+    /// @dev True after contract has been initialized
+    bytes32 private constant INITIALIZED_SLOT = keccak256("equilibria.root.initialized");
 
     constructor(string memory name_, Version memory version_, Version memory versionFrom_) {
         nameHash = keccak256(bytes(name_));
@@ -51,17 +54,21 @@ abstract contract Initializable is IInitializable {
 
     /// @dev Can only be called once per version, `version` is 1-indexed
     modifier initializer() {
-        _initializing = true;
+        if (StorageSlot.getBooleanSlot(INITIALIZED_SLOT).value)
+            revert InitializableAlreadyInitializedError();
+        StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = true;
 
         _;
 
-        _initializing = false;
+        StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = false;
+        StorageSlot.getBooleanSlot(INITIALIZED_SLOT).value = true;
         emit Initialized();
     }
 
     /// @dev Can only be called from an initializer or constructor
     modifier onlyInitializer() {
-        if (!_constructing() && !_initializing) revert InitializableNotInitializingError();
+        if (!_constructing() && !StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value)
+            revert InitializableNotInitializingError();
         _;
     }
 
