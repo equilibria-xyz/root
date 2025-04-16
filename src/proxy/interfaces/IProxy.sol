@@ -14,5 +14,6 @@ interface IProxy is IERC1967 {
         bytes calldata initData
     ) external payable;
 
-    // TODO: rollback mechanism
+    /// @dev Points proxy to previous implementation, if available
+    function rollback() external;
 }

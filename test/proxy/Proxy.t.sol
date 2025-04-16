@@ -15,6 +15,7 @@ abstract contract ProxyTest is RootTest {
     address public immutable implementationOwner;
     IProxy public proxy;
     ProxyAdmin public proxyAdmin;
+    SampleContractV1 impl1;
     SampleContractV1 public instance1;
 
     constructor() {
@@ -29,9 +30,9 @@ abstract contract ProxyTest is RootTest {
         proxyAdmin.initialize();
 
         // deploy the implementation and create the proxy
-        SampleContractV1 impl = new SampleContractV1(101);
+        impl1 = new SampleContractV1(101);
         Proxy proxyInstantiation = new Proxy(
-            impl,
+            impl1,
             proxyAdmin,
             abi.encodeWithSignature("initialize()")
         );
@@ -99,7 +100,7 @@ contract ProxyTestV1 is ProxyTest {
 
     function test_proxyAdminCannotInteract() public {
         vm.prank(address(proxyAdmin));
-        vm.expectRevert(Proxy.ProxyDeniedAdminAccess.selector);
+        vm.expectRevert(Proxy.ProxyDeniedAdminAccessError.selector);
         instance1.setValue(106);
     }
 
@@ -118,7 +119,7 @@ contract ProxyTestV1 is ProxyTest {
 
     function test_revertsIfNameMismatch() public {
         NonSampleContract wrongContract = new NonSampleContract();
-        vm.expectRevert(Proxy.ProxyNameMismatch.selector);
+        vm.expectRevert(Proxy.ProxyNameMismatchError.selector);
         vm.prank(proxyOwner);
         proxyAdmin.upgradeToAndCall(proxy, wrongContract, "");
     }
@@ -157,7 +158,7 @@ contract ProxyTestV2 is ProxyTest {
     function test_revertsOnDowngradeAttempt() public {
         SampleContractV1 impl1 = new SampleContractV1(104);
         vm.expectRevert(abi.encodeWithSelector(
-            Proxy.ProxyVersionMismatch.selector,
+            Proxy.ProxyVersionMismatchError.selector,
             Version(2, 0, 1),
             Version(1, 0, 1)
         ));
@@ -168,6 +169,28 @@ contract ProxyTestV2 is ProxyTest {
     function test_implementationCanRevert() public {
         vm.expectRevert(SampleContractV2.CustomError.selector);
         instance2.revertWhenCalled();
+    }
+
+    function test_canRollback() public {
+        // rollback to previous version
+        vm.prank(proxyOwner);
+        vm.expectEmit();
+        emit IERC1967.Upgraded(address(impl1));
+        proxyAdmin.rollback(proxy);
+
+        // check that the rollback worked
+        assertEq(instance1.version(), Version(1, 0, 1), "Version should be 1.0.1 after rollback");
+        assertEq(instance1.getValue(), 153, "Value should be 153 after rollback");
+    }
+
+    function test_revertsRollbackTwice() public {
+        // rollback to previous version
+        vm.startPrank(proxyOwner);
+        proxyAdmin.rollback(proxy);
+
+        // ensure reverts
+        vm.expectRevert(Proxy.ProxyCannotRollBackError.selector);
+        proxyAdmin.rollback(proxy);
     }
 }
 

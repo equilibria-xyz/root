@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-// TODO: lib with comparison
-
 interface IInitializable {
     // sig: 0xd6f0e837
     /// @custom:error Contract is already initialized

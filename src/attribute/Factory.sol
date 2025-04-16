@@ -18,14 +18,12 @@ abstract contract Factory is IFactory, Pausable {
     /// @notice The instance implementation address
     address public immutable implementation;
 
-    // TODO: uncomfortable with parameter order here; seems like versions should be together,
-    // but new implementation shouldn't be near the old version
     /// @notice Constructs the contract
     /// @param implementation_ The instance implementation address
     constructor(
         string memory name,
-        Version memory version,
         address implementation_,
+        Version memory version,
         Version memory versionFrom
     ) Pausable(name, version, versionFrom)
     {

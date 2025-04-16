@@ -91,8 +91,8 @@ contract FactoryTest is Test {
 contract MockFactory is Factory {
     constructor(address implementation_) Factory(
         "MockFactory",
-        Version(0,0,1),
         implementation_,
+        Version(0,0,1),
         Version(0,0,0)
     ) {}
 

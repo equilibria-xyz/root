@@ -29,7 +29,7 @@ abstract contract Initializable is IInitializable {
     uint32 public immutable versionFromMinor;
     uint32 public immutable versionFromPatch;
 
-    /// @dev True while initializing
+    /// @dev True while initializing; stored in named slots to avoid storage collisions
     bytes32 private constant INITIALIZING_SLOT = keccak256("equilibria.root.initializing");
     /// @dev Populated with version after contract has been initialized
     bytes32 private constant INITIALIZED_VERSION_SLOT = keccak256("equilibria.root.initializedVersion");

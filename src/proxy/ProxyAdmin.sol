@@ -21,4 +21,8 @@ contract ProxyAdmin is Ownable {
     ) public payable virtual onlyOwner {
         proxy.upgradeToAndCall{value: msg.value}(implementation, data);
     }
+
+    function rollback(IProxy proxy) public onlyOwner {
+        proxy.rollback();
+    }
 }

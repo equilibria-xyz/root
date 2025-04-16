@@ -18,16 +18,24 @@ import { ProxyAdmin } from "./ProxyAdmin.sol";
 contract Proxy is ERC1967Proxy {
     address private immutable _admin;
 
-    // TODO: document error hashes for these
+    // @dev Stored in named slot to avoid storage collision with implementation
+    bytes32 private constant ROLLBACK_SLOT = keccak256("equilibria.root.rollback");
 
+    // sig: 0x05b0d206
+    /// @dev The active implementation was already rolled back or no rollback implementation is available.
+    error ProxyCannotRollBackError();
+
+    // sig: 0xe8d6e8ee
     /// @dev An upgrade attempt was made by someone other than the proxy administrator.
-    error ProxyDeniedAdminAccess();
+    error ProxyDeniedAdminAccessError();
 
+    // sig: 0x73df0fec
     /// @dev The name provided in the upgrade request does not match the name of this proxy.
-    error ProxyNameMismatch();
+    error ProxyNameMismatchError();
 
+    // sig: 0x3f7d07d5
     /// @dev The upgraded version is not greater than the current version.
-    error ProxyVersionMismatch(Version proxyCurrentVersion, Version requestVersion);
+    error ProxyVersionMismatchError(Version proxyCurrentVersion, Version requestVersion);
 
     /// @dev Initializes an upgradeable proxy managed by an instance of a {ProxyAdmin}.
     /// @param implementation The first version of the contract to be proxied.
@@ -49,10 +57,12 @@ contract Proxy is ERC1967Proxy {
     function _fallback() internal virtual override {
         // only admin may interact with the proxy
         if (msg.sender == _proxyAdmin()) {
-            if (msg.sig != IProxy.upgradeToAndCall.selector) {
-                revert ProxyDeniedAdminAccess();
-            } else {
+            if (msg.sig == IProxy.upgradeToAndCall.selector) {
                 _dispatchUpgrade();
+            } else if (msg.sig == IProxy.rollback.selector) {
+                _dispatchRollback();
+            } else {
+                revert ProxyDeniedAdminAccessError();
             }
         // all other callers interact only with the implementation
         } else {
@@ -68,6 +78,9 @@ contract Proxy is ERC1967Proxy {
             bytes memory initData
         ) = abi.decode(msg.data[4:], (Initializable, bytes));
 
+        // store the old implementation address in the rollback slot
+        StorageSlot.getAddressSlot(ROLLBACK_SLOT).value = _implementation();
+
         // read the current name and version from storage before calling new initializer
         Initializable old = Initializable(_implementation());
         bytes32 oldNameHash = old.nameHash();
@@ -78,8 +91,22 @@ contract Proxy is ERC1967Proxy {
 
         // ensure name hash and version are appropriate
         if (oldNameHash != newImplementation.nameHash())
-            revert ProxyNameMismatch();
+            revert ProxyNameMismatchError();
         if (!oldVersion.eq(newImplementation.versionFrom()))
-            revert ProxyVersionMismatch(oldVersion, newImplementation.version());
+            revert ProxyVersionMismatchError(oldVersion, newImplementation.version());
+    }
+
+    /// @dev Points the proxy back to the old implementation.
+    function _dispatchRollback() private {
+        // ensure we have something to roll back to
+        address rollback = StorageSlot.getAddressSlot(ROLLBACK_SLOT).value;
+        if (rollback == address(0))
+            revert ProxyCannotRollBackError();
+
+        // downgrade to the old implementation without initialization calldata
+        ERC1967Utils.upgradeToAndCall(rollback, "");
+
+        // cannot roll back again
+        StorageSlot.getAddressSlot(ROLLBACK_SLOT).value = address(0);
     }
 }
