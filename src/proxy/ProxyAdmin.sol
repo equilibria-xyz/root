@@ -3,16 +3,32 @@ pragma solidity ^0.8.20;
 
 import { Initializable } from "src/attribute/Initializable.sol";
 import { IProxy } from "./interfaces/IProxy.sol";
-import { Ownable } from "src/attribute/Ownable.sol";
-import { Version } from "src/attribute/types/Version.sol";
+import { Ownable } from "../../src/attribute/Ownable.sol";
+import { Version } from "../../src/attribute/types/Version.sol";
 
 contract ProxyAdmin is Ownable {
+    event PauserUpdated(address indexed newPauser);
+
+    // sig: 0x108c51dc
+    /// @custom:error Caller unauthorized to pause/unpause the proxied contract
+    error ProxyAdminNotOwnerOrPauserError(address sender);
+
     constructor() Ownable("ProxyAdmin", Version(0,0,0), Version(0,0,0)) {}
-    // TODO: Introduce a Pauser role to allow pausing and unpausing of the proxied contract
+
+    /// @dev The pauser address
+    address private _pauser;
+    function pauser() public view returns (address) {
+        return _pauser;
+    }
 
     /// @notice Sets initial owner to the sender
     function initialize() external initializer() {
         __Ownable__initialize();
+    }
+
+    function updatePauser(address newPauser) public onlyOwner {
+        _pauser = newPauser;
+        emit PauserUpdated(newPauser);
     }
 
     /// @notice Upgrades the implementation of a proxy and optionally calls its initializer
@@ -28,12 +44,19 @@ contract ProxyAdmin is Ownable {
     }
 
     /// @notice Prevents interaction with the proxied contract
-    function pause(IProxy proxy) public onlyOwner {
+    function pause(IProxy proxy) public ownerOrPauser {
         proxy.pause();
     }
 
     /// @notice Allows interaction with the proxied contract
-    function unpause(IProxy proxy) public onlyOwner {
+    function unpause(IProxy proxy) public ownerOrPauser {
         proxy.unpause();
+    }
+
+    modifier ownerOrPauser {
+        if (owner() != _sender() && pauser() != _sender()) {
+            revert ProxyAdminNotOwnerOrPauserError(_sender());
+        }
+        _;
     }
 }

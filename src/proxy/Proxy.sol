@@ -134,18 +134,4 @@ contract Proxy is ERC1967Proxy {
         // if proxy was paused before upgrade, re-pause the proxy
         if (wasPaused) setPausedImplementation();
     }
-
-    // This was an attempt to use staticcall to access views on the proxied contract.
-    // It did not revert, but debugger shows empty returndata buffer.
-    /*function _staticCall(address implementation) internal virtual {
-        assembly {
-            calldatacopy(0, 0, calldatasize())
-            let result := staticcall(gas(), implementation, 0, calldatasize(), 0, 0)
-            returndatacopy(0, 0, returndatasize())
-
-            switch result
-            case 0 { revert(0, returndatasize()) }
-            default { return(1, returndatasize()) }
-        }
-    }*/
 }
