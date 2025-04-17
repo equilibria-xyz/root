@@ -4,9 +4,9 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
-import { IVerifierBase, VerifierBase } from "src/verifier/VerifierBase.sol";
-import { Common, CommonLib } from "src/verifier/types/Common.sol";
-import { GroupCancellation, GroupCancellationLib } from "src/verifier/types/GroupCancellation.sol";
+import { IVerifierBase, VerifierBase } from "../../src/verifier/VerifierBase.sol";
+import { Common, CommonLib } from "../../src/verifier/types/Common.sol";
+import { GroupCancellation, GroupCancellationLib } from "../../src/verifier/types/GroupCancellation.sol";
 import { signCommon, signGroupCancellation } from "../testutil/erc712Helpers.sol";
 
 contract VerifierBaseTest is Test {
@@ -303,6 +303,6 @@ contract VerifierBaseTester is VerifierBase {
     }
 
     function _authorized(address account, address signer) internal view override returns (bool) {
-        return account == signer || signers[account] == signer;
+        return super._authorized(account, signer) || signers[account] == signer;
     }
 }

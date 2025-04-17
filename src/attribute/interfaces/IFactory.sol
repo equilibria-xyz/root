@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
-import "./IPausable.sol";
-import "./IInstance.sol";
+import { IBeacon } from "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
+
+import { IOwnable } from "./IOwnable.sol";
+import { IPausable } from "./IPausable.sol";
+import { IInstance } from "./IInstance.sol";
 
 interface IFactory is IBeacon, IOwnable, IPausable {
     event InstanceRegistered(IInstance indexed instance);

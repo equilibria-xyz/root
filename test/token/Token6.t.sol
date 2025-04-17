@@ -1,13 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import { TokenTest } from "./TokenTest.sol";
-
-import {
-    Token6,
-    Token6Lib
-} from "../../src/token/types/Token6.sol";
+import { Token6, Token6Lib } from "../../src/token/types/Token6.sol";
 import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
+import { Fixed6Lib } from "../../src/number/types/Fixed6.sol";
+import { TokenTest } from "./TokenTest.sol";
 
 abstract contract Token6Test is TokenTest {
     Token6 public token;
@@ -60,10 +57,9 @@ contract Token6FundedUserTest is Token6Test {
     }
 
     function test_push() public {
-        vm.startPrank(user);
+        vm.prank(user);
         token.push(recipient, UFixed6Lib.from(100));
         assertEq(erc20.balanceOf(recipient), 100e6, "push some from user to recipient");
-        vm.stopPrank();
         // contract has 140, user has 60, recipient has 100
 
         // contract uses address.this, so cannot push all from user to recipient
@@ -73,9 +69,8 @@ contract Token6FundedUserTest is Token6Test {
     }
 
     function test_pull() public {
-        vm.startPrank(user);
+        vm.prank(user);
         token.approve(address(this), UFixed6Lib.from(100));
-        vm.stopPrank();
 
         token.pull(user, UFixed6Lib.from(40));
         // contract should now have 140 + 40
@@ -83,6 +78,28 @@ contract Token6FundedUserTest is Token6Test {
 
         token.pullTo(user, recipient, UFixed6Lib.from(60));
         assertEq(erc20.balanceOf(recipient), 60e6, "pull some from user to recipient");
+    }
+
+    function test_update() public {
+        vm.prank(user);
+        token.approve(address(this), UFixed6Lib.from(100));
+
+        // transfer from user to contract
+        token.update(user, Fixed6Lib.from(100));
+        // contract should now have 140 + 100
+        assertEq(erc20.balanceOf(address(this)), 240e6, "contract should have 240");
+        assertEq(erc20.balanceOf(user), 60e6, "user should have 60");
+
+        // transfer from contract to user
+        token.update(user, Fixed6Lib.from(-100));
+        // contract should now have 240 - 100
+        assertEq(erc20.balanceOf(address(this)), 140e6, "contract should have 140");
+        assertEq(erc20.balanceOf(user), 160e6, "user should have 160");
+
+        // should not revert if amount is 0
+        token.update(user, Fixed6Lib.from(0));
+        assertEq(erc20.balanceOf(address(this)), 140e6, "contract should have 140");
+        assertEq(erc20.balanceOf(user), 160e6, "user should have 160");
     }
 
     function test_balance() public view {

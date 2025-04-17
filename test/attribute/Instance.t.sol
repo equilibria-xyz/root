@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 
-import { Instance } from "src/attribute/Instance.sol";
+import { Instance } from "../../src/attribute/Instance.sol";
 import { MockFactory } from "./Factory.t.sol";
 import { Version } from "src/attribute/types/Version.sol";
 

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./IFactory.sol";
-import "./IInitializable.sol";
+import { IFactory } from "./IFactory.sol";
+import { IInitializable } from "./IInitializable.sol";
 
 interface IInstance is IInitializable {
     // sig: 0x4d193d1f

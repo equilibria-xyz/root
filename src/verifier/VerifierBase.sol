@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+
 import { Common, CommonLib } from "./types/Common.sol";
 import { GroupCancellation, GroupCancellationLib } from "./types/GroupCancellation.sol";
 import { IVerifierBase } from "./interfaces/IVerifierBase.sol";

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "../../number/types/UFixed6.sol";
+import { UFixed6, UFixed6Lib } from "../../number/types/UFixed6.sol";
 
 /// @dev UAccumulator6 type
 struct UAccumulator6 {

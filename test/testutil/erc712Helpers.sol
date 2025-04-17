@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import { Vm } from "forge-std/Vm.sol";
-import { Common, CommonLib } from "src/verifier/types/Common.sol";
-import { GroupCancellation, GroupCancellationLib } from "src/verifier/types/GroupCancellation.sol";
+
+import { Common, CommonLib } from "../../src/verifier/types/Common.sol";
+import { GroupCancellation, GroupCancellationLib } from "../../src/verifier/types/GroupCancellation.sol";
 
 bytes32 constant EIP712_DOMAIN_SEPARATOR_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
 

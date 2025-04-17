@@ -3,8 +3,8 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 
-import { Pausable } from "src/attribute/Pausable.sol";
-import { Version } from "src/attribute/types/Version.sol";
+import { Pausable } from "../../src/attribute/Pausable.sol";
+import { Version } from "../../src/attribute/types/Version.sol";
 
 contract PausableTest is Test {
     event PauserUpdated(address indexed newPauser);

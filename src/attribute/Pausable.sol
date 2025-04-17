@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "./Initializable.sol";
-import "./Ownable.sol";
-import "./interfaces/IPausable.sol";
+import { Initializable } from "./Initializable.sol";
+import { Ownable } from "./Ownable.sol";
+import { IPausable } from "./interfaces/IPausable.sol";
 import { Version } from "./types/Version.sol";
 
 /// @title Pausable

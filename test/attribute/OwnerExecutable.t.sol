@@ -3,8 +3,8 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 
-import { OwnerExecutable, Ownable } from "src/attribute/OwnerExecutable.sol";
-import { Token18 } from "src/token/types/Token18.sol";
+import { OwnerExecutable, Ownable } from "../../src/attribute/OwnerExecutable.sol";
+import { Token18 } from "../../src/token/types/Token18.sol";
 import { MockOwnable } from "./Ownable.t.sol";
 import { MockToken18 } from "../token/Token18.t.sol";
 

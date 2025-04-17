@@ -3,8 +3,8 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 
-import { Initializable } from "src/attribute/Initializable.sol";
-import { Version } from "src/attribute/types/Version.sol";
+import { Initializable } from "../../src/attribute/Initializable.sol";
+import { Version } from "../../src/attribute/types/Version.sol";
 
 contract InitializableTest is Test {
     event CustomInitializer(uint256 value);

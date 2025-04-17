@@ -5,8 +5,8 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { Fixed6, Fixed6Lib } from "../../src/number/types/Fixed6.sol";
-import { Fixed18, Fixed18Lib } from "../../src/number/types/Fixed18.sol";
 import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
+import { Fixed18, Fixed18Lib } from "../../src/number/types/Fixed18.sol";
 import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
 
 // solhint-disable no-console
@@ -60,6 +60,8 @@ contract ConsoleTest is Test {
     }
 
     function test_formatTwoInts(uint256 val1, uint256 val2) external pure {
+        val1 = bound(val1, 0, uint256(type(int256).max));
+        val2 = bound(val2, 0, uint256(type(int256).max));
         console.log("      Both unsigned and unsigned: %s and %s", uint(val1), uint(val2));
         console.log("      Both unsigned and signed:   %s and %s", uint(val1), int(val2)*-1);
         console.log("      Both signed and unsigned:   %s and %s", int(val1)*-1, uint(val2));

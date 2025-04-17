@@ -6,8 +6,6 @@ import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import { IInitializable } from "./interfaces/IInitializable.sol";
 import { Version, VersionLib } from "./types/Version.sol";
 
-import { console } from "forge-std/console.sol";
-
 /// @title Initializable
 /// @notice Library to manage the initialization lifecycle of upgradeable contracts
 /// @dev `Initializable.sol` allows the creation of pseudo-constructors for upgradeable contracts. One

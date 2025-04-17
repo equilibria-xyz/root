@@ -4,7 +4,10 @@ pragma solidity ^0.8.13;
 import { stdError } from "forge-std/StdError.sol";
 import { RootTest } from "../RootTest.sol";
 
-import { JumpRateUtilizationCurve6, JumpRateUtilizationCurve6Lib } from "../../src/utilization/types/JumpRateUtilizationCurve6.sol";
+import {
+    JumpRateUtilizationCurve6,
+    JumpRateUtilizationCurve6Lib
+} from "../../src/utilization/types/JumpRateUtilizationCurve6.sol";
 import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
 
 contract JumpRateUtilizationCurve6Test is RootTest {
