@@ -36,10 +36,4 @@ contract ProxyAdmin is Ownable {
     function unpause(IProxy proxy) public onlyOwner {
         proxy.unpause();
     }
-
-    /// @notice Points proxy to previous implementation, if available
-    /// @custom:error ProxyCannotRollBackError No rollback implementation available
-    function rollback(IProxy proxy) public onlyOwner {
-        proxy.rollback();
-    }
 }

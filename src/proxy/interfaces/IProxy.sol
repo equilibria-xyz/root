@@ -20,8 +20,4 @@ interface IProxy is IERC1967 {
 
     /// @dev Allows interaction with the proxied contract
     function unpause() external;
-
-    // TODO: remove the rollback facility
-    /// @dev Points proxy to previous implementation, if available
-    function rollback() external;
 }

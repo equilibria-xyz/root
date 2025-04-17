@@ -51,7 +51,6 @@ abstract contract Ownable is IOwnable, Initializable {
         updatePendingOwner(address(0));
     }
 
-
     /// @dev Hook for inheriting contracts to perform logic before accepting ownership
     function _beforeAcceptOwner() internal virtual {}
 

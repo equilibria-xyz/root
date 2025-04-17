@@ -7,32 +7,31 @@ import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import { Initializable, Version } from "src/attribute/Initializable.sol";
 import { IProxy } from "./interfaces/IProxy.sol";
 import { ProxyAdmin } from "./ProxyAdmin.sol";
+import { ProxyPauseTarget } from "./ProxyPauseTarget.sol";
 
 /// @title Proxy
 /// @notice A mostly-transparent upgradeable proxy with facilities to prevent deployment errors.
 /// @dev The real interface of this proxy is that defined in `IProxy`. This contract does not
-/// inherit from that interface to maintain transparency.  Upgradability is implemented using an
-/// internal dispatch mechanism.  Proxied contracts must implement `Initializable` (not just the
-/// interface) and must return a constant `name` string used for identification.
-/// Implementations must be initialized using calldata during deployment and upgrade.
-/// Users are exposed to ProxyPausedError when the proxied contract is paused.
+///      inherit from that interface to maintain transparency.  Upgradability is implemented using
+///      an internal dispatch mechanism.  Proxied contracts must implement `Initializable` (not just
+///      the interface) and must return a constant `name` string used for identification.
+///      Implementations must be initialized using calldata during deployment and upgrade.
+///      Users are exposed to ProxyPausedError when the proxied contract is paused.
 contract Proxy is ERC1967Proxy {
     address private immutable _admin;
 
     // Stored in named slots to avoid storage collision with implementation
     // @dev Prevents any interaction with the proxied contract
     bytes32 private constant PAUSED_SLOT = keccak256("equilibria.root.proxy.paused");
-    // @dev Stores previously proxied contract, cleared after a rollback is performed
-    bytes32 private constant ROLLBACK_SLOT = keccak256("equilibria.root.proxy.rollback");
+    // @dev Stub contract used when proxy is paused
+    bytes32 private constant PAUSED_TARGET_SLOT = keccak256("equilibria.root.proxy.target.paused");
+    // @dev Implementation contract used when proxy is unpaused
+    bytes32 private constant UNPAUSED_TARGET_SLOT = keccak256("equilibria.root.proxy.target.unpaused");
 
     /// @notice Proxy will ignore calls to the proxied contract
     event Paused();
     /// @notice Proxy will allow calls to the proxied contract
     event Unpaused();
-
-    // sig: 0x05b0d206
-    /// @dev The active implementation was already rolled back or no rollback implementation is available.
-    error ProxyCannotRollBackError();
 
     // sig: 0xe8d6e8ee
     /// @dev An upgrade attempt was made by someone other than the proxy administrator.
@@ -43,7 +42,7 @@ contract Proxy is ERC1967Proxy {
     error ProxyNameMismatchError();
 
     // sig: 0x9419684e
-    /// @dev Interactions with contract are not allowed while paused.
+    /// @dev Interactions with proxied contract are not allowed while paused.
     error ProxyPausedError();
 
     // sig: 0x3f7d07d5
@@ -59,10 +58,12 @@ contract Proxy is ERC1967Proxy {
     {
         _admin = address(proxyAdmin);
         ERC1967Utils.changeAdmin(address(proxyAdmin));
+        StorageSlot.getAddressSlot(PAUSED_TARGET_SLOT).value = address(new ProxyPauseTarget());
+        StorageSlot.getAddressSlot(UNPAUSED_TARGET_SLOT).value = address(implementation);
     }
 
     /// @dev Returns the administrator of the proxy.
-    function _proxyAdmin() internal view virtual returns (address) {
+    function _proxyAdmin() internal virtual view returns (address) {
         return _admin;
     }
 
@@ -72,29 +73,35 @@ contract Proxy is ERC1967Proxy {
         if (msg.sender == _proxyAdmin()) {
             if (msg.sig == IProxy.upgradeToAndCall.selector) {
                 _dispatchUpgrade();
-            } else if (msg.sig == IProxy.pause.selector
-                && !StorageSlot.getBooleanSlot(PAUSED_SLOT).value
-            ) {
+            } else if (msg.sig == IProxy.pause.selector && !paused()) {
+                setPausedImplementation();
                 StorageSlot.getBooleanSlot(PAUSED_SLOT).value = true;
                 emit Paused();
-            } else if (msg.sig == IProxy.unpause.selector
-                && StorageSlot.getBooleanSlot(PAUSED_SLOT).value
-            ) {
+            } else if (msg.sig == IProxy.unpause.selector && paused()) {
+                setUnpausedImplementation();
                 StorageSlot.getBooleanSlot(PAUSED_SLOT).value = false;
                 emit Unpaused();
-            } else if (msg.sig == IProxy.rollback.selector) {
-                _dispatchRollback();
             } else {
                 revert ProxyDeniedAdminAccessError();
             }
         // all other callers interact only with the implementation
         } else {
-            // TODO: see if we can staticcall to access views on the proxied contract
-            // TODO: see if there's a clean way to avoid an expensive storage read here, perhaps using a stub contract
-            if (StorageSlot.getBooleanSlot(PAUSED_SLOT).value)
-                revert ProxyPausedError();
             super._fallback();
         }
+    }
+
+    /// @dev Convenience function which checks whether proxy is pointed at the pause target (true)
+    ///      or implementation (false).
+    function paused() internal virtual view returns (bool) {
+        return StorageSlot.getBooleanSlot(PAUSED_SLOT).value;
+    }
+
+    function setPausedImplementation() internal virtual {
+        ERC1967Utils.upgradeToAndCall(StorageSlot.getAddressSlot(PAUSED_TARGET_SLOT).value, "");
+    }
+
+    function setUnpausedImplementation() internal virtual {
+        ERC1967Utils.upgradeToAndCall(StorageSlot.getAddressSlot(UNPAUSED_TARGET_SLOT).value, "");
     }
 
     /// @dev Updates the implementation of the proxy.
@@ -105,8 +112,9 @@ contract Proxy is ERC1967Proxy {
             bytes memory initData
         ) = abi.decode(msg.data[4:], (Initializable, bytes));
 
-        // store the old implementation address in the rollback slot
-        StorageSlot.getAddressSlot(ROLLBACK_SLOT).value = _implementation();
+        // if proxy is paused upon upgrade, need to briefly soft-unpause to upgrade
+        bool wasPaused = paused();
+        if (wasPaused) setUnpausedImplementation();
 
         // read the current name and version from storage before calling new initializer
         Initializable old = Initializable(_implementation());
@@ -114,6 +122,7 @@ contract Proxy is ERC1967Proxy {
         Version memory oldVersion = old.version();
 
         // update the implementation and call initializer
+        StorageSlot.getAddressSlot(UNPAUSED_TARGET_SLOT).value = address(newImplementation);
         ERC1967Utils.upgradeToAndCall(address(newImplementation), initData);
 
         // ensure name hash and version are appropriate
@@ -121,19 +130,22 @@ contract Proxy is ERC1967Proxy {
             revert ProxyNameMismatchError();
         if (!oldVersion.eq(newImplementation.versionFrom()))
             revert ProxyVersionMismatchError(oldVersion, newImplementation.version());
+
+        // if proxy was paused before upgrade, re-pause the proxy
+        if (wasPaused) setPausedImplementation();
     }
 
-    /// @dev Points the proxy back to the old implementation.
-    function _dispatchRollback() private {
-        // ensure we have something to roll back to
-        address rollback = StorageSlot.getAddressSlot(ROLLBACK_SLOT).value;
-        if (rollback == address(0))
-            revert ProxyCannotRollBackError();
+    // This was an attempt to use staticcall to access views on the proxied contract.
+    // It did not revert, but debugger shows empty returndata buffer.
+    /*function _staticCall(address implementation) internal virtual {
+        assembly {
+            calldatacopy(0, 0, calldatasize())
+            let result := staticcall(gas(), implementation, 0, calldatasize(), 0, 0)
+            returndatacopy(0, 0, returndatasize())
 
-        // downgrade to the old implementation without initialization calldata
-        ERC1967Utils.upgradeToAndCall(rollback, "");
-
-        // cannot roll back again
-        StorageSlot.getAddressSlot(ROLLBACK_SLOT).value = address(0);
-    }
+            switch result
+            case 0 { revert(0, returndatasize()) }
+            default { return(1, returndatasize()) }
+        }
+    }*/
 }
