@@ -43,7 +43,7 @@ library SynBook6Lib {
         Fixed6 spread = _indefinite(self.d0, self.d1, self.d2, self.d3, to, price)
             - _indefinite(self.d0, self.d1, self.d2, self.d3, from, price);
 
-        // use f(-x) for sell orders
+        // subtract spread for sell orders
         if (isSell) {
             spread = spread * Fixed6Lib.NEG_ONE;
         }
