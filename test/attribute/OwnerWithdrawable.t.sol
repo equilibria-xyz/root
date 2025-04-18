@@ -24,7 +24,7 @@ contract OwnerWithdrawableTest is Test {
         // Deploy the withdrawable contract and initialize it
         vm.startPrank(owner);
         ownerWithdrawable = new MockOwnerWithdrawable();
-        ownerWithdrawable.__initialize();
+        ownerWithdrawable.initialize(ownerWithdrawable.version(), "");
 
         // Deploy and mint ERC20 tokens
         erc20 = new MockERC20("TestToken", "TT");

@@ -25,12 +25,12 @@ contract FactoryTest is Test {
         vm.expectRevert(abi.encodeWithSelector(InitializableNotInitializingError.selector));
         factory.initializeIncorrect();
 
-        factory.initialize();
+        factory.initialize(factory.version(), "");
         assertEq(factory.owner(), address(this));
     }
 
     function test_create() public {
-        factory.initialize();
+        factory.initialize(factory.version(), "");
 
         IInstance instance;
 
@@ -49,7 +49,7 @@ contract FactoryTest is Test {
     }
 
     function test_create2() public {
-        factory.initialize();
+        factory.initialize(factory.version(), "");
 
         IInstance instance;
 
@@ -64,7 +64,7 @@ contract FactoryTest is Test {
     }
 
     function test_computeCreate2Address() public {
-        factory.initialize();
+        factory.initialize(factory.version(), "");
 
         // Verify create2 address computation matches actual deployment
         bytes32 salt = bytes32(0);
@@ -76,7 +76,7 @@ contract FactoryTest is Test {
     }
 
     function test_onlyCallableByInstance() public {
-        factory.initialize();
+        factory.initialize(factory.version(), "");
 
         // Test instance-only function access control
         vm.expectRevert(abi.encodeWithSelector(FactoryNotInstanceError.selector));
@@ -96,7 +96,9 @@ contract MockFactory is Factory {
         Version(0,0,0)
     ) {}
 
-    function initialize() external initializer() {
+    function initialize(Version memory version_, bytes memory)
+        external virtual override initializer(version_)
+    {
         __Factory__initialize();
     }
 
@@ -105,15 +107,19 @@ contract MockFactory is Factory {
     }
 
     function create() external onlyOwner returns (MockInstance) {
-        return MockInstance(address(_create(abi.encodeCall(MockInstance.initialize, ()))));
+        return MockInstance(address(_create(
+            abi.encodeCall(MockInstance.initialize, (version(), ""))
+        )));
     }
 
     function create2(bytes32 salt) external onlyOwner returns (MockInstance) {
-        return MockInstance(address(_create2(abi.encodeCall(MockInstance.initialize, ()), salt)));
+        return MockInstance(address(_create2(
+            abi.encodeCall(MockInstance.initialize, (version(), "")), salt)));
     }
 
     function computeCreate2Address(bytes32 salt) external view returns (address) {
-        return _computeCreate2Address(abi.encodeCall(MockInstance.initialize, ()), salt);
+        return _computeCreate2Address(
+            abi.encodeCall(MockInstance.initialize, (version(), "")), salt);
     }
 
     function onlyCallableByInstance() external view onlyInstance {}

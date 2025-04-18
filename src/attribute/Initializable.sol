@@ -53,17 +53,33 @@ abstract contract Initializable is IInitializable {
         return Version(versionFromMajor, versionFromMinor, versionFromPatch);
     }
 
+    // TODO: This requires every subclass to override(Initializable, IInitializable), which impacts readability.
+    /// @dev Default no-op implementation
+    // function initialize(Version memory version_, bytes memory initParams)
+    //     external virtual override(IInitializable) initializer(version_) {}
+
+    function initializing() internal view returns (bool) {
+        return StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value;
+    }
+
+    /// @notice Returns whether the contract is currently being constructed
+    /// @return Whether the contract is currently being constructed
+    function _constructing() private view returns (bool) {
+        return !(address(this).code.length > 0);
+    }
+
     // TODO: Only run if version passed to initializer matches current version; find better name for variable
     /// @dev Can only be called once per version, `version` is 1-indexed
-    modifier initializer(/*Version memory version_*/) {
+    modifier initializer(Version memory version_) {
         // TODO: Do a code size analysis on hashing the version rather than bit fiddling.
         uint256 initializedVersion = StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value;
         if (initializedVersion != 0 && initializedVersion == version().toUnsigned())
             revert InitializableAlreadyInitializedError();
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = true;
 
-        // TODO: only run this if version_ parameter matches
-        _;
+        // only execute if the version stated in initialization matches the contract version
+        if (version_.eq(version()))
+            _;
 
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = false;
         StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value = version().toUnsigned();
@@ -75,15 +91,5 @@ abstract contract Initializable is IInitializable {
         if (!_constructing() && !StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value)
             revert InitializableNotInitializingError();
         _;
-    }
-
-    function initializing() internal view returns (bool) {
-        return StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value;
-    }
-
-    /// @notice Returns whether the contract is currently being constructed
-    /// @return Whether the contract is currently being constructed
-    function _constructing() private view returns (bool) {
-        return !(address(this).code.length > 0);
     }
 }

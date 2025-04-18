@@ -11,7 +11,7 @@ contract ProxyTestV1 is ProxyTest {
     function test_creation() public view {
         assertEq(instance1.version(), Version(1, 0, 1), "Version should be 1.0.1 after deployment");
         assertEq(instance1.immutableValue(), 101, "Immutable value should be 101");
-        assertEq(instance1.getValue(), 0, "Initial value should be 0");
+        assertEq(instance1.getValue(), 112, "Initializer should have set value");
     }
 
     function test_identify() public view {
@@ -26,17 +26,27 @@ contract ProxyTestV1 is ProxyTest {
     }
 
     function test_upgrade() public {
-        // set value on old version to confirm storage is not overwritten
-        vm.prank(implementationOwner);
-        instance1.setValue(153);
-
         SampleContractV2 instance2 = upgrade();
         assertEq(instance2.version(), Version(2, 0, 1), "Version should be 2.0.1 after upgrade");
         assertEq(instance2.owner(), implementationOwner, "Owner should still be implementationOwner");
         assertEq(instance2.immutableValue(), 201, "Immutable value should be 201");
         (uint256 value1, int256 value2) = instance2.getValues();
-        assertEq(value1, 153, "Value1 should still be 153");
-        assertEq(value2, 0, "Value2 was never set");
+        assertEq(value1, 113, "Value1 should have incremented by initializer");
+        assertEq(value2, 222, "Value2 should have set the initializer using initParams");
+    }
+
+    function test_upgradeWithDifferentInitVersion() public {
+        // upgrade passing the initializer a different version than the contract
+        SampleContractV2 instance2 = upgradeWithVersion(Version(2, 0, 0));
+
+        // confirm upgrade worked and immutable value was updated
+        assertEq(instance2.version(), Version(2, 0, 1), "Version should be 2.0.1 after upgrade");
+        assertEq(instance2.immutableValue(), 201, "Immutable value should be 201");
+
+        // confirm initializer did not run
+        (uint256 value1, int256 value2) = instance2.getValues();
+        assertEq(value1, 112, "Value1 not incremented when init version doesn't match");
+        assertEq(value2, 0, "Value2 should be 0 when init version doesn't match");
     }
 
     function test_nonOwnerCannotInteract() public {
@@ -118,13 +128,14 @@ contract ProxyTestV1 is ProxyTest {
         // check state
         assertEq(instance2.version(), Version(2, 0, 1), "Version change after upgrade while paused");
         assertEq(instance2.immutableValue(), 201, "Immutable value after upgrade while paused");
-        assertEq(instance2.value1(), 155, "Value1 after upgrade while paused");
+        assertEq(instance2.value1(), 156, "Value1 after upgrade while paused");
+        assertEq(instance2.value2(), 222, "Value2 after upgrade while paused");
 
         // confirm interactions still work
         vm.prank(implementationOwner);
-        instance2.setValues(156, -17);
+        instance2.setValues(255, -17);
         (uint256 val1, int256 val2) = instance2.getValues();
-        assertEq(val1, 156, "Value1 should be mutable after upgrade while paused");
+        assertEq(val1, 255, "Value1 should be mutable after upgrade while paused");
         assertEq(val2, -17, "Value2 should be mutable after upgrade while paused");
     }
 }
@@ -136,8 +147,6 @@ contract ProxyTestV2 is ProxyTest {
         super.setUp();
         // upgrade the proxy
         instance2 = upgrade();
-        vm.prank(implementationOwner);
-        instance2.setValues(153, -1);
     }
 
     function test_identify() public view {
@@ -152,11 +161,6 @@ contract ProxyTestV2 is ProxyTest {
         assertEq(instance2.immutableValue(), 201, "Immutable value should still be 201");
         assertEq(val1, 253, "Value1 should be 253");
         assertEq(val2, -254, "Value2 should be -254");
-    }
-
-    function test_canInitializeAfterUpgrade() public {
-        vm.prank(implementationOwner);
-        instance2.initialize();
     }
 
     function test_revertsOnDowngradeAttempt() public {

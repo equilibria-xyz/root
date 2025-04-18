@@ -26,15 +26,16 @@ abstract contract ProxyTest is RootTest {
     function setUp() public virtual {
         // create the proxy admin
         proxyAdmin = new ProxyAdmin();
+        Version memory proxyAdminVersion = proxyAdmin.version();
         vm.startPrank(proxyOwner);
-        proxyAdmin.initialize();
+        proxyAdmin.initialize(proxyAdminVersion, "");
 
         // deploy the implementation and create the proxy
         impl1 = new SampleContractV1(101);
         Proxy proxyInstantiation = new Proxy(
             impl1,
             proxyAdmin,
-            abi.encodeWithSignature("initialize()")
+            abi.encodeCall(SampleContractV1.initialize, (Version(1, 0, 1), ""))
         );
         vm.stopPrank();
         proxy = IProxy(address(proxyInstantiation));
@@ -53,11 +54,22 @@ abstract contract ProxyTest is RootTest {
     }
 
     function upgrade() internal returns (SampleContractV2) {
+        return upgradeWithVersion(Version(2, 0, 1));
+    }
+
+    function upgradeWithVersion(Version memory version) internal returns (SampleContractV2) {
         SampleContractV2 impl2 = new SampleContractV2(201);
         vm.prank(proxyOwner);
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, "");
+        proxyAdmin.upgradeToAndCall(
+            proxy,
+            impl2,
+            abi.encodeCall(
+                SampleContractV2.initialize,
+                (version, abi.encode(int256(222)))
+            )
+        );
         return SampleContractV2(address(proxy));
     }
 }
@@ -73,9 +85,11 @@ contract SampleContractV1 is Ownable {
         immutableValue = immutableValue_;
     }
 
-    // TODO: test initializer on deployment
-    function initialize() external initializer() {
+    function initialize(Version memory version_, bytes memory)
+        external virtual override initializer(version_)
+    {
         __Ownable__initialize();
+        value = 112;
     }
 
     function setValue(uint256 value_) external onlyOwner() {
@@ -96,15 +110,17 @@ contract SampleContractV2 is Ownable {
     error CustomError();
 
     constructor(uint256 immutableValue_)
-    Ownable("SampleContract", Version(2, 0, 1), Version(1, 0, 1))
+        Ownable("SampleContract", Version(2, 0, 1), Version(1, 0, 1))
     {
         immutableValue = immutableValue_;
     }
 
-    // TODO: test initializer on upgrade
-    function initialize() external initializer() {
-        __Ownable__initialize();
-        value2 = -3;
+    function initialize(Version memory version_, bytes memory initParams)
+        external virtual override initializer(version_)
+    {
+        // __Ownable__initialize() was already called in V1
+        value1 += 1;
+        value2 = abi.decode(initParams, (int256));
     }
 
     function setValues(uint256 value1_, int256 value2_) external onlyOwner() {
@@ -124,4 +140,10 @@ contract SampleContractV2 is Ownable {
 /// @dev Contract whose name does not match that expected by the proxy
 contract NonSampleContract is Ownable {
     constructor() Ownable("NonSampleContract", Version(1, 1, 0), Version (1, 0, 0)) {}
+
+    function initialize(Version memory version_, bytes memory)
+        external virtual override initializer(version_)
+    {
+        __Ownable__initialize();
+    }
 }

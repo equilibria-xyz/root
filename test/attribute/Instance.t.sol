@@ -16,11 +16,13 @@ contract InstanceTest is Test {
 
     MockInstance public instance;
     MockFactory public factory;
+    Version instanceVersion;
 
     function setUp() public {
         instance = new MockInstance();
+        instanceVersion = instance.version();
         factory = new MockFactory(address(instance));
-        factory.initialize();
+        factory.initialize(factory.version(), "");
     }
 
     function test_initialize() public {
@@ -31,13 +33,13 @@ contract InstanceTest is Test {
 
         // should initialize when correctly initialized
         vm.prank(address(factory));
-        instance.initialize();
+        instance.initialize(instanceVersion, "");
         assertEq(address(instance.factory()), address(factory));
     }
 
     function test_onlyOwnerModifier() public {
         vm.prank(address(factory));
-        instance.initialize();
+        instance.initialize(instanceVersion, "");
 
         vm.prank(address(factory.owner()));
         assertEq(instance.protectedFunctionOwner(), true);
@@ -50,7 +52,7 @@ contract InstanceTest is Test {
 
     function test_onlyFactoryModifier() public {
         vm.prank(address(factory));
-        instance.initialize();
+        instance.initialize(instanceVersion, "");
 
         vm.prank(address(factory));
         assertEq(instance.protectedFunctionFactory(), true);
@@ -63,7 +65,7 @@ contract InstanceTest is Test {
 
     function test_whenNotPausedModifier() public {
         vm.prank(address(factory));
-        instance.initialize();
+        instance.initialize(instanceVersion, "");
 
         vm.prank(address(factory));
         assertEq(instance.protectedFunctionPaused(), true);
@@ -87,7 +89,9 @@ contract InstanceTest is Test {
 contract MockInstance is Instance {
     constructor() Instance("MockInstance", Version(0,0,1), Version(0,0,0)) {}
 
-    function initialize() external initializer() {
+    function initialize(Version memory version_, bytes memory)
+        external virtual override initializer(version_)
+    {
         __Instance__initialize();
     }
 

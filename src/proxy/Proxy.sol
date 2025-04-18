@@ -49,6 +49,7 @@ contract Proxy is ERC1967Proxy {
     /// @dev The upgraded version is not greater than the current version.
     error ProxyVersionMismatchError(Version proxyCurrentVersion, Version requestVersion);
 
+    // TODO: Force that initializer is called; maybe changing the initData arg to initParams.
     /// @dev Initializes an upgradeable proxy managed by an instance of a {ProxyAdmin}.
     /// @param implementation The first version of the contract to be proxied.
     /// @param proxyAdmin Administrator who can upgrade the proxy.

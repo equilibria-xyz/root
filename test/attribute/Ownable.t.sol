@@ -15,6 +15,7 @@ contract OwnableTest is Test {
     event PendingOwnerUpdated(address indexed newPendingOwner);
 
     MockOwnable public ownable;
+    Version ownableVersion;
     address public owner;
     address public user;
     address public unrelated;
@@ -27,6 +28,7 @@ contract OwnableTest is Test {
         // Deploy the contract with the owner as msg.sender.
         vm.prank(owner);
         ownable = new MockOwnable();
+        ownableVersion = ownable.version();
     }
 
     function test_initializeInitializesOwner() public {
@@ -37,7 +39,7 @@ contract OwnableTest is Test {
         vm.prank(owner);
         vm.expectEmit(true, false, false, true);
         emit OwnerUpdated(owner);
-        ownable.__initialize();
+        ownable.initialize(ownableVersion, "");
 
         // Verify owner is now set.
         assertEq(ownable.owner(), owner);
@@ -49,18 +51,18 @@ contract OwnableTest is Test {
 
         // Set the owner using __initializeV with a dummy version (simulate previous initialization).
         vm.prank(owner);
-        ownable.__initialize();
+        ownable.initialize(ownableVersion, "");
 
         // Reinitializing with a new version should revert.
         vm.prank(owner);
         vm.expectRevert(abi.encodeWithSelector(InitializableAlreadyInitializedError.selector));
-        ownable.__initialize();
+        ownable.initialize(ownableVersion, "");
     }
 
     function test_setPendingOwnerUpdatesPendingOwner() public {
         // Initialize first.
         vm.prank(owner);
-        ownable.__initialize();
+        ownable.initialize(ownableVersion, "");
 
         // Expect the PendingOwnerUpdated event.
         vm.prank(owner);
@@ -75,7 +77,7 @@ contract OwnableTest is Test {
 
     function test_setPendingOwnerRevertsIfNotOwner() public {
         vm.prank(owner);
-        ownable.__initialize();
+        ownable.initialize(ownableVersion, "");
 
         // Using a non-owner account should revert.
         vm.prank(user);
@@ -85,7 +87,7 @@ contract OwnableTest is Test {
 
     function test_setPendingOwnerResetToZero() public {
         vm.prank(owner);
-        ownable.__initialize();
+        ownable.initialize(ownableVersion, "");
 
         // Reset pending owner by setting it to address(0)
         vm.prank(owner);
@@ -100,7 +102,7 @@ contract OwnableTest is Test {
 
     function test_acceptOwnerTransfersOwnership() public {
         vm.prank(owner);
-        ownable.__initialize();
+        ownable.initialize(ownableVersion, "");
         vm.prank(owner);
         ownable.updatePendingOwner(user);
 
@@ -117,7 +119,7 @@ contract OwnableTest is Test {
 
     function test_acceptOwnerCallsBeforeAcceptOwnerHook() public {
         vm.prank(owner);
-        ownable.__initialize();
+        ownable.initialize(ownableVersion, "");
         vm.prank(owner);
         ownable.updatePendingOwner(user);
 
@@ -138,7 +140,7 @@ contract OwnableTest is Test {
 
     function test_acceptOwnerRevertsIfNotPendingOwner() public {
         vm.prank(owner);
-        ownable.__initialize();
+        ownable.initialize(ownableVersion, "");
         vm.prank(owner);
         ownable.updatePendingOwner(user);
 
@@ -159,7 +161,9 @@ contract MockOwnable is Ownable {
 
     constructor() Ownable("MockOwnable", Version(0,0,1), Version(0,0,0)) {}
 
-    function __initialize() external initializer() {
+    function initialize(Version memory version_, bytes memory)
+        external virtual override initializer(version_)
+    {
         super.__Ownable__initialize();
     }
 
