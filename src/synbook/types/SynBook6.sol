@@ -33,8 +33,10 @@ library SynBook6Lib {
         bool isSell = change < Fixed6Lib.ZERO;
 
         // use f(-x) for sell orders
-        latest = _flipIfSell(latest, isSell);
-        change = _flipIfSell(change, isSell);
+        if (isSell) {
+            latest = latest * Fixed6Lib.NEG_ONE;
+            change = change * Fixed6Lib.NEG_ONE;
+        }
 
         Fixed6 from = latest / Fixed6Lib.from(self.scale);
         Fixed6 to = (latest + change) / Fixed6Lib.from(self.scale);
@@ -42,13 +44,11 @@ library SynBook6Lib {
             - _indefinite(self.d0, self.d1, self.d2, self.d3, from, price);
 
         // use f(-x) for sell orders
-        spread = _flipIfSell(spread, isSell);
+        if (isSell) {
+            spread = spread * Fixed6Lib.NEG_ONE;
+        }
 
         return UFixed6Lib.unsafeFrom(Fixed6Lib.from(price) + spread);
-    }
-
-    function _flipIfSell(Fixed6 value, bool isSell) private pure returns (Fixed6) {
-        return isSell ? value * Fixed6Lib.NEG_ONE : value;
     }
 
     /// @dev f(x) = d0 * x + d1 * x^2 / 2 + d2 * x^3 / 3 + d3 * x^4 / 4
