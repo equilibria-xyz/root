@@ -28,14 +28,14 @@ abstract contract ProxyTest is RootTest {
         proxyAdmin = new ProxyAdmin();
         Version memory proxyAdminVersion = proxyAdmin.version();
         vm.startPrank(proxyOwner);
-        proxyAdmin.initialize(proxyAdminVersion, "");
+        proxyAdmin.initialize("");
 
         // deploy the implementation and create the proxy
         impl1 = new SampleContractV1(101);
         Proxy proxyInstantiation = new Proxy(
             impl1,
             proxyAdmin,
-            abi.encodeCall(SampleContractV1.initialize, (Version(1, 0, 1), ""))
+            abi.encodeCall(SampleContractV1.initialize, (""))
         );
         vm.stopPrank();
         proxy = IProxy(address(proxyInstantiation));
@@ -67,7 +67,7 @@ abstract contract ProxyTest is RootTest {
             impl2,
             abi.encodeCall(
                 SampleContractV2.initialize,
-                (version, abi.encode(int256(222)))
+                (abi.encode(int256(222)))
             )
         );
         return SampleContractV2(address(proxy));
@@ -85,8 +85,8 @@ contract SampleContractV1 is Ownable {
         immutableValue = immutableValue_;
     }
 
-    function initialize(Version memory version_, bytes memory)
-        external virtual override initializer(version_)
+    function initialize(bytes memory)
+        external virtual override initializer(Version(1, 0, 1))
     {
         __Ownable__initialize();
         value = 112;
@@ -115,8 +115,8 @@ contract SampleContractV2 is Ownable {
         immutableValue = immutableValue_;
     }
 
-    function initialize(Version memory version_, bytes memory initParams)
-        external virtual override initializer(version_)
+    function initialize(bytes memory initParams)
+        external virtual override initializer(Version(2, 0, 1))
     {
         // __Ownable__initialize() was already called in V1
         value1 += 1;
@@ -137,12 +137,34 @@ contract SampleContractV2 is Ownable {
     }
 }
 
+/// @dev Initialize version is still 2.0.1, so initializer should not run
+contract SampleContractWithOldInit is Ownable {
+    uint256 public immutable immutableValue;
+    uint256 public value1; // no storage change between V2.0.1 and V2.0.2
+    int256 public value2;
+
+    constructor(uint256 immutableValue_)
+        Ownable("SampleContract", Version(2, 0, 2), Version(2, 0, 1))
+    {
+        immutableValue = immutableValue_;
+    }
+
+    // intentionally does not match contract
+    function initialize(bytes memory)
+        external virtual override initializer(Version(2, 0, 1))
+    {
+        // __Ownable__initialize() was already called in V1
+        value1 = 676;
+        value2 = -767;
+    }
+}
+
 /// @dev Contract whose name does not match that expected by the proxy
 contract NonSampleContract is Ownable {
     constructor() Ownable("NonSampleContract", Version(1, 1, 0), Version (1, 0, 0)) {}
 
-    function initialize(Version memory version_, bytes memory)
-        external virtual override initializer(version_)
+    function initialize(bytes memory)
+        external virtual override initializer(Version(1, 1, 0))
     {
         __Ownable__initialize();
     }

@@ -22,8 +22,8 @@ contract ProxyAdmin is Ownable {
     }
 
     /// @notice Sets initial owner to the sender
-    function initialize(Version memory version_, bytes memory)
-        external override initializer(version_)
+    function initialize(bytes memory)
+        external override initializer(Version(0,0,0))
     {
         __Ownable__initialize();
     }

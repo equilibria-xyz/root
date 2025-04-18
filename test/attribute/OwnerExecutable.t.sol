@@ -23,7 +23,7 @@ contract OwnerExecutableTest is Test {
 
         vm.startPrank(owner);
         ownableExecutable = new MockOwnerExecutable();
-        ownableExecutable.initialize(ownableExecutable.version(), "");
+        ownableExecutable.initialize("");
         vm.stopPrank();
     }
 

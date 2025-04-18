@@ -1,7 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
-import { ProxyTest, NonSampleContract, SampleContractV1, SampleContractV2 } from "./ProxyTest.sol";
+import {
+
+    ProxyTest,
+    NonSampleContract,
+    SampleContractV1,
+    SampleContractV2,
+    SampleContractWithOldInit
+} from "./ProxyTest.sol";
 import { IOwnable, Ownable } from "../../src/attribute/Ownable.sol";
 import { Version } from "../../src/attribute/types/Version.sol";
 import { IProxy } from "../../src/proxy/interfaces/IProxy.sol";
@@ -33,20 +40,6 @@ contract ProxyTestV1 is ProxyTest {
         (uint256 value1, int256 value2) = instance2.getValues();
         assertEq(value1, 113, "Value1 should have incremented by initializer");
         assertEq(value2, 222, "Value2 should have set the initializer using initParams");
-    }
-
-    function test_upgradeWithDifferentInitVersion() public {
-        // upgrade passing the initializer a different version than the contract
-        SampleContractV2 instance2 = upgradeWithVersion(Version(2, 0, 0));
-
-        // confirm upgrade worked and immutable value was updated
-        assertEq(instance2.version(), Version(2, 0, 1), "Version should be 2.0.1 after upgrade");
-        assertEq(instance2.immutableValue(), 201, "Immutable value should be 201");
-
-        // confirm initializer did not run
-        (uint256 value1, int256 value2) = instance2.getValues();
-        assertEq(value1, 112, "Value1 not incremented when init version doesn't match");
-        assertEq(value2, 0, "Value2 should be 0 when init version doesn't match");
     }
 
     function test_nonOwnerCannotInteract() public {
@@ -177,5 +170,25 @@ contract ProxyTestV2 is ProxyTest {
     function test_implementationCanRevert() public {
         vm.expectRevert(SampleContractV2.CustomError.selector);
         instance2.revertWhenCalled();
+    }
+
+    function test_upgradeWithDifferentInitVersion() public {
+        // upgrade passing the initializer a different version than the contract
+        SampleContractWithOldInit impl202 = new SampleContractWithOldInit(202);
+        vm.prank(proxyOwner);
+        proxyAdmin.upgradeToAndCall(
+            proxy,
+            impl202,
+            ""
+        );
+        SampleContractWithOldInit instance202 = SampleContractWithOldInit(address(proxy));
+
+        // confirm upgrade worked and immutable value was updated
+        assertEq(instance202.version(), Version(2, 0, 2), "Version should be 2.0.2 after upgrade");
+        assertEq(instance202.immutableValue(), 202, "Immutable value should be 202");
+
+        // confirm initializer did not run
+        assertEq(instance202.value1(), 113, "Initializer should not have mutated value1");
+        assertEq(instance202.value2(), 222, "Initializer should not have mutated value2");
     }
 }

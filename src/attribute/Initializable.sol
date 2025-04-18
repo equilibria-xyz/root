@@ -44,11 +44,6 @@ abstract contract Initializable is IInitializable {
         return VersionLib.from(_versionFrom);
     }
 
-    // TODO: This requires every subclass to override(Initializable, IInitializable), which impacts readability.
-    /// @dev Default no-op implementation
-    // function initialize(Version memory version_, bytes memory initParams)
-    //     external virtual override(IInitializable) initializer(version_) {}
-
     function initializing() internal view returns (bool) {
         return StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value;
     }

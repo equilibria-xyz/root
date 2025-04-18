@@ -23,25 +23,25 @@ contract InitializableTest is RootTest {
 
     function test_initializeSuccessfully() public {
         initializable = new MockInitializable();
-        initializable.initialize(version, abi.encode("success"));
+        initializable.initialize(abi.encode("success"));
         assertEq(initializable.unsignedValue(), 1);
         assertEq(initializable.stringValue(), "success");
     }
 
     function test_revertAlreadyInitialized() public {
         initializable = new MockInitializable();
-        initializable.initialize(version, abi.encode("first call"));
+        initializable.initialize(abi.encode("first call"));
 
         // ensure a second call reverts
         vm.expectRevert(InitializableAlreadyInitializedError.selector);
-        initializable.initialize(version, abi.encode("second call"));
+        initializable.initialize(abi.encode("second call"));
         assertEq(initializable.stringValue(), "first call");
     }
 
     function test_skipsInitializeIfVersionMismatch() public {
-        initializable = new MockInitializable();
-        initializable.initialize(Version(2, 6, 3), abi.encode("should not run"));
-        assertEq(initializable.stringValue(), "");
+        MockInitializableNoInit initializable2 = new MockInitializableNoInit();
+        initializable2.initialize("");
+        assertEq(initializable2.stringValue(), "set from ctor");
     }
 
     function test_revertIfNotInitializing_preInit() public {
@@ -53,7 +53,7 @@ contract InitializableTest is RootTest {
 
     function test_revertIfNotInitializing_postInit() public {
         initializable = new MockInitializable();
-        initializable.initialize(version, abi.encode("initialized"));
+        initializable.initialize(abi.encode("initialized"));
 
         vm.expectRevert(InitializableNotInitializingError.selector);
         initializable.notCalledFromInitializer();
@@ -75,8 +75,8 @@ contract MockInitializable is Initializable {
         return _stringValue;
     }
 
-    function initialize(Version memory version_, bytes memory initData)
-        public virtual initializer(version_)
+    function initialize(bytes memory initData)
+        public virtual initializer(Version(2, 6, 4))
     {
         _unsignedValue = 1;
         setStringValue(abi.decode(initData, (string)));
@@ -90,5 +90,20 @@ contract MockInitializable is Initializable {
     function notCalledFromInitializer() public {
         _unsignedValue = 2;
         setStringValue("rat");
+    }
+}
+
+contract MockInitializableNoInit is Initializable {
+    string public stringValue;
+
+    constructor() Initializable("MockInitializableVersionMismatch", Version(3, 2, 11), Version(3, 2, 7)) {
+        stringValue = "set from ctor";
+    }
+
+    // was used to upgrade from 3.2.7 to 3.2.8; irrelevant for 3.2.11
+    function initialize(bytes memory initData)
+        public virtual initializer(Version(3, 2, 8))
+    {
+        stringValue = "set from init";
     }
 }

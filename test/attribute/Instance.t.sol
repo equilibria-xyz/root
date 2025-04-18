@@ -16,13 +16,11 @@ contract InstanceTest is Test {
 
     MockInstance public instance;
     MockFactory public factory;
-    Version instanceVersion;
 
     function setUp() public {
         instance = new MockInstance();
-        instanceVersion = instance.version();
         factory = new MockFactory(address(instance));
-        factory.initialize(factory.version(), "");
+        factory.initialize("");
     }
 
     function test_initialize() public {
@@ -33,13 +31,13 @@ contract InstanceTest is Test {
 
         // should initialize when correctly initialized
         vm.prank(address(factory));
-        instance.initialize(instanceVersion, "");
+        instance.initialize("");
         assertEq(address(instance.factory()), address(factory));
     }
 
     function test_onlyOwnerModifier() public {
         vm.prank(address(factory));
-        instance.initialize(instanceVersion, "");
+        instance.initialize("");
 
         vm.prank(address(factory.owner()));
         assertEq(instance.protectedFunctionOwner(), true);
@@ -52,7 +50,7 @@ contract InstanceTest is Test {
 
     function test_onlyFactoryModifier() public {
         vm.prank(address(factory));
-        instance.initialize(instanceVersion, "");
+        instance.initialize("");
 
         vm.prank(address(factory));
         assertEq(instance.protectedFunctionFactory(), true);
@@ -65,7 +63,7 @@ contract InstanceTest is Test {
 
     function test_whenNotPausedModifier() public {
         vm.prank(address(factory));
-        instance.initialize(instanceVersion, "");
+        instance.initialize("");
 
         vm.prank(address(factory));
         assertEq(instance.protectedFunctionPaused(), true);
@@ -89,8 +87,8 @@ contract InstanceTest is Test {
 contract MockInstance is Instance {
     constructor() Instance("MockInstance", Version(0,0,1), Version(0,0,0)) {}
 
-    function initialize(Version memory version_, bytes memory)
-        external virtual override initializer(version_)
+    function initialize(bytes memory)
+        external virtual override initializer(Version(0,0,1))
     {
         __Instance__initialize();
     }

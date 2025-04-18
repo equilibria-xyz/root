@@ -19,7 +19,6 @@ contract PausableTest is Test {
     address public newPauser;
     address public user;
     MockPausable public pausable;
-    Version pausableVersion;
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -28,7 +27,6 @@ contract PausableTest is Test {
 
         vm.prank(owner);
         pausable = new MockPausable();
-        pausableVersion = pausable.version();
     }
 
     function test_initializeSetsPauserAndOwner() public {
@@ -36,7 +34,7 @@ contract PausableTest is Test {
         vm.expectEmit(true, true, false, true);
         emit PauserUpdated(owner);
         vm.prank(owner);
-        pausable.initialize(pausableVersion, "");
+        pausable.initialize("");
 
         assertEq(pausable.pauser(), owner);
         assertEq(pausable.owner(), owner);
@@ -44,7 +42,7 @@ contract PausableTest is Test {
 
     function test_revertWhenReinitializing() public {
         vm.prank(owner);
-        pausable.initialize(pausableVersion, "");
+        pausable.initialize("");
 
         vm.expectRevert();
         vm.prank(owner);
@@ -53,7 +51,7 @@ contract PausableTest is Test {
 
     function test_updatePauser() public {
         vm.prank(owner);
-        pausable.initialize(pausableVersion, "");
+        pausable.initialize("");
 
         vm.expectEmit(true, true, false, true);
         emit PauserUpdated(newPauser);
@@ -65,7 +63,7 @@ contract PausableTest is Test {
 
     function test_onlyOwnerCanUpdatePauser() public {
         vm.prank(owner);
-        pausable.initialize(pausableVersion, "");
+        pausable.initialize("");
 
         vm.expectRevert(abi.encodeWithSelector(OwnableNotOwnerError.selector, user));
         vm.prank(user);
@@ -81,7 +79,7 @@ contract PausableTest is Test {
 
     function test_pauserCanPause() public {
         vm.prank(owner);
-        pausable.initialize(pausableVersion, "");
+        pausable.initialize("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
 
@@ -90,7 +88,7 @@ contract PausableTest is Test {
 
     function test_ownerCanPause() public {
         vm.prank(owner);
-        pausable.initialize(pausableVersion, "");
+        pausable.initialize("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
 
@@ -99,7 +97,7 @@ contract PausableTest is Test {
 
     function test_otherUserCannotPause() public {
         vm.prank(owner);
-        pausable.initialize(pausableVersion, "");
+        pausable.initialize("");
 
         vm.expectRevert(abi.encodeWithSelector(PausableNotPauserError.selector, user));
         vm.prank(user);
@@ -108,7 +106,7 @@ contract PausableTest is Test {
 
     function test_pauserCanUnpause() public {
         vm.prank(owner);
-        pausable.initialize(pausableVersion, "");
+        pausable.initialize("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
 
@@ -117,7 +115,7 @@ contract PausableTest is Test {
 
     function test_ownerCanUnpause() public {
         vm.prank(owner);
-        pausable.initialize(pausableVersion, "");
+        pausable.initialize("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
 
@@ -126,7 +124,7 @@ contract PausableTest is Test {
 
     function test_otherUserCannotUnpause() public {
         vm.prank(owner);
-        pausable.initialize(pausableVersion, "");
+        pausable.initialize("");
         vm.prank(owner);
         pausable.pause();
 
@@ -179,8 +177,8 @@ contract MockPausable is Pausable {
 
     constructor() Pausable("MockPausable", Version(0,0,1), Version(0,0,0)) {}
 
-    function initialize(Version memory version_, bytes memory)
-        external virtual override initializer(version_)
+    function initialize(bytes memory)
+        external virtual override initializer(Version(0,0,1))
     {
         super.__Pausable__initialize();
     }
