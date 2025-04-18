@@ -30,25 +30,25 @@ library SynBook6Lib {
         UFixed6 price
     ) internal pure returns (UFixed6) {
         // sign = 1 for buy / ask and -1 for sell / bid
-        bool isAsk = change > Fixed6Lib.ZERO;
+        bool isSell = change < Fixed6Lib.ZERO;
 
-        // use -f(-x) for ask orders
-        latest = _flipIfAsk(latest, isAsk);
-        change = _flipIfAsk(change, isAsk);
+        // use f(-x) for sell orders
+        latest = _flipIfSell(latest, isSell);
+        change = _flipIfSell(change, isSell);
 
         Fixed6 from = latest / Fixed6Lib.from(self.scale);
         Fixed6 to = (latest + change) / Fixed6Lib.from(self.scale);
         Fixed6 spread = _indefinite(self.d0, self.d1, self.d2, self.d3, to, price)
             - _indefinite(self.d0, self.d1, self.d2, self.d3, from, price);
 
-        // use -f(-x) for ask orders
-        spread = _flipIfAsk(spread, isAsk);
+        // use f(-x) for sell orders
+        spread = _flipIfSell(spread, isSell);
 
         return UFixed6Lib.unsafeFrom(Fixed6Lib.from(price) + spread);
     }
 
-    function _flipIfAsk(Fixed6 value, bool isAsk) private pure returns (Fixed6) {
-        return isAsk ? value * Fixed6Lib.NEG_ONE : value;
+    function _flipIfSell(Fixed6 value, bool isSell) private pure returns (Fixed6) {
+        return isSell ? value * Fixed6Lib.NEG_ONE : value;
     }
 
     /// @dev f(x) = d0 * x + d1 * x^2 / 2 + d2 * x^3 / 3 + d3 * x^4 / 4
