@@ -18,9 +18,12 @@ interface IInitializable {
     // in Initializable quietly handles unversioned use cases?
     // Or Should we remove the no-op implementation instead?
 
-    /// @dev Subclasses may use this function to implement upgrade logic, and
+    /// @dev Subclasses must use this function to implement upgrade logic, and
     /// are required to pass `version` to the `initializer` modifier.
     /// The `initializer` modifier will execute the function iff the passed version
     /// matches the immutable version defined in the contract's constructor.
+    /// @param version Deployment version this initializer was meant for.  If version
+    ///                does not match the contract's version, the initializer will be skipped.
+    /// @param initParams Contract-specific parameters to be passed to the initializer.
     function initialize(Version memory version, bytes memory initParams) external;
 }

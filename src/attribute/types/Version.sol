@@ -28,7 +28,9 @@ library VersionLib {
         return uint96((uint96(self.major) << 64) | uint96(self.minor) << 32 | self.patch);
     }
 
-    function from(uint96 value) internal pure returns (Version memory) {
+    /// @dev Converts single unsigned value to struct.  Only 96 bytes needed, but
+    ///      storing as 256 for performance reasons.
+    function from(uint256 value) internal pure returns (Version memory) {
         return Version(
             uint32(value >> 64),
             uint32((value >> 32) & 0xFFFFFFFF),
