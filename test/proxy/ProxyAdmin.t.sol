@@ -29,7 +29,7 @@ contract ProxyAdminTest is ProxyTest {
         vm.prank(proxyOwner);
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, "");
+        proxyAdmin.upgradeToAndCall(proxy, impl2, abi.encode(770));
     }
 
     function test_newOwnerMustAcceptChange() public {
@@ -53,13 +53,13 @@ contract ProxyAdminTest is ProxyTest {
         SampleContractV2 impl2 = new SampleContractV2(201);
         vm.prank(proxyOwner);
         vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, proxyOwner));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, "");
+        proxyAdmin.upgradeToAndCall(proxy, impl2, abi.encode(771));
 
         // new owner can upgrade
         vm.prank(newOwner);
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, "");
+        proxyAdmin.upgradeToAndCall(proxy, impl2, abi.encode(772));
     }
 
     function test_ownerCanPauseAndUnpause() public {

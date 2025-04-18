@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import { ERC1967Proxy, ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import { Initializable, Version } from "src/attribute/Initializable.sol";
+import { Initializable, IInitializable, Version } from "src/attribute/Initializable.sol";
 import { IProxy } from "./interfaces/IProxy.sol";
 import { ProxyAdmin } from "./ProxyAdmin.sol";
 import { ProxyPauseTarget } from "./ProxyPauseTarget.sol";
@@ -53,9 +53,9 @@ contract Proxy is ERC1967Proxy {
     /// @dev Initializes an upgradeable proxy managed by an instance of a {ProxyAdmin}.
     /// @param implementation The first version of the contract to be proxied.
     /// @param proxyAdmin Administrator who can upgrade the proxy.
-    /// @param initData Calldata to invoke the instance's initializer.
-    constructor(Initializable implementation, ProxyAdmin proxyAdmin, bytes memory initData) payable
-        ERC1967Proxy(address(implementation), initData)
+    /// @param initParams Contract-specific parameters to be passed to the initializer.
+    constructor(Initializable implementation, ProxyAdmin proxyAdmin, bytes memory initParams) payable
+        ERC1967Proxy(address(implementation), bytes(abi.encodeCall(IInitializable.initialize, (initParams))))
     {
         _admin = address(proxyAdmin);
         ERC1967Utils.changeAdmin(address(proxyAdmin));
@@ -110,7 +110,7 @@ contract Proxy is ERC1967Proxy {
         // get arguments from the upgrade request
         (
             Initializable newImplementation,
-            bytes memory initData
+            bytes memory initParams
         ) = abi.decode(msg.data[4:], (Initializable, bytes));
 
         // if proxy is paused upon upgrade, need to briefly soft-unpause to upgrade
@@ -124,7 +124,10 @@ contract Proxy is ERC1967Proxy {
 
         // update the implementation and call initializer
         StorageSlot.getAddressSlot(UNPAUSED_TARGET_SLOT).value = address(newImplementation);
-        ERC1967Utils.upgradeToAndCall(address(newImplementation), initData);
+        ERC1967Utils.upgradeToAndCall(
+            address(newImplementation),
+            abi.encodeCall(IInitializable.initialize, (initParams))
+        );
 
         // ensure name hash and version are appropriate
         if (oldNameHash != newImplementation.nameHash())
@@ -134,5 +137,5 @@ contract Proxy is ERC1967Proxy {
 
         // if proxy was paused before upgrade, re-pause the proxy
         if (wasPaused) setPausedImplementation();
-    }
+   }
 }

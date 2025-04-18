@@ -32,11 +32,7 @@ abstract contract ProxyTest is RootTest {
 
         // deploy the implementation and create the proxy
         impl1 = new SampleContractV1(101);
-        Proxy proxyInstantiation = new Proxy(
-            impl1,
-            proxyAdmin,
-            abi.encodeCall(SampleContractV1.initialize, (""))
-        );
+        Proxy proxyInstantiation = new Proxy(impl1, proxyAdmin, "");
         vm.stopPrank();
         proxy = IProxy(address(proxyInstantiation));
 
@@ -65,10 +61,7 @@ abstract contract ProxyTest is RootTest {
         proxyAdmin.upgradeToAndCall(
             proxy,
             impl2,
-            abi.encodeCall(
-                SampleContractV2.initialize,
-                (abi.encode(int256(222)))
-            )
+            abi.encode(uint256(222))
         );
         return SampleContractV2(address(proxy));
     }
