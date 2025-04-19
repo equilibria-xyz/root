@@ -3,11 +3,11 @@ pragma solidity ^0.8.20;
 
 import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 
-import { ProxyTest, SampleContractV2 } from "./ProxyTest.sol";
+import { ProxyTestV1Deploy, SampleContractV2 } from "./ProxyTest.sol";
 import { IOwnable } from "../../src/attribute/Ownable.sol";
 import { Proxy, ProxyAdmin } from "../../src/proxy/Proxy.sol";
 
-contract ProxyAdminTest is ProxyTest {
+contract ProxyAdminTest is ProxyTestV1Deploy {
     address newOwner;
 
     function setUp() public override {

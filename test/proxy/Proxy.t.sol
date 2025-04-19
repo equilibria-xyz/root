@@ -2,8 +2,9 @@
 pragma solidity ^0.8.20;
 
 import {
-
     ProxyTest,
+    ProxyTestV1Deploy,
+    MissingInitModifier,
     NonSampleContract,
     SampleContractV1,
     SampleContractV2,
@@ -14,7 +15,7 @@ import { Version } from "../../src/attribute/types/Version.sol";
 import { IProxy } from "../../src/proxy/interfaces/IProxy.sol";
 import { Proxy, ProxyAdmin } from "../../src/proxy/Proxy.sol";
 
-contract ProxyTestV1 is ProxyTest {
+contract ProxyTestV1 is ProxyTestV1Deploy {
     function test_creation() public view {
         assertEq(instance1.version(), Version(1, 0, 1), "Version should be 1.0.1 after deployment");
         assertEq(instance1.immutableValue(), 101, "Immutable value should be 101");
@@ -133,7 +134,7 @@ contract ProxyTestV1 is ProxyTest {
     }
 }
 
-contract ProxyTestV2 is ProxyTest {
+contract ProxyTestV2 is ProxyTestV1Deploy {
     SampleContractV2 instance2;
 
     function setUp() public override {
@@ -190,5 +191,26 @@ contract ProxyTestV2 is ProxyTest {
         // confirm initializer did not run
         assertEq(instance202.value1(), 113, "Initializer should not have mutated value1");
         assertEq(instance202.value2(), 222, "Initializer should not have mutated value2");
+    }
+}
+
+contract MissingInitModifierProxyTest is ProxyTest {
+
+    function test_cannotDeployWithoutInitModifier() public {
+        MissingInitModifier impl = new MissingInitModifier();
+        vm.prank(proxyOwner);
+        vm.expectRevert(Proxy.ProxyNotInitializedError.selector);
+        Proxy proxyInstantiation = new Proxy(impl, proxyAdmin, "");
+        proxy = IProxy(address(proxyInstantiation));
+    }
+
+    function test_cannotUpgradeWithoutInitModifier() public {
+        SampleContractV1 impl1 = new SampleContractV1(101);
+        deploy(impl1);
+
+        MissingInitModifier impl2 = new MissingInitModifier();
+        vm.prank(proxyOwner);
+        vm.expectRevert(Proxy.ProxyNotInitializedError.selector);
+        proxyAdmin.upgradeToAndCall(proxy, impl2, "");
     }
 }

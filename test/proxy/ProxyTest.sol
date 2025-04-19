@@ -4,13 +4,41 @@ pragma solidity ^0.8.20;
 import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 
 import { RootTest } from "../../test/RootTest.sol";
+import { Initializable } from "../../src/attribute/Initializable.sol";
 import { Ownable } from "../../src/attribute/Ownable.sol";
 import { IProxy } from "../../src/proxy/interfaces/IProxy.sol";
 import { Proxy, ProxyAdmin } from "../../src/proxy/Proxy.sol";
 import { Version } from "../../src/attribute/types/Version.sol";
+import {console} from "forge-std/console.sol";
 
-/// @dev Tests both Proxy and ProxyAdmin
+/// @dev Creates ProxyAdmin and owner but does not deploy anything in setup
 abstract contract ProxyTest is RootTest {
+    address public immutable proxyOwner;
+    ProxyAdmin public proxyAdmin;
+    IProxy public proxy;
+
+    constructor() {
+        proxyOwner = makeAddr("owner");
+    }
+
+    function setUp() public virtual {
+        proxyAdmin = new ProxyAdmin();
+        vm.prank(proxyOwner);
+        proxyAdmin.initialize("");
+    }
+
+    function deploy(Initializable impl) public virtual{
+        console.log("creating proxy for impl %s using admin %s as owner %s",
+            address(impl), address(proxyAdmin), address(proxyOwner));
+        vm.prank(proxyOwner);
+        Proxy proxyInstantiation = new Proxy(impl, proxyAdmin, "");
+        proxy = IProxy(address(proxyInstantiation));
+    }
+}
+
+// TODO: subclass ProxyTest above
+/// @dev Tests both Proxy and ProxyAdmin
+abstract contract ProxyTestV1Deploy is RootTest {
     address public immutable proxyOwner;
     address public immutable implementationOwner;
     IProxy public proxy;
@@ -26,7 +54,6 @@ abstract contract ProxyTest is RootTest {
     function setUp() public virtual {
         // create the proxy admin
         proxyAdmin = new ProxyAdmin();
-        Version memory proxyAdminVersion = proxyAdmin.version();
         vm.startPrank(proxyOwner);
         proxyAdmin.initialize("");
 
@@ -50,10 +77,6 @@ abstract contract ProxyTest is RootTest {
     }
 
     function upgrade() internal returns (SampleContractV2) {
-        return upgradeWithVersion(Version(2, 0, 1));
-    }
-
-    function upgradeWithVersion(Version memory version) internal returns (SampleContractV2) {
         SampleContractV2 impl2 = new SampleContractV2(201);
         vm.prank(proxyOwner);
         vm.expectEmit();
@@ -160,5 +183,16 @@ contract NonSampleContract is Ownable {
         external virtual override initializer(Version(1, 1, 0))
     {
         __Ownable__initialize();
+    }
+}
+
+/// @dev Should revert during deployment or upgrade because `initializer` modifier
+///      was not called
+contract MissingInitModifier is Ownable {
+    constructor() Ownable("SampleContract", Version(1, 0, 8), Version(1, 0, 1)) {}
+
+    function initialize(bytes memory) external virtual override
+    {
+        // __Ownable__initialize();
     }
 }

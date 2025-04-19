@@ -44,6 +44,10 @@ abstract contract Initializable is IInitializable {
         return VersionLib.from(_versionFrom);
     }
 
+    function initializedVersion() public view returns (Version memory) {
+        return VersionLib.from(StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value);
+    }
+
     function initializing() internal view returns (bool) {
         return StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value;
     }
@@ -59,8 +63,8 @@ abstract contract Initializable is IInitializable {
     /// @param version_ The version for which initialization logic pertains.
     modifier initializer(Version memory version_) {
         // TODO: Do a code size analysis on hashing the version rather than bit fiddling.
-        uint256 initializedVersion = StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value;
-        if (initializedVersion != 0 && initializedVersion == version().toUnsigned())
+        uint256 initializedVersion_ = StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value;
+        if (initializedVersion_ != 0 && initializedVersion_ == version().toUnsigned())
             revert InitializableAlreadyInitializedError();
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = true;
 
