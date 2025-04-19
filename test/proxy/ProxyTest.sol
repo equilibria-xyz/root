@@ -9,7 +9,6 @@ import { Ownable } from "../../src/attribute/Ownable.sol";
 import { IProxy } from "../../src/proxy/interfaces/IProxy.sol";
 import { Proxy, ProxyAdmin } from "../../src/proxy/Proxy.sol";
 import { Version } from "../../src/attribute/types/Version.sol";
-import {console} from "forge-std/console.sol";
 
 /// @dev Creates ProxyAdmin and owner but does not deploy anything in setup
 abstract contract ProxyTest is RootTest {
@@ -22,42 +21,35 @@ abstract contract ProxyTest is RootTest {
     }
 
     function setUp() public virtual {
+        // create and initialize the proxy admin
+        vm.startPrank(proxyOwner);
         proxyAdmin = new ProxyAdmin();
-        vm.prank(proxyOwner);
         proxyAdmin.initialize("");
+        vm.stopPrank();
     }
 
     function deploy(Initializable impl) public virtual{
-        console.log("creating proxy for impl %s using admin %s as owner %s",
-            address(impl), address(proxyAdmin), address(proxyOwner));
         vm.prank(proxyOwner);
         Proxy proxyInstantiation = new Proxy(impl, proxyAdmin, "");
         proxy = IProxy(address(proxyInstantiation));
     }
 }
 
-// TODO: subclass ProxyTest above
 /// @dev Tests both Proxy and ProxyAdmin
-abstract contract ProxyTestV1Deploy is RootTest {
-    address public immutable proxyOwner;
+abstract contract ProxyTestV1Deploy is ProxyTest {
     address public immutable implementationOwner;
-    IProxy public proxy;
-    ProxyAdmin public proxyAdmin;
     SampleContractV1 impl1;
     SampleContractV1 public instance1;
 
-    constructor() {
-        proxyOwner = makeAddr("owner");
+    constructor() ProxyTest() {
         implementationOwner = makeAddr("implementationOwner");
     }
 
-    function setUp() public virtual {
-        // create the proxy admin
-        proxyAdmin = new ProxyAdmin();
-        vm.startPrank(proxyOwner);
-        proxyAdmin.initialize("");
+    function setUp() public virtual override (ProxyTest) {
+        super.setUp();
 
         // deploy the implementation and create the proxy
+        vm.startPrank(proxyOwner);
         impl1 = new SampleContractV1(101);
         Proxy proxyInstantiation = new Proxy(impl1, proxyAdmin, "");
         vm.stopPrank();
@@ -71,7 +63,7 @@ abstract contract ProxyTestV1Deploy is RootTest {
 
     function changeOwner(address newOwner) internal {
         vm.prank(proxyOwner);
-        instance1.updatePendingOwner(implementationOwner);
+        instance1.updatePendingOwner(newOwner);
         vm.prank(newOwner);
         instance1.acceptOwner();
     }
