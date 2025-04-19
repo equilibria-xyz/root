@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import { RootTest } from "../../test/RootTest.sol";
 import { Initializable } from "../../src/attribute/Initializable.sol";
-import { Version } from "../../src/attribute/types/Version.sol";
+import { Version, VersionLib } from "../../src/attribute/types/Version.sol";
 
 contract InitializableTest is RootTest {
     error InitializableAlreadyInitializedError();
@@ -15,10 +15,8 @@ contract InitializableTest is RootTest {
     function test_constructor() public {
         initializable = new MockInitializable();
         assertEq(initializable.nameHash(), keccak256("MockInitializable"));
-        assertEq(initializable.version(), version);
-        assertEq(initializable.versionFrom().major, 1);
-        assertEq(initializable.versionFrom().minor, 5);
-        assertEq(initializable.versionFrom().patch, 3);
+        assertEq(VersionLib.from(initializable.version()), version);
+        assertEq(VersionLib.from(initializable.versionFrom()), Version(1, 5, 3));
     }
 
     function test_initializeSuccessfully() public {

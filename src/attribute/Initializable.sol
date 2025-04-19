@@ -36,23 +36,27 @@ abstract contract Initializable is IInitializable {
         _versionFrom = versionFrom_.toUnsigned();
     }
 
-    function version() public view returns (Version memory) {
+    /// @notice Returns the version of the contract as a human-readable struct
+    function versionReadable() external view returns (Version memory) {
         return VersionLib.from(_version);
     }
 
-    function versionFrom() public view returns (Version memory) {
-        return VersionLib.from(_versionFrom);
+    /// @dev Returns an integer representation of contract version
+    function version() public view returns (uint256) {
+        return _version;
     }
 
-    function initializedVersion() public view returns (Version memory) {
-        return VersionLib.from(StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value);
+    /// @dev Returns an integer representation of the version this contract will be/was upgraded from
+    function versionFrom() public view returns (uint256) {
+        return _versionFrom;
     }
 
+    /// @dev Returns true while initializer is executing
     function initializing() internal view returns (bool) {
         return StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value;
     }
 
-    /// @notice Returns whether the contract is currently being constructed
+    /// @dev Returns whether the contract is currently being constructed
     /// @return Whether the contract is currently being constructed
     function _constructing() private view returns (bool) {
         return !(address(this).code.length > 0);
@@ -64,16 +68,16 @@ abstract contract Initializable is IInitializable {
     modifier initializer(Version memory version_) {
         // TODO: Do a code size analysis on hashing the version rather than bit fiddling.
         uint256 initializedVersion_ = StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value;
-        if (initializedVersion_ != 0 && initializedVersion_ == version().toUnsigned())
+        if (initializedVersion_ != 0 && initializedVersion_ == version())
             revert InitializableAlreadyInitializedError();
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = true;
 
         // only execute if the version stated in initialization matches the contract version
-        if (version_.eq(version()))
+        if (version_.toUnsigned() == version())
             _;
 
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = false;
-        StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value = version().toUnsigned();
+        StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value = version();
         emit Initialized();
     }
 

@@ -27,7 +27,7 @@ contract Proxy is ERC1967Proxy {
     bytes32 private constant PAUSED_TARGET_SLOT = keccak256("equilibria.root.proxy.target.paused");
     // @dev Implementation contract used when proxy is unpaused
     bytes32 private constant UNPAUSED_TARGET_SLOT = keccak256("equilibria.root.proxy.target.unpaused");
-    // @dev Initialized version of the proxied contract
+    // @dev Initialized version of the proxied contract, as ProxyAdmin cannot call a getter
     bytes32 private constant INITIALIZED_VERSION_SLOT = keccak256("equilibria.root.initializable.initializedVersion");
 
     /// @notice Proxy will ignore calls to the proxied contract
@@ -119,7 +119,7 @@ contract Proxy is ERC1967Proxy {
         // read the current name and version from storage before calling new initializer
         Initializable old = Initializable(_implementation());
         bytes32 oldNameHash = old.nameHash();
-        Version memory oldVersion = old.version();
+        uint256 oldVersion = old.version();
 
         // update the implementation and call initializer
         StorageSlot.getAddressSlot(UNPAUSED_TARGET_SLOT).value = address(newImplementation);
@@ -132,18 +132,22 @@ contract Proxy is ERC1967Proxy {
         // ensure name hash and version are appropriate
         if (oldNameHash != newImplementation.nameHash())
             revert ProxyNameMismatchError();
-        if (!oldVersion.eq(newImplementation.versionFrom()))
-            revert ProxyVersionMismatchError(oldVersion, newImplementation.version());
+        if (oldVersion != newImplementation.versionFrom()) {
+            revert ProxyVersionMismatchError(
+                VersionLib.from(oldVersion),
+                VersionLib.from(newImplementation.version())
+            );
+        }
 
         // if proxy was paused before upgrade, re-pause the proxy
         if (wasPaused) _setPausedImplementation();
     }
 
+    /// @dev
     function _ensureInitialized() private view {
         Initializable implementation = Initializable(_implementation());
-        // TODO: expose the uint256 version in Initializable so we can just compare two uints
-        Version memory initializedVersion = VersionLib.from(StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value);
-        if (!initializedVersion.eq(implementation.version())) {
+        uint256 initializedVersion = StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value;
+        if (initializedVersion != implementation.version()) {
             revert ProxyNotInitializedError();
         }
     }

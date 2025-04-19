@@ -6,7 +6,6 @@ import { Initializable } from "src/attribute/Initializable.sol";
 
 /// @dev Facilities provided by the proxy
 interface IProxy is IERC1967 {
-    // TODO: Force that initializer is called; maybe changing the initData arg to initParams.
     /// @dev Replaces the implementation, validating name and version
     /// @param newImplementation The new implementation contract
     /// @param initData Calldata to invoke the instance's initializer
