@@ -74,6 +74,13 @@ contract ProxyAdminTest is ProxyTestV1Deploy {
         vm.stopPrank();
     }
 
+    function test_pauserAccessor() public {
+        address pauser = makeAddr("pauser");
+        vm.prank(proxyOwner);
+        proxyAdmin.updatePauser(pauser);
+        assertEq(proxyAdmin.pauser(), pauser, "Pauser should be set correctly");
+    }
+
     function test_pauserCanPauseAndUnpause() public {
         address pauser = makeAddr("pauser");
         vm.prank(proxyOwner);
@@ -96,8 +103,13 @@ contract ProxyAdminTest is ProxyTestV1Deploy {
         proxyAdmin.updatePauser(pauser);
     }
 
-    function test_revertsOnAuthorizedPause() public {
+    function test_revertsOnUnauthorizedPause() public {
         vm.expectRevert(abi.encodeWithSelector(ProxyAdmin.ProxyAdminNotOwnerOrPauserError.selector, address(this)));
         proxyAdmin.pause(proxy);
+    }
+
+    function test_revertsOnUnauthorizedUnPause() public {
+        vm.expectRevert(abi.encodeWithSelector(ProxyAdmin.ProxyAdminNotOwnerOrPauserError.selector, address(this)));
+        proxyAdmin.unpause(proxy);
     }
 }

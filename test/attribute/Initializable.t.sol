@@ -17,6 +17,7 @@ contract InitializableTest is RootTest {
         assertEq(initializable.nameHash(), keccak256("MockInitializable"));
         assertEq(VersionLib.from(initializable.version()), version);
         assertEq(VersionLib.from(initializable.versionFrom()), Version(1, 5, 3));
+        assertEq(initializable.initializingStateInCtor(), false, "initializing() should be false in constructor");
     }
 
     function test_initializeSuccessfully() public {
@@ -24,6 +25,7 @@ contract InitializableTest is RootTest {
         initializable.initialize(abi.encode("success"));
         assertEq(initializable.unsignedValue(), 1);
         assertEq(initializable.stringValue(), "success");
+        assertEq(initializable.initializingStateInInit(), true, "initializing() should be true while initializing");
     }
 
     function test_revertAlreadyInitialized() public {
@@ -60,10 +62,14 @@ contract InitializableTest is RootTest {
 }
 
 contract MockInitializable is Initializable {
+    bool public initializingStateInCtor;
+    bool public initializingStateInInit;
     string internal _stringValue;
     uint256 internal _unsignedValue;
 
-    constructor() Initializable("MockInitializable", Version(2, 6, 4), Version(1, 5, 3)) {}
+    constructor() Initializable("MockInitializable", Version(2, 6, 4), Version(1, 5, 3)) {
+        initializingStateInCtor = initializing();
+    }
 
     function unsignedValue() external view returns (uint256) {
         return _unsignedValue;
@@ -78,6 +84,7 @@ contract MockInitializable is Initializable {
     {
         _unsignedValue = 1;
         setStringValue(abi.decode(initData, (string)));
+        initializingStateInInit = initializing();
     }
 
     // This function enforces that it may only be called during initialization

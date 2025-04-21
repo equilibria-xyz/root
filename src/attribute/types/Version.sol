@@ -11,7 +11,7 @@ struct Version {
 using VersionLib for Version global;
 
 // TODO: Operators can only be implemented for user-defined value types.(5332)
-// Wondering if I should "type Version is uint96" and use bitwise operators instead.
+// Wondering if I should "type Version is uint256" and use bitwise operators instead.
 /*using {
     eq as ==,
     gt as >,
