@@ -8,7 +8,7 @@ import { Initializable } from "../../src/attribute/Initializable.sol";
 import { Ownable } from "../../src/attribute/Ownable.sol";
 import { IProxy } from "../../src/proxy/interfaces/IProxy.sol";
 import { Proxy, ProxyAdmin } from "../../src/proxy/Proxy.sol";
-import { Version } from "../../src/attribute/types/Version.sol";
+import { Version, VersionLib } from "../../src/attribute/types/Version.sol";
 
 /// @dev Creates ProxyAdmin and owner but does not deploy anything in setup
 abstract contract ProxyTest is RootTest {
@@ -88,13 +88,13 @@ contract SampleContractV1 is Ownable {
     uint256 public value;
 
     constructor(uint256 immutableValue_)
-        Ownable("SampleContract", Version(1, 0, 1), Version(0, 0, 0))
+        Ownable("SampleContract", VersionLib.from(1, 0, 1), VersionLib.from(0, 0, 0))
     {
         immutableValue = immutableValue_;
     }
 
     function initialize(bytes memory)
-        external virtual override initializer(Version(1, 0, 1))
+        external virtual override initializer(VersionLib.from(1, 0, 1))
     {
         __Ownable__initialize();
         value = 112;
@@ -118,13 +118,13 @@ contract SampleContractV2 is Ownable {
     error CustomError();
 
     constructor(uint256 immutableValue_)
-        Ownable("SampleContract", Version(2, 0, 1), Version(1, 0, 1))
+        Ownable("SampleContract", VersionLib.from(2, 0, 1), VersionLib.from(1, 0, 1))
     {
         immutableValue = immutableValue_;
     }
 
     function initialize(bytes memory initParams)
-        external virtual override initializer(Version(2, 0, 1))
+        external virtual override initializer(VersionLib.from(2, 0, 1))
     {
         // __Ownable__initialize() was already called in V1
         value1 += 1;
@@ -152,14 +152,14 @@ contract SampleContractWithOldInit is Ownable {
     int256 public value2;
 
     constructor(uint256 immutableValue_)
-        Ownable("SampleContract", Version(2, 0, 2), Version(2, 0, 1))
+        Ownable("SampleContract", VersionLib.from(2, 0, 2), VersionLib.from(2, 0, 1))
     {
         immutableValue = immutableValue_;
     }
 
     // intentionally does not match contract
     function initialize(bytes memory)
-        external virtual override initializer(Version(2, 0, 1))
+        external virtual override initializer(VersionLib.from(2, 0, 1))
     {
         // __Ownable__initialize() was already called in V1
         value1 = 676;
@@ -169,10 +169,10 @@ contract SampleContractWithOldInit is Ownable {
 
 /// @dev Contract whose name does not match that expected by the proxy
 contract NonSampleContract is Ownable {
-    constructor() Ownable("NonSampleContract", Version(1, 1, 0), Version (1, 0, 0)) {}
+    constructor() Ownable("NonSampleContract", VersionLib.from(1, 1, 0), VersionLib.from(1, 0, 0)) {}
 
     function initialize(bytes memory)
-        external virtual override initializer(Version(1, 1, 0))
+        external virtual override initializer(VersionLib.from(1, 1, 0))
     {
         __Ownable__initialize();
     }
@@ -181,7 +181,7 @@ contract NonSampleContract is Ownable {
 /// @dev Should revert during deployment or upgrade because `initializer` modifier
 ///      was not called
 contract MissingInitModifier is Ownable {
-    constructor() Ownable("SampleContract", Version(1, 0, 8), Version(1, 0, 1)) {}
+    constructor() Ownable("SampleContract", VersionLib.from(1, 0, 8), VersionLib.from(1, 0, 1)) {}
 
     function initialize(bytes memory) external virtual override
     {

@@ -43,15 +43,11 @@ contract RootTest is Test {
         assertEq(UFixed18.unwrap(a), UFixed18.unwrap(b), message);
     }
 
-    function assertEq(Version memory a, Version memory b) public pure {
-        assertEq(a.major, b.major);
-        assertEq(a.minor, b.minor);
-        assertEq(a.patch, b.patch);
+    function assertEq(Version a, Version b) public pure {
+        assertEq(Version.unwrap(a), Version.unwrap(b));
     }
 
-    function assertEq(Version memory a, Version memory b, string memory message) public pure {
-        assertEq(a.major, b.major, message);
-        assertEq(a.minor, b.minor, message);
-        assertEq(a.patch, b.patch, message);
+    function assertEq(Version a, Version b, string memory message) public pure {
+        assertEq(Version.unwrap(a), Version.unwrap(b), message);
     }
 }

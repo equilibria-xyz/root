@@ -119,7 +119,7 @@ contract Proxy is ERC1967Proxy {
         // read the current name and version from storage before calling new initializer
         Initializable old = Initializable(_implementation());
         bytes32 oldNameHash = old.nameHash();
-        uint256 oldVersion = old.version();
+        Version oldVersion = old.version();
 
         // update the implementation and call initializer
         StorageSlot.getAddressSlot(UNPAUSED_TARGET_SLOT).value = address(newImplementation);
@@ -134,8 +134,8 @@ contract Proxy is ERC1967Proxy {
             revert ProxyNameMismatchError();
         if (oldVersion != newImplementation.versionFrom()) {
             revert ProxyVersionMismatchError(
-                VersionLib.from(oldVersion),
-                VersionLib.from(newImplementation.version())
+                oldVersion,
+                newImplementation.version()
             );
         }
 
@@ -147,7 +147,7 @@ contract Proxy is ERC1967Proxy {
     function _ensureInitialized() private view {
         Initializable implementation = Initializable(_implementation());
         uint256 initializedVersion = StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value;
-        if (initializedVersion != implementation.version()) {
+        if (initializedVersion != Version.unwrap(implementation.version())) {
             revert ProxyNotInitializedError();
         }
     }

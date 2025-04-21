@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 
 import { Instance } from "../../src/attribute/Instance.sol";
 import { MockFactory } from "./Factory.t.sol";
-import { Version } from "src/attribute/types/Version.sol";
+import { Version, VersionLib } from "src/attribute/types/Version.sol";
 
 contract InstanceTest is Test {
     error InitializableNotInitializingError();
@@ -85,10 +85,10 @@ contract InstanceTest is Test {
 }
 
 contract MockInstance is Instance {
-    constructor() Instance("MockInstance", Version(0,0,1), Version(0,0,0)) {}
+    constructor() Instance("MockInstance", VersionLib.from(0,0,1), VersionLib.from(0,0,0)) {}
 
     function initialize(bytes memory)
-        external virtual override initializer(Version(0,0,1))
+        external virtual override initializer(VersionLib.from(0,0,1))
     {
         __Instance__initialize();
     }

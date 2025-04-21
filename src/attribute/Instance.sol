@@ -15,8 +15,8 @@ abstract contract Instance is IInstance, Initializable {
     /// @dev Pass name and version to the Initializable constructor
     constructor(
         string memory name,
-        Version memory version,
-        Version memory versionFrom
+        Version version,
+        Version versionFrom
     ) Initializable(name, version, versionFrom) {}
 
     /// @notice Returns the factory that created this instance

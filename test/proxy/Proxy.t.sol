@@ -17,14 +17,17 @@ import { Proxy, ProxyAdmin } from "../../src/proxy/Proxy.sol";
 
 contract ProxyTestV1 is ProxyTestV1Deploy {
     function test_creation() public view {
-        assertEq(instance1.versionReadable(), Version(1, 0, 1), "Version should be 1.0.1 after deployment");
+        (uint32 versionMajor, uint32 versionMinor, uint32 versionPatch) = instance1.versionReadable();
+        assertEq(versionMajor, 1, "Version should be 1.0.1 after deployment - major");
+        assertEq(versionMinor, 0, "Version should be 1.0.1 after deployment - minor");
+        assertEq(versionPatch, 1, "Version should be 1.0.1 after deployment - patch");
         assertEq(instance1.immutableValue(), 101, "Immutable value should be 101");
         assertEq(instance1.getValue(), 112, "Initializer should have set value");
     }
 
     function test_identify() public view {
         assertEq(instance1.nameHash(), keccak256(bytes("SampleContract")), "Implementation name should be SampleContract");
-        assertEq(VersionLib.from(instance1.version()), Version(1, 0, 1), "Implementation version should be 1.0.1");
+        assertEq(instance1.version(), VersionLib.from(1, 0, 1), "Implementation version should be 1.0.1");
     }
 
     function test_interaction() public {
@@ -35,7 +38,7 @@ contract ProxyTestV1 is ProxyTestV1Deploy {
 
     function test_upgrade() public {
         SampleContractV2 instance2 = upgrade();
-        assertEq(instance2.versionReadable(), Version(2, 0, 1), "Version should be 2.0.1 after upgrade");
+        assertEq(instance2.version(), VersionLib.from(2, 0, 1), "Version should be 2.0.1 after upgrade");
         assertEq(instance2.owner(), implementationOwner, "Owner should still be implementationOwner");
         assertEq(instance2.immutableValue(), 201, "Immutable value should be 201");
         (uint256 value1, int256 value2) = instance2.getValues();
@@ -120,7 +123,7 @@ contract ProxyTestV1 is ProxyTestV1Deploy {
         proxyAdmin.unpause(proxy);
 
         // check state
-        assertEq(instance2.versionReadable(), Version(2, 0, 1), "Version change after upgrade while paused");
+        assertEq(instance2.version(), VersionLib.from(2, 0, 1), "Version change after upgrade while paused");
         assertEq(instance2.immutableValue(), 201, "Immutable value after upgrade while paused");
         assertEq(instance2.value1(), 156, "Value1 after upgrade while paused");
         assertEq(instance2.value2(), 222, "Value2 after upgrade while paused");
@@ -145,7 +148,7 @@ contract ProxyTestV2 is ProxyTestV1Deploy {
 
     function test_identify() public view {
         assertEq(instance2.nameHash(), keccak256(bytes("SampleContract")), "Implementation name should be SampleContract2");
-        assertEq(instance2.versionReadable(), Version(2, 0, 1), "Implementation version should be 2");
+        assertEq(instance2.version(), VersionLib.from(2, 0, 1), "Implementation version should be 2");
     }
 
     function test_interactionPostUpgrade() public {
@@ -161,8 +164,8 @@ contract ProxyTestV2 is ProxyTestV1Deploy {
         SampleContractV1 impl1 = new SampleContractV1(104);
         vm.expectRevert(abi.encodeWithSelector(
             Proxy.ProxyVersionMismatchError.selector,
-            Version(2, 0, 1),
-            Version(1, 0, 1)
+            VersionLib.from(2, 0, 1),
+            VersionLib.from(1, 0, 1)
         ));
         vm.prank(proxyOwner);
         proxyAdmin.upgradeToAndCall(proxy, impl1, "");
@@ -185,7 +188,7 @@ contract ProxyTestV2 is ProxyTestV1Deploy {
         SampleContractWithOldInit instance202 = SampleContractWithOldInit(address(proxy));
 
         // confirm upgrade worked and immutable value was updated
-        assertEq(instance202.versionReadable(), Version(2, 0, 2), "Version should be 2.0.2 after upgrade");
+        assertEq(instance202.version(), VersionLib.from(2, 0, 2), "Version should be 2.0.2 after upgrade");
         assertEq(instance202.immutableValue(), 202, "Immutable value should be 202");
 
         // confirm initializer did not run

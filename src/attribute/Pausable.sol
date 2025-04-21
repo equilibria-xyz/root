@@ -24,8 +24,8 @@ abstract contract Pausable is IPausable, Ownable {
     /// @dev Pass name and version to the Ownable constructor
     constructor(
         string memory name,
-        Version memory version,
-        Version memory versionFrom
+        Version version,
+        Version versionFrom
     ) Ownable(name, version, versionFrom) {}
 
     /// @notice Initializes the contract setting `msg.sender` as the initial pauser

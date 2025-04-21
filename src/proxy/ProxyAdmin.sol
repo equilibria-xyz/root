@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import { Initializable } from "src/attribute/Initializable.sol";
 import { IProxy } from "./interfaces/IProxy.sol";
 import { Ownable } from "../../src/attribute/Ownable.sol";
-import { Version } from "../../src/attribute/types/Version.sol";
+import { Version, VersionLib } from "../../src/attribute/types/Version.sol";
 
 contract ProxyAdmin is Ownable {
     event PauserUpdated(address indexed newPauser);
@@ -13,7 +13,7 @@ contract ProxyAdmin is Ownable {
     /// @custom:error Caller unauthorized to pause/unpause the proxied contract
     error ProxyAdminNotOwnerOrPauserError(address sender);
 
-    constructor() Ownable("ProxyAdmin", Version(0,0,0), Version(0,0,0)) {}
+    constructor() Ownable("ProxyAdmin", VersionLib.from(0,0,0), VersionLib.from(0,0,0)) {}
 
     /// @dev The pauser address
     address private _pauser;
@@ -23,7 +23,7 @@ contract ProxyAdmin is Ownable {
 
     /// @notice Sets initial owner to the sender
     function initialize(bytes memory)
-        external override initializer(Version(0,0,0))
+        external override initializer(VersionLib.from(0,0,0))
     {
         __Ownable__initialize();
     }

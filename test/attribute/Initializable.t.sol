@@ -10,13 +10,13 @@ contract InitializableTest is RootTest {
     error InitializableNotInitializingError();
 
     MockInitializable public initializable;
-    Version public version = Version(2, 6, 4);
+    Version public version = VersionLib.from(2, 6, 4);
 
     function test_constructor() public {
         initializable = new MockInitializable();
         assertEq(initializable.nameHash(), keccak256("MockInitializable"));
-        assertEq(VersionLib.from(initializable.version()), version);
-        assertEq(VersionLib.from(initializable.versionFrom()), Version(1, 5, 3));
+        assertEq(initializable.version(), version);
+        assertEq(initializable.versionFrom(), VersionLib.from(1, 5, 3));
         assertEq(initializable.initializingStateInCtor(), false, "initializing() should be false in constructor");
     }
 
@@ -67,7 +67,7 @@ contract MockInitializable is Initializable {
     string internal _stringValue;
     uint256 internal _unsignedValue;
 
-    constructor() Initializable("MockInitializable", Version(2, 6, 4), Version(1, 5, 3)) {
+    constructor() Initializable("MockInitializable", VersionLib.from(2, 6, 4), VersionLib.from(1, 5, 3)) {
         initializingStateInCtor = initializing();
     }
 
@@ -80,7 +80,7 @@ contract MockInitializable is Initializable {
     }
 
     function initialize(bytes memory initData)
-        public virtual initializer(Version(2, 6, 4))
+        public virtual initializer(VersionLib.from(2, 6, 4))
     {
         _unsignedValue = 1;
         setStringValue(abi.decode(initData, (string)));
@@ -101,13 +101,13 @@ contract MockInitializable is Initializable {
 contract MockInitializableNoInit is Initializable {
     string public stringValue;
 
-    constructor() Initializable("MockInitializableVersionMismatch", Version(3, 2, 11), Version(3, 2, 7)) {
+    constructor() Initializable("MockInitializableVersionMismatch", VersionLib.from(3, 2, 11), VersionLib.from(3, 2, 7)) {
         stringValue = "set from ctor";
     }
 
     // was used to upgrade from 3.2.7 to 3.2.8; irrelevant for 3.2.11
     function initialize(bytes memory initData)
-        public virtual initializer(Version(3, 2, 8))
+        public virtual initializer(VersionLib.from(3, 2, 8))
     {
         stringValue = "set from init";
     }

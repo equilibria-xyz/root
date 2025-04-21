@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { Ownable } from "../../src/attribute/Ownable.sol";
-import { Version } from "../../src/attribute/types/Version.sol";
+import { Version, VersionLib } from "../../src/attribute/types/Version.sol";
 
 contract OwnableTest is Test {
     error InitializableAlreadyInitializedError();
@@ -157,10 +157,10 @@ contract OwnableTest is Test {
 contract MockOwnable is Ownable {
     bool public beforeCalled;
 
-    constructor() Ownable("MockOwnable", Version(0,0,1), Version(0,0,0)) {}
+    constructor() Ownable("MockOwnable", VersionLib.from(0,0,1), VersionLib.from(0,0,0)) {}
 
     function initialize(bytes memory)
-        external virtual override initializer(Version(0,0,1))
+        external virtual override initializer(VersionLib.from(0,0,1))
     {
         super.__Ownable__initialize();
     }

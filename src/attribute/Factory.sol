@@ -25,8 +25,8 @@ abstract contract Factory is IFactory, Pausable {
     constructor(
         string memory name,
         address implementation_,
-        Version memory version,
-        Version memory versionFrom
+        Version version,
+        Version versionFrom
     ) Pausable(name, version, versionFrom)
     {
         implementation = implementation_;

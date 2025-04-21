@@ -14,8 +14,8 @@ abstract contract Ownable is IOwnable, Initializable {
     /// @dev Pass name and version to the Initializable constructor
     constructor(
         string memory name,
-        Version memory version,
-        Version memory versionFrom
+        Version version,
+        Version versionFrom
     ) Initializable(name, version, versionFrom) {}
 
     /// @dev The owner address
