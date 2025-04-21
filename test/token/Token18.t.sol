@@ -122,6 +122,5 @@ contract MockToken18 {
         Token18Lib.approve(self, grantee, amount);
     }
 
-    // TODO: seems to be replacing MockReceiver in OwnerExecutable test; can we clean this up?
     receive() external payable {}
 }
