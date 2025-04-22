@@ -17,10 +17,7 @@ import { Proxy, ProxyAdmin } from "../../src/proxy/Proxy.sol";
 
 contract ProxyTestV1 is ProxyTestV1Deploy {
     function test_creation() public view {
-        (uint32 versionMajor, uint32 versionMinor, uint32 versionPatch) = instance1.versionReadable();
-        assertEq(versionMajor, 1, "Version should be 1.0.1 after deployment - major");
-        assertEq(versionMinor, 0, "Version should be 1.0.1 after deployment - minor");
-        assertEq(versionPatch, 1, "Version should be 1.0.1 after deployment - patch");
+        assertEq(instance1.version(), VersionLib.from(1, 0, 1), "Version should be 1.0.1 after deployment");
         assertEq(instance1.immutableValue(), 101, "Immutable value should be 101");
         assertEq(instance1.getValue(), 112, "Initializer should have set value");
     }

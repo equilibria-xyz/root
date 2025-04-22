@@ -18,40 +18,25 @@ abstract contract Initializable is IInitializable {
     bytes32 public immutable nameHash;
 
     /// @dev Version of this contract
-    Version internal immutable _version;
+    Version public immutable version;
 
     /// @dev Version of the contract this contract is being upgraded from.
-    Version internal immutable _versionFrom;
+    Version public immutable target;
 
     /// @dev True while initializing; stored in named slots to avoid storage collisions
     bytes32 private constant INITIALIZING_SLOT = keccak256("equilibria.root.initializable.initializing");
     /// @dev Populated with version after contract has been initialized
     bytes32 private constant INITIALIZED_VERSION_SLOT = keccak256("equilibria.root.initializable.initializedVersion");
 
-    constructor(string memory name_, Version version_, Version versionFrom_) {
+    constructor(string memory name_, Version version_, Version target_) {
         nameHash = keccak256(bytes(name_));
 
-        _version = version_;
-        _versionFrom = versionFrom_;
-    }
-
-    /// @notice Returns the version of the contract as a human-readable struct
-    function versionReadable() external view returns (uint32 major, uint32 minor, uint32 patch) {
-        return _version.toComponents();
-    }
-
-    /// @dev Returns an integer representation of contract version
-    function version() public view returns (Version) {
-        return _version;
-    }
-
-    /// @dev Returns an integer representation of the version this contract will be/was upgraded from
-    function versionFrom() public view returns (Version) {
-        return _versionFrom;
+        version = version_;
+        target = target_;
     }
 
     /// @dev Returns true while initializer is executing
-    function initializing() internal view returns (bool) {
+    function _initializing() internal view returns (bool) {
         return StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value;
     }
 
@@ -65,24 +50,23 @@ abstract contract Initializable is IInitializable {
     ///      Prevents execution of initialize function if versions do not match.
     /// @param version_ The version for which initialization logic pertains.
     modifier initializer(Version version_) {
-        uint256 initializedVersion_ = StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value;
-        if (initializedVersion_ != 0 && initializedVersion_ == Version.unwrap(version()))
+
+        bytes32 initializedVersion_ = StorageSlot.getBytes32Slot(INITIALIZED_VERSION_SLOT).value;
+        if (initializedVersion_ != bytes32(0) && initializedVersion_ == Version.unwrap(version))
             revert InitializableAlreadyInitializedError();
-        StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = true;
 
         // only execute if the version stated in initialization matches the contract version
-        if (version_ == version())
-            _;
-
+        StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = true;
+        if (version_ == version) _;
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = false;
-        StorageSlot.getUint256Slot(INITIALIZED_VERSION_SLOT).value = Version.unwrap(version());
-        emit Initialized();
+
+        StorageSlot.getBytes32Slot(INITIALIZED_VERSION_SLOT).value = Version.unwrap(version);
+        emit Initialized(version);
     }
 
     /// @dev Can only be called from an initializer or constructor
-    modifier onlyInitializer() {
-        if (!_constructing() && !StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value)
-            revert InitializableNotInitializingError();
+    modifier onlyInitializer {
+        if (!_constructing() && !_initializing()) revert InitializableNotInitializingError();
         _;
     }
 }

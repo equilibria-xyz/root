@@ -12,7 +12,7 @@ interface IInitializable {
     /// @custom:error Contract is not initializing
     error InitializableNotInitializingError();
 
-    event Initialized();
+    event Initialized(Version version);
 
     /// @dev Subclasses must use this function to implement upgrade logic, and
     /// are required to pass `version` to the `initializer` modifier.
@@ -20,4 +20,10 @@ interface IInitializable {
     /// matches the immutable version defined in the contract's constructor.
     /// @param initParams Contract-specific parameters to be passed to the initializer.
     function initialize(bytes memory initParams) external;
+
+    /// @dev Returns the version of the contract.
+    function version() external view returns (Version);
+
+    /// @dev Returns the target version of the contract.
+    function target() external view returns (Version);
 }
