@@ -53,7 +53,7 @@ contract Proxy is ERC1967Proxy {
     error ProxyPausedError();
 
     // sig: 0x3f7d07d5
-    /// @dev The upgraded version is not greater than the current version.
+    /// @dev The version we're upgrading from does not match that expected by the new implementation.
     error ProxyVersionMismatchError(Version proxyCurrentVersion, Version requestVersion);
 
     /// @dev Initializes an upgradeable proxy managed by an instance of a {ProxyAdmin}.
@@ -143,7 +143,7 @@ contract Proxy is ERC1967Proxy {
         if (wasPaused) _setPausedImplementation();
     }
 
-    /// @dev
+    /// @dev revert if the initializer on the proxied contract was not called for current version
     function _ensureInitialized() private view {
         Initializable implementation = Initializable(_implementation());
         bytes32 initializedVersion = StorageSlot.getBytes32Slot(INITIALIZED_VERSION_SLOT).value;
