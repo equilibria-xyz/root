@@ -24,6 +24,7 @@ abstract contract Instance is IInstance, Initializable {
     function factory() public view returns (IFactory) { return IFactory(_factory); }
 
     /// @notice Initializes the contract setting `msg.sender` as the factory
+    // solhint-disable-next-line func-name-mixedcase
     function __Instance__initialize() internal onlyInitializer {
         _factory = msg.sender;
     }

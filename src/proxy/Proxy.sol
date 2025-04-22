@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import { ERC1967Proxy, ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import { Initializable, IInitializable, Version, VersionLib } from "src/attribute/Initializable.sol";
+import { Initializable, IInitializable, Version } from "src/attribute/Initializable.sol";
 import { IProxy } from "./interfaces/IProxy.sol";
 import { ProxyAdmin } from "./ProxyAdmin.sol";
 import { ProxyPauseTarget } from "./ProxyPauseTarget.sol";

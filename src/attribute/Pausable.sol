@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Initializable } from "./Initializable.sol";
 import { Ownable } from "./Ownable.sol";
 import { IPausable } from "./interfaces/IPausable.sol";
 import { Version } from "./types/Version.sol";
@@ -29,6 +28,7 @@ abstract contract Pausable is IPausable, Ownable {
     ) Ownable(name, version, versionFrom) {}
 
     /// @notice Initializes the contract setting `msg.sender` as the initial pauser
+    // solhint-disable-next-line func-name-mixedcase
     function __Pausable__initialize() internal onlyInitializer {
         __Ownable__initialize();
         updatePauser(_sender());

@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import { Initializable } from "src/attribute/Initializable.sol";
 import { IProxy } from "./interfaces/IProxy.sol";
 import { Ownable } from "../../src/attribute/Ownable.sol";
-import { Version, VersionLib } from "../../src/attribute/types/Version.sol";
+import { VersionLib } from "../../src/attribute/types/Version.sol";
 
 contract ProxyAdmin is Ownable {
     event PauserUpdated(address indexed newPauser);

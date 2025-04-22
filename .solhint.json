@@ -4,6 +4,7 @@
     "compiler-version": ["error", "^0.8.13"],
     "contract-name-capwords": "warn",
     "func-visibility": ["warn", { "ignoreConstructors": true }],
+    "immutable-vars-naming": ["off",{"immutablesAsConstants":false}],
     "no-inline-assembly": "off",
     "one-contract-per-file": "off",
     "reason-string": "warn"

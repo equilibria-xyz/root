@@ -101,7 +101,11 @@ contract MockInitializable is Initializable {
 contract MockInitializableNoInit is Initializable {
     string public stringValue;
 
-    constructor() Initializable("MockInitializableVersionMismatch", VersionLib.from(3, 2, 11), VersionLib.from(3, 2, 7)) {
+    constructor() Initializable(
+        "MockInitializableVersionMismatch",
+        VersionLib.from(3, 2, 11),
+        VersionLib.from(3, 2, 7)
+    ) {
         stringValue = "set from ctor";
     }
 

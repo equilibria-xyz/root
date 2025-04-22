@@ -8,7 +8,6 @@ import { IFactory } from "./interfaces/IFactory.sol";
 import { IInstance } from "./interfaces/IInstance.sol";
 import { Pausable } from "./Pausable.sol";
 import { Version } from "./types/Version.sol";
-import { Ownable } from "./Ownable.sol";
 
 /// @title Factory
 /// @notice An abstract factory that manages creates and manages instances
@@ -33,6 +32,7 @@ abstract contract Factory is IFactory, Pausable {
     }
 
     /// @notice Initializes the contract state
+    // solhint-disable-next-line func-name-mixedcase
     function __Factory__initialize() internal onlyInitializer {
         __Ownable__initialize();
     }
