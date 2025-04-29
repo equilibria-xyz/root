@@ -56,8 +56,8 @@ contract ProxyAdmin is Ownable {
     }
 
     modifier ownerOrPauser {
-        if (owner() != _sender() && pauser() != _sender()) {
-            revert ProxyAdminNotOwnerOrPauserError(_sender());
+        if (owner() != msg.sender && pauser() != msg.sender) {
+            revert ProxyAdminNotOwnerOrPauserError(msg.sender);
         }
         _;
     }

@@ -18,6 +18,7 @@ abstract contract Ownable is IOwnable, Initializable {
 
     /// @dev The slot of the pending owner address
     bytes32 private constant PENDING_OWNER_SLOT = keccak256("equilibria.root.Ownable.pendingOwner");
+
     /// @dev Pass name and version to the Initializable constructor
     constructor(
         string memory name,
