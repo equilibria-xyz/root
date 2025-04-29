@@ -5,16 +5,16 @@ import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
 import { IInstance } from "./interfaces/IInstance.sol";
 import { IFactory } from "./interfaces/IFactory.sol";
-import { Initializable } from "./Initializable.sol";
+import { Implementation } from "./Implementation.sol";
 
 /// @title Instance
 /// @notice An abstract contract that is created and managed by a factory
-abstract contract Instance is IInstance, Initializable {
+abstract contract Instance is IInstance, Implementation {
     /// @dev The slot of the factory address
     bytes32 private constant FACTORY_SLOT = keccak256("equilibria.root.Instance.factory");
 
     /// @notice Initializes the contract setting `msg.sender` as the factory
-    function __Instance__initialize() internal onlyInitializer {
+    function __initialize(bytes memory) internal returns (uint256) {
         StorageSlot.getAddressSlot(FACTORY_SLOT).value = msg.sender;
     }
 
