@@ -16,17 +16,16 @@ import { Version } from "./types/Version.sol";
 abstract contract Initializable is IInitializable {
     /// @dev Hash of the contract name, used to ensure the correct contract is being upgraded.
     bytes32 public immutable nameHash;
+    /// @notice The slot of the initialized version
+    bytes32 private constant VERSION_SLOT = keccak256("equilibria.root.Initializable.version");
 
     /// @dev Version of this contract
     Version public immutable version;
+    /// @notice The slot of the initializing flag
+    bytes32 private constant INITIALIZING_SLOT = keccak256("equilibria.root.Initializable.initializing");
 
     /// @dev Version of the contract this contract is being upgraded from.
     Version public immutable target;
-
-    /// @dev True while initializing; stored in named slots to avoid storage collisions
-    bytes32 private constant INITIALIZING_SLOT = keccak256("equilibria.root.initializable.initializing");
-    /// @dev Populated with version after contract has been initialized
-    bytes32 private constant INITIALIZED_VERSION_SLOT = keccak256("equilibria.root.initializable.initializedVersion");
 
     constructor(string memory name_, Version version_, Version target_) {
         nameHash = keccak256(bytes(name_));
@@ -51,7 +50,7 @@ abstract contract Initializable is IInitializable {
     /// @param version_ The version for which initialization logic pertains.
     modifier initializer(Version version_) {
 
-        bytes32 initializedVersion_ = StorageSlot.getBytes32Slot(INITIALIZED_VERSION_SLOT).value;
+        bytes32 initializedVersion_ = StorageSlot.getBytes32Slot(VERSION_SLOT).value;
         if (initializedVersion_ != bytes32(0) && initializedVersion_ == Version.unwrap(version))
             revert InitializableAlreadyInitializedError();
 
@@ -60,7 +59,7 @@ abstract contract Initializable is IInitializable {
         if (version_ == version) _;
         StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = false;
 
-        StorageSlot.getBytes32Slot(INITIALIZED_VERSION_SLOT).value = Version.unwrap(version);
+        StorageSlot.getBytes32Slot(VERSION_SLOT).value = Version.unwrap(version);
         emit Initialized(version);
     }
 
