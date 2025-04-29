@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
+import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
+
 import { Initializable } from "./Initializable.sol";
 import { IOwnable } from "./interfaces/IOwnable.sol";
 
@@ -10,25 +12,33 @@ import { IOwnable } from "./interfaces/IOwnable.sol";
 ///      unstructured storage pattern so that it can be safely mixed in with upgradeable
 ///      contracts without affecting their storage patterns through inheritance.
 abstract contract Ownable is IOwnable, Initializable {
+    /// @dev The slot of the owner address
+    bytes32 private constant OWNER_SLOT = keccak256("equilibria.root.Ownable.owner");
+
+    /// @dev The slot of the pending owner address
+    bytes32 private constant PENDING_OWNER_SLOT = keccak256("equilibria.root.Ownable.pendingOwner");
+
     /// @dev The owner address
-    address private _owner;
-    function owner() public view returns (address) { return _owner; }
+    function owner() public view returns (address) {
+        return StorageSlot.getAddressSlot(OWNER_SLOT).value;
+    }
 
     /// @dev The pending owner address
-    address private _pendingOwner;
-    function pendingOwner() public view returns (address) { return _pendingOwner; }
+    function pendingOwner() public view returns (address) {
+        return StorageSlot.getAddressSlot(PENDING_OWNER_SLOT).value;
+    }
 
     /// @notice Initializes the contract setting `msg.sender` as the initial owner
     function __Ownable__initialize() internal onlyInitializer {
         if (owner() != address(0)) revert OwnableAlreadyInitializedError();
-        _updateOwner(_sender());
+        _updateOwner(msg.sender);
     }
 
     /// @notice Updates the new pending owner
     /// @dev Can only be called by the current owner
     /// @param newPendingOwner New pending owner address
     function updatePendingOwner(address newPendingOwner) public onlyOwner {
-        _pendingOwner = newPendingOwner;
+        StorageSlot.getAddressSlot(PENDING_OWNER_SLOT).value = newPendingOwner;
         emit PendingOwnerUpdated(newPendingOwner);
     }
 
@@ -38,7 +48,7 @@ abstract contract Ownable is IOwnable, Initializable {
     function acceptOwner() public {
         _beforeAcceptOwner();
 
-        if (_sender() != pendingOwner()) revert OwnableNotPendingOwnerError(_sender());
+        if (msg.sender != pendingOwner()) revert OwnableNotPendingOwnerError(msg.sender);
 
         _updateOwner(pendingOwner());
         updatePendingOwner(address(0));
@@ -51,17 +61,13 @@ abstract contract Ownable is IOwnable, Initializable {
     /// @notice Updates the owner address
     /// @param newOwner New owner address
     function _updateOwner(address newOwner) private {
-        _owner = newOwner;
+        StorageSlot.getAddressSlot(OWNER_SLOT).value = newOwner;
         emit OwnerUpdated(newOwner);
-    }
-
-    function _sender() internal view virtual returns (address) {
-        return msg.sender;
     }
 
     /// @dev Throws if called by any account other than the owner
     modifier onlyOwner {
-        if (owner() != _sender()) revert OwnableNotOwnerError(_sender());
+        if (owner() != msg.sender) revert OwnableNotOwnerError(msg.sender);
         _;
     }
 }
