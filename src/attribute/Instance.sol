@@ -14,6 +14,7 @@ abstract contract Instance is IInstance, Initializable {
     }
 
     /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
     bytes32 private constant InstanceStorageLocation = 0xbf37ca0c6353d07d4968ca5873c5b82ea2e21a06e612b4d4a1c55285b8166200;
 
     /// @dev The erc7201 storage of the mix-in
