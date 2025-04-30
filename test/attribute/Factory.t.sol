@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { IInstance, Factory } from "../../src/attribute/Factory.sol";
+import { Mutable } from "../../src/mutability/Mutable.sol";
 import { MockInstance } from "./Instance.t.sol";
 
 contract FactoryTest is Test {
@@ -22,14 +23,14 @@ contract FactoryTest is Test {
     function test_initialize() public {
         // Test initialization behavior
         vm.expectRevert(abi.encodeWithSelector(InitializableNotInitializingError.selector));
-        factory.initializeIncorrect();
+        factory.notConstructor();
 
-        factory.initialize();
+        factory.construct("");
         assertEq(factory.owner(), address(this));
     }
 
     function test_create() public {
-        factory.initialize();
+        factory.construct("");
 
         IInstance instance;
 
@@ -48,7 +49,7 @@ contract FactoryTest is Test {
     }
 
     function test_create2() public {
-        factory.initialize();
+        factory.construct("");
 
         IInstance instance;
 
@@ -63,7 +64,7 @@ contract FactoryTest is Test {
     }
 
     function test_computeCreate2Address() public {
-        factory.initialize();
+        factory.construct("");
 
         // Verify create2 address computation matches actual deployment
         bytes32 salt = bytes32(0);
@@ -75,7 +76,7 @@ contract FactoryTest is Test {
     }
 
     function test_onlyCallableByInstance() public {
-        factory.initialize();
+        factory.construct("");
 
         // Test instance-only function access control
         vm.expectRevert(abi.encodeWithSelector(FactoryNotInstanceError.selector));
@@ -87,27 +88,31 @@ contract FactoryTest is Test {
     }
 }
 
-contract MockFactory is Factory {
+contract MockFactory is Mutable, Factory {
     constructor(address implementation_) Factory(implementation_) {}
 
-    function initialize() external initializer(1) {
-        __Factory__initialize();
+    function __constructor(bytes memory) internal override returns (uint256 version) {
+        __Ownable__constructor();
+        __Pausable__constructor();
+
+        version = 1;
     }
 
-    function initializeIncorrect() external {
-        __Factory__initialize();
+    function notConstructor() external {
+        __Ownable__constructor();
+        __Pausable__constructor();
     }
 
     function create() external onlyOwner returns (MockInstance) {
-        return MockInstance(address(_create(abi.encodeCall(MockInstance.initialize, ()))));
+        return MockInstance(address(_create(abi.encodeCall(Mutable.construct, ("")))));
     }
 
     function create2(bytes32 salt) external onlyOwner returns (MockInstance) {
-        return MockInstance(address(_create2(abi.encodeCall(MockInstance.initialize, ()), salt)));
+        return MockInstance(address(_create2(abi.encodeCall(Mutable.construct, ("")), salt)));
     }
 
     function computeCreate2Address(bytes32 salt) external view returns (address) {
-        return _computeCreate2Address(abi.encodeCall(MockInstance.initialize, ()), salt);
+        return _computeCreate2Address(abi.encodeCall(Mutable.construct, ("")), salt);
     }
 
     function onlyCallableByInstance() external view onlyInstance {}

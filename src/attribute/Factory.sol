@@ -23,11 +23,6 @@ abstract contract Factory is IFactory, Ownable, Pausable {
     /// @param implementation_ The instance implementation address
     constructor(address implementation_) { implementation = implementation_; }
 
-    /// @notice Initializes the contract state
-    function __Factory__initialize() internal onlyInitializer {
-        __Ownable__initialize();
-    }
-
     /// @notice Returns whether the instance is valid
     /// @param instance The instance to check
     /// @return Whether the instance is valid

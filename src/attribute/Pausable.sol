@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import { Initializable } from "./Initializable.sol";
 import { Ownable } from "./Ownable.sol";
 import { IPausable } from "./interfaces/IPausable.sol";
 
@@ -21,17 +20,15 @@ abstract contract Pausable is IPausable, Ownable {
     bytes32 private constant PAUSED_SLOT = keccak256("equilibria.root.Pausable.paused");
 
     /// @notice Initializes the contract setting `msg.sender` as the initial pauser
-    function __Pausable__initialize() internal onlyInitializer {
-        __Ownable__initialize();
-        updatePauser(msg.sender);
+    function __Pausable__constructor() initializer("Pausable") internal {
+        _updatePauser(msg.sender);
     }
 
     /// @notice Updates the new pauser
     /// @dev Can only be called by the current owner
     /// @param newPauser New pauser address
     function updatePauser(address newPauser) public onlyOwner {
-        StorageSlot.getAddressSlot(PAUSER_SLOT).value = newPauser;
-        emit PauserUpdated(newPauser);
+        _updatePauser(newPauser);
     }
 
     /// @dev The pauser address
@@ -51,6 +48,12 @@ abstract contract Pausable is IPausable, Ownable {
     /// @notice Unpauses the contract
     /// @dev Can only be called by the pauser
     function unpause() external onlyPauser { _unpause(); }
+
+    /// @dev Hook for inheriting contracts to update the pauser
+    function _updatePauser(address newPauser) internal {
+        StorageSlot.getAddressSlot(PAUSER_SLOT).value = newPauser;
+        emit PauserUpdated(newPauser);
+    }
 
     /// @dev Hook for inheriting contracts to pause the contract
     function _pause() internal virtual {
