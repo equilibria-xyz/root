@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
-
 import { Initializable } from "./Initializable.sol";
 import { IOwnable } from "./interfaces/IOwnable.sol";
 
