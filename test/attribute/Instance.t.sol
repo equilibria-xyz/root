@@ -8,7 +8,7 @@ import { Mutable } from "../../src/mutability/Mutable.sol";
 import { MockFactory } from "./Factory.t.sol";
 
 contract InstanceTest is Test {
-    error InitializableNotInitializingError();
+    error AttributeNotConstructing();
     error InstanceNotFactoryError(address factory);
     error InstanceNotOwnerError(address owner);
     error PausableNotPauserError(address pauser);
@@ -23,13 +23,13 @@ contract InstanceTest is Test {
         factory.construct("");
     }
 
-    function test_initialize() public {
-        // should revert when incorrectly initialized
-        vm.expectRevert(InitializableNotInitializingError.selector);
+    function test_constructor() public {
+        // should revert when incorrectly constructed
+        vm.expectRevert(AttributeNotConstructing.selector);
         vm.prank(address(factory));
         instance.notConstructor();
 
-        // should initialize when correctly initialized
+        // should initialize when correctly constructed
         vm.prank(address(factory));
         instance.construct("");
         assertEq(address(instance.factory()), address(factory));

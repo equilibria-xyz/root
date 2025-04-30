@@ -8,7 +8,7 @@ import { Mutable } from "../../src/mutability/Mutable.sol";
 import { MockInstance } from "./Instance.t.sol";
 
 contract FactoryTest is Test {
-    error InitializableNotInitializingError();
+    error AttributeNotConstructing();
     error FactoryNotInstanceError();
 
     event InstanceRegistered(address indexed instance);
@@ -20,9 +20,9 @@ contract FactoryTest is Test {
         factory = new MockFactory(address(instance));
     }
 
-    function test_initialize() public {
-        // Test initialization behavior
-        vm.expectRevert(abi.encodeWithSelector(InitializableNotInitializingError.selector));
+    function test_constructor() public {
+        // Test construction behavior
+        vm.expectRevert(abi.encodeWithSelector(AttributeNotConstructing.selector));
         factory.notConstructor();
 
         factory.construct("");

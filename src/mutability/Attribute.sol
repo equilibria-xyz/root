@@ -25,7 +25,7 @@ abstract contract Attribute is IAttribute, Contract {
     /// @dev Ensure the deployable parent contract is constructing
     ///      Skip if the mix-in has already been constructed
     modifier initializer(string memory attribute) {
-        if (_constructing()) revert AttributeNotConstructing();
+        if (!_constructing()) revert AttributeNotConstructing();
         if (!Attribute$().attributes[attribute]) _;
         Attribute$().attributes[attribute] = true;
     }

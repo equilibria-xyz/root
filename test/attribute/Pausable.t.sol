@@ -11,6 +11,7 @@ contract PausableTest is Test {
     event Paused();
     event Unpaused();
 
+    error AttributeNotConstructing();
     error OwnableNotOwnerError(address pauser);
     error PausableNotPauserError(address pauser);
     error PausablePausedError();
@@ -29,8 +30,11 @@ contract PausableTest is Test {
         pausable = new MockPausable();
     }
 
-    function test_initializeSetsPauserAndOwner() public {
-        assertEq(pausable.pauser(), address(0));
+    function test_constructor() public {
+        // Test construction behavior
+        vm.expectRevert(abi.encodeWithSelector(AttributeNotConstructing.selector));
+        pausable.notConstructor();
+
         vm.expectEmit(true, true, false, true);
         emit PauserUpdated(owner);
         vm.prank(owner);
@@ -176,6 +180,7 @@ contract MockPausable is Mutable, Pausable {
     uint256 public counter;
 
     function __constructor(bytes memory) internal override returns (uint256 version) {
+        __Ownable__constructor();
         __Pausable__constructor();
 
         version = 1;
