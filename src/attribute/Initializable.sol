@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
-
 import { IInitializable } from "./interfaces/IInitializable.sol";
 
 /// @title Initializable
@@ -12,6 +10,22 @@ import { IInitializable } from "./interfaces/IInitializable.sol";
 ///      modifier to tag their internal initialization functions to ensure that they can only be called
 ///      from a top-level `initializer` or a constructor.
 abstract contract Initializable is IInitializable {
+    /// @custom:storage-location erc7201:equilibria.root.Initializable
+    struct InitializableStorage {
+        uint256 version;
+        bool initializing;
+    }
+
+    /// @dev The erc7201 storage location of the mix-in
+    bytes32 private constant InitializableStorageLocation = 0x08f77ec4fbea51a32ec724cceb179b6666a9be3867a64cbf2c349790a85c2500;
+
+    /// @dev The erc7201 storage of the mix-in
+    function Initializable$() private pure returns (InitializableStorage storage $) {
+        assembly {
+            $.slot := InitializableStorageLocation
+        }
+    }
+
     /// @notice The slot of the initialized version
     bytes32 private constant VERSION_SLOT = keccak256("equilibria.root.Initializable.version");
 
@@ -21,21 +35,21 @@ abstract contract Initializable is IInitializable {
     /// @dev Can only be called once per version, `version` is 1-indexed
     modifier initializer(uint256 version) {
         if (version == 0) revert InitializableZeroVersionError();
-        if (StorageSlot.getUint256Slot(VERSION_SLOT).value >= version)
+        if (Initializable$().version >= version)
             revert InitializableAlreadyInitializedError(version);
 
-        StorageSlot.getUint256Slot(VERSION_SLOT).value = version;
-        StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = true;
+        Initializable$().version = version;
+        Initializable$().initializing = true;
 
         _;
 
-        StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value = false;
+        Initializable$().initializing = false;
         emit Initialized(version);
     }
 
     /// @dev Can only be called from an initializer or constructor
     modifier onlyInitializer() {
-        if (!_constructing() && !StorageSlot.getBooleanSlot(INITIALIZING_SLOT).value)
+        if (!_constructing() && !Initializable$().initializing)
             revert InitializableNotInitializingError();
         _;
     }
