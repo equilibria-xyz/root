@@ -17,6 +17,7 @@ abstract contract Initializable is IInitializable {
     }
 
     /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
     bytes32 private constant InitializableStorageLocation = 0x08f77ec4fbea51a32ec724cceb179b6666a9be3867a64cbf2c349790a85c2500;
 
     /// @dev The erc7201 storage of the mix-in

@@ -19,6 +19,7 @@ abstract contract Factory is IFactory, Ownable, Pausable {
     }
 
     /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
     bytes32 private constant FactoryStorageLocation = 0x2068933510e31bb02be4765cf6d0b2c054190db3eddefe11ffed0ca32b7e6f00;
 
     /// @dev The erc7201 storage of the mix-in

@@ -17,6 +17,7 @@ abstract contract Ownable is IOwnable, Initializable {
     }
 
     /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
     bytes32 private constant OwnableStorageLocation = 0x863176706c9b4c9b393005d0714f55de5425abea2a0b5dfac67fac0c9e2ffe00;
 
     /// @dev The erc7201 storage of the mix-in
