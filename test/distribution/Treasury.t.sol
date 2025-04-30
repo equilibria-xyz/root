@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 import { Treasury } from "../../src/distribution/Treasury.sol";
 import { MockERC20 } from "../attribute/OwnerWithdrawable.t.sol";
-import { Ownable } from "../../src/attribute/Ownable.sol";
+import { IOwnable } from "../../src/attribute/interfaces/IOwnable.sol";
 
 contract TreasuryTest is Test {
     Treasury private treasury;
@@ -71,7 +71,7 @@ contract TreasuryTest is Test {
         // User attempts to approve the user to pull tokens from the treasury
         uint256 amount = 100e18;
         vm.prank(user);
-        vm.expectRevert(abi.encodeWithSelector(OwnableNotOwnerError.selector, user));
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, user));
         treasury.approve(address(token), user, amount);
     }
 }
