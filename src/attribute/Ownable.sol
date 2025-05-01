@@ -10,25 +10,44 @@ import { IOwnable } from "./interfaces/IOwnable.sol";
 ///      unstructured storage pattern so that it can be safely mixed in with upgradeable
 ///      contracts without affecting their storage patterns through inheritance.
 abstract contract Ownable is IOwnable, Initializable {
+    /// @custom:storage-location erc7201:equilibria.root.Ownable
+    struct OwnableStorage {
+        address owner;
+        address pendingOwner;
+    }
+
+    /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
+    bytes32 private constant OwnableStorageLocation = 0x863176706c9b4c9b393005d0714f55de5425abea2a0b5dfac67fac0c9e2ffe00;
+
+    /// @dev The erc7201 storage of the mix-in
+    function Ownable$() private pure returns (OwnableStorage storage $) {
+        assembly {
+            $.slot := OwnableStorageLocation
+        }
+    }
+
     /// @dev The owner address
-    address private _owner;
-    function owner() public view returns (address) { return _owner; }
+    function owner() public view returns (address) {
+        return Ownable$().owner;
+    }
 
     /// @dev The pending owner address
-    address private _pendingOwner;
-    function pendingOwner() public view returns (address) { return _pendingOwner; }
+    function pendingOwner() public view returns (address) {
+        return Ownable$().pendingOwner;
+    }
 
     /// @notice Initializes the contract setting `msg.sender` as the initial owner
     function __Ownable__initialize() internal onlyInitializer {
         if (owner() != address(0)) revert OwnableAlreadyInitializedError();
-        _updateOwner(_sender());
+        _updateOwner(msg.sender);
     }
 
     /// @notice Updates the new pending owner
     /// @dev Can only be called by the current owner
     /// @param newPendingOwner New pending owner address
     function updatePendingOwner(address newPendingOwner) public onlyOwner {
-        _pendingOwner = newPendingOwner;
+        Ownable$().pendingOwner = newPendingOwner;
         emit PendingOwnerUpdated(newPendingOwner);
     }
 
@@ -38,7 +57,7 @@ abstract contract Ownable is IOwnable, Initializable {
     function acceptOwner() public {
         _beforeAcceptOwner();
 
-        if (_sender() != pendingOwner()) revert OwnableNotPendingOwnerError(_sender());
+        if (msg.sender != pendingOwner()) revert OwnableNotPendingOwnerError(msg.sender);
 
         _updateOwner(pendingOwner());
         updatePendingOwner(address(0));
@@ -51,17 +70,13 @@ abstract contract Ownable is IOwnable, Initializable {
     /// @notice Updates the owner address
     /// @param newOwner New owner address
     function _updateOwner(address newOwner) private {
-        _owner = newOwner;
+        Ownable$().owner = newOwner;
         emit OwnerUpdated(newOwner);
-    }
-
-    function _sender() internal view virtual returns (address) {
-        return msg.sender;
     }
 
     /// @dev Throws if called by any account other than the owner
     modifier onlyOwner {
-        if (owner() != _sender()) revert OwnableNotOwnerError(_sender());
+        if (owner() != msg.sender) revert OwnableNotOwnerError(msg.sender);
         _;
     }
 }

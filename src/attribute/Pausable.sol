@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Initializable } from "./Initializable.sol";
 import { Ownable } from "./Ownable.sol";
 import { IPausable } from "./interfaces/IPausable.sol";
 
@@ -12,45 +11,70 @@ import { IPausable } from "./interfaces/IPausable.sol";
 ///      unstructured storage pattern so that it can be safely mixed in with upgradeable
 ///      contracts without affecting their storage patterns through inheritance.
 abstract contract Pausable is IPausable, Ownable {
-    /// @dev The pauser address
-    address private _pauser;
-    function pauser() public view returns (address) { return _pauser; }
+    /// @custom:storage-location erc7201:equilibria.root.Pausable
+    struct PausableStorage {
+        address pauser;
+        bool paused;
+    }
 
-    /// @dev Whether the contract is paused
-    bool private _paused;
-    function paused() public view returns (bool) { return _paused; }
+    /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
+    bytes32 private constant PausableStorageLocation = 0x3f6e81f1674f7eaca7e8904fa6f14f10175d4d641e37fc18a3df849e00101900;
+
+    /// @dev The erc7201 storage of the mix-in
+    function Pausable$() private pure returns (PausableStorage storage $) {
+        assembly {
+            $.slot := PausableStorageLocation
+        }
+    }
 
     /// @notice Initializes the contract setting `msg.sender` as the initial pauser
     function __Pausable__initialize() internal onlyInitializer {
         __Ownable__initialize();
-        updatePauser(_sender());
+        updatePauser(msg.sender);
     }
 
     /// @notice Updates the new pauser
     /// @dev Can only be called by the current owner
     /// @param newPauser New pauser address
     function updatePauser(address newPauser) public onlyOwner {
-        _pauser = newPauser;
+        Pausable$().pauser = newPauser;
         emit PauserUpdated(newPauser);
+    }
+
+    /// @dev The pauser address
+    function pauser() public view returns (address) {
+        return Pausable$().pauser;
+    }
+
+    /// @dev Whether the contract is paused
+    function paused() public view returns (bool) {
+        return Pausable$().paused;
     }
 
     /// @notice Pauses the contract
     /// @dev Can only be called by the pauser
-    function pause() external onlyPauser {
-        _paused = true;
-        emit Paused();
-    }
+    function pause() external onlyPauser { _pause(); }
 
     /// @notice Unpauses the contract
     /// @dev Can only be called by the pauser
-    function unpause() external onlyPauser {
-        _paused = false;
+    function unpause() external onlyPauser { _unpause(); }
+
+    /// @dev Hook for inheriting contracts to pause the contract
+    function _pause() internal virtual {
+        Pausable$().paused = true;
+        emit Paused();
+    }
+
+    /// @dev Hook for inheriting contracts to unpause the contract
+    function _unpause() internal virtual {
+        Pausable$().paused = false;
         emit Unpaused();
     }
 
     /// @dev Throws if called by any account other than the pauser
     modifier onlyPauser {
-        if (_sender() != pauser() && _sender() != owner()) revert PausableNotPauserError(_sender());
+        if (msg.sender != pauser() && msg.sender != owner()) revert PausableNotPauserError(msg.sender);
         _;
     }
 
