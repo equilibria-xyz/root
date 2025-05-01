@@ -1,45 +1,45 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
-
-import { Initializable } from "./Initializable.sol";
 import { IOwnable } from "./interfaces/IOwnable.sol";
-import { Version } from "./types/Version.sol";
+import { Attribute } from "../mutability/Attribute.sol";
 
 /// @title Ownable
 /// @notice Library to manage the ownership lifecycle of upgradeable contracts.
 /// @dev This contract has been extended from the Open Zeppelin library to include an
 ///      unstructured storage pattern so that it can be safely mixed in with upgradeable
 ///      contracts without affecting their storage patterns through inheritance.
-abstract contract Ownable is IOwnable, Initializable {
-    /// @dev The slot of the owner address
-    bytes32 private constant OWNER_SLOT = keccak256("equilibria.root.Ownable.owner");
+abstract contract Ownable is IOwnable, Attribute {
+    /// @custom:storage-location erc7201:equilibria.root.Ownable
+    struct OwnableStorage {
+        address owner;
+        address pendingOwner;
+    }
 
-    /// @dev The slot of the pending owner address
-    bytes32 private constant PENDING_OWNER_SLOT = keccak256("equilibria.root.Ownable.pendingOwner");
+    /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
+    bytes32 private constant OwnableStorageLocation = 0x863176706c9b4c9b393005d0714f55de5425abea2a0b5dfac67fac0c9e2ffe00;
 
-    /// @dev Pass name and version to the Initializable constructor
-    constructor(
-        string memory name,
-        Version version,
-        Version versionFrom
-    ) Initializable(name, version, versionFrom) {}
+    /// @dev The erc7201 storage of the mix-in
+    function Ownable$() private pure returns (OwnableStorage storage $) {
+        assembly {
+            $.slot := OwnableStorageLocation
+        }
+    }
 
     /// @dev The owner address
     function owner() public view returns (address) {
-        return StorageSlot.getAddressSlot(OWNER_SLOT).value;
+        return Ownable$().owner;
     }
 
     /// @dev The pending owner address
     function pendingOwner() public view returns (address) {
-        return StorageSlot.getAddressSlot(PENDING_OWNER_SLOT).value;
+        return Ownable$().pendingOwner;
     }
 
     /// @notice Initializes the contract setting `msg.sender` as the initial owner
     // solhint-disable-next-line func-name-mixedcase
-    function __Ownable__initialize() internal onlyInitializer {
-        if (owner() != address(0)) revert OwnableAlreadyInitializedError();
+    function __Ownable__constructor() initializer("Ownable") internal {
         _updateOwner(msg.sender);
     }
 
@@ -47,7 +47,7 @@ abstract contract Ownable is IOwnable, Initializable {
     /// @dev Can only be called by the current owner
     /// @param newPendingOwner New pending owner address
     function updatePendingOwner(address newPendingOwner) public onlyOwner {
-        StorageSlot.getAddressSlot(PENDING_OWNER_SLOT).value = newPendingOwner;
+        Ownable$().pendingOwner = newPendingOwner;
         emit PendingOwnerUpdated(newPendingOwner);
     }
 
@@ -70,7 +70,7 @@ abstract contract Ownable is IOwnable, Initializable {
     /// @notice Updates the owner address
     /// @param newOwner New owner address
     function _updateOwner(address newOwner) private {
-        StorageSlot.getAddressSlot(OWNER_SLOT).value = newOwner;
+        Ownable$().owner = newOwner;
         emit OwnerUpdated(newOwner);
     }
 

@@ -7,41 +7,41 @@ import { BeaconProxy } from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.so
 import { IFactory } from "./interfaces/IFactory.sol";
 import { IInstance } from "./interfaces/IInstance.sol";
 import { Pausable } from "./Pausable.sol";
-import { Version } from "./types/Version.sol";
 
 /// @title Factory
 /// @notice An abstract factory that manages creates and manages instances
 /// @dev Ownable and Pausable, and satisfies the IBeacon interface by default.
 abstract contract Factory is IFactory, Pausable {
-    /// @notice The instances mapping storage slot
-    bytes32 private constant INSTANCE_MAP_SLOT = keccak256("equilibria.root.Factory.instances");
+    /// @custom:storage-location erc7201:equilibria.root.Factory
+    struct FactoryStorage {
+        mapping(IInstance instance => bool registered) instances;
+    }
+
+    /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
+    bytes32 private constant FactoryStorageLocation = 0x2068933510e31bb02be4765cf6d0b2c054190db3eddefe11ffed0ca32b7e6f00;
+
+    /// @dev The erc7201 storage of the mix-in
+    function Factory$() private pure returns (FactoryStorage storage $) {
+        assembly {
+            $.slot := FactoryStorageLocation
+        }
+    }
 
     /// @notice The instance implementation address
     address public immutable implementation;
 
     /// @notice Constructs the contract
     /// @param implementation_ The instance implementation address
-    constructor(
-        string memory name,
-        address implementation_,
-        Version version,
-        Version versionFrom
-    ) Pausable(name, version, versionFrom)
-    {
+    constructor(address implementation_) {
         implementation = implementation_;
-    }
-
-    /// @notice Initializes the contract state
-    // solhint-disable-next-line func-name-mixedcase
-    function __Factory__initialize() internal onlyInitializer {
-        __Ownable__initialize();
     }
 
     /// @notice Returns whether the instance is valid
     /// @param instance The instance to check
     /// @return Whether the instance is valid
     function instances(IInstance instance) public view returns (bool) {
-        return _instances()[instance];
+        return Factory$().instances[instance];
     }
 
     /// @notice Creates a new instance
@@ -78,16 +78,8 @@ abstract contract Factory is IFactory, Pausable {
     /// @dev Called by _create automatically, or can be called manually in an extending implementation
     /// @param newInstance The new instance
     function _register(IInstance newInstance) internal {
-        _instances()[newInstance] = true;
+        Factory$().instances[newInstance] = true;
         emit InstanceRegistered(newInstance);
-    }
-
-    /// @notice Returns the storage mapping for instances
-    /// @return r The storage mapping for instances
-    function _instances() private pure returns (mapping(IInstance => bool) storage r) {
-        bytes32 slot = INSTANCE_MAP_SLOT;
-        /// @solidity memory-safe-assembly
-        assembly { r.slot := slot }
     }
 
     /// @notice Only allow the function by a valid instance

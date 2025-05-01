@@ -22,7 +22,7 @@ contract OwnableStubTest is Test {
         vm.startPrank(owner);
         ownableStub = new OwnableStub();
         ownableContract = new MockOwnable();
-        ownableContract.initialize("");
+        ownableContract.construct("");
         vm.stopPrank();
     }
 

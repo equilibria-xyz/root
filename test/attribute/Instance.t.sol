@@ -4,11 +4,12 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { Instance } from "../../src/attribute/Instance.sol";
+import { Mutable } from "../../src/mutability/Mutable.sol";
 import { MockFactory } from "./Factory.t.sol";
 import { Version, VersionLib } from "src/attribute/types/Version.sol";
 
 contract InstanceTest is Test {
-    error InitializableNotInitializingError();
+    error AttributeNotConstructing();
     error InstanceNotFactoryError(address factory);
     error InstanceNotOwnerError(address owner);
     error PausableNotPauserError(address pauser);
@@ -20,24 +21,24 @@ contract InstanceTest is Test {
     function setUp() public {
         instance = new MockInstance();
         factory = new MockFactory(address(instance));
-        factory.initialize("");
+        factory.construct("");
     }
 
-    function test_initialize() public {
-        // should revert when incorrectly initialized
-        vm.expectRevert(InitializableNotInitializingError.selector);
+    function test_constructor() public {
+        // should revert when incorrectly constructed
+        vm.expectRevert(AttributeNotConstructing.selector);
         vm.prank(address(factory));
-        instance.incorrectInitialize();
+        instance.notConstructor();
 
-        // should initialize when correctly initialized
+        // should initialize when correctly constructed
         vm.prank(address(factory));
-        instance.initialize("");
+        instance.construct("");
         assertEq(address(instance.factory()), address(factory));
     }
 
     function test_onlyOwnerModifier() public {
         vm.prank(address(factory));
-        instance.initialize("");
+        instance.construct("");
 
         vm.prank(address(factory.owner()));
         assertEq(instance.protectedFunctionOwner(), true);
@@ -50,7 +51,7 @@ contract InstanceTest is Test {
 
     function test_onlyFactoryModifier() public {
         vm.prank(address(factory));
-        instance.initialize("");
+        instance.construct("");
 
         vm.prank(address(factory));
         assertEq(instance.protectedFunctionFactory(), true);
@@ -63,7 +64,7 @@ contract InstanceTest is Test {
 
     function test_whenNotPausedModifier() public {
         vm.prank(address(factory));
-        instance.initialize("");
+        instance.construct("");
 
         vm.prank(address(factory));
         assertEq(instance.protectedFunctionPaused(), true);
@@ -87,14 +88,14 @@ contract InstanceTest is Test {
 contract MockInstance is Instance {
     constructor() Instance("MockInstance", VersionLib.from(0,0,1), VersionLib.from(0,0,0)) {}
 
-    function initialize(bytes memory)
-        external virtual override initializer(VersionLib.from(0,0,1))
-    {
-        __Instance__initialize();
+    function __constructor(bytes memory) internal override returns (uint256 version) {
+        __Instance__constructor();
+
+        version = VersionLib.from(0,0,1);
     }
 
-    function incorrectInitialize() external {
-        __Instance__initialize();
+    function notConstructor() external {
+        __Instance__constructor();
     }
 
     /// @dev This function can only be called by the factory owner

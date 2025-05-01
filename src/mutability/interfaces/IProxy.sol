@@ -2,17 +2,14 @@
 pragma solidity ^0.8.20;
 
 import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
-import { Initializable } from "src/attribute/Initializable.sol";
+import { Mutable } from "../Mutable.sol";
 
 /// @dev Facilities provided by the proxy
 interface IProxy is IERC1967 {
     /// @dev Replaces the implementation, validating name and version
     /// @param newImplementation The new implementation contract
-    /// @param initData Calldata to invoke the instance's initializer
-    function upgradeToAndCall(
-        Initializable newImplementation,
-        bytes calldata initData
-    ) external payable;
+    /// @param data Calldata to invoke the instance's initializer
+    function upgradeToAndCall(Mutable newImplementation, bytes calldata data) external payable;
 
     /// @dev Prevents any interaction with the proxied contract.
     /// Implementation may be upgraded when paused.

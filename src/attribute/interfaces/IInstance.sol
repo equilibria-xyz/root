@@ -2,9 +2,9 @@
 pragma solidity ^0.8.13;
 
 import { IFactory } from "./IFactory.sol";
-import { IInitializable } from "./IInitializable.sol";
+import { IAttribute } from "../../mutability/interfaces/IAttribute.sol";
 
-interface IInstance is IInitializable {
+interface IInstance is IAttribute {
     // sig: 0x4d193d1f
     /// @custom:error Caller is not the owner
     error InstanceNotOwnerError(address sender);

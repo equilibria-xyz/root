@@ -1,34 +1,37 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
-
 import { IInstance } from "./interfaces/IInstance.sol";
 import { IFactory } from "./interfaces/IFactory.sol";
-import { Initializable } from "./Initializable.sol";
-import { Version } from "./types/Version.sol";
+import { Attribute } from "../mutability/Attribute.sol";
 
 /// @title Instance
 /// @notice An abstract contract that is created and managed by a factory
-abstract contract Instance is IInstance, Initializable {
-    /// @dev The slot of the factory address
-    bytes32 private constant FACTORY_SLOT = keccak256("equilibria.root.Instance.factory");
+abstract contract Instance is IInstance, Attribute {
+    /// @custom:storage-location erc7201:equilibria.root.Instance
+    struct InstanceStorage {
+        IFactory factory;
+    }
 
-    /// @dev Pass name and version to the Initializable constructor
-    constructor(
-        string memory name,
-        Version version,
-        Version versionFrom
-    ) Initializable(name, version, versionFrom) {}
+    /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
+    bytes32 private constant InstanceStorageLocation = 0xbf37ca0c6353d07d4968ca5873c5b82ea2e21a06e612b4d4a1c55285b8166200;
+
+    /// @dev The erc7201 storage of the mix-in
+    function Instance$() private pure returns (InstanceStorage storage $) {
+        assembly {
+            $.slot := InstanceStorageLocation
+        }
+    }
 
     /// @notice Initializes the contract setting `msg.sender` as the factory
-    function __Instance__initialize() internal onlyInitializer {
-        StorageSlot.getAddressSlot(FACTORY_SLOT).value = msg.sender;
+    function __Instance__constructor() initializer("Instance") internal {
+        Instance$().factory = IFactory(msg.sender);
     }
 
     /// @dev The factory that created this instance
     function factory() public view returns (IFactory) {
-        return IFactory(StorageSlot.getAddressSlot(FACTORY_SLOT).value);
+        return Instance$().factory;
     }
 
     /// @notice Only allow the owner defined by the factory to call the function
