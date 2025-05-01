@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
-
 import { Ownable } from "./Ownable.sol";
 import { IPausable } from "./interfaces/IPausable.sol";
 
@@ -20,6 +18,7 @@ abstract contract Pausable is IPausable, Ownable {
     }
 
     /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
     bytes32 private constant PausableStorageLocation = 0x3f6e81f1674f7eaca7e8904fa6f14f10175d4d641e37fc18a3df849e00101900;
 
     /// @dev The erc7201 storage of the mix-in

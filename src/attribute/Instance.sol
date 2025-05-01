@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
-
 import { IInstance } from "./interfaces/IInstance.sol";
 import { IFactory } from "./interfaces/IFactory.sol";
 import { Attribute } from "../mutability/Attribute.sol";
@@ -16,6 +14,7 @@ abstract contract Instance is IInstance, Attribute {
     }
 
     /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
     bytes32 private constant InstanceStorageLocation = 0xbf37ca0c6353d07d4968ca5873c5b82ea2e21a06e612b4d4a1c55285b8166200;
 
     /// @dev The erc7201 storage of the mix-in
