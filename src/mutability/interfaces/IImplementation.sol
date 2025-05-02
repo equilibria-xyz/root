@@ -4,8 +4,12 @@ pragma solidity ^0.8.13;
 import { Version } from "../types/Version.sol";
 
 interface IImplementation {
-    function nameHash() external view returns (bytes32);
-    function target() external view returns (Version);
+    // sig: 0x149b10c8
+    /// @dev Thrown when the constructor version of the implementation does not match the version of the implementation.
+    error ImplementationConstructorVersionMismatch();
+
+    function name() external view returns (string memory);
     function version() external view returns (Version);
+    function target() external view returns (Version);
     function construct(bytes memory data) external;
 }

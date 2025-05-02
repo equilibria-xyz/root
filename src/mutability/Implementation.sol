@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import { IImplementation } from "./interfaces/IImplementation.sol";
 import { Contract } from "./Contract.sol";
-import { Version } from "./types/Version.sol";
+import { Version, VersionLib } from "./types/Version.sol";
 
 /// @title Implementation
 /// @notice Implementation of Contract for upgradeable contracts.
@@ -23,14 +23,22 @@ abstract contract Implementation is IImplementation, Contract {
         }
     }
 
-    function nameHash() public pure virtual returns (bytes32);
-    function target() public pure virtual returns (Version);
+    /// @dev The name of the implementation.
+    function name() public pure virtual returns (string memory);
+
+    /// @dev The version of the implementation.
     function version() public pure virtual returns (Version);
+
+    /// @dev The version of the previous implementation.
+    function target() public pure virtual returns (Version);
 
     /// @dev Called at upgrade time to initialize the contract with `data`.
     function construct(bytes memory data) external {
         Implementation$().constructing = true;
-        __constructor(data);
+
+        Version constructorVersion = __constructor(data);
+        if (constructorVersion != this.version()) revert ImplementationConstructorVersionMismatch();
+
         Implementation$().constructing = false;
     }
 
@@ -40,5 +48,5 @@ abstract contract Implementation is IImplementation, Contract {
     }
 
     /// @dev Hook for inheriting contracts to construct the contract.
-    function __constructor(bytes memory data) internal virtual;
+    function __constructor(bytes memory data) internal virtual returns (Version);
 }

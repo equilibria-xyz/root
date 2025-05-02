@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.20;
 
+import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+import { ShortStrings, ShortString } from "@openzeppelin/contracts/utils/ShortStrings.sol";
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
@@ -20,8 +22,8 @@ import { Version } from "./types/Version.sol";
 ///      Users are exposed to ProxyPausedError when the proxied contract is paused.
 contract Mutable is IMutableTransparent, Proxy {
     address private immutable _mutator;
-    address private immutable _pausedTarget;
-    bytes32 private immutable _nameHash;
+    address private immutable _pauseTarget;
+    ShortString private immutable _name;
 
     /// @custom:storage-location erc7201:equilibria.root.Proxy
     struct MutableStorage {
@@ -45,8 +47,8 @@ contract Mutable is IMutableTransparent, Proxy {
     /// @param data Contract-specific parameters to be passed to the initializer.
     constructor(string memory name, IImplementation implementation, bytes memory data) payable {
         _mutator = msg.sender;
-        _pausedTarget = address(new MutablePauseTarget());
-        _nameHash = keccak256(bytes(name));
+        _pauseTarget = address(new MutablePauseTarget());
+        _name = ShortStrings.toShortString(name);
 
         _upgrade(implementation, data);
 
@@ -94,7 +96,7 @@ contract Mutable is IMutableTransparent, Proxy {
     /// @dev Upgrades the implementation of the proxy.
     function _upgrade(IImplementation newImplementation, bytes memory data) private {
         // validate the upgrade metadata of the new implementation
-        if (_nameHash != newImplementation.nameHash())
+        if (!Strings.equal(ShortStrings.toString(_name), newImplementation.name()))
             revert MutableNameMismatch();
         if (IImplementation(_implementation()).version() != newImplementation.target())
             revert MutableTargetMismatch();
@@ -110,7 +112,7 @@ contract Mutable is IMutableTransparent, Proxy {
 
     /// @dev Pauses the proxy by setting the implementation to the MutablePauseTarget.
     function _pause() private whenUnpaused {
-        ERC1967Utils.upgradeToAndCall(_pausedTarget, "");
+        ERC1967Utils.upgradeToAndCall(_pauseTarget, "");
         Mutable$().paused = _implementation();
         emit Paused();
     }
