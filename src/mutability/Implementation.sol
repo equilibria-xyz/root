@@ -3,13 +3,13 @@ pragma solidity ^0.8.13;
 
 import { IImplementation } from "./interfaces/IImplementation.sol";
 import { Contract } from "./Contract.sol";
+import { Version } from "./types/Version.sol";
 
 /// @title Implementation
 /// @notice Implementation of Contract for upgradeable contracts.
 abstract contract Implementation is IImplementation, Contract {
     /// @custom:storage-location erc7201:equilibria.root.Implementation
     struct ImplementationStorage {
-        uint256 version;
         bool constructing;
     }
 
@@ -23,15 +23,15 @@ abstract contract Implementation is IImplementation, Contract {
         }
     }
 
+    function nameHash() public pure virtual returns (bytes32);
+    function target() public pure virtual returns (Version);
+    function version() public pure virtual returns (Version);
+
     /// @dev Called at upgrade time to initialize the contract with `data`.
     function construct(bytes memory data) external {
         Implementation$().constructing = true;
-        uint256 version = __constructor(data);
+        __constructor(data);
         Implementation$().constructing = false;
-
-        if (Implementation$().version >= version) revert ImplementationVersionAlreadyInitialized();
-        Implementation$().version = version;
-        emit Initialized(version);
     }
 
     /// @dev Whether the contract is initializing.
@@ -40,5 +40,5 @@ abstract contract Implementation is IImplementation, Contract {
     }
 
     /// @dev Hook for inheriting contracts to construct the contract.
-    function __constructor(bytes memory data) internal virtual returns (uint256 version);
+    function __constructor(bytes memory data) internal virtual;
 }
