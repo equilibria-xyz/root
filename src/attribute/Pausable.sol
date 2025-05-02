@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { Ownable } from "./Ownable.sol";
+import { Attribute } from "./Attribute.sol";
 import { IPausable } from "./interfaces/IPausable.sol";
 
 /// @title Pausable
@@ -10,7 +11,7 @@ import { IPausable } from "./interfaces/IPausable.sol";
 /// @dev This contract has been extended from the Open Zeppelin library to include an
 ///      unstructured storage pattern so that it can be safely mixed in with upgradeable
 ///      contracts without affecting their storage patterns through inheritance.
-abstract contract Pausable is IPausable, Ownable {
+abstract contract Pausable is IPausable, Attribute, Ownable {
     /// @custom:storage-location erc7201:equilibria.root.Pausable
     struct PausableStorage {
         address pauser;
@@ -29,7 +30,7 @@ abstract contract Pausable is IPausable, Ownable {
     }
 
     /// @notice Initializes the contract setting `msg.sender` as the initial pauser
-    function __Pausable__constructor() initializer("Pausable") internal {
+    function __Pausable__constructor() internal initializer("Pausable") {
         _updatePauser(msg.sender);
     }
 

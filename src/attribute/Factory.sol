@@ -8,11 +8,11 @@ import { IFactory } from "./interfaces/IFactory.sol";
 import { IInstance } from "./interfaces/IInstance.sol";
 import { Pausable } from "./Pausable.sol";
 import { Ownable } from "./Ownable.sol";
-
+import { Attribute } from "./Attribute.sol";
 /// @title Factory
 /// @notice An abstract factory that manages creates and manages instances
 /// @dev Ownable and Pausable, and satisfies the IBeacon interface by default.
-abstract contract Factory is IFactory, Ownable, Pausable {
+abstract contract Factory is IFactory, Attribute, Ownable, Pausable {
     /// @custom:storage-location erc7201:equilibria.root.Factory
     struct FactoryStorage {
         mapping(IInstance instance => bool registered) instances;

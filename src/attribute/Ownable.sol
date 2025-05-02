@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { IOwnable } from "./interfaces/IOwnable.sol";
-import { Attribute } from "../mutability/Attribute.sol";
+import { Attribute } from "./Attribute.sol";
 
 /// @title Ownable
 /// @notice Library to manage the ownership lifecycle of upgradeable contracts.
@@ -38,7 +38,7 @@ abstract contract Ownable is IOwnable, Attribute {
     }
 
     /// @notice Initializes the contract setting `msg.sender` as the initial owner
-    function __Ownable__constructor() initializer("Ownable") internal {
+    function __Ownable__constructor() internal initializer("Ownable") {
         _updateOwner(msg.sender);
     }
 

@@ -8,7 +8,7 @@ import { IPausable } from "./IPausable.sol";
 import { IInstance } from "./IInstance.sol";
 import { IAttribute } from "../../mutability/interfaces/IAttribute.sol";
 
-interface IFactory is IBeacon, IAttribute, IPausable {
+interface IFactory is IBeacon, IAttribute, IOwnable, IPausable {
     event InstanceRegistered(IInstance indexed instance);
 
     // sig: 0x9dd1d227
