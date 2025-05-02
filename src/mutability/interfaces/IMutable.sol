@@ -1,11 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
 
-interface IMutable {
-    // sig: 0xf74492ff
-    error MutableVersionAlreadyInitialized();
+import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
+import { IImplementation } from "../Implementation.sol";
 
-    event Initialized(uint256 version);
+/// @dev Facilities provided by the proxy
+interface IMutable is IERC1967 {
+    /// @dev Replaces the implementation, validating name and version
+    /// @param newImplementation The new implementation contract
+    /// @param data Calldata to invoke the instance's initializer
+    function upgradeToAndCall(IImplementation newImplementation, bytes calldata data) external payable;
 
-    function construct(bytes memory data) external;
+    /// @dev Prevents any interaction with the proxied contract.
+    /// Implementation may be upgraded when paused.
+    function pause() external;
+
+    /// @dev Allows interaction with the proxied contract
+    function unpause() external;
 }

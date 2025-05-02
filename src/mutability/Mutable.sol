@@ -1,16 +1,32 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
+
+import { ERC1967Proxy, ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
 import { IMutable } from "./interfaces/IMutable.sol";
-import { Contract } from "./Contract.sol";
+import { IImplementation } from "./interfaces/IImplementation.sol";
+import { Mutator } from "./Mutator.sol";
+import { Version } from "./types/Version.sol";
 
 /// @title Mutable
-/// @notice Implementation of Contract for upgradeable contracts.
-abstract contract Mutable is IMutable, Contract {
-    /// @custom:storage-location erc7201:equilibria.root.Mutable
+/// @notice A mostly-transparent upgradeable proxy with facilities to prevent deployment errors.
+/// @dev The real interface of this proxy is that defined in `IProxy`. This contract does not
+///      inherit from that interface to maintain transparency.  Upgradability is implemented using
+///      an internal dispatch mechanism.  Proxied contracts must implement `Initializable` (not just
+///      the interface) and must return a constant `name` string used for identification.
+///      Implementations must be initialized using calldata during deployment and upgrade.
+///      Users are exposed to ProxyPausedError when the proxied contract is paused.
+contract Mutable is ERC1967Proxy {
+    address private immutable _admin;
+    address private immutable _pausedTarget;
+    bytes32 private immutable _nameHash;
+
+    /// @custom:storage-location erc7201:equilibria.root.Proxy
     struct MutableStorage {
-        uint256 version;
-        bool constructing;
+        bool paused;
+        address unpausedTarget;
+        Version initializedVersion;
     }
 
     /// @dev The erc7201 storage location of the mix-in
@@ -23,22 +39,105 @@ abstract contract Mutable is IMutable, Contract {
         }
     }
 
-    /// @dev Called at upgrade time to initialize the contract with `data`.
-    function construct(bytes memory data) external {
-        Mutable$().constructing = true;
-        uint256 version = __constructor(data);
-        Mutable$().constructing = false;
+    /// @notice Proxy will ignore calls to the proxied contract
+    event Paused();
 
-        if (Mutable$().version >= version) revert MutableVersionAlreadyInitialized();
-        Mutable$().version = version;
-        emit Initialized(version);
+    /// @notice Proxy will allow calls to the proxied contract
+    event Unpaused();
+
+    // sig: TODO
+    /// @dev An upgrade attempt was made by someone other than the proxy administrator.
+    error ProxyDeniedAdminAccess();
+
+    // sig: 0x73df0fec
+    /// @dev The name provided in the upgrade request does not match the name of this proxy.
+    error ProxyNameMismatchError();
+
+    // sig: 0x9419684e
+    /// @dev Interactions with proxied contract are not allowed while paused.
+    error ProxyPausedError();
+
+    // sig: 0x3f7d07d5
+    /// @dev The version we're upgrading from does not match that expected by the new implementation.
+    error ProxyVersionMismatchError(Version proxyCurrentVersion, Version requestVersion);
+
+    /// @dev Initializes an upgradeable proxy managed by an instance of a {ProxyAdmin}.
+    /// @param name The name of the contract.
+    /// @param implementation The first version of the contract to be proxied.
+    /// @param data Contract-specific parameters to be passed to the initializer.
+    constructor(
+        string memory name,
+        IImplementation implementation,
+        bytes memory data
+    )
+        payable
+        ERC1967Proxy(address(implementation), bytes(abi.encodeCall(IImplementation.construct, (data))))
+    {
+        _admin = msg.sender;
+        _pausedTarget = address(new MutablePauseTarget());
+        _nameHash = keccak256(bytes(name));
     }
 
-    /// @dev Whether the contract is initializing.
-    function _constructing() internal view override returns (bool) {
-        return Mutable$().constructing;
+    /// @dev Handles any non-administrative calls to the proxy.
+    function _fallback() internal virtual override {
+        // only admin may interact with the proxy
+        if (msg.sender == _admin) {
+            if (msg.sig == IMutable.upgradeToAndCall.selector) {
+                _dispatchUpgrade();
+            } else if (msg.sig == IMutable.pause.selector) {
+                _pause();
+            } else if (msg.sig == IMutable.unpause.selector) {
+                _unpause();
+            } else {
+                revert ProxyDeniedAdminAccess();
+            }
+        // all other callers interact only with the implementation
+        } else {
+            super._fallback();
+        }
     }
 
-    /// @dev Hook for inheriting contracts to construct the contract.
-    function __constructor(bytes memory data) internal virtual returns (uint256 version);
+    /// @dev Updates the implementation of the proxy.
+    function _dispatchUpgrade() private {
+        // get arguments from the upgrade request
+        (IImplementation newImplementation, bytes memory data) = abi.decode(msg.data[4:], (IImplementation, bytes));
+
+        // do not allow upgrades while the proxy is paused
+        if (Mutable$().unpausedTarget != address(0)) revert ProxyPausedError();
+
+        // read the current name and version from storage before calling new initializer
+        Version previousVersion = IImplementation(_implementation()).version();
+
+        // update the implementation and call initializer
+        ERC1967Utils.upgradeToAndCall(address(newImplementation),abi.encodeCall(IImplementation.construct, (data)));
+
+        // ensure name hash and version are appropriate
+        if (_nameHash != newImplementation.nameHash())
+            revert ProxyNameMismatchError();
+        if (previousVersion != newImplementation.target())
+            revert ProxyVersionMismatchError(previousVersion, newImplementation.target());
+
+        // TODO do new version check here
+    }
+
+    function _pause() private {
+        ERC1967Utils.upgradeToAndCall(_pausedTarget, "");
+        Mutable$().unpausedTarget = _implementation();
+        emit Paused();
+    }
+
+    function _unpause() private {
+        ERC1967Utils.upgradeToAndCall(Mutable$().unpausedTarget, "");
+        Mutable$().unpausedTarget = address(0);
+        emit Unpaused();
+    }
+}
+
+/// @title MutablePauseTarget
+/// @dev Stub contract Mutable sets as the implementation whenever the proxied contract is paused.
+///      This eliminates the need for a storage read to check paused state on each interaction.
+contract MutablePauseTarget {
+    fallback() external payable virtual {
+        revert Mutable.ProxyPausedError();
+    }
 }

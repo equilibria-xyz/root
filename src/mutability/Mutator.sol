@@ -3,12 +3,13 @@ pragma solidity ^0.8.20;
 
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-import { IProxy } from "./interfaces/IProxy.sol";
+import { IMutable } from "./interfaces/IMutable.sol";
+import { IImplementation } from "./interfaces/IImplementation.sol";
 import { Pausable } from "../../src/attribute/Pausable.sol";
 import { Version } from "./types/Version.sol";
 import { Derived } from "./Derived.sol";
+import { Implementation } from "./Implementation.sol";
 import { Mutable } from "./Mutable.sol";
-import { Proxy } from "./Proxy.sol";
 
 contract Mutator is Derived, Pausable {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -24,9 +25,12 @@ contract Mutator is Derived, Pausable {
         return _mutables.values();
     }
 
-    function register(string calldata name, Mutable implementation, bytes calldata data) public onlyOwner {
-        IProxy proxy = new Proxy(name, implementation, address(this), data);
-        _mutables.add(address(proxy));
+    function create(
+        string calldata name,
+        Implementation implementation,
+        bytes calldata data
+    ) public onlyOwner returns (Mutable newMutable) {
+        _mutables.add(address(newMutable = new Mutable(name, implementation, data)));
     }
 
     /// @notice Upgrades the implementation of a proxy and optionally calls its initializer
@@ -34,20 +38,20 @@ contract Mutator is Derived, Pausable {
     /// @param implementation New version of contract to be proxied
     /// @param data Calldata to invoke the instance's initializer
     function upgradeToAndCall(
-        IProxy proxy,
-        Mutable implementation,
+        IMutable proxy,
+        IImplementation implementation,
         bytes memory data
     ) public payable virtual onlyOwner {
         proxy.upgradeToAndCall{value: msg.value}(implementation, data);
     }
 
-    function pause() public {
-        for (uint256 i = 0; i < _mutables.length(); i++) IProxy(_mutables.at(i)).pause();
-        super.pause();
+    function _pause() internal override {
+        for (uint256 i = 0; i < _mutables.length(); i++) IMutable(_mutables.at(i)).pause();
+        super._pause();
     }
 
-    function unpause() public {
-        for (uint256 i = 0; i < _mutables.length(); i++) IProxy(_mutables.at(i)).unpause();
-        super.unpause();
+    function _unpause() internal override {
+        for (uint256 i = 0; i < _mutables.length(); i++) IMutable(_mutables.at(i)).unpause();
+        super._unpause();
     }
 }
