@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import { Math, NumberMath } from "../NumberMath.sol";
 import { Fixed18, Fixed18Lib } from "./Fixed18.sol";
 import { UFixed6 } from "./UFixed6.sol";
+import { UD60x18 } from "@prb/math/UD60x18.sol";
 
 /// @dev UFixed18 type
 type UFixed18 is uint256;
@@ -231,6 +232,14 @@ library UFixed18Lib {
     /// @return Whether `value` is outside the range `min` and `max`
     function outside(UFixed18 value, UFixed18 min_, UFixed18 max_) internal pure returns (bool) {
         return lt(value, min_) || gt(value, max_);
+    }
+
+    /// @notice Returns the exponential of an unsigned fixed-decimal
+    /// @param value Unsigned fixed-decimal
+    /// @return Exponential of `value`
+    function exp(UFixed18 value) internal pure returns (UFixed18) {
+        UD60x18 udValue = UD60x18.wrap(UFixed18.unwrap(value));
+        return UFixed18.wrap(UD60x18.unwrap(udValue.exp()));
     }
 }
 
