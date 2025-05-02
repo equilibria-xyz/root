@@ -603,6 +603,22 @@ contract Fixed6Test is Test {
         a = Fixed6.wrap(16);
         assertEq(Fixed6Lib.outside(a, b, c), true, "above upper bound");
     }
+
+    function test_exp() public pure {
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6Lib.from(0))), 1000000, "exp(0) = 1");
+
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6Lib.from(1))), 2_718281, "exp(1) = 2.718281");
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6Lib.from(2))), 7_389056, "exp(2) = 7.389056");
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6Lib.from(10))), 22026_465794, "exp(10) = 22026.465794");
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6.wrap(0.5e6))), 1_648721, "exp(0.5) = 1.648721");
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6.wrap(5))), 1_000005, "exp(0.000005) = 1.000005");
+
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6Lib.from(-1))), 367879, "exp(-1) = 0.367879");
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6Lib.from(-2))), 135335, "exp(-2) = 0.135335");
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6Lib.from(-10))), 45, "exp(-10) = 0.000045");
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6.wrap(-0.5e6))), 606530, "exp(-0.5) = 0.606530");
+        assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6.wrap(-5))), 999995, "exp(-0.000005) = 0.999995");
+    }
 }
 
 contract MockFixed6 {
