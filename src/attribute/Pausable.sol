@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { Ownable } from "./Ownable.sol";
+import { Attribute } from "./Attribute.sol";
 import { IPausable } from "./interfaces/IPausable.sol";
 
 /// @title Pausable
@@ -10,7 +11,7 @@ import { IPausable } from "./interfaces/IPausable.sol";
 /// @dev This contract has been extended from the Open Zeppelin library to include an
 ///      unstructured storage pattern so that it can be safely mixed in with upgradeable
 ///      contracts without affecting their storage patterns through inheritance.
-abstract contract Pausable is IPausable, Ownable {
+abstract contract Pausable is IPausable, Attribute, Ownable {
     /// @custom:storage-location erc7201:equilibria.root.Pausable
     struct PausableStorage {
         address pauser;
@@ -29,17 +30,15 @@ abstract contract Pausable is IPausable, Ownable {
     }
 
     /// @notice Initializes the contract setting `msg.sender` as the initial pauser
-    function __Pausable__initialize() internal onlyInitializer {
-        __Ownable__initialize();
-        updatePauser(msg.sender);
+    function __Pausable__constructor() internal initializer("Pausable") {
+        _updatePauser(msg.sender);
     }
 
     /// @notice Updates the new pauser
     /// @dev Can only be called by the current owner
     /// @param newPauser New pauser address
     function updatePauser(address newPauser) public onlyOwner {
-        Pausable$().pauser = newPauser;
-        emit PauserUpdated(newPauser);
+        _updatePauser(newPauser);
     }
 
     /// @dev The pauser address
@@ -59,6 +58,12 @@ abstract contract Pausable is IPausable, Ownable {
     /// @notice Unpauses the contract
     /// @dev Can only be called by the pauser
     function unpause() external onlyPauser { _unpause(); }
+
+    /// @dev Hook for inheriting contracts to update the pauser
+    function _updatePauser(address newPauser) internal {
+        Pausable$().pauser = newPauser;
+        emit PauserUpdated(newPauser);
+    }
 
     /// @dev Hook for inheriting contracts to pause the contract
     function _pause() internal virtual {

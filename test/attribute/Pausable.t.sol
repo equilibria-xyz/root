@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 
+import { Mutable } from "../../src/mutability/Mutable.sol";
 import { Pausable } from "../../src/attribute/Pausable.sol";
 
 contract PausableTest is Test {
@@ -10,6 +11,7 @@ contract PausableTest is Test {
     event Paused();
     event Unpaused();
 
+    error AttributeNotConstructing();
     error OwnableNotOwnerError(address pauser);
     error PausableNotPauserError(address pauser);
     error PausablePausedError();
@@ -28,12 +30,15 @@ contract PausableTest is Test {
         pausable = new MockPausable();
     }
 
-    function test_initializeSetsPauserAndOwner() public {
-        assertEq(pausable.pauser(), address(0));
+    function test_constructor() public {
+        // Test construction behavior
+        vm.expectRevert(abi.encodeWithSelector(AttributeNotConstructing.selector));
+        pausable.notConstructor();
+
         vm.expectEmit(true, true, false, true);
         emit PauserUpdated(owner);
         vm.prank(owner);
-        pausable.__initialize();
+        pausable.construct("");
 
         assertEq(pausable.pauser(), owner);
         assertEq(pausable.owner(), owner);
@@ -41,16 +46,16 @@ contract PausableTest is Test {
 
     function test_revertWhenReinitializing() public {
         vm.prank(owner);
-        pausable.__initialize();
+        pausable.construct("");
 
         vm.expectRevert();
         vm.prank(owner);
-        pausable.initializeIncorrect();
+        pausable.notConstructor();
     }
 
     function test_updatePauser() public {
         vm.prank(owner);
-        pausable.__initialize();
+        pausable.construct("");
 
         vm.expectEmit(true, true, false, true);
         emit PauserUpdated(newPauser);
@@ -62,7 +67,7 @@ contract PausableTest is Test {
 
     function test_onlyOwnerCanUpdatePauser() public {
         vm.prank(owner);
-        pausable.__initialize();
+        pausable.construct("");
 
         vm.expectRevert(abi.encodeWithSelector(OwnableNotOwnerError.selector, user));
         vm.prank(user);
@@ -78,7 +83,7 @@ contract PausableTest is Test {
 
     function test_pauserCanPause() public {
         vm.prank(owner);
-        pausable.__initialize();
+        pausable.construct("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
 
@@ -87,7 +92,7 @@ contract PausableTest is Test {
 
     function test_ownerCanPause() public {
         vm.prank(owner);
-        pausable.__initialize();
+        pausable.construct("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
 
@@ -96,7 +101,7 @@ contract PausableTest is Test {
 
     function test_otherUserCannotPause() public {
         vm.prank(owner);
-        pausable.__initialize();
+        pausable.construct("");
 
         vm.expectRevert(abi.encodeWithSelector(PausableNotPauserError.selector, user));
         vm.prank(user);
@@ -105,7 +110,7 @@ contract PausableTest is Test {
 
     function test_pauserCanUnpause() public {
         vm.prank(owner);
-        pausable.__initialize();
+        pausable.construct("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
 
@@ -114,7 +119,7 @@ contract PausableTest is Test {
 
     function test_ownerCanUnpause() public {
         vm.prank(owner);
-        pausable.__initialize();
+        pausable.construct("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
 
@@ -123,7 +128,7 @@ contract PausableTest is Test {
 
     function test_otherUserCannotUnpause() public {
         vm.prank(owner);
-        pausable.__initialize();
+        pausable.construct("");
         vm.prank(owner);
         pausable.pause();
 
@@ -171,15 +176,18 @@ contract PausableTest is Test {
     }
 }
 
-contract MockPausable is Pausable {
+contract MockPausable is Mutable, Pausable {
     uint256 public counter;
 
-    function __initialize() external initializer(1) {
-        super.__Pausable__initialize();
+    function __constructor(bytes memory) internal override returns (uint256 version) {
+        __Ownable__constructor();
+        __Pausable__constructor();
+
+        version = 1;
     }
 
-    function initializeIncorrect() external {
-        super.__Pausable__initialize();
+    function notConstructor() external {
+        __Pausable__constructor();
     }
 
     function increment() external whenNotPaused {
