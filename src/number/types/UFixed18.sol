@@ -238,8 +238,7 @@ library UFixed18Lib {
     /// @param value Unsigned fixed-decimal
     /// @return Exponential of `value`
     function exp(UFixed18 value) internal pure returns (UFixed18) {
-        UD60x18 udValue = UD60x18.wrap(UFixed18.unwrap(value));
-        return UFixed18.wrap(UD60x18.unwrap(udValue.exp()));
+        return UFixed18.wrap(UD60x18.unwrap(UD60x18.wrap(UFixed18.unwrap(value)).exp()));
     }
 }
 

@@ -245,8 +245,7 @@ library UFixed6Lib {
     /// @param value Unsigned fixed-decimal
     /// @return Exponential of `value`
     function exp(UFixed6 value) internal pure returns (UFixed6) {
-        UD60x18 udValue = UD60x18.wrap(UFixed18.unwrap(UFixed18Lib.from(value)));
-        return from(UFixed18.wrap(UD60x18.unwrap(udValue.exp())));
+        return from(UFixed18.wrap(UD60x18.unwrap(UD60x18.wrap(UFixed18.unwrap(UFixed18Lib.from(value))).exp())));
     }
 }
 

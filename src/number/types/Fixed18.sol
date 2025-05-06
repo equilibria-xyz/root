@@ -261,8 +261,7 @@ library Fixed18Lib {
     /// @param value Signed fixed-decimal
     /// @return Exponential of `value`
     function exp(Fixed18 value) internal pure returns (Fixed18) {
-        SD59x18 sdValue = SD59x18.wrap(Fixed18.unwrap(value));
-        return Fixed18.wrap(SD59x18.unwrap(sdValue.exp()));
+        return Fixed18.wrap(SD59x18.unwrap(SD59x18.wrap(Fixed18.unwrap(value)).exp()));
     }
 }
 
