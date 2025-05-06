@@ -1,31 +1,31 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity 0.8.24;
 
-import { IERC20, SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
+import { Token18 } from "../token/types/Token18.sol";
+import { UFixed18 } from "../number/types/UFixed18.sol";
 import { IAirdrop } from "./interfaces/IAirdrop.sol";
 
 /// @title Airdrop
 /// @notice A contract for distributing token airdrops using a merkle tree
 /// @dev Inspired by Uniswap https://github.com/Uniswap/merkle-distributor/blob/master/contracts/MerkleDistributor.sol at commit 25a79e8
 contract Airdrop is IAirdrop, Ownable {
-    using SafeERC20 for IERC20;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
-    mapping(bytes32 merkleRoot => address token) public distributions;
-    mapping(bytes32 merkleRoot => mapping(uint256 index => uint256 claimed)) public claimed;
-    EnumerableSet.Bytes32Set private merkleRoots;
+    mapping(bytes32 merkleRoot => Token18 token) public distributions;
+    mapping(bytes32 merkleRoot => mapping(uint256 index => uint256 claimed)) private _claimed;
+    EnumerableSet.Bytes32Set private _merkleRoots;
 
     constructor() Ownable(msg.sender) {}
 
     /// @inheritdoc IAirdrop
-    function addDistributions(address token, bytes32 merkleRoot) external override onlyOwner {
-        if (merkleRoots.contains(merkleRoot)) revert DistributionAlreadyExists();
+    function addDistributions(Token18 token, bytes32 merkleRoot) external override onlyOwner {
+        if (_merkleRoots.contains(merkleRoot)) revert AirdropDistributionAlreadyExists();
         distributions[merkleRoot] = token;
-        merkleRoots.add(merkleRoot);
+        _merkleRoots.add(merkleRoot);
 
         emit DistributionAdded(token, merkleRoot);
     }
@@ -34,30 +34,29 @@ contract Airdrop is IAirdrop, Ownable {
     function claim(
         address account,
         uint256[] calldata index,
-        uint256[] calldata amount,
+        UFixed18[] calldata amount,
         bytes32[][] calldata merkleProof,
         bytes32[] calldata merkleRoot
     ) public override {
         for (uint256 i = 0; i < index.length; i++) {
-            if (isClaimed(index[i], merkleRoot[i])) revert AlreadyClaimed();
-            address token = distributions[merkleRoot[i]];
+            if (claimed(index[i], merkleRoot[i])) revert AirdropAlreadyClaimed();
 
             // Verify the merkle proof.
-            bytes32 node = keccak256(abi.encodePacked(index[i], account, amount[i]));
-            if (!MerkleProof.verify(merkleProof[i], merkleRoot[i], node)) revert InvalidProof();
+            bytes32 node = keccak256(abi.encodePacked(index[i], account, UFixed18.unwrap(amount[i])));
+            if (!MerkleProof.verify(merkleProof[i], merkleRoot[i], node)) revert AirdropInvalidProof();
 
             // Mark it claimed and send the token.
-            _setClaimed(index[i], merkleRoot[i]);
-            IERC20(token).safeTransfer(account, amount[i]);
+            _updateClaimed(index[i], merkleRoot[i]);
+            distributions[merkleRoot[i]].push(account, amount[i]);
 
             emit Claimed(index[i], account, amount[i], merkleRoot[i]);
         }
     }
 
     /// @inheritdoc IAirdrop
-    function isClaimed(uint256 index, bytes32 merkleRoot) public view override returns (bool) {
+    function claimed(uint256 index, bytes32 merkleRoot) public view override returns (bool) {
         (uint256 claimedWordIndex, uint256 claimedBitIndex) = (index / 256, index % 256);
-        uint256 claimedWord = claimed[merkleRoot][claimedWordIndex];
+        uint256 claimedWord = _claimed[merkleRoot][claimedWordIndex];
         uint256 mask = (1 << claimedBitIndex);
         return claimedWord & mask == mask;
     }
@@ -65,14 +64,13 @@ contract Airdrop is IAirdrop, Ownable {
     /// @notice Sets the index as claimed
     /// @param index The index to set as claimed
     /// @param merkleRoot The merkle root
-    function _setClaimed(uint256 index, bytes32 merkleRoot) private {
+    function _updateClaimed(uint256 index, bytes32 merkleRoot) private {
         (uint256 claimedWordIndex, uint256 claimedBitIndex) = (index / 256, index % 256);
-        claimed[merkleRoot][claimedWordIndex] = claimed[merkleRoot][claimedWordIndex] | (1 << claimedBitIndex);
+        _claimed[merkleRoot][claimedWordIndex] = _claimed[merkleRoot][claimedWordIndex] | (1 << claimedBitIndex);
     }
 
-    /// @notice Returns the list of all merkle roots
-    /// @return An array of all merkle roots
-    function getMerkleRoots() external view returns (bytes32[] memory) {
-        return merkleRoots.values();
+    /// @inheritdoc IAirdrop
+    function merkleRoots() external view override returns (bytes32[] memory) {
+        return _merkleRoots.values();
     }
 }

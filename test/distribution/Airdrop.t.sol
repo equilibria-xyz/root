@@ -1,58 +1,59 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity 0.8.24;
 
-import { Test } from "forge-std/Test.sol";
+import { RootTest } from "../RootTest.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import { IAirdrop, Airdrop } from "../../src/distribution/Airdrop.sol";
 import { MerkleProof1, MerkleProof2 } from "../testutil/MerkleProofs.sol";
 import { ERC20Mintable } from "../testutil/ERC20Mintable.sol";
-
-contract AirdropTest is Test {
+import { Token18 } from "../../src/token/types/Token18.sol";
+import { UFixed18 } from "../../src/number/types/UFixed18.sol";
+contract AirdropTest is RootTest {
     Airdrop public airdrop;
-    ERC20Mintable public airdropToken;
+    Token18 public airdropToken;
     MerkleProof1 public merkleProof1;
     MerkleProof2 public merkleProof2;
     address public owner = makeAddr("OWNER");
 
     function setUp() public {
-        airdropToken = new ERC20Mintable("Test Token", "TEST");
+        airdropToken = Token18.wrap(address(new ERC20Mintable("Test Token", "TEST")));
         merkleProof1 = new MerkleProof1();
         merkleProof2 = new MerkleProof2();
         vm.prank(owner);
         airdrop = new Airdrop();
-        airdropToken.mint(address(airdrop), 1_000_000_000 * 1e18);
+        ERC20Mintable(Token18.unwrap(airdropToken)).mint(address(airdrop), 1_000_000_000 * 1e18);
     }
 
     function test_addDistribution() public {
-        address token = address(new ERC20Mintable("Token", "TEST"));
+        Token18 token = airdropToken;
         bytes32 merkleRoot = bytes32(uint256(1));
         vm.prank(owner);
         airdrop.addDistributions(token, merkleRoot);
 
-        assertEq(airdrop.distributions(merkleRoot), token);
+        assertEq(Token18.unwrap(airdrop.distributions(merkleRoot)), Token18.unwrap(token));
 
         vm.prank(owner);
-        vm.expectRevert(IAirdrop.DistributionAlreadyExists.selector);
+        vm.expectRevert(IAirdrop.AirdropDistributionAlreadyExists.selector);
         airdrop.addDistributions(token, merkleRoot);
     }
 
-    function test_getMerkleRoots() public {
+    function test_merkleRoots() public {
         bytes32 merkleRoot1 = merkleProof1.airdropRoot();
         bytes32 merkleRoot2 = merkleProof2.airdropRoot();
         vm.prank(owner);
-        airdrop.addDistributions(address(airdropToken), merkleRoot1);
+        airdrop.addDistributions(airdropToken, merkleRoot1);
         vm.prank(owner);
-        airdrop.addDistributions(address(airdropToken), merkleRoot2);
+        airdrop.addDistributions(airdropToken, merkleRoot2);
 
-        bytes32[] memory merkleRoots = airdrop.getMerkleRoots();
+        bytes32[] memory merkleRoots = airdrop.merkleRoots();
         assertEq(merkleRoots.length, 2);
         assertEq(merkleRoots[0], merkleRoot1);
         assertEq(merkleRoots[1], merkleRoot2);
     }
 
-    function test_claimDistribution() public {
-        address token = address(airdropToken);
+    function test_claim() public {
+        Token18 token = airdropToken;
         bytes32 merkleRoot = merkleProof1.airdropRoot();
         vm.prank(owner);
         airdrop.addDistributions(token, merkleRoot);
@@ -70,30 +71,30 @@ contract AirdropTest is Test {
             proofs[0][2] = bytes32(merkleProof1.airdropUserProofs(i, 2));
 
             vm.prank(user);
-            uint256 userBalanceBefore = airdropToken.balanceOf(user);
-            uint256 airdropTokenBalanceBefore = airdropToken.balanceOf(address(airdrop));
+            UFixed18 userBalanceBefore = airdropToken.balanceOf(user);
+            UFixed18 airdropTokenBalanceBefore = airdropToken.balanceOf(address(airdrop));
             uint256[] memory indexes = new uint256[](1);
             indexes[0] = index;
-            uint256[] memory amounts = new uint256[](1);
-            amounts[0] = amount;
+            UFixed18[] memory amounts = new UFixed18[](1);
+            amounts[0] = UFixed18.wrap(amount);
             bytes32[] memory merkleRoots = new bytes32[](1);
             merkleRoots[0] = merkleProof1.airdropRoot();
-            assertFalse(airdrop.isClaimed(index, merkleRoots[0]));
+            assertFalse(airdrop.claimed(index, merkleRoots[0]));
             airdrop.claim(user, indexes, amounts, proofs, merkleRoots);
 
-            assertEq(airdropToken.balanceOf(user), userBalanceBefore + amount);
-            assertEq(airdropToken.balanceOf(address(airdrop)), airdropTokenBalanceBefore - amount);
-            assertTrue(airdrop.isClaimed(index, merkleRoots[0]));
+            assertUFixed18Eq(airdropToken.balanceOf(user), userBalanceBefore + amounts[0]);
+            assertUFixed18Eq(airdropToken.balanceOf(address(airdrop)), airdropTokenBalanceBefore - amounts[0]);
+            assertTrue(airdrop.claimed(index, merkleRoots[0]));
         }
     }
 
-    function test_claimMultipleDistributions() public {
-        address token1 = address(airdropToken);
+    function test_claimMultiple() public {
+        Token18 token1 = airdropToken;
         bytes32 merkleRoot1 = merkleProof1.airdropRoot();
         vm.prank(owner);
         airdrop.addDistributions(token1, merkleRoot1);
 
-        address token2 = address(airdropToken);
+        Token18 token2 = airdropToken;
         bytes32 merkleRoot2 = merkleProof2.airdropRoot();
         vm.prank(owner);
         airdrop.addDistributions(token2, merkleRoot2);
@@ -111,20 +112,20 @@ contract AirdropTest is Test {
             proofs[0][2] = bytes32(merkleProof1.airdropUserProofs(i, 2));
 
             vm.prank(user);
-            uint256 userBalanceBefore = airdropToken.balanceOf(user);
-            uint256 airdropTokenBalanceBefore = airdropToken.balanceOf(address(airdrop));
+            UFixed18 userBalanceBefore = airdropToken.balanceOf(user);
+            UFixed18 airdropTokenBalanceBefore = airdropToken.balanceOf(address(airdrop));
             uint256[] memory indexes = new uint256[](1);
             indexes[0] = index;
-            uint256[] memory amounts = new uint256[](1);
-            amounts[0] = amount;
+            UFixed18[] memory amounts = new UFixed18[](1);
+            amounts[0] = UFixed18.wrap(amount);
             bytes32[] memory merkleRoot = new bytes32[](1);
             merkleRoot[0] = merkleProof1.airdropRoot();
-            assertFalse(airdrop.isClaimed(index, merkleRoot[0]));
+            assertFalse(airdrop.claimed(index, merkleRoot[0]));
             airdrop.claim(user, indexes, amounts, proofs, merkleRoot);
 
-            assertEq(airdropToken.balanceOf(user), userBalanceBefore + amount);
-            assertEq(airdropToken.balanceOf(address(airdrop)), airdropTokenBalanceBefore - amount);
-            assertTrue(airdrop.isClaimed(index, merkleRoot[0]));
+            assertUFixed18Eq(airdropToken.balanceOf(user), userBalanceBefore + amounts[0]);
+            assertUFixed18Eq(airdropToken.balanceOf(address(airdrop)), airdropTokenBalanceBefore - amounts[0]);
+            assertTrue(airdrop.claimed(index, merkleRoot[0]));
         }
 
         // Claim airdrop for each account in second distribution
@@ -137,25 +138,25 @@ contract AirdropTest is Test {
             proofs[0] = merkleProof2.getUserProofs(i);
 
             vm.prank(user);
-            uint256 userBalanceBefore = airdropToken.balanceOf(user);
-            uint256 airdropTokenBalanceBefore = airdropToken.balanceOf(address(airdrop));
+            UFixed18 userBalanceBefore = airdropToken.balanceOf(user);
+            UFixed18 airdropTokenBalanceBefore = airdropToken.balanceOf(address(airdrop));
             uint256[] memory indexes = new uint256[](1);
             indexes[0] = index;
-            uint256[] memory amounts = new uint256[](1);
-            amounts[0] = amount;
+            UFixed18[] memory amounts = new UFixed18[](1);
+            amounts[0] = UFixed18.wrap(amount);
             bytes32[] memory merkleRoot = new bytes32[](1);
             merkleRoot[0] = merkleProof2.airdropRoot();
-            assertFalse(airdrop.isClaimed(index, merkleRoot[0]));
+            assertFalse(airdrop.claimed(index, merkleRoot[0]));
             airdrop.claim(user, indexes, amounts, proofs, merkleRoot);
 
-            assertEq(airdropToken.balanceOf(user), userBalanceBefore + amount);
-            assertEq(airdropToken.balanceOf(address(airdrop)), airdropTokenBalanceBefore - amount);
-            assertTrue(airdrop.isClaimed(index, merkleRoot[0]));
+            assertUFixed18Eq(airdropToken.balanceOf(user), userBalanceBefore + amounts[0]);
+            assertUFixed18Eq(airdropToken.balanceOf(address(airdrop)), airdropTokenBalanceBefore - amounts[0]);
+            assertTrue(airdrop.claimed(index, merkleRoot[0]));
         }
     }
 
-    function test_claimAirdropAlreadyClaimed() public {
-        address token1 = address(airdropToken);
+    function test_claimAlreadyClaimed() public {
+        Token18 token1 = airdropToken;
         bytes32 merkleRoot1 = merkleProof1.airdropRoot();
         vm.prank(owner);
         airdrop.addDistributions(token1, merkleRoot1);
@@ -171,8 +172,8 @@ contract AirdropTest is Test {
         proofs[0][2] = bytes32(merkleProof1.airdropUserProofs(0, 2));
         uint256[] memory indexes = new uint256[](1);
         indexes[0] = index;
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = amount;
+        UFixed18[] memory amounts = new UFixed18[](1);
+        amounts[0] = UFixed18.wrap(amount);
         bytes32[] memory merkleRoot = new bytes32[](1);
         merkleRoot[0] = merkleProof1.airdropRoot();
 
@@ -180,11 +181,11 @@ contract AirdropTest is Test {
         airdrop.claim(user, indexes, amounts, proofs, merkleRoot);
 
         vm.prank(user);
-        vm.expectRevert(IAirdrop.AlreadyClaimed.selector);
+        vm.expectRevert(IAirdrop.AirdropAlreadyClaimed.selector);
         airdrop.claim(user, indexes, amounts, proofs, merkleRoot);
     }
 
-    function test_claimAirdropInvalidProof() public {
+    function test_claimInvalidProof() public {
         uint256 index = vm.parseUint(merkleProof1.airdropLeafs(0, 0));
         address user = vm.parseAddress(merkleProof1.airdropLeafs(0, 1));
         uint256 amount = vm.parseUint(merkleProof1.airdropLeafs(0, 2));
@@ -195,14 +196,14 @@ contract AirdropTest is Test {
         proof[2] = bytes32(0x0000000000000000000000000000000000000000000000000000000000000000);
         uint256[] memory indexes = new uint256[](1);
         indexes[0] = index;
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = amount;
+        UFixed18[] memory amounts = new UFixed18[](1);
+        amounts[0] = UFixed18.wrap(amount);
         bytes32[] memory merkleRoot = new bytes32[](1);
         merkleRoot[0] = merkleProof1.airdropRoot();
         bytes32[][] memory proofs = new bytes32[][](1);
 
         vm.prank(user);
-        vm.expectRevert(IAirdrop.InvalidProof.selector);
+        vm.expectRevert(IAirdrop.AirdropInvalidProof.selector);
         airdrop.claim(user, indexes, amounts, proofs, merkleRoot);
     }
 }
