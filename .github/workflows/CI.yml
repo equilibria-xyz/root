@@ -27,7 +27,7 @@ jobs:
           node-version: 22.14
 
       - name: Install
-        run: npm install -g solhint
+        run: npm install -g solhint@~5.0
         id: install
 
       - name: Lint

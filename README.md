@@ -73,7 +73,7 @@ Other installation options available [here](https://github.com/crytic/slither?ta
 
 Optionally, to install solhint:
 ```sh
-sudo npm install -g solhint
+sudo npm install -g solhint@~5.0
 ```
 
 ### Compile

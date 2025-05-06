@@ -3,21 +3,35 @@ pragma solidity ^0.8.13;
 
 import { IInstance } from "./interfaces/IInstance.sol";
 import { IFactory } from "./interfaces/IFactory.sol";
-import { Initializable } from "./Initializable.sol";
+import { Attribute } from "./Attribute.sol";
 
 /// @title Instance
 /// @notice An abstract contract that is created and managed by a factory
-abstract contract Instance is IInstance, Initializable {
-    /// @dev The factory address storage slot
-    address private _factory;
+abstract contract Instance is IInstance, Attribute {
+    /// @custom:storage-location erc7201:equilibria.root.Instance
+    struct InstanceStorage {
+        IFactory factory;
+    }
 
-    /// @notice Returns the factory that created this instance
-    /// @return The factory that created this instance
-    function factory() public view returns (IFactory) { return IFactory(_factory); }
+    /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
+    bytes32 private constant InstanceStorageLocation = 0xbf37ca0c6353d07d4968ca5873c5b82ea2e21a06e612b4d4a1c55285b8166200;
+
+    /// @dev The erc7201 storage of the mix-in
+    function Instance$() private pure returns (InstanceStorage storage $) {
+        assembly {
+            $.slot := InstanceStorageLocation
+        }
+    }
 
     /// @notice Initializes the contract setting `msg.sender` as the factory
-    function __Instance__initialize() internal onlyInitializer {
-        _factory = msg.sender;
+    function __Instance__constructor() internal initializer("Instance") {
+        Instance$().factory = IFactory(msg.sender);
+    }
+
+    /// @dev The factory that created this instance
+    function factory() public view returns (IFactory) {
+        return Instance$().factory;
     }
 
     /// @notice Only allow the owner defined by the factory to call the function

@@ -10,45 +10,44 @@ struct SynBook6 {
     UFixed6 d1;
     UFixed6 d2;
     UFixed6 d3;
-    UFixed6 scale;
+    UFixed6 limit;
 }
 using SynBook6Lib for SynBook6 global;
 
 /// @title SynBook6Lib
 /// @notice Library that that manages the synthetic orderbook mechanism
 library SynBook6Lib {
-    /// @notice Computes the spread from the synthetic orderbook
+    /// @notice Computes the quoted price from the synthetic orderbook
     /// @param self The synthetic orderbook configuration
-    /// @param latest The latest skew in asset terms
-    /// @param change The change in skew in asset terms
-    /// @param price The price of the underlying asset
-    /// @return newPrice The price of a given order amount based on the synbook for the account
+    /// @param latest The latest position in asset terms
+    /// @param change The change in position in asset terms
+    /// @param price The midpoint price of the underlying asset
+    /// @return newPrice The quoted price of the given order amount based on the synbook configuration
     function compute(
         SynBook6 memory self,
         Fixed6 latest,
         Fixed6 change,
         UFixed6 price
     ) internal pure returns (UFixed6) {
-        // sign = 1 for buy / ask and -1 for sell / bid
-        bool isAsk = change > Fixed6Lib.ZERO;
+        bool isBid = change > Fixed6Lib.ZERO;
 
-        // use -f(-x) for ask orders
-        latest = _flipIfAsk(latest, isAsk);
-        change = _flipIfAsk(change, isAsk);
+        // mirror negative orders (asks) onto the positive synbook function
+        latest = _flipIf(latest, !isBid);
+        change = _flipIf(change, !isBid);
 
-        Fixed6 from = latest / Fixed6Lib.from(self.scale);
-        Fixed6 to = (latest + change) / Fixed6Lib.from(self.scale);
+        Fixed6 from = latest / Fixed6Lib.from(self.limit);
+        Fixed6 to = (latest + change) / Fixed6Lib.from(self.limit);
         Fixed6 spread = _indefinite(self.d0, self.d1, self.d2, self.d3, to, price)
             - _indefinite(self.d0, self.d1, self.d2, self.d3, from, price);
 
-        // use -f(-x) for ask orders
-        spread = _flipIfAsk(spread, isAsk);
+        // spread is in the positive direction, mirror for bid orders
+        spread = _flipIf(spread, isBid);
 
         return UFixed6Lib.unsafeFrom(Fixed6Lib.from(price) + spread);
     }
 
-    function _flipIfAsk(Fixed6 value, bool isAsk) private pure returns (Fixed6) {
-        return isAsk ? value * Fixed6Lib.NEG_ONE : value;
+    function _flipIf(Fixed6 value, bool flip) private pure returns (Fixed6) {
+        return flip ? value * Fixed6Lib.NEG_ONE : value;
     }
 
     /// @dev f(x) = d0 * x + d1 * x^2 / 2 + d2 * x^3 / 3 + d3 * x^4 / 4
