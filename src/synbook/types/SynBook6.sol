@@ -31,23 +31,23 @@ library SynBook6Lib {
     ) internal pure returns (UFixed6) {
         bool isBid = change > Fixed6Lib.ZERO;
 
-        // use -f(-x) for bid orders
-        latest = _flipIfBid(latest, isBid);
-        change = _flipIfBid(change, isBid);
+        // mirror negative orders (asks) onto the positive synbook function
+        latest = _flipIf(latest, !isBid);
+        change = _flipIf(change, !isBid);
 
         Fixed6 from = latest / Fixed6Lib.from(self.limit);
         Fixed6 to = (latest + change) / Fixed6Lib.from(self.limit);
         Fixed6 spread = _indefinite(self.d0, self.d1, self.d2, self.d3, to, price)
             - _indefinite(self.d0, self.d1, self.d2, self.d3, from, price);
 
-        // use -f(-x) for bid orders
-        spread = _flipIfBid(spread, isBid);
+        // spread is in the positive direction, mirror for bid orders
+        spread = _flipIf(spread, isBid);
 
         return UFixed6Lib.unsafeFrom(Fixed6Lib.from(price) + spread);
     }
 
-    function _flipIfBid(Fixed6 value, bool isBid) private pure returns (Fixed6) {
-        return isBid ? value * Fixed6Lib.NEG_ONE : value;
+    function _flipIf(Fixed6 value, bool flip) private pure returns (Fixed6) {
+        return flip ? value * Fixed6Lib.NEG_ONE : value;
     }
 
     /// @dev f(x) = d0 * x + d1 * x^2 / 2 + d2 * x^3 / 3 + d3 * x^4 / 4
