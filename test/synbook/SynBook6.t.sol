@@ -12,7 +12,7 @@ contract SynBook6Test is RootTest {
         d1: UFixed6Lib.ZERO,
         d2: UFixed6.wrap(1000), // 0.001
         d3: UFixed6.wrap(10000), // 0.01
-        scale: UFixed6Lib.from(1000)
+        limit: UFixed6Lib.from(1000)
     });
 
     SynBook6 curve2 = SynBook6({
@@ -20,7 +20,7 @@ contract SynBook6Test is RootTest {
         d1: UFixed6.wrap(4000), // 0.004
         d2: UFixed6.wrap(1000), // 0.001
         d3: UFixed6.wrap(10000), // 0.01
-        scale: UFixed6Lib.from(1000)
+        limit: UFixed6Lib.from(1000)
     });
 
     UFixed6 price;
@@ -37,13 +37,13 @@ contract SynBook6Test is RootTest {
         );
         assertUFixed6Eq(
             curve1.compute(Fixed6Lib.ZERO, Fixed6Lib.from(100), price),
-            price + UFixed6.wrap(24611), // price + (2.467175 / price)
-            "zero skew, positive change"
+            price - UFixed6.wrap(24671), // price - 0.024671
+            "zero skew, negative change"
         );
         assertUFixed6Eq(
             curve1.compute(Fixed6Lib.ZERO, Fixed6Lib.from(-100), price),
-            price - UFixed6.wrap(24611), // price - (2.467175 / price)
-            "zero skew, negative change"
+            price + UFixed6.wrap(24671), // price + 0.024671
+            "zero skew, positive change"
         );
     }
 
@@ -55,13 +55,13 @@ contract SynBook6Test is RootTest {
         );
         assertUFixed6Eq(
             curve1.compute(Fixed6Lib.from(200), Fixed6Lib.from(100), price),
-            price + UFixed6.wrap(23381), // price + (2.737775 / price)
-            "positive skew, positive change"
+            price - UFixed6.wrap(27377), // price - 0.027377
+            "positive skew, negative change"
         );
         assertUFixed6Eq(
             curve1.compute(Fixed6Lib.from(200), Fixed6Lib.from(-100), price),
-            price - UFixed6.wrap(25349), // price - (2.442575 / price)
-            "positive skew, negative change"
+            price + UFixed6.wrap(24425), // price + 0.024425
+            "positive skew, positive change"
         );
     }
 
@@ -73,13 +73,13 @@ contract SynBook6Test is RootTest {
         );
         assertUFixed6Eq(
             curve1.compute(Fixed6Lib.from(-200), Fixed6Lib.from(100), price),
-            price + UFixed6.wrap(25349), // price + (2.442575 / price)
-            "negative skew, positive change"
+            price - UFixed6.wrap(24425), // price + 0.024425
+            "negative skew, negative change"
         );
         assertUFixed6Eq(
             curve1.compute(Fixed6Lib.from(-200), Fixed6Lib.from(-100), price),
-            price - UFixed6.wrap(23381), // price - (2.737775 / price)
-            "negative skew, negative change"
+            price + UFixed6.wrap(27377), // price + 0.027377
+            "negative skew, positive change"
         );
     }
 
@@ -91,13 +91,13 @@ contract SynBook6Test is RootTest {
         );
         assertUFixed6Eq(
             curve2.compute(Fixed6Lib.ZERO, Fixed6Lib.from(100), price),
-            price + UFixed6.wrap(22151), // price + (2.713175 / price)
-            "zero skew, positive change"
+            price - UFixed6.wrap(27131), // price - 0.027131
+            "zero skew, negative change"
         );
         assertUFixed6Eq(
             curve2.compute(Fixed6Lib.ZERO, Fixed6Lib.from(-100), price),
-            price - UFixed6.wrap(22151), // price - (2.713175 / price)
-            "zero skew, negative change"
+            price + UFixed6.wrap(27131), // price + 0.027131
+            "zero skew, positive change"
         );
     }
 
@@ -109,13 +109,13 @@ contract SynBook6Test is RootTest {
         );
         assertUFixed6Eq(
             curve2.compute(Fixed6Lib.from(200), Fixed6Lib.from(100), price),
-            price + UFixed6.wrap(11081), // price + (3.967775 / price)
-            "positive skew, positive change"
+            price - UFixed6.wrap(39677), // price - 0.039677
+            "positive skew, negative change"
         );
         assertUFixed6Eq(
             curve2.compute(Fixed6Lib.from(200), Fixed6Lib.from(-100), price),
-            price - UFixed6.wrap(32729), // price - (1.704575 / price)
-            "positive skew, negative change"
+            price + UFixed6.wrap(17045), // price + 0.017045
+            "positive skew, positive change"
         );
     }
 
@@ -127,13 +127,13 @@ contract SynBook6Test is RootTest {
         );
         assertUFixed6Eq(
             curve2.compute(Fixed6Lib.from(-200), Fixed6Lib.from(100), price),
-            price + UFixed6.wrap(32729), // price + (1.704575 / price)
-            "negative skew, positive change"
+            price - UFixed6.wrap(17045), // price - 0.017045
+            "negative skew, negative change"
         );
         assertUFixed6Eq(
             curve2.compute(Fixed6Lib.from(-200), Fixed6Lib.from(-100), price),
-            price - UFixed6.wrap(11081), // price - (3.967775 / price)
-            "negative skew, negative change"
+            price + UFixed6.wrap(39677), // price + 0.039677
+            "negative skew, positive change"
         );
     }
 }
