@@ -417,6 +417,16 @@ contract UFixed6Test is Test {
         a = UFixed6.wrap(16);
         assertEq(a.outside(b, c), true, "above upper bound");
     }
+
+    function test_exp() public pure {
+        assertEq(UFixed6.unwrap(UFixed6Lib.exp(UFixed6Lib.from(0))), 1e6, "exp(0) = 1");
+
+        assertEq(UFixed6.unwrap(UFixed6Lib.exp(UFixed6Lib.from(1))), 2_718281, "exp(1) = 2.718281");
+        assertEq(UFixed6.unwrap(UFixed6Lib.exp(UFixed6Lib.from(2))), 7_389056, "exp(2) = 7.389056");
+        assertEq(UFixed6.unwrap(UFixed6Lib.exp(UFixed6Lib.from(10))), 22026_465794, "exp(10) = 22026.465794");
+        assertEq(UFixed6.unwrap(UFixed6Lib.exp(UFixed6.wrap(0.5e6))), 1_648721, "exp(0.5) = 1.648721");
+        assertEq(UFixed6.unwrap(UFixed6Lib.exp(UFixed6.wrap(5))), 1_000005, "exp(0.000005) = 1.000005");
+    }
 }
 
 contract MockUFixed6 {

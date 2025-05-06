@@ -5,6 +5,7 @@ import { SignedMath } from "@openzeppelin/contracts/utils/math/SignedMath.sol";
 import { NumberMath } from "../NumberMath.sol";
 import { Fixed6 } from "./Fixed6.sol";
 import { UFixed18 } from "./UFixed18.sol";
+import { SD59x18 } from "@prb/math/SD59x18.sol";
 
 /// @dev Fixed18 type
 type Fixed18 is int256;
@@ -254,6 +255,13 @@ library Fixed18Lib {
     /// @return Whether `value` is outside the range `min` and `max`
     function outside(Fixed18 value, Fixed18 min_, Fixed18 max_) internal pure returns (bool) {
         return lt(value, min_) || gt(value, max_);
+    }
+
+    /// @notice Returns the exponential of a signed fixed-decimal
+    /// @param value Signed fixed-decimal
+    /// @return Exponential of `value`
+    function exp(Fixed18 value) internal pure returns (Fixed18) {
+        return Fixed18.wrap(SD59x18.unwrap(SD59x18.wrap(Fixed18.unwrap(value)).exp()));
     }
 }
 

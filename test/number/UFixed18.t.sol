@@ -406,6 +406,16 @@ contract UFixed18Test is Test {
         a = UFixed18.wrap(16);
         assertEq(UFixed18Lib.outside(a, b, c), true, "above upper bound");
     }
+
+    function test_exp() public pure {
+        assertEq(UFixed18.unwrap(UFixed18Lib.exp(UFixed18Lib.from(0))), 1e18, "exp(0) = 1");
+
+        assertEq(UFixed18.unwrap(UFixed18Lib.exp(UFixed18Lib.from(1))), 2_718281828459045234, "exp(1) = 2.718281828459045234");
+        assertEq(UFixed18.unwrap(UFixed18Lib.exp(UFixed18Lib.from(2))), 7_389056098930650223, "exp(2) = 7.389056098930650223");
+        assertEq(UFixed18.unwrap(UFixed18Lib.exp(UFixed18Lib.from(10))), 22026_465794806716461725, "exp(10) = 22026.465794806716461725");
+        assertEq(UFixed18.unwrap(UFixed18Lib.exp(UFixed18.wrap(0.5e18))), 1_648721270700128145, "exp(0.5) = 1.648721270700128145");
+        assertEq(UFixed18.unwrap(UFixed18Lib.exp(UFixed18.wrap(5))), 1_000000000000000004, "exp(5 * 10^-18) = 1.000000000000000004");
+    }
 }
 
 contract MockUFixed18 {

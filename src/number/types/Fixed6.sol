@@ -3,9 +3,9 @@ pragma solidity ^0.8.19;
 
 import { SignedMath } from "@openzeppelin/contracts/utils/math/SignedMath.sol";
 import { NumberMath } from "../NumberMath.sol";
-import { Fixed18 } from "./Fixed18.sol";
+import { Fixed18, Fixed18Lib } from "./Fixed18.sol";
 import { UFixed6 } from "./UFixed6.sol";
-
+import { SD59x18 } from "@prb/math/SD59x18.sol";
 /// @dev Fixed6 type
 type Fixed6 is int256;
 using Fixed6Lib for Fixed6 global;
@@ -262,6 +262,13 @@ library Fixed6Lib {
     /// @return Whether `value` is outside the range `min` and `max`
     function outside(Fixed6 value, Fixed6 min_, Fixed6 max_) internal pure returns (bool) {
         return lt(value, min_) || gt(value, max_);
+    }
+
+    /// @notice Returns the exponential of a signed fixed-decimal
+    /// @param value Signed fixed-decimal
+    /// @return Exponential of `value`
+    function exp(Fixed6 value) internal pure returns (Fixed6) {
+        return from(Fixed18.wrap(SD59x18.unwrap(SD59x18.wrap(Fixed18.unwrap(Fixed18Lib.from(value))).exp())));
     }
 }
 
