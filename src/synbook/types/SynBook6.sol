@@ -10,34 +10,33 @@ struct SynBook6 {
     UFixed6 d1;
     UFixed6 d2;
     UFixed6 d3;
-    UFixed6 scale;
+    UFixed6 limit;
 }
 using SynBook6Lib for SynBook6 global;
 
 /// @title SynBook6Lib
 /// @notice Library that that manages the synthetic orderbook mechanism
 library SynBook6Lib {
-    /// @notice Computes the spread from the synthetic orderbook
+    /// @notice Computes the quoted price from the synthetic orderbook
     /// @param self The synthetic orderbook configuration
-    /// @param latest The latest skew in asset terms
-    /// @param change The change in skew in asset terms
-    /// @param price The price of the underlying asset
-    /// @return newPrice The price of a given order amount based on the synbook for the account
+    /// @param latest The latest position in asset terms
+    /// @param change The change in position in asset terms
+    /// @param price The midpoint price of the underlying asset
+    /// @return newPrice The quoted price of the given order amount based on the synbook configuration
     function compute(
         SynBook6 memory self,
         Fixed6 latest,
         Fixed6 change,
         UFixed6 price
     ) internal pure returns (UFixed6) {
-        // sign = 1 for buy / ask and -1 for sell / bid
         bool isBid = change > Fixed6Lib.ZERO;
 
         // use -f(-x) for bid orders
         latest = _flipIfBid(latest, isBid);
         change = _flipIfBid(change, isBid);
 
-        Fixed6 from = latest / Fixed6Lib.from(self.scale);
-        Fixed6 to = (latest + change) / Fixed6Lib.from(self.scale);
+        Fixed6 from = latest / Fixed6Lib.from(self.limit);
+        Fixed6 to = (latest + change) / Fixed6Lib.from(self.limit);
         Fixed6 spread = _indefinite(self.d0, self.d1, self.d2, self.d3, to, price)
             - _indefinite(self.d0, self.d1, self.d2, self.d3, from, price);
 

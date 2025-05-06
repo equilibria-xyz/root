@@ -12,7 +12,7 @@ contract SynBook6Test is RootTest {
         d1: UFixed6Lib.ZERO,
         d2: UFixed6.wrap(1000), // 0.001
         d3: UFixed6.wrap(10000), // 0.01
-        scale: UFixed6Lib.from(1000)
+        limit: UFixed6Lib.from(1000)
     });
 
     SynBook6 curve2 = SynBook6({
@@ -20,7 +20,7 @@ contract SynBook6Test is RootTest {
         d1: UFixed6.wrap(4000), // 0.004
         d2: UFixed6.wrap(1000), // 0.001
         d3: UFixed6.wrap(10000), // 0.01
-        scale: UFixed6Lib.from(1000)
+        limit: UFixed6Lib.from(1000)
     });
 
     UFixed6 price;
