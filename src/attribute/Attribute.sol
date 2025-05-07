@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { IAttribute } from "./interfaces/IAttribute.sol";
-import { Contract } from "./Contract.sol";
+import { IAttribute } from "../mutability/interfaces/IAttribute.sol";
+import { Contract } from "../mutability/Contract.sol";
 
 /// @title Attribute
 /// @notice Manages initialization lifecycle for abstract mix-ins that are optionally upgradable.

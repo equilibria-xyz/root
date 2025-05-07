@@ -595,6 +595,22 @@ contract Fixed18Test is Test {
         a = Fixed18.wrap(16);
         assertEq(Fixed18Lib.outside(a, b, c), true, "above upper bound");
     }
+
+    function test_exp() public pure {
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18Lib.from(0))), 1e18, "exp(0) = 1");
+
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18Lib.from(1))), 2_718281828459045234, "exp(1) = 2.718281828459045234");
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18Lib.from(2))), 7_389056098930650223, "exp(2) = 7.389056098930650223");
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18Lib.from(10))), 22026_465794806716461725, "exp(10) = 22026.465794806716461725");
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18.wrap(0.5e18))), 1_648721270700128145, "exp(0.5) = 1.648721270700128145");
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18.wrap(5))), 1_000000000000000004, "exp(5 * 10^-18) = 1.000000000000000004");
+
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18Lib.from(-1))), 367879441171442321, "exp(-1) = 0.367879441171442321");
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18Lib.from(-2))), 135335283236612691, "exp(-2) = 0.135335283236612691");
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18Lib.from(-10))), 45399929762484, "exp(-10) = 0.000045399929762484");
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18.wrap(-0.5e18))), 606530659712633424, "exp(-0.5) = 0.606530659712633424");
+        assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18.wrap(-5))), 999999999999999996, "exp(-5 * 10^-18) = 0.999999999999999996");
+    }
 }
 
 contract MockFixed18 {

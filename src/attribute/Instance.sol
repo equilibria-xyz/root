@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import { IInstance } from "./interfaces/IInstance.sol";
 import { IFactory } from "./interfaces/IFactory.sol";
-import { Attribute } from "../mutability/Attribute.sol";
+import { Attribute } from "./Attribute.sol";
 
 /// @title Instance
 /// @notice An abstract contract that is created and managed by a factory
@@ -25,7 +25,7 @@ abstract contract Instance is IInstance, Attribute {
     }
 
     /// @notice Initializes the contract setting `msg.sender` as the factory
-    function __Instance__constructor() initializer("Instance") internal {
+    function __Instance__constructor() internal initializer("Instance") {
         Instance$().factory = IFactory(msg.sender);
     }
 
