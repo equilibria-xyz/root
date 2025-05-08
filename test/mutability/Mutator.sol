@@ -3,11 +3,12 @@ pragma solidity ^0.8.20;
 
 import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 
-import { ProxyTestV1Deploy, SampleContractV2 } from "./ProxyTest.sol";
+import { MutableTestV1Deploy, SampleContractV2 } from "./MutabilityTest.sol";
 import { IOwnable } from "../../src/attribute/Ownable.sol";
-import { Proxy, ProxyAdmin } from "../../src/proxy/Proxy.sol";
+import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
+import { Mutator } from "../../src/mutability/Mutator.sol";
 
-contract ProxyAdminTest is ProxyTestV1Deploy {
+contract MutatorTest is MutableTestV1Deploy {
     address newOwner;
 
     function setUp() public override {
@@ -17,99 +18,99 @@ contract ProxyAdminTest is ProxyTestV1Deploy {
     function updatePendingOwner() internal {
         // start with a pending update
         newOwner = makeAddr("newOwner");
-        vm.prank(proxyOwner);
+        vm.prank(owner);
         vm.expectEmit();
         emit IOwnable.PendingOwnerUpdated(newOwner);
-        proxyAdmin.updatePendingOwner(newOwner);
+        mutator.updatePendingOwner(newOwner);
     }
 
     function test_oldOwnerCanUpgradeBeforeNewOwnerAccepts() public {
         updatePendingOwner();
         SampleContractV2 impl2 = new SampleContractV2(201);
-        vm.prank(proxyOwner);
+        vm.prank(owner);
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, abi.encode(770));
+        mutator.upgrade(impl2.name(), impl2, abi.encode(770));
     }
 
     function test_newOwnerMustAcceptChange() public {
         updatePendingOwner();
-        assertEq(proxyAdmin.owner(), proxyOwner, "ProxyAdmin owner unchanged until accepted");
+        assertEq(mutator.owner(), owner, "Mutator owner unchanged until accepted");
 
         vm.prank(newOwner);
         vm.expectEmit();
         emit IOwnable.OwnerUpdated(newOwner);
-        proxyAdmin.acceptOwner();
-        assertEq(proxyAdmin.owner(), newOwner, "ProxyAdmin owner changed");
+        mutator.acceptOwner();
+        assertEq(mutator.owner(), newOwner, "Mutator owner changed");
     }
 
     function test_newOwnerCanUpgrade() public {
         updatePendingOwner();
         vm.prank(newOwner);
-        proxyAdmin.acceptOwner();
-        assertEq(proxyAdmin.owner(), newOwner, "ProxyAdmin owner should be newOwner");
+        mutator.acceptOwner();
+        assertEq(mutator.owner(), newOwner, "Mutator owner should be newOwner");
 
         // old owner cannot upgrade
         SampleContractV2 impl2 = new SampleContractV2(201);
-        vm.prank(proxyOwner);
-        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, proxyOwner));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, abi.encode(771));
+        vm.prank(owner);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, owner));
+        mutator.upgrade(impl2.name(), impl2, abi.encode(771));
 
         // new owner can upgrade
         vm.prank(newOwner);
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
-        proxyAdmin.upgradeToAndCall(proxy, impl2, abi.encode(772));
+        mutator.upgrade(impl2.name(), impl2, abi.encode(772));
     }
 
     function test_ownerCanPauseAndUnpause() public {
-        vm.startPrank(proxyOwner);
+        vm.startPrank(owner);
         vm.expectEmit();
-        emit Proxy.Paused();
-        proxyAdmin.pause(proxy);
+        emit IMutableTransparent.Paused();
+        mutator.pause();
 
         vm.expectEmit();
-        emit Proxy.Unpaused();
-        proxyAdmin.unpause(proxy);
+        emit IMutableTransparent.Unpaused();
+        mutator.unpause();
         vm.stopPrank();
     }
 
     function test_pauserAccessor() public {
         address pauser = makeAddr("pauser");
-        vm.prank(proxyOwner);
-        proxyAdmin.updatePauser(pauser);
-        assertEq(proxyAdmin.pauser(), pauser, "Pauser should be set correctly");
+        vm.prank(owner);
+        mutator.updatePauser(pauser);
+        assertEq(mutator.pauser(), pauser, "Pauser should be set correctly");
     }
 
     function test_pauserCanPauseAndUnpause() public {
         address pauser = makeAddr("pauser");
-        vm.prank(proxyOwner);
-        proxyAdmin.updatePauser(pauser);
+        vm.prank(owner);
+        mutator.updatePauser(pauser);
 
         vm.startPrank(pauser);
         vm.expectEmit();
-        emit Proxy.Paused();
-        proxyAdmin.pause(proxy);
+        emit IMutableTransparent.Paused();
+        mutator.pause();
 
         vm.expectEmit();
-        emit Proxy.Unpaused();
-        proxyAdmin.unpause(proxy);
+        emit IMutableTransparent.Unpaused();
+        mutator.unpause();
         vm.stopPrank();
     }
 
     function test_revertsNonOwnerCannotSetPauser() public {
         address pauser = makeAddr("pauser");
         vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, address(this)));
-        proxyAdmin.updatePauser(pauser);
+        mutator.updatePauser(pauser);
     }
 
     function test_revertsOnUnauthorizedPause() public {
-        vm.expectRevert(abi.encodeWithSelector(ProxyAdmin.ProxyAdminNotOwnerOrPauserError.selector, address(this)));
-        proxyAdmin.pause(proxy);
+        vm.expectRevert(abi.encodeWithSelector(IMutableTransparent.PausedError.selector));
+        mutator.pause();
     }
 
     function test_revertsOnUnauthorizedUnPause() public {
-        vm.expectRevert(abi.encodeWithSelector(ProxyAdmin.ProxyAdminNotOwnerOrPauserError.selector, address(this)));
-        proxyAdmin.unpause(proxy);
+        vm.expectRevert(abi.encodeWithSelector(IMutableTransparent.UnpausedError.selector));
+        mutator.unpause();
     }
 }

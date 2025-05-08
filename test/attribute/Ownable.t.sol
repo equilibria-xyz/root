@@ -3,9 +3,9 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 
-import { Mutable } from "../../src/mutability/Mutable.sol";
+import { Implementation } from "../../src/mutability/Implementation.sol";
 import { Ownable } from "../../src/attribute/Ownable.sol";
-import { Version, VersionLib } from "../../src/attribute/types/Version.sol";
+import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
 
 contract OwnableTest is Test {
     error InitializableAlreadyInitializedError();
@@ -141,15 +141,17 @@ contract OwnableTest is Test {
     }
 }
 
-contract MockOwnable is Mutable, Ownable {
+contract MockOwnable is Implementation, Ownable {
     bool public beforeCalled;
 
-    constructor() Ownable("MockOwnable", VersionLib.from(0,0,1), VersionLib.from(0,0,0)) {}
+    function name() public pure override returns (string memory) { return "MockOwnable"; }
+    Version public immutable override version = VersionLib.from(0, 0, 1);
+    Version public immutable override target = VersionLib.from(0, 0, 0);
 
-    function __constructor(bytes memory) internal override returns (uint256 version) {
+    function __constructor(bytes memory) internal override returns (Version) {
         __Ownable__constructor();
 
-        version = VersionLib.from(0,0,1);
+        return VersionLib.from(0, 0, 1);
     }
 
     function notConstructor() external {

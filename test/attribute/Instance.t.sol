@@ -4,9 +4,9 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { Instance } from "../../src/attribute/Instance.sol";
-import { Mutable } from "../../src/mutability/Mutable.sol";
+import { Implementation } from "../../src/mutability/Implementation.sol";
 import { MockFactory } from "./Factory.t.sol";
-import { Version, VersionLib } from "src/attribute/types/Version.sol";
+import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
 
 contract InstanceTest is Test {
     error AttributeNotConstructing();
@@ -85,13 +85,15 @@ contract InstanceTest is Test {
     }
 }
 
-contract MockInstance is Instance {
-    constructor() Instance("MockInstance", VersionLib.from(0,0,1), VersionLib.from(0,0,0)) {}
+contract MockInstance is Implementation, Instance {
+    function name() public pure override returns (string memory) { return "MockInstance"; }
+    Version public immutable override version = VersionLib.from(0, 0, 1);
+    Version public immutable override target = VersionLib.from(0, 0, 0);
 
-    function __constructor(bytes memory) internal override returns (uint256 version) {
+    function __constructor(bytes memory) internal override returns (Version) {
         __Instance__constructor();
 
-        version = VersionLib.from(0,0,1);
+        return VersionLib.from(0, 0, 1);
     }
 
     function notConstructor() external {

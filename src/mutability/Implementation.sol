@@ -24,13 +24,13 @@ abstract contract Implementation is IImplementation, Contract {
     }
 
     /// @dev The name of the implementation.
-    function name() public pure virtual returns (string memory);
+    function name() external view virtual returns (string memory);
 
     /// @dev The version of the implementation.
-    function version() public pure virtual returns (Version);
+    function version() external view virtual returns (Version);
 
     /// @dev The version of the previous implementation.
-    function target() public pure virtual returns (Version);
+    function target() external view virtual returns (Version);
 
     /// @dev Called at upgrade time to initialize the contract with `data`.
     function construct(bytes memory data) external {

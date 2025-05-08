@@ -35,7 +35,7 @@ contract Mutator is Derived, Pausable {
     /// @return newMutable The new mutable
     function create(
         string calldata name,
-        Implementation implementation,
+        IImplementation implementation,
         bytes calldata data
     ) public onlyOwner returns (IMutableTransparent newMutable) {
         _mutables.add(address(newMutable = new Mutable(name, implementation, data)));

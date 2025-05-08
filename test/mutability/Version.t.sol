@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import { RootTest } from "test/RootTest.sol";
-import { Version, VersionLib } from "src/attribute/types/Version.sol";
+import { Version, VersionLib } from "src/mutability/types/Version.sol";
 
 contract VersionTest is RootTest {
     function test_equals() public pure {

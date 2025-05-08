@@ -4,9 +4,9 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { IInstance, Factory } from "../../src/attribute/Factory.sol";
-import { Mutable } from "../../src/mutability/Mutable.sol";
+import { Implementation } from "../../src/mutability/Implementation.sol";
 import { MockInstance } from "./Instance.t.sol";
-import { Version, VersionLib } from "src/attribute/types/Version.sol";
+import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
 
 contract FactoryTest is Test {
     error AttributeNotConstructing();
@@ -89,19 +89,18 @@ contract FactoryTest is Test {
     }
 }
 
-contract MockFactory is Mutable, Factory {
-    constructor(address implementation_) Factory(
-        "MockFactory",
-        implementation_,
-        VersionLib.from(0,0,1),
-        VersionLib.from(0,0,0)
-    ) {}
+contract MockFactory is Implementation, Factory {
+    function name() public pure override returns (string memory) { return "MockFactory"; }
+    Version public immutable override version = VersionLib.from(0, 0, 1);
+    Version public immutable override target = VersionLib.from(0, 0, 0);
 
-    function __constructor(bytes memory) internal override returns (uint256 version) {
+    constructor(address implementation_) Factory(implementation_) {}
+
+    function __constructor(bytes memory) internal override returns (Version) {
         __Ownable__constructor();
         __Pausable__constructor();
 
-        version = VersionLib.from(0,0,1);
+        return VersionLib.from(0, 0, 1);
     }
 
     function notConstructor() external {
@@ -111,18 +110,18 @@ contract MockFactory is Mutable, Factory {
 
     function create() external onlyOwner returns (MockInstance) {
         return MockInstance(address(_create(
-            abi.encodeCall(Mutable.construct, (""))
+            abi.encodeCall(Implementation.construct, (""))
         )));
     }
 
     function create2(bytes32 salt) external onlyOwner returns (MockInstance) {
         return MockInstance(address(_create2(
-            abi.encodeCall(Mutable.construct, ("")), salt)));
+            abi.encodeCall(Implementation.construct, ("")), salt)));
     }
 
     function computeCreate2Address(bytes32 salt) external view returns (address) {
         return _computeCreate2Address(
-            abi.encodeCall(Mutable.construct, ("")), salt);
+            abi.encodeCall(Implementation.construct, ("")), salt);
     }
 
     function onlyCallableByInstance() external view onlyInstance {}

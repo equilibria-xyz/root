@@ -2,20 +2,20 @@
 pragma solidity ^0.8.20;
 
 import {
-    ProxyTest,
-    ProxyTestV1Deploy,
-    MissingInitModifier,
+    MutableTest,
+    MutableTestV1Deploy,
     NonSampleContract,
     SampleContractV1,
     SampleContractV2,
     SampleContractWithOldInit
-} from "./ProxyTest.sol";
+} from "./MutabilityTest.sol";
 import { IOwnable, Ownable } from "../../src/attribute/Ownable.sol";
-import { Version, VersionLib } from "../../src/attribute/types/Version.sol";
-import { IProxy } from "../../src/proxy/interfaces/IProxy.sol";
-import { Proxy, ProxyAdmin } from "../../src/proxy/Proxy.sol";
+import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
+import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
+import { Mutable } from "../../src/mutability/Mutable.sol";
+import { Mutator } from "../../src/mutability/Mutator.sol";
 
-contract ProxyTestV1 is ProxyTestV1Deploy {
+contract MutableTestV1 is MutableTestV1Deploy {
     function test_creation() public view {
         assertEq(instance1.version(), VersionLib.from(1, 0, 1), "Version should be 1.0.1 after deployment");
         assertEq(instance1.immutableValue(), 101, "Immutable value should be 101");
@@ -23,8 +23,9 @@ contract ProxyTestV1 is ProxyTestV1Deploy {
     }
 
     function test_identify() public view {
-        assertEq(instance1.nameHash(), keccak256(bytes("SampleContract")), "Implementation name should be SampleContract");
+        assertEq(instance1.name(), "SampleContractV1", "Implementation name should be SampleContract");
         assertEq(instance1.version(), VersionLib.from(1, 0, 1), "Implementation version should be 1.0.1");
+        assertEq(instance1.target(), VersionLib.from(0, 0, 0), "Implementation target should be 0.0.0");
     }
 
     function test_interaction() public {
@@ -48,30 +49,30 @@ contract ProxyTestV1 is ProxyTestV1Deploy {
         instance1.setValue(106);
     }
 
-    function test_proxyAdminCannotInteract() public {
-        vm.prank(address(proxyAdmin));
-        vm.expectRevert(Proxy.ProxyDeniedAdminAccessError.selector);
+    function test_mutatorCannotInteract() public {
+        vm.prank(address(mutator));
+        vm.expectRevert(IMutableTransparent.MutableDeniedMutatorAccess.selector);
         instance1.setValue(106);
     }
 
-    function test_proxyAdminOwnerCannotInteract() public {
-        assertEq(proxyAdmin.owner(), proxyOwner, "ProxyAdmin owner should be proxyOwner");
-        vm.prank(proxyOwner);
-        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, address(proxyOwner)));
+    function test_mutatorOwnerCannotInteract() public {
+        assertEq(mutator.owner(), owner, "Mutator owner should be owner");
+        vm.prank(owner);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, address(owner)));
         instance1.setValue(106);
     }
 
-    function test_nonProxyAdminCannotUpgrade() public {
+    function test_nonMutatorCannotUpgrade() public {
         SampleContractV2 impl2 = new SampleContractV2(204);
         vm.expectRevert();
-        proxy.upgradeToAndCall(impl2, "");
+        mutator.upgrade(impl2.name(), impl2, "");
     }
 
     function test_revertsIfNameMismatch() public {
         NonSampleContract wrongContract = new NonSampleContract();
-        vm.expectRevert(Proxy.ProxyNameMismatchError.selector);
-        vm.prank(proxyOwner);
-        proxyAdmin.upgradeToAndCall(proxy, wrongContract, "");
+        vm.expectRevert(IMutableTransparent.MutableNameMismatch.selector);
+        vm.prank(owner);
+        mutator.upgrade(wrongContract.name(), wrongContract, "");
     }
 
     function test_canPause() public {
@@ -79,10 +80,10 @@ contract ProxyTestV1 is ProxyTestV1Deploy {
         instance1.setValue(154);
         assertEq(instance1.value(), 154, "Value should be 154");*/
 
-        vm.prank(proxyOwner);
+        vm.prank(owner);
         vm.expectEmit();
-        emit Proxy.Paused();
-        proxyAdmin.pause(proxy);
+        emit IMutableTransparent.Paused();
+        mutator.pause();
 
         // user can still read from contract
         /*assertEq(instance1.value(), 154, "Value should still be 154");
@@ -90,16 +91,16 @@ contract ProxyTestV1 is ProxyTestV1Deploy {
 
         // user cannot interact
         vm.prank(implementationOwner);
-        vm.expectRevert(Proxy.ProxyPausedError.selector);
+        vm.expectRevert(IMutableTransparent.PausedError.selector);
         instance1.setValue(444);
     }
 
     function test_canUnpause() public {
-        vm.startPrank(proxyOwner);
-        proxyAdmin.pause(proxy);
+        vm.startPrank(owner);
+        mutator.pause();
         vm.expectEmit();
-        emit Proxy.Unpaused();
-        proxyAdmin.unpause(proxy);
+        emit IMutableTransparent.Unpaused();
+        mutator.unpause();
         vm.stopPrank();
 
         vm.prank(implementationOwner);
@@ -108,16 +109,16 @@ contract ProxyTestV1 is ProxyTestV1Deploy {
     }
 
     function test_upgradeWhilePaused() public {
-        // change state and then pause the proxy
+        // change state and then pause the mutable
         vm.prank(implementationOwner);
         instance1.setValue(155);
-        vm.prank(proxyOwner);
-        proxyAdmin.pause(proxy);
+        vm.prank(owner);
+        mutator.pause();
 
         // upgrade while paused and then unpause
         SampleContractV2 instance2 = upgrade();
-        vm.prank(proxyOwner);
-        proxyAdmin.unpause(proxy);
+        vm.prank(owner);
+        mutator.unpause();
 
         // check state
         assertEq(instance2.version(), VersionLib.from(2, 0, 1), "Version change after upgrade while paused");
@@ -134,18 +135,19 @@ contract ProxyTestV1 is ProxyTestV1Deploy {
     }
 }
 
-contract ProxyTestV2 is ProxyTestV1Deploy {
+contract MutableTestV2 is MutableTestV1Deploy {
     SampleContractV2 instance2;
 
     function setUp() public override {
         super.setUp();
-        // upgrade the proxy
+        // upgrade the mutable
         instance2 = upgrade();
     }
 
     function test_identify() public view {
-        assertEq(instance2.nameHash(), keccak256(bytes("SampleContract")), "Implementation name should be SampleContract2");
+        assertEq(instance2.name(), "SampleContractV2", "Implementation name should be SampleContract2");
         assertEq(instance2.version(), VersionLib.from(2, 0, 1), "Implementation version should be 2");
+        assertEq(instance2.target(), VersionLib.from(1, 0, 1), "Implementation target should be 1.0.1");
     }
 
     function test_interactionPostUpgrade() public {
@@ -160,12 +162,12 @@ contract ProxyTestV2 is ProxyTestV1Deploy {
     function test_revertsOnDowngradeAttempt() public {
         SampleContractV1 impl1 = new SampleContractV1(104);
         vm.expectRevert(abi.encodeWithSelector(
-            Proxy.ProxyVersionMismatchError.selector,
+            IMutableTransparent.MutableVersionMismatch.selector,
             VersionLib.from(2, 0, 1),
             VersionLib.from(1, 0, 1)
         ));
-        vm.prank(proxyOwner);
-        proxyAdmin.upgradeToAndCall(proxy, impl1, "");
+        vm.prank(owner);
+        mutator.upgrade(impl1.name(), impl1, "");
     }
 
     function test_implementationCanRevert() public {
@@ -176,13 +178,13 @@ contract ProxyTestV2 is ProxyTestV1Deploy {
     function test_upgradeWithDifferentInitVersion() public {
         // upgrade passing the initializer a different version than the contract
         SampleContractWithOldInit impl202 = new SampleContractWithOldInit(202);
-        vm.prank(proxyOwner);
-        proxyAdmin.upgradeToAndCall(
-            proxy,
+        vm.prank(owner);
+        mutator.upgrade(
+            impl202.name(),
             impl202,
             ""
         );
-        SampleContractWithOldInit instance202 = SampleContractWithOldInit(address(proxy));
+        SampleContractWithOldInit instance202 = SampleContractWithOldInit(address(mutableContract));
 
         // confirm upgrade worked and immutable value was updated
         assertEq(instance202.version(), VersionLib.from(2, 0, 2), "Version should be 2.0.2 after upgrade");
@@ -191,26 +193,5 @@ contract ProxyTestV2 is ProxyTestV1Deploy {
         // confirm initializer did not run
         assertEq(instance202.value1(), 113, "Initializer should not have mutated value1");
         assertEq(instance202.value2(), 222, "Initializer should not have mutated value2");
-    }
-}
-
-contract MissingInitModifierProxyTest is ProxyTest {
-
-    function test_cannotDeployWithoutInitModifier() public {
-        MissingInitModifier impl = new MissingInitModifier();
-        vm.prank(proxyOwner);
-        vm.expectRevert(Proxy.ProxyNotInitializedError.selector);
-        Proxy proxyInstantiation = new Proxy(impl, proxyAdmin, "");
-        proxy = IProxy(address(proxyInstantiation));
-    }
-
-    function test_cannotUpgradeWithoutInitModifier() public {
-        SampleContractV1 impl1 = new SampleContractV1(101);
-        deploy(impl1);
-
-        MissingInitModifier impl2 = new MissingInitModifier();
-        vm.prank(proxyOwner);
-        vm.expectRevert(Proxy.ProxyNotInitializedError.selector);
-        proxyAdmin.upgradeToAndCall(proxy, impl2, "");
     }
 }
