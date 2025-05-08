@@ -10,7 +10,7 @@ import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import { IMutable, IMutableTransparent } from "./interfaces/IMutable.sol";
 import { IImplementation } from "./interfaces/IImplementation.sol";
 import { Mutator } from "./Mutator.sol";
-import { Version } from "./types/Version.sol";
+import { Version, VersionLib } from "./types/Version.sol";
 
 /// @title Mutable
 /// @notice A mostly-transparent upgradeable proxy with facilities to prevent deployment errors.
@@ -96,12 +96,12 @@ contract Mutable is IMutableTransparent, Proxy {
     /// @dev Upgrades the implementation of the proxy.
     function _upgrade(IImplementation newImplementation, bytes memory data) private {
         // validate the upgrade metadata of the new implementation
-        if (!Strings.equal(ShortStrings.toString(_name), newImplementation.name()))
-            revert MutableNameMismatch();
-        if (IImplementation(_implementation()).version() != newImplementation.target())
-            revert MutableTargetMismatch();
-        if (newImplementation.version() == Mutable$().version)
-            revert MutableVersionMismatch();
+        if (!Strings.equal(ShortStrings.toString(_name), newImplementation.name())) revert MutableNameMismatch();
+        if (
+            (_implementation() == address(0) ? VersionLib.from(0, 0, 0) : IImplementation(_implementation()).version())
+            != newImplementation.target()
+        ) revert MutableTargetMismatch();
+        if (newImplementation.version() == Mutable$().version) revert MutableVersionMismatch();
 
         // update the implementation and call its constructor
         ERC1967Utils.upgradeToAndCall(address(newImplementation),abi.encodeCall(IImplementation.construct, (data)));

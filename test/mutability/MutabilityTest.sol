@@ -101,7 +101,7 @@ contract SampleContractV1 is Implementation, Ownable {
 
         value = 112;
 
-        VersionLib.from(1, 0, 1);
+        return VersionLib.from(1, 0, 1);
     }
 
     function setValue(uint256 value_) external onlyOwner() {
