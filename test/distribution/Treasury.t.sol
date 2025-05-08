@@ -36,15 +36,6 @@ contract TreasuryTest is Test {
         assertEq(token.balanceOf(owner), 1000e18 - amount);
     }
 
-    function test_approve() public {
-        // Owner approves the user to pull tokens from the treasury
-        uint256 amount = 100e18;
-        vm.prank(owner);
-        treasury.approve(token, user, amount);
-
-        assertEq(MockERC20(Token.unwrap(token)).allowance(address(treasury), user), amount);
-    }
-
     function test_approveAndPullFromTreasury() public {
         // Owner approves and deposits tokens to the treasury
         uint256 amount = 100e18;
@@ -55,7 +46,7 @@ contract TreasuryTest is Test {
         assertEq(token.balanceOf(address(treasury)), amount);
 
         // Owner approves the user to pull tokens from the treasury
-        treasury.approve(token, user, amount);
+        treasury.credit(token, user, amount);
         vm.stopPrank();
 
         assertEq(MockERC20(Token.unwrap(token)).allowance(address(treasury), user), amount);
@@ -68,18 +59,28 @@ contract TreasuryTest is Test {
         assertEq(token.balanceOf(user), amount);
     }
 
-    function test_onlyOwnerCanApprove() public {
+    function test_onlyOwnerCanUpdateAllowance() public {
         // User attempts to approve the user to pull tokens from the treasury
         uint256 amount = 100e18;
         vm.prank(user);
         vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, user));
-        treasury.approve(token, user, amount);
+        treasury.credit(token, user, amount);
+
+        // User attempts to decrease the allowance
+        vm.prank(user);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, user));
+        treasury.debit(token, user, amount);
+
+        // User attempts to reset the allowance
+        vm.prank(user);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, user));
+        treasury.reset(token, user);
     }
 
     function test_increaseAllowance() public {
         // Owner approves the user to pull tokens from the treasury
         vm.prank(owner);
-        treasury.approve(token, user, 100e18);
+        treasury.credit(token, user, 100e18);
 
         // Owner increases the allowance by 10e18
         vm.prank(owner);
@@ -91,7 +92,7 @@ contract TreasuryTest is Test {
     function test_decreaseAllowance() public {
         // Owner approves the user to pull tokens from the treasury
         vm.prank(owner);
-        treasury.approve(token, user, 100e18);
+        treasury.credit(token, user, 100e18);
 
         // Owner decreases the allowance by 10e18
         vm.prank(owner);
@@ -110,7 +111,7 @@ contract TreasuryTest is Test {
     function test_resetAllowance() public {
         // Owner approves the user to pull tokens from the treasury
         vm.prank(owner);
-        treasury.approve(token, user, 100e18);
+        treasury.credit(token, user, 100e18);
 
         // Owner resets the allowance
         vm.prank(owner);
