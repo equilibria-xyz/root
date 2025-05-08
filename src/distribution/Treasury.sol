@@ -12,25 +12,20 @@ contract Treasury is ITreasury, Ownable {
     }
 
     /// @inheritdoc ITreasury
-    function approve(Token token, address to, uint256 amount) external onlyOwner {
-        TokenLib.approve(token, to, amount);
-    }
-
-    /// @inheritdoc ITreasury
-    function credit(Token token, address spender, uint256 creditAmount) external {
+    function credit(Token token, address spender, uint256 creditAmount) external onlyOwner {
         uint256 currentAllowance = IERC20(Token.unwrap(token)).allowance(address(this), spender);
         token.approve(spender, currentAllowance + creditAmount);
     }
 
     /// @inheritdoc ITreasury
-    function debit(Token token, address spender, uint256 debitAmount) external {
+    function debit(Token token, address spender, uint256 debitAmount) external onlyOwner {
         uint256 currentAllowance = IERC20(Token.unwrap(token)).allowance(address(this), spender);
         uint256 newAllowance = currentAllowance > debitAmount ? currentAllowance - debitAmount : 0;
         token.approve(spender, newAllowance);
     }
 
     /// @inheritdoc ITreasury
-    function reset(Token token, address spender) external {
+    function reset(Token token, address spender) external onlyOwner {
         token.approve(spender, 0);
     }
 

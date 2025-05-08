@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Token, TokenLib } from "../../token/types/Token.sol";
+import { Token } from "../../token/types/Token.sol";
 
 interface ITreasury {
     function initialize() external;
-
-    /// @notice Approves the transfer of ERC20 tokens from the escrow to a specified address.
-    /// @param token The address of the ERC20 token contract.
-    /// @param to The address to approve the tokens for.
-    /// @param amount The amount of tokens to approve.
-    function approve(Token token, address to, uint256 amount) external;
 
     /// @notice Increases the approval for `spender` by `amount`
     /// @param token Token to increase approval for
