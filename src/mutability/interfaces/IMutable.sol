@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
-import { IImplementation } from "../Implementation.sol";
+import { IImplementation } from "./IImplementation.sol";
 
 /// @dev The publicly available interface of the Mutable contract.
 interface IMutableTransparent is IERC1967 {

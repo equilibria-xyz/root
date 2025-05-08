@@ -6,4 +6,7 @@ pragma solidity ^0.8.13;
 abstract contract Contract {
     /// @dev Hook to define when the contract is constructing based on implementation.
     function _constructing() internal virtual view returns (bool);
+
+    /// @dev Hook to define the deployer of the contract.
+    function _deployer() internal virtual view returns (address);
 }

@@ -5,13 +5,14 @@ import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableS
 import { ShortStrings, ShortString } from "@openzeppelin/contracts/utils/ShortStrings.sol";
 import { IMutable, IMutableTransparent } from "./interfaces/IMutable.sol";
 import { IImplementation } from "./interfaces/IImplementation.sol";
+import { IMutator } from "./interfaces/IMutator.sol";
 import { Pausable } from "../../src/attribute/Pausable.sol";
 import { Version } from "./types/Version.sol";
 import { Derived } from "./Derived.sol";
 import { Implementation } from "./Implementation.sol";
 import { Mutable } from "./Mutable.sol";
 
-contract Mutator is Derived, Pausable {
+contract Mutator is IMutator, Derived, Pausable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     EnumerableSet.AddressSet private _mutables;
@@ -47,7 +48,7 @@ contract Mutator is Derived, Pausable {
     /// @param implementation New version of contract to be proxied
     /// @param data Calldata to invoke the instance's initializer
     function upgrade(string calldata name, IImplementation implementation, bytes memory data) public payable onlyOwner {
-        _nameToMutable[ShortStrings.toShortString(name)].upgrade(implementation, data);
+        _nameToMutable[ShortStrings.toShortString(name)].upgrade{value: msg.value}(implementation, data);
     }
 
     function _pause() internal override {

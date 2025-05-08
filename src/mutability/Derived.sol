@@ -10,5 +10,10 @@ abstract contract Derived is Contract {
     function _constructing() internal view override returns (bool) {
         return !(address(this).code.length > 0);
     }
+
+    /// @dev Hook to define the deployer of the contract.
+    function _deployer() internal view override returns (address) {
+        return msg.sender;
+    }
 }
 

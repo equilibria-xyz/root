@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { IImplementation } from "./interfaces/IImplementation.sol";
+import { IMutator } from "./interfaces/IMutator.sol";
 import { Contract } from "./Contract.sol";
 import { Version, VersionLib } from "./types/Version.sol";
 
@@ -51,6 +52,11 @@ abstract contract Implementation is IImplementation, Contract {
     /// @dev Whether the contract is initializing.
     function _constructing() internal view override returns (bool) {
         return Implementation$().constructing;
+    }
+
+    /// @dev The deployer of the contract.
+    function _deployer() internal view override returns (address) {
+        return IMutator(msg.sender).owner();
     }
 
     /// @dev Hook for inheriting contracts to construct the contract.
