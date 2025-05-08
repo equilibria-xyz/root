@@ -91,10 +91,8 @@ contract SampleContractV1 is Implementation, Ownable {
     uint256 public value;
 
     function name() public pure override returns (string memory) { return "SampleContractV1"; }
-    Version public immutable override version = VersionLib.from(1, 0, 1);
-    Version public immutable override target = VersionLib.from(0, 0, 0);
 
-    constructor(uint256 immutableValue_) {
+    constructor(uint256 immutableValue_) Implementation(VersionLib.from(1, 0, 1), VersionLib.from(0, 0, 0)) {
         immutableValue = immutableValue_;
     }
 
@@ -118,8 +116,6 @@ contract SampleContractV1 is Implementation, Ownable {
 /// @dev Second implementation of an upgradable contract
 contract SampleContractV2 is Implementation, Ownable {
     function name() public pure override returns (string memory) { return "SampleContractV2"; }
-    Version public immutable override version = VersionLib.from(2, 0, 1);
-    Version public immutable override target = VersionLib.from(1, 0, 1);
 
     uint256 public immutable immutableValue;
     uint256 public value1; // same storage location as `value` in V1
@@ -127,7 +123,7 @@ contract SampleContractV2 is Implementation, Ownable {
 
     error CustomError();
 
-    constructor(uint256 immutableValue_) {
+    constructor(uint256 immutableValue_) Implementation(VersionLib.from(2, 0, 1), VersionLib.from(1, 0, 1)) {
         immutableValue = immutableValue_;
     }
 
@@ -157,14 +153,12 @@ contract SampleContractV2 is Implementation, Ownable {
 /// @dev Initialize version is still 2.0.1, so initializer should not run
 contract SampleContractWithOldInit is Implementation, Ownable {
     function name() public pure override returns (string memory) { return "SampleContractV2"; }
-    Version public immutable override version = VersionLib.from(2, 0, 2);
-    Version public immutable override target = VersionLib.from(2, 0, 1);
 
     uint256 public immutable immutableValue;
     uint256 public value1; // no storage change between V2.0.1 and V2.0.2
     int256 public value2;
 
-    constructor(uint256 immutableValue_) {
+    constructor(uint256 immutableValue_) Implementation(VersionLib.from(2, 0, 2), VersionLib.from(2, 0, 1)) {
         immutableValue = immutableValue_;
     }
 
@@ -181,8 +175,8 @@ contract SampleContractWithOldInit is Implementation, Ownable {
 /// @dev Contract whose name does not match that expected by the mutable
 contract NonSampleContract is Implementation, Ownable {
     function name() public pure override returns (string memory) { return "NonSampleContract"; }  // intentionally does not match contract
-    Version public immutable override version = VersionLib.from(1, 1, 0);
-    Version public immutable override target = VersionLib.from(1, 0, 0);
+
+    constructor() Implementation(VersionLib.from(1, 1, 0), VersionLib.from(1, 0, 0)) {}
 
     function __constructor(bytes memory) internal override returns (Version) {
         __Ownable__constructor();

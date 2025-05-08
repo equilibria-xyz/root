@@ -145,8 +145,8 @@ contract MockOwnable is Implementation, Ownable {
     bool public beforeCalled;
 
     function name() public pure override returns (string memory) { return "MockOwnable"; }
-    Version public immutable override version = VersionLib.from(0, 0, 1);
-    Version public immutable override target = VersionLib.from(0, 0, 0);
+
+    constructor() Implementation(VersionLib.from(0, 0, 1), VersionLib.from(0, 0, 0)) {}
 
     function __constructor(bytes memory) internal override returns (Version) {
         __Ownable__constructor();

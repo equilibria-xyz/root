@@ -87,8 +87,8 @@ contract InstanceTest is Test {
 
 contract MockInstance is Implementation, Instance {
     function name() public pure override returns (string memory) { return "MockInstance"; }
-    Version public immutable override version = VersionLib.from(0, 0, 1);
-    Version public immutable override target = VersionLib.from(0, 0, 0);
+
+    constructor() Implementation(VersionLib.from(0, 0, 1), VersionLib.from(0, 0, 0)) {}
 
     function __constructor(bytes memory) internal override returns (Version) {
         __Instance__constructor();

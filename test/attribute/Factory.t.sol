@@ -91,10 +91,11 @@ contract FactoryTest is Test {
 
 contract MockFactory is Implementation, Factory {
     function name() public pure override returns (string memory) { return "MockFactory"; }
-    Version public immutable override version = VersionLib.from(0, 0, 1);
-    Version public immutable override target = VersionLib.from(0, 0, 0);
 
-    constructor(address implementation_) Factory(implementation_) {}
+    constructor(address implementation_)
+        Implementation(VersionLib.from(0, 0, 1), VersionLib.from(0, 0, 0))
+        Factory(implementation_)
+    {}
 
     function __constructor(bytes memory) internal override returns (Version) {
         __Ownable__constructor();

@@ -23,21 +23,27 @@ abstract contract Implementation is IImplementation, Contract {
         }
     }
 
-    /// @dev The name of the implementation.
-    function name() external view virtual returns (string memory);
-
     /// @dev The version of the implementation.
-    function version() external view virtual returns (Version);
+    Version public immutable version;
 
     /// @dev The version of the previous implementation.
-    function target() external view virtual returns (Version);
+    Version public immutable target;
+
+    /// @dev Constructor for the implementation.
+    constructor(Version version_, Version target_) {
+        version = version_;
+        target = target_;
+    }
+
+    /// @dev The name of the implementation.
+    function name() external view virtual returns (string memory);
 
     /// @dev Called at upgrade time to initialize the contract with `data`.
     function construct(bytes memory data) external {
         Implementation$().constructing = true;
 
         Version constructorVersion = __constructor(data);
-        if (constructorVersion != this.version()) revert ImplementationConstructorVersionMismatch();
+        if (constructorVersion != version) revert ImplementationConstructorVersionMismatch();
 
         Implementation$().constructing = false;
     }
