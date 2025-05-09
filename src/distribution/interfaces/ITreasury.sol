@@ -4,8 +4,6 @@ pragma solidity ^0.8.13;
 import { Token } from "../../token/types/Token.sol";
 
 interface ITreasury {
-    function initialize() external;
-
     /// @notice Increases the approval for `spender` by `amount`
     /// @param token Token to increase approval for
     /// @param spender Address to increase approval for
