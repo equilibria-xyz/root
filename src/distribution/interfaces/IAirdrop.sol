@@ -11,8 +11,16 @@ interface IAirdrop {
     /// @dev This event is triggered when adding a new distribution
     event DistributionAdded(Token18 indexed token, bytes32 indexed merkleRoot);
 
+    // sig: 0xe4ca4c0b
+    /// @custom:error Airdrop is already claimed
     error AirdropAlreadyClaimed();
+
+    // sig: 0x8738f09b
+    /// @custom:error Invalid merkle proof provided
     error AirdropInvalidProof();
+
+    // sig: 0xac4d0508
+    /// @custom:error Distribution with same merkle root already exists
     error AirdropDistributionAlreadyExists();
 
     /// @notice Returns true if the index has been marked claimed.
