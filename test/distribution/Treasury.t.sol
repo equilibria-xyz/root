@@ -17,7 +17,6 @@ contract TreasuryTest is Test {
         user = makeAddr("user");
         token = Token.wrap(address(new MockERC20("MockToken", "MTK")));
         treasury = new Treasury();
-        treasury.construct("");
 
         // Mint tokens to the owner
         MockERC20(Token.unwrap(token)).mint(owner, 1000e18);

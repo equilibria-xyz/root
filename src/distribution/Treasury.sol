@@ -5,12 +5,11 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Token, TokenLib } from "../token/types/Token.sol";
 import { Ownable } from "../attribute/Ownable.sol";
 import { ITreasury } from "./interfaces/ITreasury.sol";
-import { Mutable } from "../mutability/Mutable.sol";
+import { Immutable } from "../mutability/Immutable.sol";
 
-contract Treasury is ITreasury, Mutable, Ownable {
-    function __constructor(bytes memory) internal override returns (uint256 version) {
+contract Treasury is ITreasury, Immutable, Ownable {
+    constructor() {
         __Ownable__constructor();
-        version = 1;
     }
 
     /// @inheritdoc ITreasury
@@ -33,6 +32,6 @@ contract Treasury is ITreasury, Mutable, Ownable {
 
     /// @inheritdoc ITreasury
     function pull(Token token, address benefactor, uint256 amount) external {
-        TokenLib.pull(token, benefactor, amount);
+        token.pull(benefactor, amount);
     }
 }
