@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Initializable } from "./Initializable.sol";
 import { IOwnable } from "./interfaces/IOwnable.sol";
+import { Attribute } from "./Attribute.sol";
 
 /// @title Ownable
 /// @notice Library to manage the ownership lifecycle of upgradeable contracts.
 /// @dev This contract has been extended from the Open Zeppelin library to include an
 ///      unstructured storage pattern so that it can be safely mixed in with upgradeable
 ///      contracts without affecting their storage patterns through inheritance.
-abstract contract Ownable is IOwnable, Initializable {
+abstract contract Ownable is IOwnable, Attribute {
     /// @custom:storage-location erc7201:equilibria.root.Ownable
     struct OwnableStorage {
         address owner;
@@ -38,8 +38,7 @@ abstract contract Ownable is IOwnable, Initializable {
     }
 
     /// @notice Initializes the contract setting `msg.sender` as the initial owner
-    function __Ownable__initialize() internal onlyInitializer {
-        if (owner() != address(0)) revert OwnableAlreadyInitializedError();
+    function __Ownable__constructor() internal initializer("Ownable") {
         _updateOwner(msg.sender);
     }
 
@@ -62,7 +61,6 @@ abstract contract Ownable is IOwnable, Initializable {
         _updateOwner(pendingOwner());
         updatePendingOwner(address(0));
     }
-
 
     /// @dev Hook for inheriting contracts to perform logic before accepting ownership
     function _beforeAcceptOwner() internal virtual {}

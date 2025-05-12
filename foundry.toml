@@ -5,6 +5,7 @@ libs = ["lib"]
 
 remappings = [
     '@openzeppelin/contracts=lib/openzeppelin-contracts/contracts',
+    '@prb/math=lib/prb-math/src'
 ]
 
 [fuzz]
