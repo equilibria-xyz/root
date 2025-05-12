@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Test } from "forge-std/Test.sol";
+import { MutatorTest } from "../MutatorTest.sol";
 
 import { Instance } from "../../src/attribute/Instance.sol";
 import { Implementation } from "../../src/mutability/Implementation.sol";
 import { MockFactory } from "./Factory.t.sol";
 import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
 
-contract InstanceTest is Test {
-    error AttributeNotConstructing();
+contract InstanceTest is MutatorTest {
     error InstanceNotFactoryError(address factory);
     error InstanceNotOwnerError(address owner);
-    error PausableNotPauserError(address pauser);
     error InstancePausedError();
 
     MockInstance public instance;
