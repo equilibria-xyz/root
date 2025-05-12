@@ -22,11 +22,12 @@ contract OwnerWithdrawableTest is Test {
         addr1 = makeAddr("addr1");
 
         // Deploy the withdrawable contract and initialize it
-        vm.startPrank(owner);
+        vm.prank(owner);
         ownerWithdrawable = new MockOwnerWithdrawable();
         ownerWithdrawable.construct("");
 
         // Deploy and mint ERC20 tokens
+        vm.startPrank(owner);
         erc20 = new MockERC20("TestToken", "TT");
         erc20.mint(owner, 1000);
         vm.stopPrank();

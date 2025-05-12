@@ -35,7 +35,7 @@ contract OwnableTest is Test {
         assertEq(ownable.owner(), address(0));
 
         // Expect the OwnerUpdated event with the owner address.
-        vm.prank(owner);
+        // vm.prank(owner);
         vm.expectEmit(true, false, false, true);
         emit OwnerUpdated(owner);
         ownable.construct("");
@@ -46,7 +46,6 @@ contract OwnableTest is Test {
 
     function test_setPendingOwnerUpdatesPendingOwner() public {
         // Initialize first.
-        vm.prank(owner);
         ownable.construct("");
 
         // Expect the PendingOwnerUpdated event.
@@ -61,7 +60,6 @@ contract OwnableTest is Test {
     }
 
     function test_setPendingOwnerRevertsIfNotOwner() public {
-        vm.prank(owner);
         ownable.construct("");
 
         // Using a non-owner account should revert.
@@ -71,7 +69,6 @@ contract OwnableTest is Test {
     }
 
     function test_setPendingOwnerResetToZero() public {
-        vm.prank(owner);
         ownable.construct("");
 
         // Reset pending owner by setting it to address(0)
@@ -86,7 +83,6 @@ contract OwnableTest is Test {
     }
 
     function test_acceptOwnerTransfersOwnership() public {
-        vm.prank(owner);
         ownable.construct("");
         vm.prank(owner);
         ownable.updatePendingOwner(user);
@@ -103,7 +99,6 @@ contract OwnableTest is Test {
     }
 
     function test_acceptOwnerCallsBeforeAcceptOwnerHook() public {
-        vm.prank(owner);
         ownable.construct("");
         vm.prank(owner);
         ownable.updatePendingOwner(user);
@@ -124,7 +119,6 @@ contract OwnableTest is Test {
     }
 
     function test_acceptOwnerRevertsIfNotPendingOwner() public {
-        vm.prank(owner);
         ownable.construct("");
         vm.prank(owner);
         ownable.updatePendingOwner(user);

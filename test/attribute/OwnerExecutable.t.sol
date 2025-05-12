@@ -23,8 +23,8 @@ contract OwnerExecutableTest is Test {
 
         vm.startPrank(owner);
         ownableExecutable = new MockOwnerExecutable();
-        ownableExecutable.construct("");
         vm.stopPrank();
+        ownableExecutable.construct("");
     }
 
     function test_staticCallReturnsOwner() public {

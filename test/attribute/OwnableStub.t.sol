@@ -22,8 +22,8 @@ contract OwnableStubTest is Test {
         vm.startPrank(owner);
         ownableStub = new OwnableStub();
         ownableContract = new MockOwnable();
-        ownableContract.construct("");
         vm.stopPrank();
+        ownableContract.construct("");
     }
 
     function test_acceptOwnerWorksWhenStubIsPendingOwner() public {

@@ -2,9 +2,8 @@
 pragma solidity ^0.8.13;
 
 import { RootTest } from "./RootTest.sol";
-import { Contract } from "../src/mutability/Contract.sol";
-import { Derived, Mutator } from "../src/mutability/Mutator.sol";
-import { Implementation } from "../src/mutability/Implementation.sol";
+import { Mutator } from "../src/mutability/Mutator.sol";
+import { IImplementation, IMutableTransparent, IMutator, IOwnable, IPausable } from "../src/mutability/interfaces/IMutator.sol";
 
 contract MutatorTest is RootTest, Mutator {
     /// @dev Used to monkey-patch the owner of the Mutable to be the test contract itself

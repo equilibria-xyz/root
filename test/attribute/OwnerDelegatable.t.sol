@@ -30,8 +30,11 @@ contract OwnerDelegatableTest is Test {
         // Deploy contracts from the owner address
         vm.startPrank(owner);
         ownerDelegatable = new MockOwnerDelegatable();
+        vm.stopPrank();
+
         ownerDelegatable.construct("");
 
+        vm.startPrank(owner);
         mockToken = new MockERC20Votes();
         mockToken.mint(owner, 1000 ether);
         vm.stopPrank();
