@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { Test } from "forge-std/Test.sol";
+import { MutatorTest } from "../MutatorTest.sol";
 
 import { IInstance, Factory } from "../../src/attribute/Factory.sol";
 import { Implementation } from "../../src/mutability/Implementation.sol";
 import { MockInstance } from "./Instance.t.sol";
 import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
 
-contract FactoryTest is Test {
-    error AttributeNotConstructing();
+contract FactoryTest is MutatorTest {
     error FactoryNotInstanceError();
 
     event InstanceRegistered(address indexed instance);
@@ -65,6 +64,7 @@ contract FactoryTest is Test {
     }
 
     function test_computeCreate2Address() public {
+        vm.prank(address(this));
         factory.construct("");
 
         // Verify create2 address computation matches actual deployment
