@@ -14,6 +14,7 @@ interface IMutableTransparent is IERC1967 {
 
     // sig: 0xeced32bc
     /// @dev An external call was made to the contract while the mutable was paused.
+    /// @custom:error Version has already been initialized
     error PausedError();
 
     // sig: 0xcd38faf6
@@ -23,6 +24,7 @@ interface IMutableTransparent is IERC1967 {
     // sig: 0xa16b8f00
     /// @dev Mutator functionality was called by a non-mutator.
     error MutableDeniedMutatorAccess();
+
     // sig: 0xfa83a711
     /// @dev The target version of the implementation does not match the previous implementation version.
     error MutableTargetMismatch();
