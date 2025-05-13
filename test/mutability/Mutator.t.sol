@@ -25,6 +25,13 @@ contract MutatorTest is MutableTestV1Deploy {
         mutator.updatePendingOwner(newOwner);
     }
 
+    function test_mutablesList() public view {
+        // ensure mutables list contains SampleContractV1 deployment
+        address[] memory mutables = mutator.mutables();
+        assertEq(mutables.length, 1, "Mutables list should contain one mutable");
+        assertEq(mutables[0], address(mutableContract), "Mutables list should contain the mutable");
+    }
+
     function test_oldOwnerCanUpgradeBeforeNewOwnerAccepts() public {
         updatePendingOwner();
         SampleContractV2 impl2 = new SampleContractV2(201);

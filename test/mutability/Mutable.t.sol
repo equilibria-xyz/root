@@ -48,6 +48,14 @@ contract MutableTestV1 is MutableTestV1Deploy {
         assertEq(value2, 222, "Value2 should have set the initializer using initParams");
     }
 
+    function test_targetMismatch() public {
+        // cannot upgrade from SampleContractV1 to SampleContractV1 because the target does not match
+        SampleContractV1 instance2 = new SampleContractV1(102);
+        vm.prank(owner);
+        vm.expectRevert(IMutableTransparent.MutableTargetMismatch.selector);
+        mutator.upgrade(instance2, abi.encode(888));
+    }
+
     function test_notValidMutable() public {
         NonSampleContract nonSampleContract = new NonSampleContract();
         vm.prank(owner);
@@ -74,18 +82,10 @@ contract MutableTestV1 is MutableTestV1Deploy {
     }
 
     function test_canPause() public {
-        /*vm.prank(implementationOwner);
-        instance1.setValue(154);
-        assertEq(instance1.value(), 154, "Value should be 154");*/
-
         vm.prank(owner);
         vm.expectEmit();
         emit IMutableTransparent.Paused();
         mutator.pause();
-
-        // user can still read from contract
-        /*assertEq(instance1.value(), 154, "Value should still be 154");
-        assertEq(instance1.getValue(), 154, "Getter function should still return 154");*/
 
         // user cannot interact
         vm.prank(implementationOwner);
