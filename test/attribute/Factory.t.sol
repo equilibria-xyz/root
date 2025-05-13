@@ -7,6 +7,7 @@ import { IInstance, Factory } from "../../src/attribute/Factory.sol";
 import { Implementation } from "../../src/mutability/Implementation.sol";
 import { MockInstance } from "./Instance.t.sol";
 import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract FactoryTest is Test {
     error AttributeNotConstructing();
@@ -14,10 +15,12 @@ contract FactoryTest is Test {
 
     event InstanceRegistered(address indexed instance);
 
+    MockMutable public mockMutable;
     MockFactory public factory;
 
     function setUp() public {
         MockInstance instance = new MockInstance();
+        mockMutable = new MockMutable(address(this));
         factory = new MockFactory(address(instance));
     }
 
@@ -26,11 +29,13 @@ contract FactoryTest is Test {
         vm.expectRevert(abi.encodeWithSelector(AttributeNotConstructing.selector));
         factory.notConstructor();
 
+        vm.prank(address(mockMutable));
         factory.construct("");
         assertEq(factory.owner(), address(this));
     }
 
     function test_create() public {
+        vm.prank(address(mockMutable));
         factory.construct("");
 
         IInstance instance;
@@ -50,6 +55,7 @@ contract FactoryTest is Test {
     }
 
     function test_create2() public {
+        vm.prank(address(mockMutable));
         factory.construct("");
 
         IInstance instance;
@@ -65,6 +71,7 @@ contract FactoryTest is Test {
     }
 
     function test_computeCreate2Address() public {
+        vm.prank(address(mockMutable));
         factory.construct("");
 
         // Verify create2 address computation matches actual deployment
@@ -77,6 +84,7 @@ contract FactoryTest is Test {
     }
 
     function test_onlyCallableByInstance() public {
+        vm.prank(address(mockMutable));
         factory.construct("");
 
         // Test instance-only function access control

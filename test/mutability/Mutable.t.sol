@@ -195,3 +195,11 @@ contract MutableTestV2 is MutableTestV1Deploy {
         assertEq(instance202.value2(), 222, "Initializer should not have mutated value2");
     }
 }
+
+contract MockMutable {
+    address public immutable owner;
+
+    constructor(address owner_) {
+        owner = owner_;
+    }
+}

@@ -7,6 +7,7 @@ import { Instance } from "../../src/attribute/Instance.sol";
 import { Implementation } from "../../src/mutability/Implementation.sol";
 import { MockFactory } from "./Factory.t.sol";
 import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract InstanceTest is Test {
     error AttributeNotConstructing();
@@ -16,11 +17,16 @@ contract InstanceTest is Test {
     error InstancePausedError();
 
     MockInstance public instance;
+    MockMutable public mockMutable;
     MockFactory public factory;
 
     function setUp() public {
+        mockMutable = new MockMutable(address(this));
         instance = new MockInstance();
+        mockMutable = new MockMutable(address(this));
         factory = new MockFactory(address(instance));
+
+        vm.prank(address(mockMutable));
         factory.construct("");
     }
 

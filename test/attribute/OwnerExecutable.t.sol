@@ -7,12 +7,14 @@ import { OwnerExecutable, Ownable } from "../../src/attribute/OwnerExecutable.so
 import { Token18 } from "../../src/token/types/Token18.sol";
 import { MockOwnable } from "./Ownable.t.sol";
 import { MockToken18 } from "../token/Token18.t.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract OwnerExecutableTest is Test {
     error OwnableNotOwnerError(address owner);
 
     MockOwnerExecutable public ownableExecutable;
     MockToken18 public mockToken;
+    MockMutable public mockMutable;
 
     address public owner;
     address public user;
@@ -23,8 +25,11 @@ contract OwnerExecutableTest is Test {
 
         vm.startPrank(owner);
         ownableExecutable = new MockOwnerExecutable();
-        ownableExecutable.construct("");
+        mockMutable = new MockMutable(owner);
         vm.stopPrank();
+
+        vm.prank(address(mockMutable));
+        ownableExecutable.construct("");
     }
 
     function test_staticCallReturnsOwner() public {

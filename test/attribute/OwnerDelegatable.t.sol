@@ -9,6 +9,7 @@ import { Test } from "forge-std/Test.sol";
 
 import { OwnerDelegatable, Ownable } from "../../src/attribute/OwnerDelegatable.sol";
 import { MockOwnable } from "./Ownable.t.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract OwnerDelegatableTest is Test {
     event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
@@ -17,6 +18,7 @@ contract OwnerDelegatableTest is Test {
 
     MockOwnerDelegatable public ownerDelegatable;
     MockERC20Votes public mockToken;
+    MockMutable public mockMutable;
 
     address public owner;
     address public user;
@@ -30,11 +32,14 @@ contract OwnerDelegatableTest is Test {
         // Deploy contracts from the owner address
         vm.startPrank(owner);
         ownerDelegatable = new MockOwnerDelegatable();
-        ownerDelegatable.construct("");
+        mockMutable = new MockMutable(owner);
 
         mockToken = new MockERC20Votes();
         mockToken.mint(owner, 1000 ether);
         vm.stopPrank();
+
+        vm.prank(address(mockMutable));
+        ownerDelegatable.construct("");
     }
 
     function test_successfulDelegation() public {

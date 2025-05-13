@@ -6,6 +6,7 @@ import { Test } from "forge-std/Test.sol";
 import { Implementation } from "../../src/mutability/Implementation.sol";
 import { Ownable } from "../../src/attribute/Ownable.sol";
 import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract OwnableTest is Test {
     error InitializableAlreadyInitializedError();
@@ -16,6 +17,7 @@ contract OwnableTest is Test {
     event PendingOwnerUpdated(address indexed newPendingOwner);
 
     MockOwnable public ownable;
+    MockMutable public mockMutable;
     address public owner;
     address public user;
     address public unrelated;
@@ -28,6 +30,7 @@ contract OwnableTest is Test {
         // Deploy the contract with the owner as msg.sender.
         vm.prank(owner);
         ownable = new MockOwnable();
+        mockMutable = new MockMutable(owner);
     }
 
     function test_initializeInitializesOwner() public {
@@ -35,7 +38,7 @@ contract OwnableTest is Test {
         assertEq(ownable.owner(), address(0));
 
         // Expect the OwnerUpdated event with the owner address.
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         vm.expectEmit(true, false, false, true);
         emit OwnerUpdated(owner);
         ownable.construct("");
@@ -46,11 +49,11 @@ contract OwnableTest is Test {
 
     function test_setPendingOwnerUpdatesPendingOwner() public {
         // Initialize first.
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         ownable.construct("");
 
         // Expect the PendingOwnerUpdated event.
-        vm.prank(owner);
+        vm.prank(address(owner));
         vm.expectEmit(true, false, false, true);
         emit PendingOwnerUpdated(user);
         ownable.updatePendingOwner(user);
@@ -61,7 +64,7 @@ contract OwnableTest is Test {
     }
 
     function test_setPendingOwnerRevertsIfNotOwner() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         ownable.construct("");
 
         // Using a non-owner account should revert.
@@ -71,11 +74,11 @@ contract OwnableTest is Test {
     }
 
     function test_setPendingOwnerResetToZero() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         ownable.construct("");
 
         // Reset pending owner by setting it to address(0)
-        vm.prank(owner);
+        vm.prank(address(owner));
         vm.expectEmit(true, false, false, true);
         emit PendingOwnerUpdated(address(0));
         ownable.updatePendingOwner(address(0));
@@ -86,9 +89,9 @@ contract OwnableTest is Test {
     }
 
     function test_acceptOwnerTransfersOwnership() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         ownable.construct("");
-        vm.prank(owner);
+        vm.prank(address(owner));
         ownable.updatePendingOwner(user);
 
         // Expect the OwnerUpdated event when ownership is accepted.
@@ -103,9 +106,9 @@ contract OwnableTest is Test {
     }
 
     function test_acceptOwnerCallsBeforeAcceptOwnerHook() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         ownable.construct("");
-        vm.prank(owner);
+        vm.prank(address(owner));
         ownable.updatePendingOwner(user);
 
         // Initially, beforeCalled should be false.
@@ -124,13 +127,13 @@ contract OwnableTest is Test {
     }
 
     function test_acceptOwnerRevertsIfNotPendingOwner() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         ownable.construct("");
-        vm.prank(owner);
+        vm.prank(address(owner));
         ownable.updatePendingOwner(user);
 
         // When the caller is not the pending owner (using owner account), it should revert.
-        vm.prank(owner);
+        vm.prank(address(owner));
         vm.expectRevert(abi.encodeWithSelector(OwnableNotPendingOwnerError.selector, owner));
         ownable.acceptOwner();
 
