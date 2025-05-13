@@ -6,6 +6,7 @@ import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 import { MutableTestV1Deploy, SampleContractV2 } from "./MutabilityTest.sol";
 import { IOwnable } from "../../src/attribute/Ownable.sol";
 import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
+import { IPausable } from "../../src/attribute/interfaces/IPausable.sol";
 import { Mutator } from "../../src/mutability/Mutator.sol";
 
 contract MutatorTest is MutableTestV1Deploy {
@@ -30,7 +31,7 @@ contract MutatorTest is MutableTestV1Deploy {
         vm.prank(owner);
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
-        mutator.upgrade(impl2.name(), impl2, abi.encode(770));
+        mutator.upgrade(impl2, abi.encode(770));
     }
 
     function test_newOwnerMustAcceptChange() public {
@@ -54,13 +55,13 @@ contract MutatorTest is MutableTestV1Deploy {
         SampleContractV2 impl2 = new SampleContractV2(201);
         vm.prank(owner);
         vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, owner));
-        mutator.upgrade(impl2.name(), impl2, abi.encode(771));
+        mutator.upgrade(impl2, abi.encode(771));
 
         // new owner can upgrade
         vm.prank(newOwner);
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
-        mutator.upgrade(impl2.name(), impl2, abi.encode(772));
+        mutator.upgrade(impl2, abi.encode(772));
     }
 
     function test_ownerCanPauseAndUnpause() public {
@@ -105,12 +106,12 @@ contract MutatorTest is MutableTestV1Deploy {
     }
 
     function test_revertsOnUnauthorizedPause() public {
-        vm.expectRevert(abi.encodeWithSelector(IMutableTransparent.PausedError.selector));
+        vm.expectRevert(abi.encodeWithSelector(IPausable.PausableNotPauserError.selector, address(this)));
         mutator.pause();
     }
 
     function test_revertsOnUnauthorizedUnPause() public {
-        vm.expectRevert(abi.encodeWithSelector(IMutableTransparent.UnpausedError.selector));
+        vm.expectRevert(abi.encodeWithSelector(IPausable.PausableNotPauserError.selector, address(this)));
         mutator.unpause();
     }
 }

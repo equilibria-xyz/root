@@ -11,6 +11,7 @@ import { IMutable, IMutableTransparent } from "./interfaces/IMutable.sol";
 import { IImplementation } from "./interfaces/IImplementation.sol";
 import { Mutator } from "./Mutator.sol";
 import { Version, VersionLib } from "./types/Version.sol";
+import { console } from "../../src/utils/console.sol";
 
 /// @title Mutable
 /// @notice A mostly-transparent upgradeable proxy with facilities to prevent deployment errors.
@@ -23,7 +24,6 @@ import { Version, VersionLib } from "./types/Version.sol";
 contract Mutable is IMutableTransparent, Proxy {
     address private immutable _mutator;
     address private immutable _pauseTarget;
-    ShortString private immutable _name;
 
     /// @custom:storage-location erc7201:equilibria.root.Proxy
     struct MutableStorage {
@@ -42,13 +42,11 @@ contract Mutable is IMutableTransparent, Proxy {
     }
 
     /// @dev Initializes an upgradeable proxy managed by an instance of a {ProxyAdmin}.
-    /// @param name The name of the contract.
     /// @param implementation The first version of the contract to be proxied.
     /// @param data Contract-specific parameters to be passed to the initializer.
-    constructor(string memory name, IImplementation implementation, bytes memory data) payable {
+    constructor(IImplementation implementation, bytes memory data) payable {
         _mutator = msg.sender;
         _pauseTarget = address(new MutablePauseTarget());
-        _name = ShortStrings.toShortString(name);
 
         _upgrade(implementation, data);
 
@@ -57,13 +55,13 @@ contract Mutable is IMutableTransparent, Proxy {
 
     /// @dev Only allows calls when the proxy is paused.
     modifier whenPaused {
-        if (Mutable$().paused != address(0)) revert PausedError();
+        if (Mutable$().paused == address(0)) revert UnpausedError();
         _;
     }
 
     /// @dev Only allows calls when the proxy is unpaused.
     modifier whenUnpaused {
-        if (Mutable$().paused == address(0)) revert UnpausedError();
+        if (Mutable$().paused != address(0)) revert PausedError();
         _;
     }
 
@@ -96,7 +94,6 @@ contract Mutable is IMutableTransparent, Proxy {
     /// @dev Upgrades the implementation of the proxy.
     function _upgrade(IImplementation newImplementation, bytes memory data) private {
         // validate the upgrade metadata of the new implementation
-        if (!Strings.equal(ShortStrings.toString(_name), newImplementation.name())) revert MutableNameMismatch();
         if (
             (_implementation() == address(0) ? VersionLib.from(0, 0, 0) : IImplementation(_implementation()).version())
             != newImplementation.target()
@@ -112,8 +109,8 @@ contract Mutable is IMutableTransparent, Proxy {
 
     /// @dev Pauses the proxy by setting the implementation to the MutablePauseTarget.
     function _pause() private whenUnpaused {
-        ERC1967Utils.upgradeToAndCall(_pauseTarget, "");
         Mutable$().paused = _implementation();
+        ERC1967Utils.upgradeToAndCall(_pauseTarget, "");
         emit Paused();
     }
 

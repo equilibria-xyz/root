@@ -11,6 +11,7 @@ import { Version } from "./types/Version.sol";
 import { Derived } from "./Derived.sol";
 import { Implementation } from "./Implementation.sol";
 import { Mutable } from "./Mutable.sol";
+import { console } from "../../src/utils/console.sol";
 
 contract Mutator is IMutator, Derived, Pausable {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -30,25 +31,24 @@ contract Mutator is IMutator, Derived, Pausable {
 
     /// @notice Creates a new mutable with the given name
     /// @dev Initializes the mutable with the given implementation and data
-    /// @param name The name of the mutable
     /// @param implementation The implementation of the mutable
     /// @param data The calldata to invoke the instance's initializer
     /// @return newMutable The new mutable
     function create(
-        string calldata name,
         IImplementation implementation,
         bytes calldata data
     ) public onlyOwner returns (IMutableTransparent newMutable) {
-        _mutables.add(address(newMutable = new Mutable(name, implementation, data)));
-        _nameToMutable[ShortStrings.toShortString(name)] = IMutable(address(newMutable));
+        _mutables.add(address(newMutable = new Mutable(implementation, data)));
+        _nameToMutable[ShortStrings.toShortString(implementation.name())] = IMutable(address(newMutable));
     }
 
     /// @notice Upgrades the implementation of a proxy and optionally calls its initializer
-    /// @param name Target to upgrade
     /// @param implementation New version of contract to be proxied
     /// @param data Calldata to invoke the instance's initializer
-    function upgrade(string calldata name, IImplementation implementation, bytes memory data) public payable onlyOwner {
-        _nameToMutable[ShortStrings.toShortString(name)].upgrade{value: msg.value}(implementation, data);
+    function upgrade(IImplementation implementation, bytes memory data) public payable onlyOwner {
+        ShortString name = ShortStrings.toShortString(implementation.name());
+        if (_nameToMutable[name] == IMutable(address(0))) revert MutatorInvalidMutable();
+        _nameToMutable[name].upgrade{value: msg.value}(implementation, data);
     }
 
     function _pause() internal override {

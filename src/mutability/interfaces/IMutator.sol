@@ -8,7 +8,10 @@ import { IMutableTransparent } from "./IMutable.sol";
 
 /// @dev The publicly available interface of the Mutator contract.
 interface IMutator is IOwnable, IPausable {
+    // sig: TODO
+    error MutatorInvalidMutable();
+
     function mutables() external view returns (address[] memory);
-    function create(string calldata name, IImplementation implementation, bytes calldata data) external returns (IMutableTransparent newMutable);
-    function upgrade(string calldata name, IImplementation implementation, bytes memory data) external payable;
+    function create(IImplementation implementation, bytes calldata data) external returns (IMutableTransparent newMutable);
+    function upgrade( IImplementation implementation, bytes memory data) external payable;
 }

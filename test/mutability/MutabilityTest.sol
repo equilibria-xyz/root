@@ -33,7 +33,7 @@ abstract contract MutableTest is RootTest {
 
     function deploy(IImplementation impl) public virtual {
         vm.prank(owner);
-        IMutableTransparent newMutable = mutator.create(impl.name(), impl, "");
+        IMutableTransparent newMutable = mutator.create(impl, "");
         mutableContract = IMutable(address(newMutable));
     }
 }
@@ -54,7 +54,7 @@ abstract contract MutableTestV1Deploy is MutableTest {
         // deploy the implementation and create the mutable
         vm.startPrank(owner);
         impl1 = new SampleContractV1(101);
-        IMutableTransparent newMutable = mutator.create(impl1.name(), impl1, "");
+        IMutableTransparent newMutable = mutator.create(impl1, "");
         mutableContract = IMutable(address(newMutable));
         vm.stopPrank();
 
@@ -77,7 +77,6 @@ abstract contract MutableTestV1Deploy is MutableTest {
         vm.expectEmit();
         emit IERC1967.Upgraded(address(impl2));
         mutator.upgrade(
-            impl2.name(),
             impl2,
             abi.encode(uint256(222))
         );
@@ -90,7 +89,7 @@ contract SampleContractV1 is Implementation, Ownable {
     uint256 public immutable immutableValue;
     uint256 public value;
 
-    function name() public pure override returns (string memory) { return "SampleContractV1"; }
+    function name() public pure override returns (string memory) { return "SampleContract"; }
 
     constructor(uint256 immutableValue_) Implementation(VersionLib.from(1, 0, 1), VersionLib.from(0, 0, 0)) {
         immutableValue = immutableValue_;
@@ -115,7 +114,7 @@ contract SampleContractV1 is Implementation, Ownable {
 
 /// @dev Second implementation of an upgradable contract
 contract SampleContractV2 is Implementation, Ownable {
-    function name() public pure override returns (string memory) { return "SampleContractV2"; }
+    function name() public pure override returns (string memory) { return "SampleContract"; }
 
     uint256 public immutable immutableValue;
     uint256 public value1; // same storage location as `value` in V1
@@ -152,7 +151,7 @@ contract SampleContractV2 is Implementation, Ownable {
 
 /// @dev Initialize version is still 2.0.1, so initializer should not run
 contract SampleContractWithOldInit is Implementation, Ownable {
-    function name() public pure override returns (string memory) { return "SampleContractV2"; }
+    function name() public pure override returns (string memory) { return "SampleContract"; }
 
     uint256 public immutable immutableValue;
     uint256 public value1; // no storage change between V2.0.1 and V2.0.2

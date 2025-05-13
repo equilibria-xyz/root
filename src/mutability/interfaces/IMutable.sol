@@ -23,11 +23,6 @@ interface IMutableTransparent is IERC1967 {
     // sig: 0xa16b8f00
     /// @dev Mutator functionality was called by a non-mutator.
     error MutableDeniedMutatorAccess();
-
-    // sig: 0x9abc8a35
-    /// @dev The name of the implementation does not match the name of the proxy.
-    error MutableNameMismatch();
-
     // sig: 0xfa83a711
     /// @dev The target version of the implementation does not match the previous implementation version.
     error MutableTargetMismatch();
