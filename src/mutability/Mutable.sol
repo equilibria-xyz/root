@@ -1,17 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.20;
 
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
-import { ShortStrings, ShortString } from "@openzeppelin/contracts/utils/ShortStrings.sol";
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
 import { IMutable, IMutableTransparent } from "./interfaces/IMutable.sol";
 import { IImplementation } from "./interfaces/IImplementation.sol";
-import { Mutator } from "./Mutator.sol";
 import { Version, VersionLib } from "./types/Version.sol";
-import { console } from "../../src/utils/console.sol";
 
 /// @title Mutable
 /// @notice A mostly-transparent upgradeable proxy with facilities to prevent deployment errors.
@@ -32,6 +27,7 @@ contract Mutable is IMutableTransparent, Proxy {
     }
 
     /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
     bytes32 private constant MutableStorageLocation = 0xb906736fa3fc696e6c19a856e0f8737e348fda5c7f33a32db99da3b92f19a800;
 
     /// @dev The erc7201 storage of the mix-in

@@ -7,11 +7,8 @@ import { IMutable, IMutableTransparent } from "./interfaces/IMutable.sol";
 import { IImplementation } from "./interfaces/IImplementation.sol";
 import { IMutator } from "./interfaces/IMutator.sol";
 import { Pausable } from "../../src/attribute/Pausable.sol";
-import { Version } from "./types/Version.sol";
 import { Derived } from "./Derived.sol";
-import { Implementation } from "./Implementation.sol";
 import { Mutable } from "./Mutable.sol";
-import { console } from "../../src/utils/console.sol";
 
 contract Mutator is IMutator, Derived, Pausable {
     using EnumerableSet for EnumerableSet.AddressSet;

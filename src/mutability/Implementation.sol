@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import { IImplementation } from "./interfaces/IImplementation.sol";
 import { IMutator } from "./interfaces/IMutator.sol";
 import { Contract } from "./Contract.sol";
-import { Version, VersionLib } from "./types/Version.sol";
+import { Version } from "./types/Version.sol";
 
 /// @title Implementation
 /// @notice Implementation of Contract for upgradeable contracts.
@@ -15,6 +15,7 @@ abstract contract Implementation is IImplementation, Contract {
     }
 
     /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
     bytes32 private constant ImplementationStorageLocation = 0x3c57b102c533ff058ebe9a7c745178ce4174563553bb3edde7874874c532c200;
 
     /// @dev The erc7201 storage of the mix-in
