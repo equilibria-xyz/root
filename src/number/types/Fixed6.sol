@@ -232,11 +232,12 @@ library Fixed6Lib {
     ///                0 for zero
     ///                1 for positive
     /// @param a Signed fixed-decimal
-    /// @return Sign of the signed fixed-decimal
-    function sign(Fixed6 a) internal pure returns (int256) {
-        if (Fixed6.unwrap(a) > 0) return 1;
-        if (Fixed6.unwrap(a) < 0) return -1;
-        return 0;
+    /// @return result Sign of the signed fixed-decimal
+    function sign(Fixed6 a) internal pure returns (int256 result) {
+        assembly ("memory-safe") {
+            result := sgt(a, 0)
+            result := sub(result, slt(a, 0))
+        }
     }
 
     /// @notice Returns the absolute value of the signed fixed-decimal
