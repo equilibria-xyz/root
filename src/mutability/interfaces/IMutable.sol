@@ -25,9 +25,9 @@ interface IMutableTransparent is IERC1967 {
     /// @dev Mutator functionality was called by a non-mutator.
     error MutableDeniedMutatorAccess();
 
-    // sig: 0xfa83a711
-    /// @dev The target version of the implementation does not match the previous implementation version.
-    error MutableTargetMismatch();
+    // sig: 0x172536eb
+    /// @dev The predecessor version of the implementation does not match the previous implementation version.
+    error MutablePredecessorMismatch();
 
     // sig: 0x9c01e6c8
     /// @dev The version of the implementation is already initialized.

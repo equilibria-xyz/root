@@ -92,8 +92,8 @@ contract Mutable is IMutableTransparent, Proxy {
         // validate the upgrade metadata of the new implementation
         if (
             (_implementation() == address(0) ? VersionLib.from(0, 0, 0) : IImplementation(_implementation()).version())
-            != newImplementation.target()
-        ) revert MutableTargetMismatch();
+            != newImplementation.predecessor()
+        ) revert MutablePredecessorMismatch();
         if (newImplementation.version() == Mutable$().version) revert MutableVersionMismatch();
 
         // update the implementation and call its constructor

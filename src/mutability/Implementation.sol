@@ -25,16 +25,16 @@ abstract contract Implementation is IImplementation, Contract {
         }
     }
 
-    /// @dev The version of the implementation.
+    /// @dev The version of this implementation.
     Version public immutable version;
 
-    /// @dev The version of the previous implementation.
-    Version public immutable target;
+    /// @dev The version of the predecessor implementation.
+    Version public immutable predecessor;
 
     /// @dev Constructor for the implementation.
-    constructor(Version version_, Version target_) {
+    constructor(Version version_, Version predecessor_) {
         version = version_;
-        target = target_;
+        predecessor = predecessor_;
     }
 
     /// @dev The name of the implementation.

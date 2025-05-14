@@ -10,6 +10,6 @@ interface IImplementation {
 
     function name() external view returns (string memory);
     function version() external view returns (Version);
-    function target() external view returns (Version);
+    function predecessor() external view returns (Version);
     function construct(bytes memory data) external;
 }

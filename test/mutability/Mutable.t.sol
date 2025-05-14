@@ -29,7 +29,7 @@ contract MutableTestV1 is MutableTestV1Deploy {
     function test_identify() public view {
         assertEq(instance1.name(), "SampleContract", "Implementation name should be SampleContract");
         assertEq(instance1.version(), VersionLib.from(1, 0, 1), "Implementation version should be 1.0.1");
-        assertEq(instance1.target(), VersionLib.from(0, 0, 0), "Implementation target should be 0.0.0");
+        assertEq(instance1.predecessor(), VersionLib.from(0, 0, 0), "Implementation predecessor should be 0.0.0");
     }
 
     function test_interaction() public {
@@ -48,11 +48,11 @@ contract MutableTestV1 is MutableTestV1Deploy {
         assertEq(value2, 222, "Value2 should have set the initializer using initParams");
     }
 
-    function test_targetMismatch() public {
-        // cannot upgrade from SampleContractV1 to SampleContractV1 because the target does not match
+    function test_predecessorMismatch() public {
+        // cannot upgrade from SampleContractV1 to SampleContractV1 because the predecessor does not match
         SampleContractV1 instance2 = new SampleContractV1(102);
         vm.prank(owner);
-        vm.expectRevert(IMutableTransparent.MutableTargetMismatch.selector);
+        vm.expectRevert(IMutableTransparent.MutablePredecessorMismatch.selector);
         mutator.upgrade(instance2, abi.encode(888));
     }
 
@@ -133,7 +133,7 @@ contract MutableTestV2 is MutableTestV1Deploy {
     function test_identify() public view {
         assertEq(instance2.name(), "SampleContract", "Implementation name should be SampleContract2");
         assertEq(instance2.version(), VersionLib.from(2, 0, 1), "Implementation version should be 2");
-        assertEq(instance2.target(), VersionLib.from(1, 0, 1), "Implementation target should be 1.0.1");
+        assertEq(instance2.predecessor(), VersionLib.from(1, 0, 1), "Implementation predecessor should be 1.0.1");
     }
 
     function test_interactionPostUpgrade() public {
