@@ -69,11 +69,6 @@ contract TreasuryTest is Test {
         vm.prank(user);
         vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, user));
         treasury.debit(token, user, amount);
-
-        // User attempts to reset the allowance
-        vm.prank(user);
-        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, user));
-        treasury.reset(token, user);
     }
 
     function test_increaseAllowance() public {
@@ -104,18 +99,6 @@ contract TreasuryTest is Test {
         treasury.debit(token, user, 100e18);
 
         // Ensure the allowance is set to 0
-        assertEq(MockERC20(Token.unwrap(token)).allowance(address(treasury), user), 0);
-    }
-
-    function test_resetAllowance() public {
-        // Owner approves the user to pull tokens from the treasury
-        vm.prank(owner);
-        treasury.credit(token, user, 100e18);
-
-        // Owner resets the allowance
-        vm.prank(owner);
-        treasury.reset(token, user);
-
         assertEq(MockERC20(Token.unwrap(token)).allowance(address(treasury), user), 0);
     }
 }
