@@ -227,7 +227,7 @@ library Fixed18Lib {
     /// @param a Signed fixed-decimal
     /// @return result Sign of the signed fixed-decimal
     function sign(Fixed18 a) internal pure returns (int256 result) {
-        assembly {
+        assembly ("memory-safe") {
             result := sgt(a, 0)
             result := sub(result, slt(a, 0))
         }
