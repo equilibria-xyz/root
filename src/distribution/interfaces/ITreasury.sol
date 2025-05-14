@@ -16,11 +16,6 @@ interface ITreasury {
     /// @param debitAmount Amount to decrease approval by
     function debit(Token token, address spender, uint256 debitAmount) external;
 
-    /// @notice Sets the approval for `spender` to zero
-    /// @param token Token to reset approval for
-    /// @param spender Address to reset approval for
-    function reset(Token token, address spender) external;
-
     /// @notice Pulls ERC20 tokens from the benefactor to the treasury
     /// @param token The address of the ERC20 token contract.
     /// @param benefactor The address to pull the tokens from.

@@ -26,11 +26,6 @@ contract Treasury is ITreasury, Immutable, Ownable {
     }
 
     /// @inheritdoc ITreasury
-    function reset(Token token, address spender) external onlyOwner {
-        token.approve(spender, 0);
-    }
-
-    /// @inheritdoc ITreasury
     function pull(Token token, address benefactor, uint256 amount) external {
         token.pull(benefactor, amount);
     }
