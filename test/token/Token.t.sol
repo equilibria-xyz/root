@@ -39,6 +39,17 @@ contract TokenUnfundedUserTest is TokenUTest {
         assertEq(erc20.allowance(address(this), user), type(uint256).max, "approve all");
     }
 
+    function test_allowance() public {
+        token.approve(user, 100e18);
+        assertEq(token.allowance(user), 100e18, "allowance of spender to spend caller's tokens");
+    }
+
+    function test_allowanceOf() public {
+        token.approve(user, 100e18);
+        address account = address(this);
+        assertEq(token.allowance(account, user), 100e18, "allowance of spender to spend account's tokens");
+    }
+
     function test_nameAndSymbol() public view {
         assertEq(token.name(), "Test MiNted Token", "name");
         assertEq(token.symbol(), "TMNT", "symbol");
