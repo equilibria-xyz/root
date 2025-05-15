@@ -5,9 +5,9 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Token, TokenLib } from "../token/types/Token.sol";
 import { Ownable } from "../attribute/Ownable.sol";
 import { ITreasury } from "./interfaces/ITreasury.sol";
-import { Immutable } from "../mutability/Immutable.sol";
+import { Derived } from "../mutability/Derived.sol";
 
-contract Treasury is ITreasury, Immutable, Ownable {
+contract Treasury is ITreasury, Derived, Ownable {
     constructor() {
         __Ownable__constructor();
     }

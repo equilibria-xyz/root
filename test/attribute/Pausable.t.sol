@@ -3,8 +3,10 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 
-import { Mutable } from "../../src/mutability/Mutable.sol";
+import { Implementation } from "../../src/mutability/Implementation.sol";
 import { Pausable } from "../../src/attribute/Pausable.sol";
+import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract PausableTest is Test {
     event PauserUpdated(address indexed newPauser);
@@ -20,6 +22,7 @@ contract PausableTest is Test {
     address public newPauser;
     address public user;
     MockPausable public pausable;
+    MockMutable public mockMutable;
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -28,6 +31,7 @@ contract PausableTest is Test {
 
         vm.prank(owner);
         pausable = new MockPausable();
+        mockMutable = new MockMutable(owner);
     }
 
     function test_constructor() public {
@@ -37,7 +41,7 @@ contract PausableTest is Test {
 
         vm.expectEmit(true, true, false, true);
         emit PauserUpdated(owner);
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         pausable.construct("");
 
         assertEq(pausable.pauser(), owner);
@@ -45,7 +49,7 @@ contract PausableTest is Test {
     }
 
     function test_revertWhenReinitializing() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         pausable.construct("");
 
         vm.expectRevert();
@@ -54,7 +58,7 @@ contract PausableTest is Test {
     }
 
     function test_updatePauser() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         pausable.construct("");
 
         vm.expectEmit(true, true, false, true);
@@ -66,7 +70,7 @@ contract PausableTest is Test {
     }
 
     function test_onlyOwnerCanUpdatePauser() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         pausable.construct("");
 
         vm.expectRevert(abi.encodeWithSelector(OwnableNotOwnerError.selector, user));
@@ -82,7 +86,7 @@ contract PausableTest is Test {
     }
 
     function test_pauserCanPause() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         pausable.construct("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
@@ -91,7 +95,7 @@ contract PausableTest is Test {
     }
 
     function test_ownerCanPause() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         pausable.construct("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
@@ -100,7 +104,7 @@ contract PausableTest is Test {
     }
 
     function test_otherUserCannotPause() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         pausable.construct("");
 
         vm.expectRevert(abi.encodeWithSelector(PausableNotPauserError.selector, user));
@@ -109,7 +113,7 @@ contract PausableTest is Test {
     }
 
     function test_pauserCanUnpause() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         pausable.construct("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
@@ -118,7 +122,7 @@ contract PausableTest is Test {
     }
 
     function test_ownerCanUnpause() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         pausable.construct("");
         vm.prank(owner);
         pausable.updatePauser(newPauser);
@@ -127,7 +131,7 @@ contract PausableTest is Test {
     }
 
     function test_otherUserCannotUnpause() public {
-        vm.prank(owner);
+        vm.prank(address(mockMutable));
         pausable.construct("");
         vm.prank(owner);
         pausable.pause();
@@ -176,14 +180,18 @@ contract PausableTest is Test {
     }
 }
 
-contract MockPausable is Mutable, Pausable {
+contract MockPausable is Implementation, Pausable {
     uint256 public counter;
 
-    function __constructor(bytes memory) internal override returns (uint256 version) {
+    function name() public pure override returns (string memory) { return "MockPausable"; }
+
+    constructor() Implementation(VersionLib.from(0, 0, 1), VersionLib.from(0, 0, 0)) {}
+
+    function __constructor(bytes memory) internal override returns (Version) {
         __Ownable__constructor();
         __Pausable__constructor();
 
-        version = 1;
+        return VersionLib.from(0, 0, 1);
     }
 
     function notConstructor() external {

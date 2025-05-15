@@ -7,6 +7,7 @@ import { Fixed6, Fixed6Lib } from "../src/number/types/Fixed6.sol";
 import { Fixed18, Fixed18Lib } from "../src/number/types/Fixed18.sol";
 import { UFixed6, UFixed6Lib } from "../src/number/types/UFixed6.sol";
 import { UFixed18, UFixed18Lib } from "../src/number/types/UFixed18.sol";
+import { Version } from "../src/mutability/types/Version.sol";
 
 /// @dev Facilities useful for testing library types, particularly fixed numeric types
 contract RootTest is Test {
@@ -40,5 +41,13 @@ contract RootTest is Test {
 
     function assertUFixed18Eq(UFixed18 a, UFixed18 b, string memory message) public pure {
         assertEq(UFixed18.unwrap(a), UFixed18.unwrap(b), message);
+    }
+
+    function assertEq(Version a, Version b) public pure {
+        assertEq(Version.unwrap(a), Version.unwrap(b));
+    }
+
+    function assertEq(Version a, Version b, string memory message) public pure {
+        assertEq(Version.unwrap(a), Version.unwrap(b), message);
     }
 }

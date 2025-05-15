@@ -30,8 +30,9 @@ abstract contract Pausable is IPausable, Attribute, Ownable {
     }
 
     /// @notice Initializes the contract setting `msg.sender` as the initial pauser
+    // solhint-disable-next-line func-name-mixedcase
     function __Pausable__constructor() internal initializer("Pausable") {
-        _updatePauser(msg.sender);
+        _updatePauser(_deployer());
     }
 
     /// @notice Updates the new pauser

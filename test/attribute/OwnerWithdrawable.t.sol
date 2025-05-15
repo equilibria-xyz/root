@@ -7,12 +7,14 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { OwnerWithdrawable, Ownable } from "../../src/attribute/OwnerWithdrawable.sol";
 import { Token18 } from "../../src/token/types/Token18.sol";
 import { MockOwnable } from "./Ownable.t.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract OwnerWithdrawableTest is Test {
     error OwnableNotOwnerError(address owner);
 
     MockOwnerWithdrawable public ownerWithdrawable;
     MockERC20 public erc20;
+    MockMutable public mockMutable;
 
     address public owner;
     address public addr1;
@@ -24,12 +26,15 @@ contract OwnerWithdrawableTest is Test {
         // Deploy the withdrawable contract and initialize it
         vm.startPrank(owner);
         ownerWithdrawable = new MockOwnerWithdrawable();
-        ownerWithdrawable.construct("");
+        mockMutable = new MockMutable(owner);
 
         // Deploy and mint ERC20 tokens
         erc20 = new MockERC20("TestToken", "TT");
         erc20.mint(owner, 1000);
         vm.stopPrank();
+
+        vm.prank(address(mockMutable));
+        ownerWithdrawable.construct("");
     }
 
     function test_ownerCanWithdrawERC20() public {

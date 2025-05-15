@@ -5,12 +5,14 @@ import { Test } from "forge-std/Test.sol";
 
 import { OwnableStub } from "../../src/attribute/OwnableStub.sol";
 import { MockOwnable } from "./Ownable.t.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract OwnableStubTest is Test {
     error OwnableNotPendingOwnerError(address pendingOwner);
 
     OwnableStub public ownableStub;
     MockOwnable public ownableContract;
+    MockMutable public mockMutable;
 
     address public owner;
     address public user;
@@ -22,8 +24,11 @@ contract OwnableStubTest is Test {
         vm.startPrank(owner);
         ownableStub = new OwnableStub();
         ownableContract = new MockOwnable();
-        ownableContract.construct("");
+        mockMutable = new MockMutable(owner);
         vm.stopPrank();
+
+        vm.prank(address(mockMutable));
+        ownableContract.construct("");
     }
 
     function test_acceptOwnerWorksWhenStubIsPendingOwner() public {
