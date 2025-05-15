@@ -41,6 +41,17 @@ contract Token6UnfundedUserTest is Token6Test {
         assertEq(erc20.allowance(address(this), user), type(uint256).max, "approve all");
     }
 
+    function test_allowance() public {
+        token.approve(user, UFixed6Lib.from(100));
+        assertUFixed6Eq(token.allowance(user), UFixed6Lib.from(100), "allowance of spender to self");
+    }
+
+    function test_allowanceOf() public {
+        token.approve(user, UFixed6Lib.from(100));
+        address account = address(this);
+        assertUFixed6Eq(token.allowance(account, user), UFixed6Lib.from(100), "allowance of spender to account");
+    }
+
     function test_nameAndSymbol() public view {
         assertEq(token.name(), "Test MiNted Token", "name");
         assertEq(token.symbol(), "TMNT", "symbol");

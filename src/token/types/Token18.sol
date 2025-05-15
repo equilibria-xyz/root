@@ -128,6 +128,23 @@ library Token18Lib {
         return UFixed18.wrap(IERC20(Token18.unwrap(self)).balanceOf(account));
     }
 
+    /// @notice Returns the `self` token allowance of caller to `spender`
+    /// @param self Token to check for
+    /// @param spender Spender to check
+    /// @return Allowance of the caller
+    function allowance(Token18 self, address spender) internal view returns (UFixed18) {
+        return UFixed18.wrap(IERC20(Token18.unwrap(self)).allowance(address(this), spender));
+    }
+
+    /// @notice Returns the `self` token allowance of `account` to `spender`
+    /// @param self Token to check for
+    /// @param account Account to check
+    /// @param spender Spender to check
+    /// @return Allowance of the account
+    function allowance(Token18 self, address account, address spender) internal view returns (UFixed18) {
+        return UFixed18.wrap(IERC20(Token18.unwrap(self)).allowance(account, spender));
+    }
+
     /// @notice Returns the `self` total supply
     /// @param self Token to check for
     /// @return The total supply of the token
