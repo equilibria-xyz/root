@@ -48,7 +48,7 @@ contract TreasuryTest is Test {
         treasury.credit(token, user, amount);
         vm.stopPrank();
 
-        assertEq(MockERC20(Token.unwrap(token)).allowance(address(treasury), user), amount);
+        assertEq(token.allowance(address(treasury), user), amount);
 
         // User pulls tokens from the treasury
         vm.prank(user);
@@ -80,7 +80,7 @@ contract TreasuryTest is Test {
         vm.prank(owner);
         treasury.credit(token, user, 10e18);
 
-        assertEq(MockERC20(Token.unwrap(token)).allowance(address(treasury), user), 110e18);
+        assertEq(token.allowance(address(treasury), user), 110e18);
     }
 
     function test_decreaseAllowance() public {
@@ -92,13 +92,13 @@ contract TreasuryTest is Test {
         vm.prank(owner);
         treasury.debit(token, user, 10e18);
 
-        assertEq(MockERC20(Token.unwrap(token)).allowance(address(treasury), user), 90e18);
+        assertEq(token.allowance(address(treasury), user), 90e18);
 
         // Owner decreases the allowance by more than the current allowance
         vm.prank(owner);
         treasury.debit(token, user, 100e18);
 
         // Ensure the allowance is set to 0
-        assertEq(MockERC20(Token.unwrap(token)).allowance(address(treasury), user), 0);
+        assertEq(token.allowance(address(treasury), user), 0);
     }
 }
