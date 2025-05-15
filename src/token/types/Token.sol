@@ -126,6 +126,23 @@ library TokenLib {
         return IERC20(Token.unwrap(self)).balanceOf(account);
     }
 
+    /// @notice Returns the `self` token allowance of `spender` to spend caller's tokens
+    /// @param self Token to check for
+    /// @param spender Spender to check
+    /// @return Allowance of the spender
+    function allowance(Token self, address spender) internal view returns (uint256) {
+        return IERC20(Token.unwrap(self)).allowance(address(this), spender);
+    }
+
+    /// @notice Returns the `self` token allowance of `spender` to spend `account`'s tokens
+    /// @param self Token to check for
+    /// @param account Account to check
+    /// @param spender Spender to check
+    /// @return Allowance of the spender
+    function allowance(Token self, address account, address spender) internal view returns (uint256) {
+        return IERC20(Token.unwrap(self)).allowance(account, spender);
+    }
+
     /// @notice Returns the `self` total supply
     /// @param self Token to check for
     /// @return The total supply of the token
