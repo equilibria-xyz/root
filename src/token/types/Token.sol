@@ -5,59 +5,57 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import { UFixed18 } from "../../number/types/UFixed18.sol";
-import { Fixed18, Fixed18Lib } from "../../number/types/Fixed18.sol";
+/// @dev Token
+type Token is address;
+using TokenLib for Token global;
 
-/// @dev Token18
-type Token18 is address;
-using Token18Lib for Token18 global;
-
-/// @title Token18Lib
-/// @notice Library to manage 18-decimal ERC20s that is compliant with the fixed-decimal types.
-/// @dev Maintains significant gas savings over other Token implementations since no conversion take place
-library Token18Lib {
+/// @title TokenLib
+/// @notice Library to manage ERC20s that is compliant with the fixed-decimal types.
+library TokenLib {
     using SafeERC20 for IERC20;
 
-    Token18 public constant ZERO = Token18.wrap(address(0));
+    Token public constant ZERO = Token.wrap(address(0));
 
     /// @notice Returns whether a token is the zero address
     /// @param self Token to check for
     /// @return Whether the token is the zero address
-    function isZero(Token18 self) internal pure returns (bool) {
-        return Token18.unwrap(self) == Token18.unwrap(ZERO);
+    function isZero(Token self) internal pure returns (bool) {
+        return Token.unwrap(self) == Token.unwrap(ZERO);
     }
 
     /// @notice Returns whether the two tokens are equal
     /// @param a First token to compare
     /// @param b Second token to compare
     /// @return Whether the two tokens are equal
-    function eq(Token18 a, Token18 b) internal pure returns (bool) {
-        return Token18.unwrap(a) == Token18.unwrap(b);
+    function eq(Token a, Token b) internal pure returns (bool) {
+        return Token.unwrap(a) ==  Token.unwrap(b);
     }
 
     /// @notice Approves `grantee` to spend infinite tokens from the caller
     /// @dev Uses `approve` rather than `safeApprove` since the race condition
     ///      in safeApprove does not apply when going to an infinite approval
     /// @param self Token to grant approval
+    /// @param self Token to grant approval
     /// @param grantee Address to allow spending
-    function approve(Token18 self, address grantee) internal {
-        IERC20(Token18.unwrap(self)).approve(grantee, type(uint256).max);
+    function approve(Token self, address grantee) internal {
+        IERC20(Token.unwrap(self)).approve(grantee, type(uint256).max);
     }
 
     /// @notice Approves `grantee` to spend `amount` tokens from the caller
     /// @dev There are race conditions to be aware of when using this function
     ///      with values other than 0.
     /// @param self Token to grant approval
+    /// @param self Token to grant approval
     /// @param grantee Address to allow spending
     /// @param amount Amount of tokens to approve to spend
-    function approve(Token18 self, address grantee, UFixed18 amount) internal {
-        IERC20(Token18.unwrap(self)).approve(grantee, UFixed18.unwrap(amount));
+    function approve(Token self, address grantee, uint256 amount) internal {
+        IERC20(Token.unwrap(self)).approve(grantee, amount);
     }
 
     /// @notice Transfers all held tokens from the caller to the `recipient`
     /// @param self Token to transfer
     /// @param recipient Address to receive the tokens
-    function push(Token18 self, address recipient) internal {
+    function push(Token self, address recipient) internal {
         push(self, recipient, balanceOf(self, address(this)));
     }
 
@@ -65,8 +63,8 @@ library Token18Lib {
     /// @param self Token to transfer
     /// @param recipient Address to transfer tokens to
     /// @param amount Amount of tokens to transfer
-    function push(Token18 self, address recipient, UFixed18 amount) internal {
-        IERC20(Token18.unwrap(self)).safeTransfer(recipient, UFixed18.unwrap(amount));
+    function push(Token self, address recipient, uint256 amount) internal {
+        IERC20(Token.unwrap(self)).safeTransfer(recipient, amount);
     }
 
     /// @notice Transfers `amount` tokens from the `benefactor` to the caller
@@ -74,8 +72,8 @@ library Token18Lib {
     /// @param self Token to transfer
     /// @param benefactor Address to transfer tokens from
     /// @param amount Amount of tokens to transfer
-    function pull(Token18 self, address benefactor, UFixed18 amount) internal {
-        IERC20(Token18.unwrap(self)).safeTransferFrom(benefactor, address(this), UFixed18.unwrap(amount));
+    function pull(Token self, address benefactor, uint256 amount) internal {
+        IERC20(Token.unwrap(self)).safeTransferFrom(benefactor, address(this), amount);
     }
 
     /// @notice Transfers `amount` tokens from the `benefactor` to `recipient`
@@ -84,8 +82,8 @@ library Token18Lib {
     /// @param benefactor Address to transfer tokens from
     /// @param recipient Address to transfer tokens to
     /// @param amount Amount of tokens to transfer
-    function pullTo(Token18 self, address benefactor, address recipient, UFixed18 amount) internal {
-        IERC20(Token18.unwrap(self)).safeTransferFrom(benefactor, recipient, UFixed18.unwrap(amount));
+    function pullTo(Token self, address benefactor, address recipient, uint256 amount) internal {
+        IERC20(Token.unwrap(self)).safeTransferFrom(benefactor, recipient, amount);
     }
 
     /// @notice Processes a token transfer based on the sign of the amount
@@ -94,61 +92,61 @@ library Token18Lib {
     /// @param self Token to transfer
     /// @param account Address to pull from or push to
     /// @param amount Signed amount of tokens to transfer
-    function update(Token18 self, address account, Fixed18 amount) internal {
-        if (amount < Fixed18Lib.ZERO) push(self, account, amount.abs());
-        else if (amount > Fixed18Lib.ZERO) pull(self, account, amount.abs());
+    function update(Token self, address account, int256 amount) internal {
+        if (amount < 0) push(self, account, uint256(-amount));
+        else if (amount > 0) pull(self, account, uint256(amount));
     }
 
     /// @notice Returns the name of the token
     /// @param self Token to check for
     /// @return Token name
-    function name(Token18 self) internal view returns (string memory) {
-        return IERC20Metadata(Token18.unwrap(self)).name();
+    function name(Token self) internal view returns (string memory) {
+        return IERC20Metadata(Token.unwrap(self)).name();
     }
 
     /// @notice Returns the symbol of the token
     /// @param self Token to check for
     /// @return Token symbol
-    function symbol(Token18 self) internal view returns (string memory) {
-        return IERC20Metadata(Token18.unwrap(self)).symbol();
+    function symbol(Token self) internal view returns (string memory) {
+        return IERC20Metadata(Token.unwrap(self)).symbol();
     }
 
     /// @notice Returns the `self` token balance of the caller
     /// @param self Token to check for
     /// @return Token balance of the caller
-    function balanceOf(Token18 self) internal view returns (UFixed18) {
-        return balanceOf(self, address(this));
+    function balanceOf(Token self) internal view returns (uint256) {
+        return IERC20(Token.unwrap(self)).balanceOf(address(this));
     }
 
     /// @notice Returns the `self` token balance of `account`
     /// @param self Token to check for
     /// @param account Account to check
     /// @return Token balance of the account
-    function balanceOf(Token18 self, address account) internal view returns (UFixed18) {
-        return UFixed18.wrap(IERC20(Token18.unwrap(self)).balanceOf(account));
+    function balanceOf(Token self, address account) internal view returns (uint256) {
+        return IERC20(Token.unwrap(self)).balanceOf(account);
     }
 
-    /// @notice Returns the `self` token allowance of caller to `spender`
+    /// @notice Returns the `self` token allowance of `spender` to spend caller's tokens
     /// @param self Token to check for
     /// @param spender Spender to check
-    /// @return Allowance of the caller
-    function allowance(Token18 self, address spender) internal view returns (UFixed18) {
-        return UFixed18.wrap(IERC20(Token18.unwrap(self)).allowance(address(this), spender));
+    /// @return Allowance of the spender
+    function allowance(Token self, address spender) internal view returns (uint256) {
+        return IERC20(Token.unwrap(self)).allowance(address(this), spender);
     }
 
-    /// @notice Returns the `self` token allowance of `account` to `spender`
+    /// @notice Returns the `self` token allowance of `spender` to spend `account`'s tokens
     /// @param self Token to check for
     /// @param account Account to check
     /// @param spender Spender to check
-    /// @return Allowance of the account
-    function allowance(Token18 self, address account, address spender) internal view returns (UFixed18) {
-        return UFixed18.wrap(IERC20(Token18.unwrap(self)).allowance(account, spender));
+    /// @return Allowance of the spender
+    function allowance(Token self, address account, address spender) internal view returns (uint256) {
+        return IERC20(Token.unwrap(self)).allowance(account, spender);
     }
 
     /// @notice Returns the `self` total supply
     /// @param self Token to check for
     /// @return The total supply of the token
-    function totalSupply(Token18 self) internal view returns (UFixed18) {
-        return UFixed18.wrap(IERC20(Token18.unwrap(self)).totalSupply());
+    function totalSupply(Token self) internal view returns (uint256) {
+        return IERC20(Token.unwrap(self)).totalSupply();
     }
 }

@@ -13,6 +13,7 @@ abstract contract Attribute is IAttribute, Contract {
     }
 
     /// @dev The erc7201 storage location of the mix-in
+    // solhint-disable-next-line const-name-snakecase
     bytes32 private constant AttributeStorageLocation = 0x429797e2de2710eed6bc286312ff2c2286e5c3e13ca14d38e450727a132bfa00;
 
     /// @dev The erc7201 storage of the mix-in

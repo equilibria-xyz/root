@@ -1,38 +1,36 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import { Token18, Token18Lib } from "../../src/token/types/Token18.sol";
-import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
-import { Fixed18Lib } from "../../src/number/types/Fixed18.sol";
+import { Token, TokenLib } from "../../src/token/types/Token.sol";
 import { TokenTest } from "./TokenTest.sol";
 
-abstract contract Token18Test is TokenTest {
-    Token18 public token;
-    MockToken18 public m = new MockToken18();
+abstract contract TokenUTest is TokenTest {
+    Token public token;
+    MockToken public m = new MockToken();
 }
 
-contract Token18UnfundedUserTest is Token18Test {
+contract TokenUnfundedUserTest is TokenUTest {
     function setUp() public {
-        super.setUpToken(18, 0);
-        token = Token18.wrap(address(erc20));
+        super.setUpToken(6, 0);
+        token = Token.wrap(address(erc20));
     }
 
     function test_zero() public view {
-        Token18 zeroToken = Token18.wrap(address(0));
+        Token zeroToken = Token.wrap(address(0));
         assertEq(zeroToken.isZero(), true, "zero address");
 
-        Token18 nonZeroToken = Token18.wrap(address(1));
+        Token nonZeroToken = Token.wrap(address(1));
         assertEq(nonZeroToken.isZero(), false, "bogus token address not zero");
         assertEq(token.isZero(), false, "wrapped token address not zero");
     }
 
     function test_eq() public view {
-        assertEq(token.eq(Token18.wrap(address(erc20))), true, "address equality");
-        assertEq(token.eq(Token18.wrap(address(2))), false, "address inequality");
+        assertEq(token.eq(Token.wrap(address(erc20))), true, "address equality");
+        assertEq(token.eq(Token.wrap(address(2))), false, "address inequality");
     }
 
     function test_approveSome() public {
-        token.approve(user, UFixed18Lib.from(100));
+        token.approve(user, 100e18);
         assertEq(erc20.allowance(address(this), user), 100e18, "approve some");
     }
 
@@ -42,34 +40,34 @@ contract Token18UnfundedUserTest is Token18Test {
     }
 
     function test_allowance() public {
-        token.approve(user, UFixed18Lib.from(100));
-        assertUFixed18Eq(token.allowance(user), UFixed18Lib.from(100), "allowance of spender to self");
+        token.approve(user, 100e18);
+        assertEq(token.allowance(user), 100e18, "allowance of spender to spend caller's tokens");
     }
 
     function test_allowanceOf() public {
-        token.approve(user, UFixed18Lib.from(100));
+        token.approve(user, 100e18);
         address account = address(this);
-        assertUFixed18Eq(token.allowance(account, user), UFixed18Lib.from(100), "allowance of spender to account");
+        assertEq(token.allowance(account, user), 100e18, "allowance of spender to spend account's tokens");
     }
 
-    function test_nameAndSymbol() public view{
+    function test_nameAndSymbol() public view {
         assertEq(token.name(), "Test MiNted Token", "name");
         assertEq(token.symbol(), "TMNT", "symbol");
     }
 }
 
-contract Token18FundedUserTest is Token18Test {
+contract TokenFundedUserTest is TokenUTest {
     address public recipient = makeAddr("recipient");
 
     function setUp() public {
         super.setUpToken(18, 300e18);
-        token = Token18.wrap(address(erc20));
-        erc20.transfer(user, 160e18); // send half to user
+        token = Token.wrap(address(erc20));
+        erc20.transfer(user, 160e18);
     }
 
     function test_push() public {
         vm.prank(user);
-        token.push(recipient, UFixed18Lib.from(100));
+        token.push(recipient, 100e18);
         assertEq(erc20.balanceOf(recipient), 100e18, "push some from user to recipient");
         // contract has 140, user has 60, recipient has 100
 
@@ -81,57 +79,55 @@ contract Token18FundedUserTest is Token18Test {
 
     function test_pull() public {
         vm.prank(user);
-        token.approve(address(this), UFixed18Lib.from(100));
+        token.approve(address(this), 100e18);
 
-        token.pull(user, UFixed18Lib.from(40));
+        token.pull(user, 40e18);
         // contract should now have 140 + 40
         assertEq(erc20.balanceOf(address(this)), 180e18, "pull some from user to contract");
 
-        token.pullTo(user, recipient, UFixed18Lib.from(60));
+        token.pullTo(user, recipient, 60e18);
         assertEq(erc20.balanceOf(recipient), 60e18, "pull some from user to recipient");
     }
 
     function test_update() public {
         vm.prank(user);
-        token.approve(address(this), UFixed18Lib.from(100));
+        token.approve(address(this), 100e18);
 
         // transfer from user to contract
-        token.update(user, Fixed18Lib.from(100));
+        token.update(user, 100e18);
         // contract should now have 140 + 100
         assertEq(erc20.balanceOf(address(this)), 240e18, "contract should have 240");
         assertEq(erc20.balanceOf(user), 60e18, "user should have 60");
 
         // transfer from contract to user
-        token.update(user, Fixed18Lib.from(-100));
+        token.update(user, -100e18);
         // contract should now have 240 - 100
         assertEq(erc20.balanceOf(address(this)), 140e18, "contract should have 140");
         assertEq(erc20.balanceOf(user), 160e18, "user should have 160");
 
         // should not revert if amount is 0
-        token.update(user, Fixed18Lib.from(0));
+        token.update(user, 0);
         assertEq(erc20.balanceOf(address(this)), 140e18, "contract should have 140");
         assertEq(erc20.balanceOf(user), 160e18, "user should have 160");
     }
 
     function test_balance() public view {
-        assertUFixed18Eq(token.balanceOf(), UFixed18Lib.from(140), "balance of contract");
-        assertUFixed18Eq(token.balanceOf(user), UFixed18Lib.from(160), "balance of user");
-        assertUFixed18Eq(token.balanceOf(recipient), UFixed18Lib.ZERO, "balance of recipient");
+        assertEq(token.balanceOf(), 140e18, "balance of contract");
+        assertEq(token.balanceOf(user), 160e18, "balance of user");
+        assertEq(token.balanceOf(recipient), 0, "balance of recipient");
     }
 
     function test_totalSupply() public view {
-        assertUFixed18Eq(token.totalSupply(), UFixed18Lib.from(300), "total supply");
+        assertEq(token.totalSupply(), 300e18, "total supply");
     }
 }
 
-contract MockToken18 {
-    function approve(Token18 self, address grantee) external {
-        Token18Lib.approve(self, grantee);
+contract MockToken {
+    function approve(Token self, address grantee) external {
+        TokenLib.approve(self, grantee);
     }
 
-    function approve(Token18 self, address grantee, UFixed18 amount) external {
-        Token18Lib.approve(self, grantee, amount);
+    function approve(Token self, address grantee, uint256 amount) external {
+        TokenLib.approve(self, grantee, amount);
     }
-
-    receive() external payable {}
 }

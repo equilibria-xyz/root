@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import { ProxyAdmin, Ownable } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { Test } from "forge-std/Test.sol";
 
 import { ProxyOwner } from "../../src/access/ProxyOwner.sol";
 import { ERC20TestToken } from "../token/TokenTest.sol";
 
-contract ProxyOwnerTest is Test {
+abstract contract ProxyOwnerTest is Test {
     address public immutable owner;
     ERC20TestToken public impl;
     ProxyAdmin public proxyAdmin;

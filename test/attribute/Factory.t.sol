@@ -4,8 +4,10 @@ pragma solidity ^0.8.13;
 import { Test } from "forge-std/Test.sol";
 
 import { IInstance, Factory } from "../../src/attribute/Factory.sol";
-import { Mutable } from "../../src/mutability/Mutable.sol";
+import { Implementation } from "../../src/mutability/Implementation.sol";
 import { MockInstance } from "./Instance.t.sol";
+import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract FactoryTest is Test {
     error AttributeNotConstructing();
@@ -13,10 +15,12 @@ contract FactoryTest is Test {
 
     event InstanceRegistered(address indexed instance);
 
+    MockMutable public mockMutable;
     MockFactory public factory;
 
     function setUp() public {
         MockInstance instance = new MockInstance();
+        mockMutable = new MockMutable(address(this));
         factory = new MockFactory(address(instance));
     }
 
@@ -25,11 +29,13 @@ contract FactoryTest is Test {
         vm.expectRevert(abi.encodeWithSelector(AttributeNotConstructing.selector));
         factory.notConstructor();
 
+        vm.prank(address(mockMutable));
         factory.construct("");
         assertEq(factory.owner(), address(this));
     }
 
     function test_create() public {
+        vm.prank(address(mockMutable));
         factory.construct("");
 
         IInstance instance;
@@ -49,6 +55,7 @@ contract FactoryTest is Test {
     }
 
     function test_create2() public {
+        vm.prank(address(mockMutable));
         factory.construct("");
 
         IInstance instance;
@@ -64,6 +71,7 @@ contract FactoryTest is Test {
     }
 
     function test_computeCreate2Address() public {
+        vm.prank(address(mockMutable));
         factory.construct("");
 
         // Verify create2 address computation matches actual deployment
@@ -76,6 +84,7 @@ contract FactoryTest is Test {
     }
 
     function test_onlyCallableByInstance() public {
+        vm.prank(address(mockMutable));
         factory.construct("");
 
         // Test instance-only function access control
@@ -88,14 +97,19 @@ contract FactoryTest is Test {
     }
 }
 
-contract MockFactory is Mutable, Factory {
-    constructor(address implementation_) Factory(implementation_) {}
+contract MockFactory is Implementation, Factory {
+    function name() public pure override returns (string memory) { return "MockFactory"; }
 
-    function __constructor(bytes memory) internal override returns (uint256 version) {
+    constructor(address implementation_)
+        Implementation(VersionLib.from(0, 0, 1), VersionLib.from(0, 0, 0))
+        Factory(implementation_)
+    {}
+
+    function __constructor(bytes memory) internal override returns (Version) {
         __Ownable__constructor();
         __Pausable__constructor();
 
-        version = 1;
+        return VersionLib.from(0, 0, 1);
     }
 
     function notConstructor() external {
@@ -104,15 +118,19 @@ contract MockFactory is Mutable, Factory {
     }
 
     function create() external onlyOwner returns (MockInstance) {
-        return MockInstance(address(_create(abi.encodeCall(Mutable.construct, ("")))));
+        return MockInstance(address(_create(
+            abi.encodeCall(Implementation.construct, (""))
+        )));
     }
 
     function create2(bytes32 salt) external onlyOwner returns (MockInstance) {
-        return MockInstance(address(_create2(abi.encodeCall(Mutable.construct, ("")), salt)));
+        return MockInstance(address(_create2(
+            abi.encodeCall(Implementation.construct, ("")), salt)));
     }
 
     function computeCreate2Address(bytes32 salt) external view returns (address) {
-        return _computeCreate2Address(abi.encodeCall(Mutable.construct, ("")), salt);
+        return _computeCreate2Address(
+            abi.encodeCall(Implementation.construct, ("")), salt);
     }
 
     function onlyCallableByInstance() external view onlyInstance {}

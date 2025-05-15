@@ -38,8 +38,9 @@ abstract contract Ownable is IOwnable, Attribute {
     }
 
     /// @notice Initializes the contract setting `msg.sender` as the initial owner
+    // solhint-disable-next-line func-name-mixedcase
     function __Ownable__constructor() internal initializer("Ownable") {
-        _updateOwner(msg.sender);
+        _updateOwner(_deployer());
     }
 
     /// @notice Updates the new pending owner
@@ -63,6 +64,7 @@ abstract contract Ownable is IOwnable, Attribute {
     }
 
     /// @dev Hook for inheriting contracts to perform logic before accepting ownership
+    // solhint-disable-next-line no-empty-blocks
     function _beforeAcceptOwner() internal virtual {}
 
     /// @notice Updates the owner address
