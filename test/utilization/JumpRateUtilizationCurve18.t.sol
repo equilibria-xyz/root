@@ -9,8 +9,10 @@ import {
     JumpRateUtilizationCurve18Lib
 } from "../../src/utilization/types/JumpRateUtilizationCurve18.sol";
 import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
+import { Fixed18, Fixed18Lib } from "../../src/number/types/Fixed18.sol";
 
 contract JumpRateUtilizationCurve18Test is RootTest {
+    MockJumpRateUtilizationCurve18 m = new MockJumpRateUtilizationCurve18();
     uint256 constant FROM_TIMESTAMP = 1626156000;
     uint256 constant TO_TIMESTAMP = 1626159000;
     UFixed18 NOTIONAL;
@@ -328,6 +330,107 @@ contract JumpRateUtilizationCurve18Test is RootTest {
             curve4.accumulate(UFixed18.wrap(11e17), FROM_TIMESTAMP, FROM_TIMESTAMP, NOTIONAL),
             UFixed18Lib.ZERO,
             "curve4 returns correct accumulation at zero time elapsed"
+        );
+    }
+
+    function test_linearInterpolationIncreasingRevertsBeforeStart() public {
+        vm.expectRevert(JumpRateUtilizationCurve18Lib.JumpRateUtilizationCurve18OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 0, 200, 100, 0);
+    }
+
+    function test_linearInterpolationIncreasing() public view {
+        Fixed18 result = m.linearInterpolationWholeNumbers(0, 0, 100, 100, 0);
+        assertFixed18Eq(result, Fixed18Lib.ZERO, "returns correct y-coordinate at start");
+        result = m.linearInterpolationWholeNumbers(0, 0, 100, 100, 50);
+        assertFixed18Eq(result, Fixed18Lib.from(50), "returns correct y-coordinate at middle");
+        result = m.linearInterpolationWholeNumbers(0, 0, 100, 100, 100);
+        assertFixed18Eq(result, Fixed18Lib.from(100), "returns correct y-coordinate at end");
+    }
+
+    function test_linearInterpolationIncreasingRevertsAfterEnd() public {
+        vm.expectRevert(JumpRateUtilizationCurve18Lib.JumpRateUtilizationCurve18OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 0, 200, 100, 300);
+    }
+
+    function test_linearInterpolationDecreasingRevertsBeforeStart() public {
+        vm.expectRevert(JumpRateUtilizationCurve18Lib.JumpRateUtilizationCurve18OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 100, 200, 0, 0);
+    }
+
+    function test_linearInterpolationDecreasing() public view {
+        Fixed18 result = m.linearInterpolationWholeNumbers(0, 100, 100, 0, 0);
+        assertFixed18Eq(result, Fixed18Lib.from(100), "returns correct y-coordinate at start");
+        result = m.linearInterpolationWholeNumbers(0, 100, 100, 0, 50);
+        assertFixed18Eq(result, Fixed18Lib.from(50), "returns correct y-coordinate at middle");
+        result = m.linearInterpolationWholeNumbers(0, 100, 100, 0, 100);
+        assertFixed18Eq(result, Fixed18Lib.ZERO, "returns correct y-coordinate at end");
+    }
+
+    function test_linearInterpolationDecreasingRevertsAfterEnd() public {
+        vm.expectRevert(JumpRateUtilizationCurve18Lib.JumpRateUtilizationCurve18OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 100, 200, 0, 300);
+    }
+
+    function test_linearInterpolationHorizontalRevertsBeforeStart() public {
+        vm.expectRevert(JumpRateUtilizationCurve18Lib.JumpRateUtilizationCurve18OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 100, 200, 100, 0);
+    }
+
+    function test_linearInterpolationHorizontal() public view {
+        Fixed18 result = m.linearInterpolationWholeNumbers(0, 100, 100, 100, 0);
+        assertFixed18Eq(result, Fixed18Lib.from(100), "returns correct y-coordinate at start");
+        result = m.linearInterpolationWholeNumbers(0, 100, 100, 100, 50);
+        assertFixed18Eq(result, Fixed18Lib.from(100), "returns correct y-coordinate at middle");
+        result = m.linearInterpolationWholeNumbers(0, 100, 100, 100, 100);
+        assertFixed18Eq(result, Fixed18Lib.from(100), "returns correct y-coordinate at end");
+    }
+
+    function test_linearInterpolationHorizontalRevertsAfterEnd() public {
+        vm.expectRevert(JumpRateUtilizationCurve18Lib.JumpRateUtilizationCurve18OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 100, 200, 100, 300);
+    }
+
+    function test_linearInterpolationVerticalRevertsBeforeStart() public {
+        vm.expectRevert(JumpRateUtilizationCurve18Lib.JumpRateUtilizationCurve18OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 0, 200, 100, 0);
+    }
+
+    function test_linearInterpolationVerticalRevertsWithDivideByZero() public {
+        vm.expectRevert(stdError.divisionError);
+        m.linearInterpolationWholeNumbers(100, 0, 100, 100, 100);
+    }
+
+    function test_linearInterpolationVerticalRevertsAfterEnd() public {
+        vm.expectRevert(JumpRateUtilizationCurve18Lib.JumpRateUtilizationCurve18OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 0, 100, 100, 300);
+    }
+}
+
+contract MockJumpRateUtilizationCurve18 {
+    function linearInterpolation(
+        UFixed18 startX,
+        Fixed18 startY,
+        UFixed18 endX,
+        Fixed18 endY,
+        UFixed18 targetX
+    ) external pure returns (Fixed18) {
+        return JumpRateUtilizationCurve18Lib.linearInterpolation(startX, startY, endX, endY, targetX);
+    }
+
+    /// @dev for test readability
+    function linearInterpolationWholeNumbers(
+        uint256 startX,
+        int256 startY,
+        uint256 endX,
+        int256 endY,
+        uint256 targetX
+    ) external pure returns (Fixed18) {
+        return JumpRateUtilizationCurve18Lib.linearInterpolation(
+            UFixed18Lib.from(startX),
+            Fixed18Lib.from(startY),
+            UFixed18Lib.from(endX),
+            Fixed18Lib.from(endY),
+            UFixed18Lib.from(targetX)
         );
     }
 }

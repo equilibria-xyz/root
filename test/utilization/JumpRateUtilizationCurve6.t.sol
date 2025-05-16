@@ -9,8 +9,10 @@ import {
     JumpRateUtilizationCurve6Lib
 } from "../../src/utilization/types/JumpRateUtilizationCurve6.sol";
 import { UFixed6, UFixed6Lib } from "../../src/number/types/UFixed6.sol";
+import { Fixed6, Fixed6Lib } from "../../src/number/types/Fixed6.sol";
 
 contract JumpRateUtilizationCurve6Test is RootTest {
+    MockJumpRateUtilizationCurve6 m = new MockJumpRateUtilizationCurve6();
     uint256 constant FROM_TIMESTAMP = 1626156000;
     uint256 constant TO_TIMESTAMP = 1626159000;
     UFixed6 NOTIONAL;
@@ -328,6 +330,107 @@ contract JumpRateUtilizationCurve6Test is RootTest {
             curve1.accumulate(UFixed6.wrap(1_100000), FROM_TIMESTAMP, FROM_TIMESTAMP, NOTIONAL),
             UFixed6Lib.ZERO,
             "curve1 returns correct accumulation at zero time elapsed"
+        );
+    }
+
+    function test_linearInterpolationIncreasingRevertsBeforeStart() public {
+        vm.expectRevert(JumpRateUtilizationCurve6Lib.JumpRateUtilizationCurve6OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 0, 200, 100, 0);
+    }
+
+    function test_linearInterpolationIncreasing() public view {
+        Fixed6 result = m.linearInterpolationWholeNumbers(0, 0, 100, 100, 0);
+        assertFixed6Eq(result, Fixed6Lib.ZERO, "returns correct y-coordinate at start");
+        result = m.linearInterpolationWholeNumbers(0, 0, 100, 100, 50);
+        assertFixed6Eq(result, Fixed6Lib.from(50), "returns correct y-coordinate at middle");
+        result = m.linearInterpolationWholeNumbers(0, 0, 100, 100, 100);
+        assertFixed6Eq(result, Fixed6Lib.from(100), "returns correct y-coordinate at end");
+    }
+
+    function test_linearInterpolationIncreasingRevertsAfterEnd() public {
+        vm.expectRevert(JumpRateUtilizationCurve6Lib.JumpRateUtilizationCurve6OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(0, 0, 100, 100, 300);
+    }
+
+    function test_linearInterpolationDecreasingRevertsBeforeStart() public {
+        vm.expectRevert(JumpRateUtilizationCurve6Lib.JumpRateUtilizationCurve6OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 100, 200, 0, 0);
+    }
+
+    function test_linearInterpolationDecreasing() public view {
+        Fixed6 result = m.linearInterpolationWholeNumbers(0, 100, 100, 0, 0);
+        assertFixed6Eq(result, Fixed6Lib.from(100), "returns correct y-coordinate at start");
+        result = m.linearInterpolationWholeNumbers(0, 100, 100, 0, 50);
+        assertFixed6Eq(result, Fixed6Lib.from(50), "returns correct y-coordinate at middle");
+        result = m.linearInterpolationWholeNumbers(0, 100, 100, 0, 100);
+        assertFixed6Eq(result, Fixed6Lib.ZERO, "returns correct y-coordinate at end");
+    }
+
+    function test_linearInterpolationDecreasingRevertsAfterEnd() public {
+        vm.expectRevert(JumpRateUtilizationCurve6Lib.JumpRateUtilizationCurve6OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 100, 200, 0, 300);
+    }
+
+    function test_linearInterpolationHorizontalRevertsBeforeStart() public {
+        vm.expectRevert(JumpRateUtilizationCurve6Lib.JumpRateUtilizationCurve6OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 100, 200, 100, 0);
+    }
+
+    function test_linearInterpolationHorizontal() public view {
+        Fixed6 result = m.linearInterpolationWholeNumbers(0, 100, 100, 100, 0);
+        assertFixed6Eq(result, Fixed6Lib.from(100), "returns correct y-coordinate at start");
+        result = m.linearInterpolationWholeNumbers(0, 100, 100, 100, 50);
+        assertFixed6Eq(result, Fixed6Lib.from(100), "returns correct y-coordinate at middle");
+        result = m.linearInterpolationWholeNumbers(0, 100, 100, 100, 100);
+        assertFixed6Eq(result, Fixed6Lib.from(100), "returns correct y-coordinate at end");
+    }
+
+    function test_linearInterpolationHorizontalRevertsAfterEnd() public {
+        vm.expectRevert(JumpRateUtilizationCurve6Lib.JumpRateUtilizationCurve6OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 100, 200, 100, 300);
+    }
+
+    function test_linearInterpolationVerticalRevertsBeforeStart() public {
+        vm.expectRevert(JumpRateUtilizationCurve6Lib.JumpRateUtilizationCurve6OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 0, 200, 100, 0);
+    }
+
+    function test_linearInterpolationVerticalRevertsWithDivideByZero() public {
+        vm.expectRevert(stdError.divisionError);
+        m.linearInterpolationWholeNumbers(100, 0, 100, 100, 100);
+    }
+
+    function test_linearInterpolationVerticalRevertsAfterEnd() public {
+        vm.expectRevert(JumpRateUtilizationCurve6Lib.JumpRateUtilizationCurve6OutOfBoundsError.selector);
+        m.linearInterpolationWholeNumbers(100, 0, 100, 100, 300);
+    }
+}
+
+contract MockJumpRateUtilizationCurve6 {
+    function linearInterpolation(
+        UFixed6 startX,
+        Fixed6 startY,
+        UFixed6 endX,
+        Fixed6 endY,
+        UFixed6 targetX
+    ) external pure returns (Fixed6) {
+        return JumpRateUtilizationCurve6Lib.linearInterpolation(startX, startY, endX, endY, targetX);
+    }
+
+    /// @dev for test readability
+    function linearInterpolationWholeNumbers(
+        uint256 startX,
+        int256 startY,
+        uint256 endX,
+        int256 endY,
+        uint256 targetX
+    ) external pure returns (Fixed6) {
+        return JumpRateUtilizationCurve6Lib.linearInterpolation(
+            UFixed6Lib.from(startX),
+            Fixed6Lib.from(startY),
+            UFixed6Lib.from(endX),
+            Fixed6Lib.from(endY),
+            UFixed6Lib.from(targetX)
         );
     }
 }
