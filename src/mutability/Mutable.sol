@@ -77,6 +77,9 @@ contract Mutable is IMutableTransparent, Proxy {
 
         // pass through all other calls
         } else {
+            if (msg.sig == IImplementation.construct.selector) {
+                revert MutableDeniedConstructorAccess();
+            }
             super._fallback();
         }
     }
@@ -97,7 +100,7 @@ contract Mutable is IMutableTransparent, Proxy {
         if (newImplementation.version() == Mutable$().version) revert MutableVersionMismatch();
 
         // update the implementation and call its constructor
-        ERC1967Utils.upgradeToAndCall(address(newImplementation),abi.encodeCall(IImplementation.construct, (data)));
+        ERC1967Utils.upgradeToAndCall(address(newImplementation), abi.encodeCall(IImplementation.construct, (data)));
 
         // record the new implementation version
         Mutable$().version = newImplementation.version();

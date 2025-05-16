@@ -25,6 +25,10 @@ interface IMutableTransparent is IERC1967 {
     /// @dev Mutator functionality was called by a non-mutator.
     error MutableDeniedMutatorAccess();
 
+    // sig: 0x6faec855
+    /// @dev The constructor was called directly.
+    error MutableDeniedConstructorAccess();
+
     // sig: 0x172536eb
     /// @dev The predecessor version of the implementation does not match the previous implementation version.
     error MutablePredecessorMismatch();
