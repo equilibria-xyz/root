@@ -14,8 +14,8 @@ library VRGDADecayMath {
     /// @param timestamp The timestamp of the start of the VRGDA
     /// @param price The price coefficient of the VRGDA
     /// @param decay The decay coefficient of the VRGDA
-    /// @param from The time of the latest auction relative to the start of the VRGDA
-    /// @param to The time of the latest auction after the purchase relative to the start of the VRGDA
+    /// @param from Where the VRGDA has sold up to in its issuance schedule as of current block.timestamp (days)
+    /// @param to Where the VRGDA will have sold up to in its issuance schedule after the current purchase (days)
     /// @return cost The cost of the purchase
     function exponentialDecay(UFixed18 timestamp, UFixed18 price, UFixed18 decay, UFixed18 from, UFixed18 to) internal view returns (UFixed18 cost) {
         (Fixed18 a, Fixed18 b) = (convert(timestamp + to), convert(timestamp + from));
@@ -26,6 +26,7 @@ library VRGDADecayMath {
     }
 
     /// @notice Returns time of the latest auction after the purchase over a continuous VRGDA with exponential decay
+    /// @param timestamp The timestamp of the start of the VRGDA
     /// @param price The price coefficient of the VRGDA
     /// @param decay The decay coefficient of the VRGDA
     /// @param from The time of the latest auction relative to the start of the VRGDA

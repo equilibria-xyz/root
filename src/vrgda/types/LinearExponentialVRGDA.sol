@@ -7,13 +7,14 @@ import { VRGDAIssuanceMath } from "../VRGDAIssuanceMath.sol";
 
 // TODO: change time to year for bounds?
 struct LinearExponentialVRGDA {
-    UFixed18 timestamp; // in seconds
-    UFixed18 price; // per token
-    UFixed18 decay; // per day
-    UFixed18 emission; // per day
+    UFixed18 timestamp; // block timestamp of the start of the auction (seconds)
+    UFixed18 price; // Price coefficient of the VRGDA per token (k)
+    UFixed18 decay; // Decay coefficient of the VRGDA per day
+    UFixed18 emission; // tokens per day
 }
 using LinearExponentialVRGDALib for LinearExponentialVRGDA global;
 
+/// @title Linear Exponential Variable Rate Gradual Dutch Auctions
 library LinearExponentialVRGDALib {
     function toCost(LinearExponentialVRGDA memory self, UFixed18 issued, UFixed18 amount) internal view returns (UFixed18) {
         return VRGDADecayMath.exponentialDecay(

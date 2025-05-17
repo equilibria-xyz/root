@@ -6,7 +6,7 @@ import { VRGDADecayMath } from "../../src/vrgda/VRGDADecayMath.sol";
 import { VRGDAIssuanceMath } from "../../src/vrgda/VRGDAIssuanceMath.sol";
 import { RootTest } from "../RootTest.sol";
 
-contract VRGDATest is RootTest {
+contract VRGDAMathTest is RootTest {
     function setUp() public virtual {
         vm.warp(1728000000); // time() -> 20_000 (days)
     }
@@ -122,6 +122,53 @@ contract VRGDATest is RootTest {
             ),
             UFixed18.wrap(171.828182845904523400e18),
             "incorrect result with higher initial price"
+        );
+    }
+
+    // recover if so far behind that small buy would revert
+    function test_exponentialDecay_behind() external {
+        skip(1 days);
+        // timestamp = 20_000, lamba = 10, k = 100
+        // 1 day in, only sold 0.1 day worth of tokens per issuance schedule
+        // cost of purchasing enough to bring us to 0.2 day worth of tokens, still behind by 0.8 day
+        assertUFixed18Eq(
+            VRGDADecayMath.exponentialDecay(
+                UFixed18.wrap(20_000e18),
+                UFixed18.wrap(100e18),
+                UFixed18.wrap(10e18),
+                UFixed18.wrap(0.1e18),
+                UFixed18.wrap(0.2e18)
+            ),
+            UFixed18.wrap(2120528_238158320), // 0.002120528_238158320
+            "incorrect result while somewhat behind"
+        );
+
+        // 4.5 days in, an attempt to buy a small amount of tokens would result in 0 price
+        skip(3 days + 12 hours);
+        assertUFixed18Eq(
+            VRGDADecayMath.exponentialDecay(
+                UFixed18.wrap(20_000e18),
+                UFixed18.wrap(100e18),
+                UFixed18.wrap(10e18),
+                UFixed18.wrap(0.2e18),
+                UFixed18.wrap(0.21e18)
+            ),
+            UFixed18.wrap(0),
+            "incorrect result while really behind"
+        );
+
+        // five days in, someone purchases enough tokens to put us slightly ahead of issuance schedule
+        skip(12 hours);
+        assertUFixed18Eq(
+            VRGDADecayMath.exponentialDecay(
+                UFixed18.wrap(20_000e18),
+                UFixed18.wrap(100e18),
+                UFixed18.wrap(10e18),
+                UFixed18.wrap(0.2e18),
+                UFixed18.wrap(5.4e18)
+            ),
+            UFixed18.wrap(545.981500331_442390190e18), // 545.981500331_442390190
+            "incorrect result after recovering"
         );
     }
 
@@ -243,9 +290,9 @@ contract VRGDATest is RootTest {
         );
     }
 
-    // TODO: recover if so far behind that small buy would revert
     // TODO: do very small buys undercharge?
     // TODO: can the first purchase be a request?
+
     function test_linearIssuance_emission() external pure {
         // emission = 100_000, auction = 2
         assertUFixed18Eq(
