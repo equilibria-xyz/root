@@ -16,6 +16,11 @@ using LinearExponentialVRGDALib for LinearExponentialVRGDA global;
 
 /// @title Linear Exponential Variable Rate Gradual Dutch Auctions
 library LinearExponentialVRGDALib {
+    /// @notice Returns the cost to purchase a specified amount of tokens
+    /// @param self VRGDA parameters
+    /// @param issued Number of tokens currently issued by the auction
+    /// @param amount The amount of tokens to purchase
+    /// @return Cost of the purchase
     function toCost(LinearExponentialVRGDA memory self, UFixed18 issued, UFixed18 amount) internal view returns (UFixed18) {
         return VRGDADecayMath.exponentialDecay(
             self.timestamp,
@@ -26,6 +31,11 @@ library LinearExponentialVRGDALib {
         );
     }
 
+    /// @notice Returns the amount of tokens that can be purchased for a specified cost
+    /// @param self VRGDA parameters
+    /// @param issued Number of tokens currently issued by the auction
+    /// @param cost Funds to spend on the purchase
+    /// @return Amount of tokens that can be purchased
     function toAmount(LinearExponentialVRGDA memory self, UFixed18 issued, UFixed18 cost) internal view returns (UFixed18) {
         return VRGDAIssuanceMath.linearIssuance(
             self.emission,
