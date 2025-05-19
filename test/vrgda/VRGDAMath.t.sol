@@ -290,7 +290,6 @@ contract VRGDAMathTest is RootTest {
         );
     }
 
-    // TODO: do very small buys undercharge?
     // TODO: can the first purchase be a request?
 
     function test_linearIssuance_emission() external pure {
