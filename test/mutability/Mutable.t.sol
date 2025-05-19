@@ -81,6 +81,11 @@ contract MutableTestV1 is MutableTestV1Deploy {
         instance1.setValue(106);
     }
 
+    function test_noDirectConstructorAccess() public {
+        vm.expectRevert(IMutableTransparent.MutableDeniedConstructorAccess.selector);
+        instance1.construct("");
+    }
+
     function test_canPause() public {
         vm.prank(owner);
         vm.expectEmit();
