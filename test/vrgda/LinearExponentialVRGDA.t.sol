@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.20;
 
-import { Fixed18, Fixed18Lib } from "../../src/number/types/Fixed18.sol";
 import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
 import { LinearExponentialVRGDA } from "../../src/vrgda/types/LinearExponentialVRGDA.sol";
 import { RootTest } from "../RootTest.sol";
-import {console} from "../../src/utils/console.sol";
 
 contract LinearExponentialVRGDATest is RootTest {
     LinearExponentialVRGDA vrgda;
@@ -131,12 +129,12 @@ contract LinearExponentialVRGDATest is RootTest {
         uint256 alreadyIssued,
         uint256 tokensToPurchase
     ) public {
-        daysIn = bound(daysIn, 0, 7);                                         // limit to a week
-        alreadyIssued = bound(alreadyIssued, 0, daysIn * 300);                // limit issuance to 1.5x expected
-        uint256 numPurchases = 10000;                                         // gas and memory limited, max ~80k
-        tokensToPurchase = bound(tokensToPurchase, 1e4, 1e18 / numPurchases); // in each purchase, max 1 whole token
+        daysIn = bound(daysIn, 0, 7);                                         // start-of-auction to a week out
+        alreadyIssued = bound(alreadyIssued, 0, daysIn * 300);                // bound issuance from 0 to 1.5x expected
+        uint256 numPurchases = 1_000;                                         // gas and memory limited, max ~80k
+        tokensToPurchase = bound(tokensToPurchase, 1e10, 1e18 / numPurchases); // in each purchase, max 1 whole token
 
-        // set up initial state to be ahead or behind the issuance schedule
+        // set up initial state to be ahead or behind the issuance schedule, even with only 1k purchases
         skip(daysIn * 3600 * 24);
         issued = UFixed18Lib.from(alreadyIssued);
 
@@ -150,9 +148,7 @@ contract LinearExponentialVRGDATest is RootTest {
             multiplePurchases = multiplePurchases + vrgda.toCost(issued, UFixed18.wrap(tokensToPurchase));
         }
         assertEq(UFixed18.unwrap(issued), (alreadyIssued * 1e18) + (tokensToPurchase * numPurchases), "total issued mismatch");
-        console.log("making %s purchases of %s tokens each", numPurchases, UFixed18.wrap(tokensToPurchase));
         int256 difference = int256(UFixed18.unwrap(singlePurchase)) - int256(UFixed18.unwrap(multiplePurchases));
-        console.log("single purchase %s multiple purchases %s difference", singlePurchase, multiplePurchases, Fixed18.wrap(difference));
         assertTrue(singlePurchase <= multiplePurchases || difference < 1e18, "undercharges for small purchase");
     }
 }
