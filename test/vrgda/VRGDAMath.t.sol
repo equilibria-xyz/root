@@ -290,8 +290,6 @@ contract VRGDAMathTest is RootTest {
         );
     }
 
-    // TODO: can the first purchase be a request?
-
     function test_linearIssuance_emission() external pure {
         // emission = 100_000, auction = 2
         assertUFixed18Eq(

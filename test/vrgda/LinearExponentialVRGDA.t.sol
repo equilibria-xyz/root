@@ -58,34 +58,16 @@ contract LinearExponentialVRGDATest is RootTest {
         // after 1 day, 200 tokens have been purchased, even with issuance schedule
         skip(1 days);
         issued = UFixed18Lib.from(200);
-        // a 5k purchase would buy us 200 tokens
-        assertUFixed18Eq(vrgda.toAmount(issued, UFixed18Lib.from(5_000)), UFixed18.wrap(0.448974472_612174000e18));
+        // a 50k purchase would buy us 4 tokens
+        assertUFixed18Eq(vrgda.toAmount(issued, UFixed18Lib.from(50_000)), UFixed18.wrap(4.091865860_077915200e18));
 
-        // if someone purchases 100 tokens, the same 5k purchase would buy us less
+        // if someone purchases 100 tokens, the same 50k purchase would buy us almost nothing
         issued = issued + UFixed18Lib.from(100);
-        // FIXME: This should be less than 200
-        assertUFixed18Eq(vrgda.toAmount(issued, UFixed18Lib.from(5_000)), UFixed18.wrap(0.003059143_308246200e18));
+        assertUFixed18Eq(vrgda.toAmount(issued, UFixed18Lib.from(50_000)), UFixed18.wrap(0.030570397_153121600e18));
 
-        // if even more overbought, the amount we can purchase decreases significantly
-        issued = issued + UFixed18Lib.from(700);
-        // FIXME: Should be less than amount with 300 tokens issued
-        // TODO: this is probably so far ahead that the price is causing an overflow (which is expected at some point)
-        assertUFixed18Eq(vrgda.toAmount(issued, UFixed18Lib.from(5_000)), UFixed18.wrap(999.999999999_999999800e18));
-    }
-
-    function test_toCostEquivalentWithToAmount() public {
-        // equivalent when behind
-        skip(4 days);
-        issued = UFixed18Lib.from(700);
-        UFixed18 cost = vrgda.toCost(issued, UFixed18Lib.from(100));
-        // FIXME: ~800 != 100
-        assertUFixed18Eq(vrgda.toAmount(issued, cost), UFixed18Lib.from(100));
-
-        // equivalent when ahead
-        issued = UFixed18Lib.from(900);
-        cost = vrgda.toCost(issued, UFixed18Lib.from(100));
-        // FIXME: ~1000 != 100
-        assertUFixed18Eq(vrgda.toAmount(issued, cost), UFixed18Lib.from(100));
+        // if even more overbought, the amount we can purchase becomes infinitesimal
+        issued = issued + UFixed18Lib.from(200);
+        assertUFixed18Eq(vrgda.toAmount(issued, UFixed18Lib.from(50_000)), UFixed18.wrap(0.000001388_955087400e18));
     }
 
     function test_costIncreasesWhenAhead() public {
@@ -105,6 +87,20 @@ contract LinearExponentialVRGDATest is RootTest {
         issued = issued + UFixed18Lib.from(250);
         skip(1 days);
         assertUFixed18Eq(vrgda.toCost(issued, UFixed18Lib.from(100)), UFixed18.wrap(4_818_404_062.443085713_321147380e18));
+    }
+
+    function test_toCostEquivalentWithToAmount() public {
+        // equivalent when behind
+        skip(4 days);
+        issued = UFixed18Lib.from(700);
+        UFixed18 amount = UFixed18Lib.from(100);
+        UFixed18 cost = vrgda.toCost(issued, amount);
+        assertApproxEqAbs(UFixed18.unwrap(vrgda.toAmount(issued, cost)), UFixed18.unwrap(amount), 200);
+
+        // equivalent when ahead
+        issued = UFixed18Lib.from(900);
+        cost = vrgda.toCost(issued, UFixed18Lib.from(100));
+        assertApproxEqAbs(UFixed18.unwrap(vrgda.toAmount(issued, cost)), UFixed18.unwrap(amount), 200);
     }
 
     function test_recoversAfterPurchaseAtZeroPrice() public {
