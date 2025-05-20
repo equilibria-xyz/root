@@ -46,6 +46,6 @@ library LinearExponentialVRGDALib {
                 VRGDAIssuanceMath.linearIssuanceI(self.emission, issued),
                 cost
             )
-        );
+        ) - issued;
     }
 }
