@@ -129,9 +129,9 @@ contract LinearExponentialVRGDATest is RootTest {
         uint256 alreadyIssued,
         uint256 tokensToPurchase
     ) public {
-        daysIn = bound(daysIn, 0, 7);                                         // start-of-auction to a week out
-        alreadyIssued = bound(alreadyIssued, 0, daysIn * 300);                // bound issuance from 0 to 1.5x expected
-        uint256 numPurchases = 1_000;                                         // gas and memory limited, max ~80k
+        daysIn = bound(daysIn, 0, 7);                                          // start-of-auction to a week out
+        alreadyIssued = bound(alreadyIssued, 0, daysIn * 300);                 // bound issuance from 0 to 1.5x expected
+        uint256 numPurchases = 1_000;                                          // gas and memory limited, max ~80k
         tokensToPurchase = bound(tokensToPurchase, 1e10, 1e18 / numPurchases); // in each purchase, max 1 whole token
 
         // set up initial state to be ahead or behind the issuance schedule, even with only 1k purchases
