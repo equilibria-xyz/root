@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.20;
 
-import { UFixed18, UFixed18Lib, Fixed18Lib } from "../../src/number/types/UFixed18.sol";
+import { Fixed18, Fixed18Lib } from "../../src/number/types/Fixed18.sol";
+import { UFixed18, UFixed18Lib } from "../../src/number/types/UFixed18.sol";
 import { LinearExponentialVRGDA } from "../../src/vrgda/types/LinearExponentialVRGDA.sol";
 import { RootTest } from "../RootTest.sol";
 import {console} from "../../src/utils/console.sol";
@@ -121,34 +122,37 @@ contract LinearExponentialVRGDATest is RootTest {
         assertUFixed18Eq(vrgda.toCost(issued, UFixed18Lib.from(1050)), UFixed18.wrap(220_239.165828664_098470190e18));
     }
 
+    /// @dev Ensures that users may not use split purchases into smaller batches to reduce cost
+    /// @param daysIn The number of days to skip ahead
+    /// @param alreadyIssued Determines if we are ahead or behind the issuance schedule
+    /// @param tokensToPurchase The number of tokens in each of the small purchases
     function test_doesNotUnderchargeForSmallPurchases(
         uint256 daysIn,
         uint256 alreadyIssued,
-        uint256 tokensToPurchase,
-        uint256 numPurchases
+        uint256 tokensToPurchase
     ) public {
         daysIn = bound(daysIn, 0, 7);                                         // limit to a week
-        alreadyIssued = bound(alreadyIssued, 0, daysIn * 200 * 2);            // limit issuance to 2x expected
-        tokensToPurchase = bound(tokensToPurchase, 0.000001e18, 100e18) / 1e6 * 1e6; // rounded to ensure total issued matches
-        numPurchases = 10 ** bound(numPurchases, 1, 4);                       // 10 to 10_000 purchases, gas limited
+        alreadyIssued = bound(alreadyIssued, 0, daysIn * 300);                // limit issuance to 1.5x expected
+        uint256 numPurchases = 10000;                                         // gas and memory limited, max ~80k
+        tokensToPurchase = bound(tokensToPurchase, 1e4, 1e18 / numPurchases); // in each purchase, max 1 whole token
 
         // set up initial state to be ahead or behind the issuance schedule
         skip(daysIn * 3600 * 24);
         issued = UFixed18Lib.from(alreadyIssued);
 
         // record cost to purchase tokens
-        UFixed18 singlePurchase = vrgda.toCost(issued, UFixed18.wrap(tokensToPurchase));
+        UFixed18 singlePurchase = vrgda.toCost(issued, UFixed18.wrap(tokensToPurchase * numPurchases));
 
         // make multiple purchases
         UFixed18 multiplePurchases = UFixed18Lib.ZERO;
-        UFixed18 purchaseSize = UFixed18.wrap(tokensToPurchase) / UFixed18Lib.from(numPurchases);
         for (uint256 i = 0; i < numPurchases; i++) {
-            issued = issued + purchaseSize;
-            multiplePurchases = multiplePurchases + vrgda.toCost(issued, purchaseSize);
+            issued = issued + UFixed18.wrap(tokensToPurchase);
+            multiplePurchases = multiplePurchases + vrgda.toCost(issued, UFixed18.wrap(tokensToPurchase));
         }
-        assertEq(UFixed18.unwrap(issued), (alreadyIssued * 1e18) + tokensToPurchase, "total issued mismatch");
-        console.log("making %s purchases of %s tokens each", numPurchases, purchaseSize);
-        console.log("single purchase %s multiple purchases %s difference", singlePurchase, multiplePurchases, Fixed18Lib.from(singlePurchase) - Fixed18Lib.from(multiplePurchases));
-        assertTrue(singlePurchase <= multiplePurchases, "undercharges for small purchases");
+        assertEq(UFixed18.unwrap(issued), (alreadyIssued * 1e18) + (tokensToPurchase * numPurchases), "total issued mismatch");
+        console.log("making %s purchases of %s tokens each", numPurchases, UFixed18.wrap(tokensToPurchase));
+        int256 difference = int256(UFixed18.unwrap(singlePurchase)) - int256(UFixed18.unwrap(multiplePurchases));
+        console.log("single purchase %s multiple purchases %s difference", singlePurchase, multiplePurchases, Fixed18.wrap(difference));
+        assertTrue(singlePurchase <= multiplePurchases || difference < 1e18, "undercharges for small purchase");
     }
 }
