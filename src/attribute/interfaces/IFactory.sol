@@ -6,7 +6,7 @@ import { IBeacon } from "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 import { IOwnable } from "./IOwnable.sol";
 import { IPausable } from "./IPausable.sol";
 import { IInstance } from "./IInstance.sol";
-import { IAttribute } from "../../mutability/interfaces/IAttribute.sol";
+import { IAttribute } from "../../attribute/interfaces/IAttribute.sol";
 
 interface IFactory is IBeacon, IAttribute, IOwnable, IPausable {
     event InstanceRegistered(IInstance indexed instance);
