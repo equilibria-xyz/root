@@ -123,6 +123,11 @@ contract Fixed6Test is Test {
         assertEq(Fixed6Lib.isZero(Fixed6Lib.NEG_ONE), false, "-1 is not zero");
     }
 
+    function test_neg() public pure {
+        Fixed6 a = Fixed6Lib.from(10);
+        assertEq(Fixed6.unwrap(-a), -10e6, "-10 = neg(10)");
+    }
+
     function test_addition() public pure {
         Fixed6 a = Fixed6Lib.from(10);
         Fixed6 b = Fixed6Lib.from(20);
@@ -618,6 +623,15 @@ contract Fixed6Test is Test {
         assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6Lib.from(-10))), 45, "exp(-10) = 0.000045");
         assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6.wrap(-0.5e6))), 606530, "exp(-0.5) = 0.606530");
         assertEq(Fixed6.unwrap(Fixed6Lib.exp(Fixed6.wrap(-5))), 999995, "exp(-0.000005) = 0.999995");
+    }
+
+    function test_ln() public pure {
+        assertEq(Fixed6.unwrap(Fixed6Lib.ln(Fixed6Lib.from(1))), 0, "ln(1) = 0");
+        assertEq(Fixed6.unwrap(Fixed6Lib.ln(Fixed6Lib.from(2))), 693147, "ln(2) = 0.693147");
+        assertEq(Fixed6.unwrap(Fixed6Lib.ln(Fixed6Lib.from(3))), 1_098612, "ln(3) = 1.098612");
+        assertEq(Fixed6.unwrap(Fixed6Lib.ln(Fixed6Lib.from(10))), 2_302585, "ln(10) = 2.302585");
+        assertEq(Fixed6.unwrap(Fixed6Lib.ln(Fixed6.wrap(0.5e6))), -693147, "ln(0.5) = -0.693147");
+        assertEq(Fixed6.unwrap(Fixed6Lib.ln(Fixed6.wrap(5))), -12_206072, "ln(0.000005) = -12.206072");
     }
 }
 

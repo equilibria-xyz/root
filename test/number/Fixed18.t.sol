@@ -115,6 +115,11 @@ contract Fixed18Test is Test {
         assertEq(Fixed18Lib.isZero(Fixed18Lib.NEG_ONE), false, "-1 is not zero");
     }
 
+    function test_neg() public pure {
+        Fixed18 a = Fixed18Lib.from(10);
+        assertEq(Fixed18.unwrap(-a), -10e18, "-10 = neg(10)");
+    }
+
     function test_addition() public pure {
         Fixed18 a = Fixed18Lib.from(10);
         Fixed18 b = Fixed18Lib.from(20);
@@ -610,6 +615,15 @@ contract Fixed18Test is Test {
         assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18Lib.from(-10))), 45399929762484, "exp(-10) = 0.000045399929762484");
         assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18.wrap(-0.5e18))), 606530659712633424, "exp(-0.5) = 0.606530659712633424");
         assertEq(Fixed18.unwrap(Fixed18Lib.exp(Fixed18.wrap(-5))), 999999999999999996, "exp(-5 * 10^-18) = 0.999999999999999996");
+    }
+
+    function test_ln() public pure {
+        assertEq(Fixed18.unwrap(Fixed18Lib.ln(Fixed18Lib.from(1))), 0, "ln(1) = 0");
+        assertEq(Fixed18.unwrap(Fixed18Lib.ln(Fixed18Lib.from(2))), 693147180559945309, "ln(2) = 0.693147180559945309");
+        assertEq(Fixed18.unwrap(Fixed18Lib.ln(Fixed18Lib.from(3))), 1_098612288668109680, "ln(3) = 1.098612288668109680");
+        assertEq(Fixed18.unwrap(Fixed18Lib.ln(Fixed18Lib.from(10))), 2_302585092994045674, "ln(10) = 2.302585092994045674");
+        assertEq(Fixed18.unwrap(Fixed18Lib.ln(Fixed18.wrap(0.5e18))), -693147180559945309, "ln(0.5) = -0.693147180559945309");
+        assertEq(Fixed18.unwrap(Fixed18Lib.ln(Fixed18.wrap(5))), -39_837093761458721938, "ln(5 * 10^-18) = -39_837093761458721938");
     }
 }
 

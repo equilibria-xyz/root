@@ -50,4 +50,12 @@ contract RootTest is Test {
     function assertEq(Version a, Version b, string memory message) public pure {
         assertEq(Version.unwrap(a), Version.unwrap(b), message);
     }
+
+    function boundFixed18(Fixed18 x, Fixed18 min, Fixed18 max) internal pure virtual returns (Fixed18 result) {
+        result = Fixed18.wrap(_bound(Fixed18.unwrap(x), Fixed18.unwrap(min), Fixed18.unwrap(max)));
+    }
+
+    function boundUFixed18(UFixed18 x, UFixed18 min, UFixed18 max) internal pure virtual returns (UFixed18 result) {
+        result = UFixed18.wrap(_bound(UFixed18.unwrap(x), UFixed18.unwrap(min), UFixed18.unwrap(max)));
+    }
 }

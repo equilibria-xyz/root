@@ -240,6 +240,13 @@ library UFixed18Lib {
     function exp(UFixed18 value) internal pure returns (UFixed18) {
         return UFixed18.wrap(UD60x18.unwrap(UD60x18.wrap(UFixed18.unwrap(value)).exp()));
     }
+
+    /// @notice Returns the natural logarithm of a signed fixed-decimal
+    /// @param value Signed fixed-decimal
+    /// @return Natural logarithm of `value`
+    function ln(UFixed18 value) internal pure returns (UFixed18) {
+        return UFixed18.wrap(UD60x18.unwrap(UD60x18.wrap(UFixed18.unwrap(value)).ln()));
+    }
 }
 
 /// @notice Adds two unsigned fixed-decimals `a` and `b` together

@@ -416,6 +416,13 @@ contract UFixed18Test is Test {
         assertEq(UFixed18.unwrap(UFixed18Lib.exp(UFixed18.wrap(0.5e18))), 1_648721270700128145, "exp(0.5) = 1.648721270700128145");
         assertEq(UFixed18.unwrap(UFixed18Lib.exp(UFixed18.wrap(5))), 1_000000000000000004, "exp(5 * 10^-18) = 1.000000000000000004");
     }
+
+    function test_ln() public pure {
+        assertEq(UFixed18.unwrap(UFixed18Lib.ln(UFixed18Lib.from(1))), 0, "ln(1) = 0");
+        assertEq(UFixed18.unwrap(UFixed18Lib.ln(UFixed18Lib.from(2))), 693147180559945309, "ln(2) = 0.693147180559945309");
+        assertEq(UFixed18.unwrap(UFixed18Lib.ln(UFixed18Lib.from(3))), 1_098612288668109680, "ln(3) = 1.098612288668109680");
+        assertEq(UFixed18.unwrap(UFixed18Lib.ln(UFixed18Lib.from(10))), 2_302585092994045674, "ln(10) = 2.302585092994045674");
+    }
 }
 
 contract MockUFixed18 {

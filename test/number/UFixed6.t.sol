@@ -427,6 +427,13 @@ contract UFixed6Test is Test {
         assertEq(UFixed6.unwrap(UFixed6Lib.exp(UFixed6.wrap(0.5e6))), 1_648721, "exp(0.5) = 1.648721");
         assertEq(UFixed6.unwrap(UFixed6Lib.exp(UFixed6.wrap(5))), 1_000005, "exp(0.000005) = 1.000005");
     }
+
+    function test_ln() public pure {
+        assertEq(UFixed6.unwrap(UFixed6Lib.ln(UFixed6Lib.from(1))), 0, "ln(1) = 0");
+        assertEq(UFixed6.unwrap(UFixed6Lib.ln(UFixed6Lib.from(2))), 693147, "ln(2) = 0.693147");
+        assertEq(UFixed6.unwrap(UFixed6Lib.ln(UFixed6Lib.from(3))), 1_098612, "ln(3) = 1.098612");
+        assertEq(UFixed6.unwrap(UFixed6Lib.ln(UFixed6Lib.from(10))), 2_302585, "ln(10) = 2.302585");
+    }
 }
 
 contract MockUFixed6 {

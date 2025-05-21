@@ -12,6 +12,7 @@ type Fixed18 is int256;
 using Fixed18Lib for Fixed18 global;
 
 using {
+    neg as -,
     add as +,
     sub as -,
     mul as *,
@@ -264,6 +265,20 @@ library Fixed18Lib {
     function exp(Fixed18 value) internal pure returns (Fixed18) {
         return Fixed18.wrap(SD59x18.unwrap(SD59x18.wrap(Fixed18.unwrap(value)).exp()));
     }
+
+    /// @notice Returns the natural logarithm of a signed fixed-decimal
+    /// @param value Signed fixed-decimal
+    /// @return Natural logarithm of `value`
+    function ln(Fixed18 value) internal pure returns (Fixed18) {
+        return Fixed18.wrap(SD59x18.unwrap(SD59x18.wrap(Fixed18.unwrap(value)).ln()));
+    }
+}
+
+/// @notice Returns the negation of a signed fixed-decimal
+/// @param a Signed fixed-decimal
+/// @return Negation of `a`
+function neg(Fixed18 a) pure returns (Fixed18) {
+    return Fixed18.wrap(-Fixed18.unwrap(a));
 }
 
 /// @notice Adds two signed fixed-decimals `a` and `b` together
