@@ -2,13 +2,13 @@
 pragma solidity 0.8.24;
 
 import { RootTest } from "../RootTest.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import { IAirdrop, Airdrop } from "../../src/distribution/Airdrop.sol";
 import { MerkleProof1, MerkleProof2 } from "../testutil/MerkleProofs.sol";
 import { ERC20Mintable } from "../testutil/ERC20Mintable.sol";
 import { Token18 } from "../../src/token/types/Token18.sol";
 import { UFixed18 } from "../../src/number/types/UFixed18.sol";
+
 contract AirdropTest is RootTest {
     Airdrop public airdrop;
     Token18 public airdropToken;

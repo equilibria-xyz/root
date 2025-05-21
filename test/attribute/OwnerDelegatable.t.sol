@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import { ERC20, ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
-import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import { EIP712 } from "@openzeppelin/contracts/governance/utils/Votes.sol";
 import { Test } from "forge-std/Test.sol";
