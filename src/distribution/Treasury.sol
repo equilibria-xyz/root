@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { Token, TokenLib } from "../token/types/Token.sol";
+import { Token } from "../token/types/Token.sol";
 import { Ownable } from "../attribute/Ownable.sol";
 import { ITreasury } from "./interfaces/ITreasury.sol";
 import { Derived } from "../mutability/Derived.sol";
