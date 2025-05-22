@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { IOwnable } from "./IOwnable.sol";
-import { IAttribute } from "../../mutability/interfaces/IAttribute.sol";
+import { IAttribute } from "../../attribute/interfaces/IAttribute.sol";
 
 interface IPausable is IAttribute, IOwnable {
     event PauserUpdated(address indexed newPauser);

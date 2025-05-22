@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { IFactory } from "./IFactory.sol";
-import { IAttribute } from "../../mutability/interfaces/IAttribute.sol";
+import { IAttribute } from "../../attribute/interfaces/IAttribute.sol";
 
 interface IInstance is IAttribute {
     // sig: 0x4d193d1f

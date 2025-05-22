@@ -6,7 +6,6 @@ import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 import { RootTest } from "../../test/RootTest.sol";
 import { Ownable } from "../../src/attribute/Ownable.sol";
 import { IMutable } from "../../src/mutability/interfaces/IMutable.sol";
-import { Mutable } from "../../src/mutability/Mutable.sol";
 import { Mutator } from "../../src/mutability/Mutator.sol";
 import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
 import { Implementation } from "../../src/mutability/Implementation.sol";
