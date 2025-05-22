@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.8.25 <0.9.0;
+pragma solidity ^0.8.20;
 
 import { UFixed18 } from "../../src/number/types/UFixed18.sol";
 import { VRGDADecayMath } from "../../src/vrgda/VRGDADecayMath.sol";
