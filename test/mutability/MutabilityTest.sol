@@ -170,6 +170,17 @@ contract SampleContractWithOldInit is Implementation, Ownable {
     }
 }
 
+/// @dev Used to test MutableVersionMismatch only
+contract SampleContractWithVersionSameAsPredecessor is Implementation, Ownable {
+    function name() public pure override returns (string memory) { return "SampleContract"; }
+
+    constructor() Implementation(VersionLib.from(1, 0, 1), VersionLib.from(1, 0, 1)) {}
+
+    function __constructor(bytes memory) internal override returns (Version) {
+        return VersionLib.from(1, 0, 1);
+    }
+}
+
 /// @dev Contract whose name does not match that expected by the mutable
 contract NonSampleContract is Implementation, Ownable {
     function name() public pure override returns (string memory) { return "NonSampleContract"; }  // intentionally does not match contract

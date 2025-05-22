@@ -6,7 +6,8 @@ import {
     NonSampleContract,
     SampleContractV1,
     SampleContractV2,
-    SampleContractWithOldInit
+    SampleContractWithOldInit,
+    SampleContractWithVersionSameAsPredecessor
 } from "./MutabilityTest.sol";
 import { IOwnable } from "../../src/attribute/Ownable.sol";
 import { VersionLib } from "../../src/mutability/types/Version.sol";
@@ -49,6 +50,13 @@ contract MutableTestV1 is MutableTestV1Deploy {
         vm.prank(owner);
         vm.expectRevert(IMutableTransparent.MutablePredecessorMismatch.selector);
         mutator.upgrade(instance2, abi.encode(888));
+    }
+
+    function test_versionMismatch() public {
+        SampleContractWithVersionSameAsPredecessor instance2 = new SampleContractWithVersionSameAsPredecessor();
+        vm.prank(owner);
+        vm.expectRevert(IMutableTransparent.MutableVersionMismatch.selector);
+        mutator.upgrade(instance2, "");
     }
 
     function test_notValidMutable() public {
@@ -98,6 +106,9 @@ contract MutableTestV1 is MutableTestV1Deploy {
         mutator.pause();
         vm.expectEmit();
         emit IMutableTransparent.Unpaused();
+        mutator.unpause();
+
+        vm.expectRevert(IMutableTransparent.UnpausedError.selector);
         mutator.unpause();
         vm.stopPrank();
 
