@@ -7,7 +7,6 @@ import { MutableTestV1Deploy, SampleContractV2 } from "./MutabilityTest.sol";
 import { IOwnable } from "../../src/attribute/Ownable.sol";
 import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
 import { IPausable } from "../../src/attribute/interfaces/IPausable.sol";
-import { Mutator } from "../../src/mutability/Mutator.sol";
 
 contract MutatorTest is MutableTestV1Deploy {
     address newOwner;

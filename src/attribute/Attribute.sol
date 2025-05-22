@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import { IAttribute } from "../mutability/interfaces/IAttribute.sol";
+import { IAttribute } from "../attribute/interfaces/IAttribute.sol";
 import { Contract } from "../mutability/Contract.sol";
 
 /// @title Attribute
