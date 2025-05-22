@@ -2,22 +2,17 @@
 pragma solidity ^0.8.20;
 
 import {
-    MutableTest,
     MutableTestV1Deploy,
     NonSampleContract,
     SampleContractV1,
     SampleContractV2,
     SampleContractWithOldInit
 } from "./MutabilityTest.sol";
-import { IOwnable, Ownable } from "../../src/attribute/Ownable.sol";
-import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
+import { IOwnable } from "../../src/attribute/Ownable.sol";
+import { VersionLib } from "../../src/mutability/types/Version.sol";
 import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
 import { IMutator } from "../../src/mutability/interfaces/IMutator.sol";
 import { IImplementation } from "../../src/mutability/interfaces/IImplementation.sol";
-import { Mutable } from "../../src/mutability/Mutable.sol";
-import { Mutator } from "../../src/mutability/Mutator.sol";
-import { console } from "../../src/utils/console.sol";
-
 
 contract MutableTestV1 is MutableTestV1Deploy {
     function test_creation() public view {

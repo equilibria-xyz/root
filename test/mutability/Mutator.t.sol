@@ -6,7 +6,7 @@ import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 import { MutableTestV1Deploy, SampleContractV2 } from "./MutabilityTest.sol";
 import { IOwnable } from "../../src/attribute/Ownable.sol";
 import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
-import { IMutator, Mutator } from "../../src/mutability/Mutator.sol";
+import { IMutator } from "../../src/mutability/Mutator.sol";
 
 contract MutatorTest is MutableTestV1Deploy {
     address newOwner;
