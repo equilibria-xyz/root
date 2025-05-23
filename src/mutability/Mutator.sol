@@ -49,13 +49,15 @@ contract Mutator is IMutator, Derived, Ownable {
         emit IMutator.PauserUpdated(newPauser);
     }
 
-    /// @notice Pauses the contract
-    /// @dev Can only be called by the owner
-    function pause() external onlyPauser { _pause(); }
+    /// @notice Pauses all proxied contracts
+    function pause() external onlyPauser {
+        for (uint256 i = 0; i < _mutables.length(); i++) IMutable(_mutables.at(i)).pause();
+    }
 
-    /// @notice Unpauses the contract
-    /// @dev Can only be called by the owner
-    function unpause() external onlyPauser { _unpause(); }
+    /// @notice Unpauses all proxied contracts
+    function unpause() external onlyPauser {
+        for (uint256 i = 0; i < _mutables.length(); i++) IMutable(_mutables.at(i)).unpause();
+    }
 
     /// @notice Upgrades the implementation of a proxy and optionally calls its initializer
     /// @param implementation New version of contract to be proxied
@@ -64,16 +66,6 @@ contract Mutator is IMutator, Derived, Ownable {
         ShortString name = ShortStrings.toShortString(implementation.name());
         if (_nameToMutable[name] == IMutable(address(0))) revert MutatorInvalidMutable();
         _nameToMutable[name].upgrade{value: msg.value}(implementation, data);
-    }
-
-    function _pause() internal {
-        for (uint256 i = 0; i < _mutables.length(); i++) IMutable(_mutables.at(i)).pause();
-        emit IMutableTransparent.Paused();
-    }
-
-    function _unpause() internal {
-        for (uint256 i = 0; i < _mutables.length(); i++) IMutable(_mutables.at(i)).unpause();
-        emit IMutableTransparent.Unpaused();
     }
 
     /// @dev Reverts if called by any account other than the pauser
