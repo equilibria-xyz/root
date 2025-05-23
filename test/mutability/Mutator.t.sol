@@ -3,11 +3,11 @@ pragma solidity ^0.8.20;
 
 import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 
-import { MutableTestV1Deploy, SampleContractV2 } from "./MutabilityTest.sol";
+import { MutableTestV1Deploy, NewContract, SampleContractV2 } from "./MutabilityTest.sol";
 import { IOwnable } from "../../src/attribute/Ownable.sol";
 import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
 import { IPausable } from "../../src/attribute/interfaces/IPausable.sol";
-import { Mutator } from "../../src/mutability/Mutator.sol";
+import { Implementation } from "../../src/mutability/Implementation.sol";
 
 contract MutatorTest is MutableTestV1Deploy {
     address newOwner;
@@ -23,13 +23,6 @@ contract MutatorTest is MutableTestV1Deploy {
         vm.expectEmit();
         emit IOwnable.PendingOwnerUpdated(newOwner);
         mutator.updatePendingOwner(newOwner);
-    }
-
-    function test_mutablesList() public view {
-        // ensure mutables list contains SampleContractV1 deployment
-        address[] memory mutables = mutator.mutables();
-        assertEq(mutables.length, 1, "Mutables list should contain one mutable");
-        assertEq(mutables[0], address(mutableContract), "Mutables list should contain the mutable");
     }
 
     function test_oldOwnerCanUpgradeBeforeNewOwnerAccepts() public {
@@ -104,6 +97,43 @@ contract MutatorTest is MutableTestV1Deploy {
         emit IMutableTransparent.Unpaused();
         mutator.unpause();
         vm.stopPrank();
+    }
+
+    function test_createMultipleMutables() public {
+        // create a new mutable
+        vm.startPrank(owner);
+        NewContract otherContract = new NewContract("OtherContract");
+        IMutableTransparent newMutable = mutator.create(otherContract, "");
+
+        // ensure mutables list contains both mutables
+        address[] memory mutables = mutator.mutables();
+        assertEq(mutables.length, 2, "Mutables list should contain two mutables");
+        assertEq(mutables[0], address(mutableContract), "First mutable should be a SampleContractV1 from setup");
+        assertEq(mutables[1], address(newMutable), "Second mutable should be OtherContract from above");
+        vm.stopPrank();
+    }
+
+    function test_createWhilePaused() public {
+        vm.startPrank(owner);
+        vm.expectEmit();
+        emit IMutableTransparent.Paused();
+        mutator.pause();
+
+        // create a new mutable while paused
+        NewContract otherContract = new NewContract("OtherContract");
+        mutator.create(otherContract, "");
+        vm.stopPrank();
+
+        // ensure first contract is paused
+        address[] memory mutables = mutator.mutables();
+        Implementation contract1 = Implementation(mutables[0]);
+        vm.expectRevert(IMutableTransparent.PausedError.selector);
+        contract1.name();
+
+        // ensure second contract is paused
+        Implementation contract2 = Implementation(mutables[1]);
+        vm.expectRevert(IMutableTransparent.PausedError.selector);
+        contract2.name();
     }
 
     function test_revertsNonOwnerCannotSetPauser() public {
