@@ -6,7 +6,8 @@ import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 import { MutableTestV1Deploy, SampleContractV2 } from "./MutabilityTest.sol";
 import { IOwnable } from "../../src/attribute/Ownable.sol";
 import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
-import { IMutator } from "../../src/mutability/Mutator.sol";
+import { IPausable } from "../../src/attribute/interfaces/IPausable.sol";
+import { Mutator } from "../../src/mutability/Mutator.sol";
 
 contract MutatorTest is MutableTestV1Deploy {
     address newOwner;
@@ -112,12 +113,12 @@ contract MutatorTest is MutableTestV1Deploy {
     }
 
     function test_revertsOnUnauthorizedPause() public {
-        vm.expectRevert(abi.encodeWithSelector(IMutator.MutatorNotPauserError.selector, address(this)));
+        vm.expectRevert(abi.encodeWithSelector(IPausable.PausableNotPauserError.selector, address(this)));
         mutator.pause();
     }
 
     function test_revertsOnUnauthorizedUnPause() public {
-        vm.expectRevert(abi.encodeWithSelector(IMutator.MutatorNotPauserError.selector, address(this)));
+        vm.expectRevert(abi.encodeWithSelector(IPausable.PausableNotPauserError.selector, address(this)));
         mutator.unpause();
     }
 }
