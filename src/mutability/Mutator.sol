@@ -37,6 +37,9 @@ contract Mutator is IMutator, Derived, Pausable {
     ) public onlyOwner returns (IMutableTransparent newMutable) {
         _mutables.add(address(newMutable = new Mutable(implementation, data)));
         _nameToMutable[ShortStrings.toShortString(implementation.name())] = IMutable(address(newMutable));
+
+        // ensure state of new mutable is consistent with mutator
+        if (paused()) IMutable(address(newMutable)).pause();
     }
 
     /// @notice Upgrades the implementation of a proxy and optionally calls its initializer
