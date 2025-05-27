@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity 0.8.24;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
+import { Derived } from "../mutability/Derived.sol";
+import { Ownable } from "../attribute/Ownable.sol";
 import { Token18 } from "../token/types/Token18.sol";
 import { UFixed18 } from "../number/types/UFixed18.sol";
 import { IAirdrop } from "./interfaces/IAirdrop.sol";
@@ -12,14 +13,16 @@ import { IAirdrop } from "./interfaces/IAirdrop.sol";
 /// @title Airdrop
 /// @notice A contract for distributing token airdrops using a merkle tree
 /// @dev Inspired by Uniswap https://github.com/Uniswap/merkle-distributor/blob/master/contracts/MerkleDistributor.sol at commit 25a79e8
-contract Airdrop is IAirdrop, Ownable {
+contract Airdrop is IAirdrop, Derived, Ownable {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     mapping(bytes32 merkleRoot => Token18 token) public distributions;
     mapping(bytes32 merkleRoot => mapping(uint256 index => uint256 claimed)) private _claimed;
     EnumerableSet.Bytes32Set private _merkleRoots;
 
-    constructor() Ownable(msg.sender) {}
+    constructor() {
+        __Ownable__constructor();
+    }
 
     /// @inheritdoc IAirdrop
     function addDistributions(Token18 token, bytes32 merkleRoot) external override onlyOwner {
