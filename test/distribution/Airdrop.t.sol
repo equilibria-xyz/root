@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity 0.8.24;
 
-import { RootTest } from "../RootTest.sol";
-
 import { IAirdrop, Airdrop } from "../../src/distribution/Airdrop.sol";
+import { UFixed18 } from "../../src/number/types/UFixed18.sol";
+import { IOwnable } from "../../src/attribute/interfaces/IOwnable.sol";
+import { Token18 } from "../../src/token/types/Token18.sol";
+
 import { MerkleProof1, MerkleProof2 } from "../testutil/MerkleProofs.sol";
 import { ERC20Mintable } from "../testutil/ERC20Mintable.sol";
-import { Token18 } from "../../src/token/types/Token18.sol";
-import { UFixed18 } from "../../src/number/types/UFixed18.sol";
+import { RootTest } from "../RootTest.sol";
 
 contract AirdropTest is RootTest {
     Airdrop public airdrop;
@@ -15,6 +16,7 @@ contract AirdropTest is RootTest {
     MerkleProof1 public merkleProof1;
     MerkleProof2 public merkleProof2;
     address public owner = makeAddr("OWNER");
+    address public nonOwner = makeAddr("NON_OWNER");
 
     function setUp() public {
         airdropToken = Token18.wrap(address(new ERC20Mintable("Test Token", "TEST")));
@@ -28,6 +30,8 @@ contract AirdropTest is RootTest {
     function test_addDistribution() public {
         Token18 token = airdropToken;
         bytes32 merkleRoot = bytes32(uint256(1));
+
+        // Non-owner tries to add a distribution
         vm.prank(owner);
         airdrop.addDistributions(token, merkleRoot);
 
@@ -36,6 +40,32 @@ contract AirdropTest is RootTest {
         vm.prank(owner);
         vm.expectRevert(IAirdrop.AirdropDistributionAlreadyExists.selector);
         airdrop.addDistributions(token, merkleRoot);
+    }
+
+    function test_removeRoot() public {
+        Token18 token = airdropToken;
+        bytes32 merkleRoot = bytes32(uint256(1));
+        vm.prank(owner);
+        airdrop.addDistributions(token, merkleRoot);
+
+        assertEq(Token18.unwrap(airdrop.distributions(merkleRoot)), Token18.unwrap(token));
+
+        // Owner tries to remove a non-existent root
+        vm.prank(owner);
+        vm.expectRevert(IAirdrop.AirdropRootDoesNotExist.selector);
+        airdrop.removeDistribution(bytes32(uint256(2)));
+
+        // Non-owner tries to remove a root
+        vm.prank(nonOwner);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, nonOwner));
+        airdrop.removeDistribution(merkleRoot);
+
+        // Owner removes a distribution
+        vm.prank(owner);
+        airdrop.removeDistribution(merkleRoot);
+
+        // Check that the distribution is removed
+        assertEq(Token18.unwrap(airdrop.distributions(merkleRoot)), address(0));
     }
 
     function test_merkleRoots() public {
@@ -205,5 +235,22 @@ contract AirdropTest is RootTest {
         vm.prank(user);
         vm.expectRevert(IAirdrop.AirdropInvalidProof.selector);
         airdrop.claim(user, indexes, amounts, proofs, merkleRoot);
+    }
+
+    function test_drain() public {
+        // Non-owner tries to withdraw unused tokens
+        vm.prank(nonOwner);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, nonOwner));
+        airdrop.drain(airdropToken, UFixed18.wrap(100_000_000 * 1e18));
+
+        UFixed18 balanceBefore = airdropToken.balanceOf(address(airdrop));
+
+        // Owner withdraws unused tokens
+        vm.prank(owner);
+        airdrop.drain(airdropToken, UFixed18.wrap(100_000_000 * 1e18));
+
+        // Check that the tokens are withdrawn
+        assertUFixed18Eq(airdropToken.balanceOf(owner), UFixed18.wrap(100_000_000 * 1e18));
+        assertUFixed18Eq(airdropToken.balanceOf(address(airdrop)), balanceBefore - UFixed18.wrap(100_000_000 * 1e18));
     }
 }

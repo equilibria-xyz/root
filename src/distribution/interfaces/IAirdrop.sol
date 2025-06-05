@@ -11,6 +11,12 @@ interface IAirdrop {
     /// @dev This event is triggered when adding a new distribution
     event DistributionAdded(Token18 indexed token, bytes32 indexed merkleRoot);
 
+    /// @dev This event is triggered when removing a distribution
+    event DistributionRemoved(bytes32 indexed merkleRoot);
+
+    /// @dev This event is triggered when draining tokens from the contract
+    event Drained(Token18 indexed token, address indexed to, UFixed18 amount);
+
     // sig: 0xe4ca4c0b
     /// @custom:error Airdrop is already claimed
     error AirdropAlreadyClaimed();
@@ -22,6 +28,10 @@ interface IAirdrop {
     // sig: 0xac4d0508
     /// @custom:error Distribution with same merkle root already exists
     error AirdropDistributionAlreadyExists();
+
+    // sig: 0x0adf5a70
+    /// @custom:error Airdrop root does not exist
+    error AirdropRootDoesNotExist();
 
     /// @notice Returns true if the index has been marked claimed.
     /// @param index The index into the merkle tree
@@ -47,6 +57,15 @@ interface IAirdrop {
     /// @param token The address of the token to distribute
     /// @param merkleRoot The merkle root of the merkle tree containing account balances available to claim
     function addDistributions(Token18 token, bytes32 merkleRoot) external;
+
+    /// @notice Remove a distribution from the contract.
+    /// @param merkleRoot The merkle root of the merkle tree to remove
+    function removeDistribution(bytes32 merkleRoot) external;
+
+    /// @notice Withdraw unused tokens from the contract.
+    /// @param token The address of the token to withdraw
+    /// @param amount The amount of tokens to withdraw
+    function drain(Token18 token, UFixed18 amount) external;
 
     /// @notice Returns the list of all merkle roots
     /// @return An array of all merkle roots
