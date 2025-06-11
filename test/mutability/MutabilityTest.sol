@@ -7,7 +7,6 @@ import { RootTest } from "../../test/RootTest.sol";
 import { Ownable } from "../../src/attribute/Ownable.sol";
 import { IMutable } from "../../src/mutability/interfaces/IMutable.sol";
 import { Mutator } from "../../src/mutability/Mutator.sol";
-import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
 import { Implementation } from "../../src/mutability/Implementation.sol";
 import { IImplementation } from "../../src/mutability/interfaces/IImplementation.sol";
 import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
@@ -90,16 +89,16 @@ contract SampleContractV1 is Implementation, Ownable {
 
     function name() public pure override returns (string memory) { return "SampleContract"; }
 
-    constructor(uint256 immutableValue_) Implementation(VersionLib.from(1, 0, 1), VersionLib.from(0, 0, 0)) {
+    constructor(uint256 immutableValue_) Implementation("1.0.1", "0.0.0") {
         immutableValue = immutableValue_;
     }
 
-    function __constructor(bytes memory) internal override returns (Version) {
+    function __constructor(bytes memory) internal override returns (string memory) {
         __Ownable__constructor();
 
         value = 112;
 
-        return VersionLib.from(1, 0, 1);
+        return "1.0.1";
     }
 
     function setValue(uint256 value_) external onlyOwner() {
@@ -121,17 +120,17 @@ contract SampleContractV2 is Implementation, Ownable {
 
     error CustomError();
 
-    constructor(uint256 immutableValue_) Implementation(VersionLib.from(2, 0, 1), VersionLib.from(1, 0, 1)) {
+    constructor(uint256 immutableValue_) Implementation("2.0.1", "1.0.1") {
         immutableValue = immutableValue_;
     }
 
-    function __constructor(bytes memory initParams) internal override returns (Version) {
+    function __constructor(bytes memory initParams) internal override returns (string memory) {
         // __Ownable__initialize() was already called in V1
 
         value1 += 1;
         value2 = abi.decode(initParams, (int256));
 
-        return VersionLib.from(2, 0, 1);
+        return "2.0.1";
     }
 
     function setValues(uint256 value1_, int256 value2_) external onlyOwner() {
@@ -156,17 +155,17 @@ contract SampleContractWithOldInit is Implementation, Ownable {
     uint256 public value1; // no storage change between V2.0.1 and V2.0.2
     int256 public value2;
 
-    constructor(uint256 immutableValue_) Implementation(VersionLib.from(2, 0, 2), VersionLib.from(2, 0, 1)) {
+    constructor(uint256 immutableValue_) Implementation("2.0.2", "2.0.1") {
         immutableValue = immutableValue_;
     }
 
-    function __constructor(bytes memory) internal override returns (Version) {
+    function __constructor(bytes memory) internal override returns (string memory) {
         // __Ownable__constructor() was already called in V1
 
         value1 = 676;
         value2 = -767;
 
-        return VersionLib.from(2, 0, 1); // intentionally does not match contract
+        return "2.0.1"; // intentionally does not match contract
     }
 }
 
@@ -174,10 +173,10 @@ contract SampleContractWithOldInit is Implementation, Ownable {
 contract SampleContractWithVersionSameAsPredecessor is Implementation, Ownable {
     function name() public pure override returns (string memory) { return "SampleContract"; }
 
-    constructor() Implementation(VersionLib.from(1, 0, 1), VersionLib.from(1, 0, 1)) {}
+    constructor() Implementation("1.0.1", "1.0.1") {}
 
-    function __constructor(bytes memory) internal pure override returns (Version) {
-        return VersionLib.from(1, 0, 1);
+    function __constructor(bytes memory) internal pure override returns (string memory) {
+        return "1.0.1";
     }
 }
 
@@ -187,14 +186,14 @@ contract NewContract is Implementation, Ownable {
 
     function name() public view override returns (string memory) { return _name; }
 
-    constructor(string memory name_) Implementation(VersionLib.from(0, 0, 1), VersionLib.from(0, 0, 0)) {
+    constructor(string memory name_) Implementation("0.0.1", "0.0.0") {
         _name = name_;
     }
 
-    function __constructor(bytes memory) internal override returns (Version) {
+    function __constructor(bytes memory) internal override returns (string memory) {
         __Ownable__constructor();
 
-        return VersionLib.from(0, 0, 1);
+        return "0.0.1";
     }
 }
 
@@ -202,11 +201,11 @@ contract NewContract is Implementation, Ownable {
 contract NonSampleContract is Implementation, Ownable {
     function name() public pure override returns (string memory) { return "NonSampleContract"; }  // intentionally does not match contract
 
-    constructor() Implementation(VersionLib.from(1, 1, 0), VersionLib.from(1, 0, 0)) {}
+    constructor() Implementation("1.1.0", "1.0.0") {}
 
-    function __constructor(bytes memory) internal override returns (Version) {
+    function __constructor(bytes memory) internal override returns (string memory) {
         __Ownable__constructor();
 
-        return VersionLib.from(1, 1, 0);
+        return "1.1.0";
     }
 }

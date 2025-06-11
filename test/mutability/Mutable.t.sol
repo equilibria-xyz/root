@@ -10,22 +10,21 @@ import {
     SampleContractWithVersionSameAsPredecessor
 } from "./MutabilityTest.sol";
 import { IOwnable } from "../../src/attribute/Ownable.sol";
-import { VersionLib } from "../../src/mutability/types/Version.sol";
 import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
 import { IMutator } from "../../src/mutability/interfaces/IMutator.sol";
 import { IImplementation } from "../../src/mutability/interfaces/IImplementation.sol";
 
 contract MutableTestV1 is MutableTestV1Deploy {
     function test_creation() public view {
-        assertEq(instance1.version(), VersionLib.from(1, 0, 1), "Version should be 1.0.1 after deployment");
+        assertEq(instance1.version(), "1.0.1", "Version should be 1.0.1 after deployment");
         assertEq(instance1.immutableValue(), 101, "Immutable value should be 101");
         assertEq(instance1.getValue(), 112, "Initializer should have set value");
     }
 
     function test_identify() public view {
         assertEq(instance1.name(), "SampleContract", "Implementation name should be SampleContract");
-        assertEq(instance1.version(), VersionLib.from(1, 0, 1), "Implementation version should be 1.0.1");
-        assertEq(instance1.predecessor(), VersionLib.from(0, 0, 0), "Implementation predecessor should be 0.0.0");
+        assertEq(instance1.version(), "1.0.1", "Implementation version should be 1.0.1");
+        assertEq(instance1.predecessor(), "0.0.0", "Implementation predecessor should be 0.0.0");
     }
 
     function test_interaction() public {
@@ -36,7 +35,7 @@ contract MutableTestV1 is MutableTestV1Deploy {
 
     function test_upgrade() public {
         SampleContractV2 instance2 = upgrade();
-        assertEq(instance2.version(), VersionLib.from(2, 0, 1), "Version should be 2.0.1 after upgrade");
+        assertEq(instance2.version(), "2.0.1", "Version should be 2.0.1 after upgrade");
         assertEq(instance2.owner(), implementationOwner, "Owner should still be implementationOwner");
         assertEq(instance2.immutableValue(), 201, "Immutable value should be 201");
         (uint256 value1, int256 value2) = instance2.getValues();
@@ -143,8 +142,8 @@ contract MutableTestV2 is MutableTestV1Deploy {
 
     function test_identify() public view {
         assertEq(instance2.name(), "SampleContract", "Implementation name should be SampleContract2");
-        assertEq(instance2.version(), VersionLib.from(2, 0, 1), "Implementation version should be 2");
-        assertEq(instance2.predecessor(), VersionLib.from(1, 0, 1), "Implementation predecessor should be 1.0.1");
+        assertEq(instance2.version(), "2.0.1", "Implementation version should be 2");
+        assertEq(instance2.predecessor(), "1.0.1", "Implementation predecessor should be 1.0.1");
     }
 
     function test_interactionPostUpgrade() public {
