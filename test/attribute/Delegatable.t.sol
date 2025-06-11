@@ -6,16 +6,16 @@ import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import { EIP712 } from "@openzeppelin/contracts/governance/utils/Votes.sol";
 import { Test } from "forge-std/Test.sol";
 
-import { OwnerDelegatable, Ownable } from "../../src/attribute/OwnerDelegatable.sol";
+import { Delegatable, Ownable } from "../../src/attribute/Delegatable.sol";
 import { MockOwnable } from "./Ownable.t.sol";
 import { MockMutable } from "../mutability/Mutable.t.sol";
 
-contract OwnerDelegatableTest is Test {
+contract DelegatableTest is Test {
     event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
 
     error OwnableNotOwnerError(address owner);
 
-    MockOwnerDelegatable public ownerDelegatable;
+    MockDelegatable public delegatable;
     MockERC20Votes public mockToken;
     MockMutable public mockMutable;
 
@@ -30,7 +30,7 @@ contract OwnerDelegatableTest is Test {
 
         // Deploy contracts from the owner address
         vm.startPrank(owner);
-        ownerDelegatable = new MockOwnerDelegatable();
+        delegatable = new MockDelegatable();
         mockMutable = new MockMutable(owner);
 
         mockToken = new MockERC20Votes();
@@ -38,28 +38,28 @@ contract OwnerDelegatableTest is Test {
         vm.stopPrank();
 
         vm.prank(address(mockMutable));
-        ownerDelegatable.construct("");
+        delegatable.construct("");
     }
 
     function test_successfulDelegation() public {
         // Expect DelegateChanged event on delegation
         vm.prank(owner);
         vm.expectEmit(true, true, true, false); // indexed fields only
-        emit DelegateChanged(address(ownerDelegatable), address(0), user);
+        emit DelegateChanged(address(delegatable), address(0), user);
 
-        ownerDelegatable.delegate(IVotes(address(mockToken)), user);
+        delegatable.delegate(IVotes(address(mockToken)), user);
     }
 
     function test_revertsIfNotOwner() public {
         // Attempting delegation from non-owner should revert
         vm.prank(user);
         vm.expectRevert(abi.encodeWithSelector(OwnableNotOwnerError.selector, user));
-        ownerDelegatable.delegate(IVotes(address(mockToken)), unrelated);
+        delegatable.delegate(IVotes(address(mockToken)), unrelated);
     }
 }
 
-contract MockOwnerDelegatable is MockOwnable, OwnerDelegatable {
-    function delegate(IVotes token, address delegatee) public override(OwnerDelegatable) {
+contract MockDelegatable is MockOwnable, Delegatable {
+    function delegate(IVotes token, address delegatee) public override(Delegatable) {
         super.delegate(token, delegatee);
     }
 
