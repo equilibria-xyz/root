@@ -5,7 +5,6 @@ import { Test } from "forge-std/Test.sol";
 
 import { Attribute, IAttribute } from "../../src/attribute/Attribute.sol";
 import { Implementation } from "../../src/mutability/Implementation.sol";
-import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
 import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract AttributeTest is Test {
@@ -39,11 +38,11 @@ contract MockAttribute is Implementation, Attribute {
 
     function name() public pure override returns (string memory) { return "MockAttribute"; }
 
-    constructor() Implementation(VersionLib.from(0, 0, 1), VersionLib.from(0, 0, 0)) {}
+    constructor() Implementation("0.0.1", "0.0.0") {}
 
-    function __constructor(bytes memory data) internal override returns (Version) {
+    function __constructor(bytes memory data) internal override returns (string memory) {
         _init(abi.decode(data, (string)));
-        return VersionLib.from(0, 0, 1);
+        return "0.0.1";
     }
 
     function init(string memory attribute) external  {

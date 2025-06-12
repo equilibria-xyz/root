@@ -5,7 +5,6 @@ import { Test } from "forge-std/Test.sol";
 
 import { Implementation } from "../../src/mutability/Implementation.sol";
 import { Ownable } from "../../src/attribute/Ownable.sol";
-import { Version, VersionLib } from "../../src/mutability/types/Version.sol";
 import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract OwnableTest is Test {
@@ -149,12 +148,12 @@ contract MockOwnable is Implementation, Ownable {
 
     function name() public pure override returns (string memory) { return "MockOwnable"; }
 
-    constructor() Implementation(VersionLib.from(0, 0, 1), VersionLib.from(0, 0, 0)) {}
+    constructor() Implementation("0.0.1", "0.0.0") {}
 
-    function __constructor(bytes memory) internal override returns (Version) {
+    function __constructor(bytes memory) internal override returns (string memory) {
         __Ownable__constructor();
 
-        return VersionLib.from(0, 0, 1);
+        return "0.0.1";
     }
 
     function notConstructor() external {

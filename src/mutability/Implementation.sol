@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
+import { ShortString, ShortStrings } from "@openzeppelin/contracts/utils/ShortStrings.sol";
+import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+
 import { IImplementation } from "./interfaces/IImplementation.sol";
 import { IMutator } from "./interfaces/IMutator.sol";
 import { Contract } from "./Contract.sol";
-import { Version } from "./types/Version.sol";
 
 /// @title Implementation
 /// @notice Implementation of Contract for upgradeable contracts.
@@ -26,26 +28,36 @@ abstract contract Implementation is IImplementation, Contract {
     }
 
     /// @dev The version of this implementation.
-    Version public immutable version;
+    ShortString private immutable _version;
 
     /// @dev The version of the predecessor implementation.
-    Version public immutable predecessor;
+    ShortString private immutable _predecessor;
 
     /// @dev Constructor for the implementation.
-    constructor(Version version_, Version predecessor_) {
-        version = version_;
-        predecessor = predecessor_;
+    constructor(string memory version_, string memory predecessor_) {
+        _version = ShortStrings.toShortString(version_);
+        _predecessor = ShortStrings.toShortString(predecessor_);
     }
 
     /// @dev The name of the implementation.
     function name() external view virtual returns (string memory);
 
+    /// @dev The version of this implementation.
+    function version() public view virtual returns (string memory) {
+        return ShortStrings.toString(_version);
+    }
+
+    /// @dev The version of the predecessor implementation.
+    function predecessor() external view virtual returns (string memory) {
+        return ShortStrings.toString(_predecessor);
+    }
+
     /// @dev Called at upgrade time to initialize the contract with `data`.
     function construct(bytes memory data) external {
         Implementation$().constructing = true;
 
-        Version constructorVersion = __constructor(data);
-        if (constructorVersion != version) revert ImplementationConstructorVersionMismatch();
+        string memory constructorVersion = __constructor(data);
+        if (!Strings.equal(constructorVersion, version())) revert ImplementationConstructorVersionMismatch();
 
         Implementation$().constructing = false;
     }
@@ -61,5 +73,5 @@ abstract contract Implementation is IImplementation, Contract {
     }
 
     /// @dev Hook for inheriting contracts to construct the contract.
-    function __constructor(bytes memory data) internal virtual returns (Version);
+    function __constructor(bytes memory data) internal virtual returns (string memory);
 }

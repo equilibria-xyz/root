@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.20;
 
+import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+import { ShortString, ShortStrings } from "@openzeppelin/contracts/utils/ShortStrings.sol";
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 import { IMutable, IMutableTransparent } from "./interfaces/IMutable.sol";
 import { IImplementation } from "./interfaces/IImplementation.sol";
-import { Version, VersionLib } from "./types/Version.sol";
 
 /// @title Mutable
 /// @notice A mostly-transparent upgradeable proxy with facilities to prevent deployment errors.
@@ -17,12 +18,14 @@ import { Version, VersionLib } from "./types/Version.sol";
 ///      Implementations must be initialized using calldata during deployment and upgrade.
 ///      Users are exposed to ProxyPausedError when the proxied contract is paused.
 contract Mutable is IMutableTransparent, Proxy {
+    string constant private NULL_VERSION = "0.0.0";
+
     address private immutable _mutator;
     address private immutable _pauseTarget;
 
     /// @custom:storage-location erc7201:equilibria.root.Proxy
     struct MutableStorage {
-        Version version;
+        ShortString version;
         address paused;
     }
 
@@ -93,17 +96,20 @@ contract Mutable is IMutableTransparent, Proxy {
     /// @dev Upgrades the implementation of the proxy.
     function _upgrade(IImplementation newImplementation, bytes memory data) private {
         // validate the upgrade metadata of the new implementation
-        if (
-            (_implementation() == address(0) ? VersionLib.from(0, 0, 0) : IImplementation(_implementation()).version())
-            != newImplementation.predecessor()
-        ) revert MutablePredecessorMismatch();
-        if (newImplementation.version() == Mutable$().version) revert MutableVersionMismatch();
+        if (!Strings.equal(
+            (_implementation() == address(0) ? NULL_VERSION : IImplementation(_implementation()).version()),
+            newImplementation.predecessor()
+        )) revert MutablePredecessorMismatch();
+        if (Strings.equal(
+            newImplementation.version(),
+            ShortStrings.toString(Mutable$().version)
+        )) revert MutableVersionMismatch();
 
         // update the implementation and call its constructor
         ERC1967Utils.upgradeToAndCall(address(newImplementation), abi.encodeCall(IImplementation.construct, (data)));
 
         // record the new implementation version
-        Mutable$().version = newImplementation.version();
+        Mutable$().version = ShortStrings.toShortString(newImplementation.version());
     }
 
     /// @dev Pauses the proxy by setting the implementation to the MutablePauseTarget.
