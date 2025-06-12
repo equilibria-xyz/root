@@ -3,11 +3,13 @@ pragma solidity ^0.8.13;
 
 import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 
+import { IDelegatable } from "./interfaces/IDelegatable.sol";
+import { Attribute } from "./Attribute.sol";
 import { Ownable } from "./Ownable.sol";
 
-/// @title OwnerDelegatable
+/// @title Delegatable
 /// @notice Allows the owner to delegate governance voting power for held tokens
-abstract contract OwnerDelegatable is Ownable {
+abstract contract Delegatable is IDelegatable, Attribute, Ownable {
     /// @notice Delegates voting power for a specific token to an address
     /// @dev Can only be called by the owner
     /// @param token The IVotes-compatible token to delegate

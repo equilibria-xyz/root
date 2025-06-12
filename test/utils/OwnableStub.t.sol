@@ -3,8 +3,8 @@ pragma solidity ^0.8.17;
 
 import { Test } from "forge-std/Test.sol";
 
-import { OwnableStub } from "../../src/attribute/OwnableStub.sol";
-import { MockOwnable } from "./Ownable.t.sol";
+import { OwnableStub } from "../../src/utils/OwnableStub.sol";
+import { MockOwnable } from "../attribute/Ownable.t.sol";
 import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract OwnableStubTest is Test {

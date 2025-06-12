@@ -2,7 +2,7 @@ pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
 import { Treasury } from "../../src/distribution/Treasury.sol";
-import { MockERC20 } from "../attribute/OwnerWithdrawable.t.sol";
+import { MockERC20 } from "../attribute/Withdrawable.t.sol";
 import { IOwnable } from "../../src/attribute/interfaces/IOwnable.sol";
 import { Token } from "../../src/token/types/Token.sol";
 
