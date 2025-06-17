@@ -5,7 +5,6 @@ import { UFixed18 } from "../../number/types/UFixed18.sol";
 import { VRGDADecayMath } from "../VRGDADecayMath.sol";
 import { VRGDAIssuanceMath } from "../VRGDAIssuanceMath.sol";
 
-// TODO: change time to year for bounds?
 struct LinearExponentialVRGDA {
     UFixed18 timestamp; // block timestamp of the start of the auction (seconds)
     UFixed18 price; // Price coefficient of the VRGDA per token (k)
