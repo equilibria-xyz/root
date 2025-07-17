@@ -48,7 +48,7 @@ contract Mutator is IMutator, Derived, Pausable {
     function upgrade(IImplementation implementation, bytes memory data) public payable onlyOwner {
         ShortString name = ShortStrings.toShortString(implementation.name());
         if (_nameToMutable[name] == IMutable(address(0))) revert MutatorInvalidMutable();
-        _nameToMutable[name].upgrade{value: msg.value}(implementation, data);
+        _nameToMutable[name].upgrade(implementation, data);
     }
 
     function _pause() internal override {
