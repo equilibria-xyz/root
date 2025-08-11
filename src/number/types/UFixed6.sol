@@ -148,7 +148,7 @@ library UFixed6Lib {
     /// @param c Unsigned number to divide by
     /// @return Resulting computation
     function muldiv(UFixed6 a, uint256 b, uint256 c) internal pure returns (UFixed6) {
-        return muldivFixed(a, UFixed6.wrap(b), UFixed6.wrap(c));
+        return muldiv(a, UFixed6.wrap(b), UFixed6.wrap(c));
     }
 
     /// @notice Computes a * b / c without loss of precision due to BASE conversion, rounding the result up to the next integer if there is a remainder
@@ -157,7 +157,7 @@ library UFixed6Lib {
     /// @param c Unsigned number to divide by
     /// @return Resulting computation
     function muldivOut(UFixed6 a, uint256 b, uint256 c) internal pure returns (UFixed6) {
-        return muldivOutFixed(a, UFixed6.wrap(b), UFixed6.wrap(c));
+        return muldivOut(a, UFixed6.wrap(b), UFixed6.wrap(c));
     }
 
     /// @notice Computes a * b / c without loss of precision due to BASE conversion
@@ -165,7 +165,7 @@ library UFixed6Lib {
     /// @param b Unsigned fixed-decimal to multiply by
     /// @param c Unsigned fixed-decimal to divide by
     /// @return Resulting computation
-    function muldivFixed(UFixed6 a, UFixed6 b, UFixed6 c) internal pure returns (UFixed6) {
+    function muldiv(UFixed6 a, UFixed6 b, UFixed6 c) internal pure returns (UFixed6) {
         return UFixed6.wrap(UFixed6.unwrap(a) * UFixed6.unwrap(b) / UFixed6.unwrap(c));
     }
 
@@ -174,7 +174,7 @@ library UFixed6Lib {
     /// @param b Unsigned fixed-decimal to multiply by
     /// @param c Unsigned fixed-decimal to divide by
     /// @return Resulting computation
-    function muldivOutFixed(UFixed6 a, UFixed6 b, UFixed6 c) internal pure returns (UFixed6) {
+    function muldivOut(UFixed6 a, UFixed6 b, UFixed6 c) internal pure returns (UFixed6) {
         return UFixed6.wrap(NumberMath.divOut(UFixed6.unwrap(a) * UFixed6.unwrap(b), UFixed6.unwrap(c)));
     }
 

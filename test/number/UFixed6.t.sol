@@ -221,11 +221,11 @@ contract UFixed6Test is Test {
 
         UFixed6 b = UFixed6Lib.from(10);
         UFixed6 c = UFixed6Lib.from(2);
-        assertEq(UFixed6.unwrap(a.muldivFixed(b, c)), 100e6, "muldiv(uf6, uf6, uf6)");
+        assertEq(UFixed6.unwrap(a.muldiv(b, c)), 100e6, "muldiv(uf6, uf6, uf6)");
 
         a = UFixed6.wrap(1_111111);
         b = UFixed6.wrap(3_333333);
-        assertEq(UFixed6.unwrap(a.muldivFixed(b, b)), 1_111111, "muldiv(uf6, uf6, uf6) precision");
+        assertEq(UFixed6.unwrap(a.muldiv(b, b)), 1_111111, "muldiv(uf6, uf6, uf6) precision");
     }
 
     function test_mulDivRoundsTowardsZero() public pure {
@@ -235,7 +235,7 @@ contract UFixed6Test is Test {
         a = UFixed6.wrap(1);
         UFixed6 b = UFixed6.wrap(21);
         UFixed6 c = UFixed6.wrap(10);
-        assertEq(UFixed6.unwrap(a.muldivFixed(b, c)), 2, "muldiv(uf6, uf6, uf6) 1*21/10 = 2");
+        assertEq(UFixed6.unwrap(a.muldiv(b, c)), 2, "muldiv(uf6, uf6, uf6) 1*21/10 = 2");
     }
 
     function test_mulDivSignedRevertsIfDivisorIsZero() public {
@@ -258,14 +258,14 @@ contract UFixed6Test is Test {
 
         UFixed6 b = UFixed6Lib.from(10);
         UFixed6 c = UFixed6Lib.from(2);
-        assertEq(UFixed6.unwrap(a.muldivOutFixed(b, c)), 100e6, "muldivOut(uf6, uf6, uf6)");
+        assertEq(UFixed6.unwrap(a.muldivOut(b, c)), 100e6, "muldivOut(uf6, uf6, uf6)");
 
         a = UFixed6.wrap(1_111111);
         uint256 bi = 333333;
         assertEq(UFixed6.unwrap(a.muldivOut(bi, bi)), 1_111111, "muldivOut(uf6, uint256, uint256) precision");
 
         b = UFixed6.wrap(333333);
-        assertEq(UFixed6.unwrap(a.muldivOutFixed(b, b)), 1_111111, "muldivOut(uf6, uf6, uf6) precision");
+        assertEq(UFixed6.unwrap(a.muldivOut(b, b)), 1_111111, "muldivOut(uf6, uf6, uf6) precision");
     }
 
     function test_mulDivOutRoundsAwayFromZero() public pure {
@@ -275,7 +275,7 @@ contract UFixed6Test is Test {
         a = UFixed6.wrap(1);
         UFixed6 b = UFixed6.wrap(21);
         UFixed6 c = UFixed6.wrap(10);
-        assertEq(UFixed6.unwrap(a.muldivOutFixed(b, c)), 3, "muldivOut(uf6, uf6, uf6) 1*21/10 = 3");
+        assertEq(UFixed6.unwrap(a.muldivOut(b, c)), 3, "muldivOut(uf6, uf6, uf6) 1*21/10 = 3");
     }
 
     function test_mulDivOutFixedRevertsIfDivisorIsZero() public {
@@ -470,7 +470,7 @@ contract MockUFixed6 {
     }
 
     function muldivFixed(UFixed6 a, UFixed6 b, UFixed6 c) external pure returns (UFixed6) {
-        return a.muldivFixed(b, c);
+        return a.muldiv(b, c);
     }
 
     function muldivOut(UFixed6 a, uint256 b, uint256 c) external pure returns (UFixed6) {
@@ -478,6 +478,6 @@ contract MockUFixed6 {
     }
 
     function muldivOutFixed(UFixed6 a, UFixed6 b, UFixed6 c) external pure returns (UFixed6) {
-        return a.muldivOutFixed(b, c);
+        return a.muldivOut(b, c);
     }
 }
