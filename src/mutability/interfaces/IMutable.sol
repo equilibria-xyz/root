@@ -43,7 +43,7 @@ interface IMutable is IMutableTransparent {
     /// @dev Replaces the implementation, validating name and version
     /// @param newImplementation The new implementation contract
     /// @param data Calldata to invoke the instance's initializer
-    function upgrade(IImplementation newImplementation, bytes calldata data) external payable;
+    function upgrade(IImplementation newImplementation, bytes calldata data) external;
 
     /// @dev Prevents any interaction with the proxied contract.
     /// Implementation may be upgraded when paused.
