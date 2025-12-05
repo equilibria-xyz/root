@@ -1,0 +1,17 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+optimizer = true
+optimizer_runs = 1_000
+
+remappings = [
+    '@openzeppelin/contracts=lib/openzeppelin-contracts/contracts',
+    '@prb/math=lib/prb-math/src'
+]
+
+[fuzz]
+runs = 64
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

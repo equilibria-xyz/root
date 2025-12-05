@@ -1,0 +1,167 @@
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.13;
+
+import { Test } from "forge-std/Test.sol";
+
+import { Implementation } from "../../src/mutability/Implementation.sol";
+import { Ownable } from "../../src/attribute/Ownable.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
+
+contract OwnableTest is Test {
+    error InitializableAlreadyInitializedError();
+    error OwnableNotOwnerError(address owner);
+    error OwnableNotPendingOwnerError(address pendingOwner);
+
+    event OwnerUpdated(address indexed newOwner);
+    event PendingOwnerUpdated(address indexed newPendingOwner);
+
+    MockOwnable public ownable;
+    MockMutable public mockMutable;
+    address public owner;
+    address public user;
+    address public unrelated;
+
+    function setUp() public {
+        owner = makeAddr("owner");
+        user = makeAddr("user");
+        unrelated = makeAddr("unrelated");
+
+        // Deploy the contract with the owner as msg.sender.
+        vm.prank(owner);
+        ownable = new MockOwnable();
+        mockMutable = new MockMutable(owner);
+    }
+
+    function test_initializeInitializesOwner() public {
+        // Initially, owner should be address(0)
+        assertEq(ownable.owner(), address(0));
+
+        // Expect the OwnerUpdated event with the owner address.
+        vm.prank(address(mockMutable));
+        vm.expectEmit(true, false, false, true);
+        emit OwnerUpdated(owner);
+        ownable.construct("");
+
+        // Verify owner is now set.
+        assertEq(ownable.owner(), owner);
+    }
+
+    function test_setPendingOwnerUpdatesPendingOwner() public {
+        // Initialize first.
+        vm.prank(address(mockMutable));
+        ownable.construct("");
+
+        // Expect the PendingOwnerUpdated event.
+        vm.prank(address(owner));
+        vm.expectEmit(true, false, false, true);
+        emit PendingOwnerUpdated(user);
+        ownable.updatePendingOwner(user);
+
+        // Verify owner remains unchanged and pending owner is updated.
+        assertEq(ownable.owner(), owner);
+        assertEq(ownable.pendingOwner(), user);
+    }
+
+    function test_setPendingOwnerRevertsIfNotOwner() public {
+        vm.prank(address(mockMutable));
+        ownable.construct("");
+
+        // Using a non-owner account should revert.
+        vm.prank(user);
+        vm.expectRevert(abi.encodeWithSelector(OwnableNotOwnerError.selector, user));
+        ownable.updatePendingOwner(user);
+    }
+
+    function test_setPendingOwnerResetToZero() public {
+        vm.prank(address(mockMutable));
+        ownable.construct("");
+
+        // Reset pending owner by setting it to address(0)
+        vm.prank(address(owner));
+        vm.expectEmit(true, false, false, true);
+        emit PendingOwnerUpdated(address(0));
+        ownable.updatePendingOwner(address(0));
+
+        // Verify that pendingOwner is reset.
+        assertEq(ownable.owner(), owner);
+        assertEq(ownable.pendingOwner(), address(0));
+    }
+
+    function test_acceptOwnerTransfersOwnership() public {
+        vm.prank(address(mockMutable));
+        ownable.construct("");
+        vm.prank(address(owner));
+        ownable.updatePendingOwner(user);
+
+        // Expect the OwnerUpdated event when ownership is accepted.
+        vm.prank(user);
+        vm.expectEmit(true, false, false, true);
+        emit OwnerUpdated(user);
+        ownable.acceptOwner();
+
+        // Verify ownership transfer and pendingOwner reset.
+        assertEq(ownable.owner(), user);
+        assertEq(ownable.pendingOwner(), address(0));
+    }
+
+    function test_acceptOwnerCallsBeforeAcceptOwnerHook() public {
+        vm.prank(address(mockMutable));
+        ownable.construct("");
+        vm.prank(address(owner));
+        ownable.updatePendingOwner(user);
+
+        // Initially, beforeCalled should be false.
+        bool beforeCalled = ownable.beforeCalled();
+        assertFalse(beforeCalled);
+
+        vm.expectEmit(true, true, true, true);
+        emit OwnerUpdated(user);
+        vm.expectEmit(true, true, true, true);
+        emit PendingOwnerUpdated(address(0));
+        vm.prank(user);
+        ownable.acceptOwner();
+
+        // Verify the hook was called.
+        assertTrue(ownable.beforeCalled());
+    }
+
+    function test_acceptOwnerRevertsIfNotPendingOwner() public {
+        vm.prank(address(mockMutable));
+        ownable.construct("");
+        vm.prank(address(owner));
+        ownable.updatePendingOwner(user);
+
+        // When the caller is not the pending owner (using owner account), it should revert.
+        vm.prank(address(owner));
+        vm.expectRevert(abi.encodeWithSelector(OwnableNotPendingOwnerError.selector, owner));
+        ownable.acceptOwner();
+
+        // Similarly, using an unrelated account should revert.
+        vm.prank(unrelated);
+        vm.expectRevert(abi.encodeWithSelector(OwnableNotPendingOwnerError.selector, unrelated));
+        ownable.acceptOwner();
+    }
+}
+
+contract MockOwnable is Implementation, Ownable {
+    bool public beforeCalled;
+
+    function name() public pure override returns (string memory) { return "MockOwnable"; }
+
+    constructor() Implementation("0.0.1", "0.0.0") {}
+
+    function __constructor(bytes memory) internal override returns (string memory) {
+        __Ownable__constructor();
+
+        return "0.0.1";
+    }
+
+    function notConstructor() external {
+        __Ownable__constructor();
+    }
+
+    function _beforeAcceptOwner() internal virtual override {
+        beforeCalled = true;
+        super._beforeAcceptOwner();
+    }
+}

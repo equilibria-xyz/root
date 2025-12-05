@@ -1,0 +1,4 @@
+{
+  "filter_paths": "lib",
+  "detectors_to_exclude": "arbitrary-send-erc20,assembly-usage"
+}

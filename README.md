@@ -8,74 +8,91 @@ Core library for DeFi.
 | **accumulator** | tracks cumulative changes to a value           |
 | **attribute**   | abstract contracts with foundational patterns  |
 | **number**      | fixed decimal types and math functions         |
-| **pid**         | proportional integral derivative controller    |
+| **synbook**     | synthetic orderbook                            |
 | **token**       | helpers for working with fungible tokens       |
 | **utilization** | calculates rates based on a utilization curve  |
 | **verifier**    | helps create and verify EIP712 signed messages |
 
 ## Installation
-
+```sh
+forge install equilibria/root@v3
 ```
-npm install @equilibria/root
+
+## Usage
+
+### console
+This debugging library is designed to be a replacement for hardhat or forge's console library, adding support for logging signed integers and fixed **number** types in format strings. However, it only supports the following types:
+- uint256
+- int256
+- UFixed6
+- UFixed18
+- Fixed6
+- Fixed18
+- address
+- bool
+
+It supports 1, 2, or 3 of the above values in a format string.
+
+To use, import the library...
+```
+import { console } from "@equilibria/root/utils/console.sol";
+```
+...and then call `console.log` with your format string:
+```
+        console.log("Processing local order for %s with maker %s at %s",
+            context.account,   // address
+            newOrder.maker(),  // Fixed6 (without unwrap)
+            newOrder.timestamp // uint256
+        );
 ```
 
 ## Contributing
 
 ### Prerequisites
+This package uses [Foundry](https://book.getfoundry.sh/), a smart contract development toolchain.
 
-This repo works best with Node.js v16.x.x, this is preconfigured for users of [asdf](https://asdf-vm.com/).
-
-Before running any command, make sure to install dependencies:
+To install Foundry:
 
 ```sh
-$ yarn
+curl -L https://foundry.paradigm.xyz | bash
+# (follow instructions to source environment or start a new shell)
+foundryup
+```
+Other installation options available [here](https://book.getfoundry.sh/getting-started/installation).
+
+Before running any command, make sure to install dependencies:
+```sh
+forge install
+```
+
+Optionally, to install [Slither](https://github.com/crytic/slither) static analyzer:
+```sh
+python3 -m pip install slither-analyzer
+```
+Other installation options available [here](https://github.com/crytic/slither?tab=readme-ov-file#how-to-install).
+
+Optionally, to install solhint:
+```sh
+sudo npm install -g solhint@~5.0
 ```
 
 ### Compile
-
-Compile the smart contracts with Hardhat:
-
 ```sh
-$ yarn compile
+forge build
 ```
-
-This also generates the Typechain types
 
 ### Test
-
-Run the Mocha tests:
-
 ```sh
-$ yarn test
+forge test
 ```
-
-To run tests against a Mainnet fork, set your `ALCHEMY_KEY` in `.env` and run
-
+or for coverage report
 ```sh
-$ yarn test-integration
+make coverage
 ```
 
-### Gas Report
-To get a gas report based on unit test calls:
-
+### Documentation
+To autogenerate Markdown documentation based on natspec comments:
 ```sh
-$ yarn gasReport
+forge doc
 ```
-
-### Deploy contract to network (requires Mnemonic and infura API key)
-
-```
-npx hardhat run --network rinkeby ./scripts/deploy.ts
-```
-
-### Validate a contract with etherscan (requires API key)
-
-```
-npx hardhat verify --network <network> <DEPLOYED_CONTRACT_ADDRESS> "Constructor argument 1"
-```
-
-### Added plugins
-
-- Contract Sizer [hardhat-contract-sizer](https://github.com/ItsNickBarry/hardhat-contract-sizer)
-- Gas reporter [hardhat-gas-reporter](https://hardhat.org/plugins/hardhat-gas-reporter.html)
-- Etherscan [hardhat-etherscan](https://hardhat.org/plugins/nomiclabs-hardhat-etherscan.html)
+To run local server for browsing; add `--serve` option.  Details [here](https://book.getfoundry.sh/reference/forge/forge-doc?highlight=forge%20doc#forge-doc).

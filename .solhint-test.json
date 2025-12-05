@@ -1,0 +1,8 @@
+{
+  "extends": "solhint:default",
+  "rules": {
+    "max-line-length": "warn",
+    "no-console": "error",
+    "no-unused-import": "warn"
+  }
+}

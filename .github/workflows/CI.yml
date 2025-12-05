@@ -1,4 +1,4 @@
-name: Automated Tests and Linting
+name: CI
 
 on:
   push:
@@ -8,58 +8,59 @@ on:
       - master
       - dev
       - v2
-      - v2.3
-      - v2.3-fix-review
+      - v2.5
+      - v3
+  workflow_dispatch:
 
 env:
-  CI: true
-  PARSER_BROKEN: false # set to true if Solidity parsing is currently broken, this will skip Linting and Coverage
-concurrency:
-  group: build-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  FOUNDRY_PROFILE: ci
+
 jobs:
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.13
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        id: cache
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+          node-version: 22.14
+
       - name: Install
-        run: yarn --frozen-lockfile
-      - name: lint
-        run: yarn run lint
+        run: npm install -g solhint@~5.0
+        id: install
+
+      - name: Lint
+        run: make lint
+        id: lint
 
   unit-test:
+    strategy:
+      fail-fast: true
+
     name: Unit Tests w/ Coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
         with:
-          node-version: ${{ matrix.node }}
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        id: cache
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
-      - name: Install
-        run: yarn --frozen-lockfile
-      - name: Compile
-        run: yarn run compile
-      - name: Run tests
-        env:
-          MOCHA_REPORTER: dot
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+      - name: Show Forge version
         run: |
-          yarn run 'coverage'
+          forge --version
+
+      - name: Run Forge build
+        run: |
+          forge build --sizes
+        id: build
+
+      - name: Run Forge tests
+        run: |
+          make lcov
+        id: test
+
       - name: Unit Test Code Coverage Report
         uses: romeovs/lcov-reporter-action@v0.3.1
         with:
@@ -68,3 +69,30 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           delete-old-comments: true
         if: ${{ github.event_name == 'pull_request' }}
+
+  analyze:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Slither Analysis
+      uses: crytic/slither-action@v0.4.1
+      id: slither
+      with:
+        node-version: 16
+        fail-on: none
+        slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
+
+    - name: Create/update checklist as PR comment
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request'
+      env:
+        REPORT: ${{ steps.slither.outputs.stdout }}
+      with:
+        script: |
+          const script = require('.github/scripts/comment')
+          const header = '# Slither report'
+          const body = process.env.REPORT
+          await script({ github, context, header, body })

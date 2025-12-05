@@ -1,0 +1,77 @@
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.13;
+
+import { ERC20, ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
+import { EIP712 } from "@openzeppelin/contracts/governance/utils/Votes.sol";
+import { Test } from "forge-std/Test.sol";
+
+import { Delegatable, Ownable } from "../../src/attribute/Delegatable.sol";
+import { MockOwnable } from "./Ownable.t.sol";
+import { MockMutable } from "../mutability/Mutable.t.sol";
+
+contract DelegatableTest is Test {
+    event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
+
+    error OwnableNotOwnerError(address owner);
+
+    MockDelegatable public delegatable;
+    MockERC20Votes public mockToken;
+    MockMutable public mockMutable;
+
+    address public owner;
+    address public user;
+    address public unrelated;
+
+    function setUp() public {
+        owner = makeAddr("owner");
+        user = makeAddr("user");
+        unrelated = makeAddr("unrelated");
+
+        // Deploy contracts from the owner address
+        vm.startPrank(owner);
+        delegatable = new MockDelegatable();
+        mockMutable = new MockMutable(owner);
+
+        mockToken = new MockERC20Votes();
+        mockToken.mint(owner, 1000 ether);
+        vm.stopPrank();
+
+        vm.prank(address(mockMutable));
+        delegatable.construct("");
+    }
+
+    function test_successfulDelegation() public {
+        // Expect DelegateChanged event on delegation
+        vm.prank(owner);
+        vm.expectEmit(true, true, true, false); // indexed fields only
+        emit DelegateChanged(address(delegatable), address(0), user);
+
+        delegatable.delegate(IVotes(address(mockToken)), user);
+    }
+
+    function test_revertsIfNotOwner() public {
+        // Attempting delegation from non-owner should revert
+        vm.prank(user);
+        vm.expectRevert(abi.encodeWithSelector(OwnableNotOwnerError.selector, user));
+        delegatable.delegate(IVotes(address(mockToken)), unrelated);
+    }
+}
+
+contract MockDelegatable is MockOwnable, Delegatable {
+    function delegate(IVotes token, address delegatee) public override(Delegatable) {
+        super.delegate(token, delegatee);
+    }
+
+    function _beforeAcceptOwner() internal override(MockOwnable, Ownable) {
+        super._beforeAcceptOwner();
+    }
+}
+
+contract MockERC20Votes is ERC20Votes {
+    constructor() ERC20("Mock ERC20 Votes", "MOCK") EIP712("MockERC20Votes", "v0.0") {}
+
+    function mint(address to, uint256 amount) public {
+        _mint(to, amount);
+    }
+}
