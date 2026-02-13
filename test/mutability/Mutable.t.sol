@@ -129,6 +129,40 @@ contract MutableTestV1 is MutableTestV1Deploy {
         vm.expectRevert(IMutableTransparent.PausedError.selector);
         mutator.upgrade(impl2, abi.encode(uint256(222)));
     }
+
+    function test_canUpgradeViaAtomicUnpauseUpgradePauseBundle() public {
+        // enter paused state first
+        vm.prank(owner);
+        mutator.pause();
+
+        // direct upgrade call while paused still fails
+        SampleContractV2 impl2 = new SampleContractV2(201);
+        vm.prank(owner);
+        vm.expectRevert(IMutableTransparent.PausedError.selector);
+        mutator.upgrade(impl2, abi.encode(uint256(333)));
+
+        // simulate an atomic owner bundle during pause window
+        vm.startPrank(owner);
+        mutator.unpause();
+        mutator.upgrade(impl2, abi.encode(uint256(333)));
+        mutator.pause();
+        vm.stopPrank();
+
+        // bundle ends with system paused
+        vm.prank(implementationOwner);
+        vm.expectRevert(IMutableTransparent.PausedError.selector);
+        instance1.setValue(777);
+
+        // once unpaused, upgraded implementation is active with expected initialized state
+        vm.prank(owner);
+        mutator.unpause();
+
+        SampleContractV2 upgraded = SampleContractV2(address(mutableContract));
+        assertEq(upgraded.version(), "2.0.1", "Version should be upgraded after bundle");
+        (uint256 value1, int256 value2) = upgraded.getValues();
+        assertEq(value1, 113, "value1 should be incremented by V2 initializer");
+        assertEq(value2, 333, "value2 should be set by V2 initializer");
+    }
 }
 
 contract MutableTestV2 is MutableTestV1Deploy {
