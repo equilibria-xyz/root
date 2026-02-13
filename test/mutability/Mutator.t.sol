@@ -136,6 +136,33 @@ contract MutatorTest is MutableTestV1Deploy {
         contract2.name();
     }
 
+    function test_pauseUnpauseScalesToHundredMutables() public {
+        vm.startPrank(owner);
+        for (uint256 i = 0; i < 99; i++) {
+            mutator.create(new NewContract(string.concat("N", vm.toString(i))), "");
+        }
+        vm.stopPrank();
+
+        address[] memory mutables = mutator.mutables();
+        assertEq(mutables.length, 100, "Expected 100 mutables");
+
+        vm.prank(owner);
+        uint256 gasBeforePause = gasleft();
+        mutator.pause();
+        uint256 pauseGas = gasBeforePause - gasleft();
+
+        vm.expectRevert(IMutableTransparent.PausedError.selector);
+        Implementation(mutables[0]).name();
+
+        vm.prank(owner);
+        uint256 gasBeforeUnpause = gasleft();
+        mutator.unpause();
+        uint256 unpauseGas = gasBeforeUnpause - gasleft();
+
+        assertLt(pauseGas, 4_000_000, "Pause gas exceeded target");
+        assertLt(unpauseGas, 4_000_000, "Unpause gas exceeded target");
+    }
+
     function test_revertsNonOwnerCannotSetPauser() public {
         address pauser = makeAddr("pauser");
         vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, address(this)));
