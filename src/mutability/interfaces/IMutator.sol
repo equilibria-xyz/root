@@ -10,6 +10,8 @@ import { IMutableTransparent } from "./IMutable.sol";
 interface IMutator is IOwnable, IPausable {
     // sig: 0xf125c967
     error MutatorInvalidMutable();
+    // sig: 0x77d1c8fc
+    error MutatorMutableAlreadyExists();
 
     function mutables() external view returns (address[] memory);
     function create(IImplementation implementation, bytes calldata data) external returns (IMutableTransparent newMutable);
