@@ -35,8 +35,11 @@ contract Mutator is IMutator, Derived, Pausable {
         IImplementation implementation,
         bytes calldata data
     ) public onlyOwner returns (IMutableTransparent newMutable) {
+        ShortString name = ShortStrings.toShortString(implementation.name());
+        if (_nameToMutable[name] != IMutable(address(0))) revert MutatorMutableAlreadyExists();
+
         _mutables.add(address(newMutable = new Mutable(implementation, data)));
-        _nameToMutable[ShortStrings.toShortString(implementation.name())] = IMutable(address(newMutable));
+        _nameToMutable[name] = IMutable(address(newMutable));
 
         // ensure state of new mutable is consistent with mutator
         if (paused()) IMutable(address(newMutable)).pause();

@@ -3,9 +3,10 @@ pragma solidity ^0.8.20;
 
 import { IERC1967 } from "@openzeppelin/contracts/interfaces/IERC1967.sol";
 
-import { MutableTestV1Deploy, NewContract, SampleContractV2 } from "./MutabilityTest.sol";
+import { MutableTestV1Deploy, NewContract, SampleContractV1, SampleContractV2 } from "./MutabilityTest.sol";
 import { IOwnable } from "../../src/attribute/Ownable.sol";
 import { IMutableTransparent } from "../../src/mutability/interfaces/IMutable.sol";
+import { IMutator } from "../../src/mutability/interfaces/IMutator.sol";
 import { IPausable } from "../../src/attribute/interfaces/IPausable.sol";
 import { Implementation } from "../../src/mutability/Implementation.sol";
 
@@ -110,6 +111,14 @@ contract MutatorTest is MutableTestV1Deploy {
         assertEq(mutables.length, 2, "Mutables list should contain two mutables");
         assertEq(mutables[0], address(mutableContract), "First mutable should be a SampleContractV1 from setup");
         assertEq(mutables[1], address(newMutable), "Second mutable should be OtherContract from above");
+        vm.stopPrank();
+    }
+
+    function test_revertsOnDuplicateMutableName() public {
+        vm.startPrank(owner);
+        SampleContractV1 duplicateName = new SampleContractV1(999);
+        vm.expectRevert(IMutator.MutatorMutableAlreadyExists.selector);
+        mutator.create(duplicateName, "");
         vm.stopPrank();
     }
 
