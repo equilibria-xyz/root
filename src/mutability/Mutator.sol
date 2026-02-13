@@ -45,7 +45,7 @@ contract Mutator is IMutator, Derived, Pausable {
     /// @notice Upgrades the implementation of a proxy and optionally calls its initializer
     /// @param implementation New version of contract to be proxied
     /// @param data Calldata to invoke the instance's initializer
-    function upgrade(IImplementation implementation, bytes memory data) public payable onlyOwner {
+    function upgrade(IImplementation implementation, bytes memory data) public onlyOwner {
         ShortString name = ShortStrings.toShortString(implementation.name());
         if (_nameToMutable[name] == IMutable(address(0))) revert MutatorInvalidMutable();
         _nameToMutable[name].upgrade(implementation, data);
