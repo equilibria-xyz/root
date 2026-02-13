@@ -137,6 +137,7 @@ contract MutatorTest is MutableTestV1Deploy {
     }
 
     function test_pauseUnpauseScalesToHundredMutables() public {
+        // 1 mutable already created in setup, create 99 more
         vm.startPrank(owner);
         for (uint256 i = 0; i < 99; i++) {
             mutator.create(new NewContract(string.concat("N", vm.toString(i))), "");
