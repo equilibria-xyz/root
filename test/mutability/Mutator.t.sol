@@ -64,6 +64,15 @@ contract MutatorTest is MutableTestV1Deploy {
         mutator.upgrade(impl2, abi.encode(772));
     }
 
+    function test_revertsUpgradeWithValue() public {
+        SampleContractV2 impl2 = new SampleContractV2(201);
+
+        vm.deal(owner, 1);
+        vm.prank(owner);
+        (bool success,) = address(mutator).call{value: 1}(abi.encodeCall(mutator.upgrade, (impl2, abi.encode(773))));
+        assertFalse(success, "upgrade should reject ETH");
+    }
+
     function test_ownerCanPauseAndUnpause() public {
         vm.startPrank(owner);
         vm.expectEmit();

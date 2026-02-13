@@ -13,5 +13,5 @@ interface IMutator is IOwnable, IPausable {
 
     function mutables() external view returns (address[] memory);
     function create(IImplementation implementation, bytes calldata data) external returns (IMutableTransparent newMutable);
-    function upgrade( IImplementation implementation, bytes memory data) external payable;
+    function upgrade( IImplementation implementation, bytes memory data) external;
 }
