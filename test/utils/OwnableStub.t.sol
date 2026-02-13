@@ -3,13 +3,12 @@ pragma solidity ^0.8.17;
 
 import { Test } from "forge-std/Test.sol";
 
+import { IOwnable } from "../../src/attribute/interfaces/IOwnable.sol";
 import { OwnableStub } from "../../src/utils/OwnableStub.sol";
 import { MockOwnable } from "../attribute/Ownable.t.sol";
 import { MockMutable } from "../mutability/Mutable.t.sol";
 
 contract OwnableStubTest is Test {
-    error OwnableNotPendingOwnerError(address pendingOwner);
-
     OwnableStub public ownableStub;
     MockOwnable public ownableContract;
     MockMutable public mockMutable;
@@ -39,7 +38,7 @@ contract OwnableStubTest is Test {
         assertEq(ownableContract.pendingOwner(), address(ownableStub));
 
         // Accept ownership through the stub
-        vm.prank(address(ownableStub));
+        vm.prank(owner);
         ownableStub.acceptOwner(address(ownableContract));
 
         // Verify ownership transfer
@@ -54,9 +53,18 @@ contract OwnableStubTest is Test {
 
         assertEq(ownableContract.pendingOwner(), user);
 
-        // Stub tries to accept ownership — should revert
-        vm.prank(address(ownableStub));
-        vm.expectRevert(abi.encodeWithSelector(OwnableNotPendingOwnerError.selector, address(ownableStub)));
+        // Stub owner tries to accept ownership when stub is not pending owner — should revert
+        vm.prank(owner);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotPendingOwnerError.selector, address(ownableStub)));
+        ownableStub.acceptOwner(address(ownableContract));
+    }
+
+    function test_acceptOwnerRevertsForNonStubOwner() public {
+        vm.prank(owner);
+        ownableContract.updatePendingOwner(address(ownableStub));
+
+        vm.prank(user);
+        vm.expectRevert(abi.encodeWithSelector(IOwnable.OwnableNotOwnerError.selector, user));
         ownableStub.acceptOwner(address(ownableContract));
     }
 }
