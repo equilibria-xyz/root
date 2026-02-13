@@ -46,7 +46,7 @@ interface IMutable is IMutableTransparent {
     function upgrade(IImplementation newImplementation, bytes calldata data) external;
 
     /// @dev Prevents any interaction with the proxied contract.
-    /// Implementation may be upgraded when paused.
+    /// Implementation upgrades are blocked while paused.
     function pause() external;
 
     /// @dev Allows interaction with the proxied contract
