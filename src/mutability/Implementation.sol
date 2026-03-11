@@ -27,6 +27,9 @@ abstract contract Implementation is IImplementation, Contract {
         }
     }
 
+    /// @dev The address of this implementation, used to detect direct (non-proxy) calls.
+    address private immutable __self = address(this);
+
     /// @dev The version of this implementation.
     ShortString private immutable _version;
 
@@ -74,4 +77,14 @@ abstract contract Implementation is IImplementation, Contract {
 
     /// @dev Hook for inheriting contracts to construct the contract.
     function __constructor(bytes memory data) internal virtual returns (string memory);
+
+    /// @dev Blocks direct (non-proxy) calls to the implementation.
+    fallback() external payable {
+        if (address(this) == __self) revert ImplementationDeniedDirectAccess();
+    }
+
+    /// @dev Blocks direct (non-proxy) ETH transfers to the implementation.
+    receive() external payable {
+        if (address(this) == __self) revert ImplementationDeniedDirectAccess();
+    }
 }

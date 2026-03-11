@@ -157,11 +157,41 @@ contract MutableTestV1 is MutableTestV1Deploy {
         vm.prank(owner);
         mutator.unpause();
 
-        SampleContractV2 upgraded = SampleContractV2(address(mutableContract));
+        SampleContractV2 upgraded = SampleContractV2(payable(address(mutableContract)));
         assertEq(upgraded.version(), "2.0.1", "Version should be upgraded after bundle");
         (uint256 value1, int256 value2) = upgraded.getValues();
         assertEq(value1, 113, "value1 should be incremented by V2 initializer");
         assertEq(value2, 333, "value2 should be set by V2 initializer");
+    }
+}
+
+contract MutableTestDirectAccess is MutableTestV1Deploy {
+    function test_directFallbackBlocked() public {
+        // calling the implementation directly with an unknown selector should revert
+        vm.expectRevert(IImplementation.ImplementationDeniedDirectAccess.selector);
+        (bool success,) = address(impl1).call(abi.encodeWithSelector(bytes4(0xdeadbeef)));
+        success; // suppress unused variable warning -- vm.expectRevert absorbs the revert
+    }
+
+    function test_directReceiveBlocked() public {
+        // sending ETH directly to the implementation should revert
+        vm.deal(address(this), 1 ether);
+        vm.expectRevert(IImplementation.ImplementationDeniedDirectAccess.selector);
+        (bool success,) = address(impl1).call{value: 1 ether}("");
+        success;
+    }
+
+    function test_proxyFallbackNotBlocked() public {
+        // calling the proxy with an unknown selector should NOT trigger the direct access error
+        (bool success,) = address(mutableContract).call(abi.encodeWithSelector(bytes4(0xdeadbeef)));
+        assertTrue(success, "Proxy fallback call should succeed");
+    }
+
+    function test_proxyReceiveNotBlocked() public {
+        // sending ETH through the proxy should NOT trigger the direct access error
+        vm.deal(address(this), 1 ether);
+        (bool success,) = address(mutableContract).call{value: 1 ether}("");
+        assertTrue(success, "Proxy receive call should succeed");
     }
 }
 

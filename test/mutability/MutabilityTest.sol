@@ -57,7 +57,7 @@ abstract contract MutableTestV1Deploy is MutableTest {
         vm.stopPrank();
 
         // initialize the instance
-        instance1 = SampleContractV1(address(mutableContract));
+        instance1 = SampleContractV1(payable(address(mutableContract)));
 
         changeOwner(implementationOwner);
     }
@@ -78,7 +78,7 @@ abstract contract MutableTestV1Deploy is MutableTest {
             impl2,
             abi.encode(uint256(222))
         );
-        return SampleContractV2(address(mutableContract));
+        return SampleContractV2(payable(address(mutableContract)));
     }
 }
 

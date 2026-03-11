@@ -144,12 +144,12 @@ contract MutatorTest is MutableTestV1Deploy {
 
         // ensure first contract is paused
         address[] memory mutables = mutator.mutables();
-        Implementation contract1 = Implementation(mutables[0]);
+        Implementation contract1 = Implementation(payable(mutables[0]));
         vm.expectRevert(IMutableTransparent.PausedError.selector);
         contract1.name();
 
         // ensure second contract is paused
-        Implementation contract2 = Implementation(mutables[1]);
+        Implementation contract2 = Implementation(payable(mutables[1]));
         vm.expectRevert(IMutableTransparent.PausedError.selector);
         contract2.name();
     }
@@ -171,7 +171,7 @@ contract MutatorTest is MutableTestV1Deploy {
         uint256 pauseGas = gasBeforePause - gasleft();
 
         vm.expectRevert(IMutableTransparent.PausedError.selector);
-        Implementation(mutables[0]).name();
+        Implementation(payable(mutables[0])).name();
 
         vm.prank(owner);
         uint256 gasBeforeUnpause = gasleft();

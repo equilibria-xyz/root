@@ -6,6 +6,10 @@ interface IImplementation {
     /// @dev Thrown when the constructor version of the implementation does not match the version of the implementation.
     error ImplementationConstructorVersionMismatch();
 
+    // sig: 0xadde52c4
+    /// @dev Thrown when the implementation is called directly rather than through a proxy.
+    error ImplementationDeniedDirectAccess();
+
     function name() external view returns (string memory);
     function version() external view returns (string memory);
     function predecessor() external view returns (string memory);
