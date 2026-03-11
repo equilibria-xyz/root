@@ -30,6 +30,9 @@ contract OwnableTest is Test {
         vm.prank(owner);
         ownable = new MockOwnable();
         mockMutable = new MockMutable(owner);
+
+        // clear `constructed` flag set by the implementation's constructor for direct unit testing
+        vm.store(address(ownable), 0x3c57b102c533ff058ebe9a7c745178ce4174563553bb3edde7874874c532c200, bytes32(0));
     }
 
     function test_initializeInitializesOwner() public {

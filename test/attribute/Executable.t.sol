@@ -27,6 +27,8 @@ contract ExecutableTest is Test {
         mockMutable = new MockMutable(owner);
         vm.stopPrank();
 
+        // clear `constructed` flag set by the implementation's constructor for direct unit testing
+        vm.store(address(executable), 0x3c57b102c533ff058ebe9a7c745178ce4174563553bb3edde7874874c532c200, bytes32(0));
         vm.prank(address(mockMutable));
         executable.construct("");
     }

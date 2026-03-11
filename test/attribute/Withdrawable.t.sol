@@ -33,6 +33,8 @@ contract OwnerWithdrawableTest is Test {
         erc20.mint(owner, 1000);
         vm.stopPrank();
 
+        // clear `constructed` flag set by the implementation's constructor for direct unit testing
+        vm.store(address(withdrawable), 0x3c57b102c533ff058ebe9a7c745178ce4174563553bb3edde7874874c532c200, bytes32(0));
         vm.prank(address(mockMutable));
         withdrawable.construct("");
     }

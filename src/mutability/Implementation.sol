@@ -14,6 +14,7 @@ abstract contract Implementation is IImplementation, Contract {
     /// @custom:storage-location erc7201:equilibria.root.Implementation
     struct ImplementationStorage {
         bool constructing;
+        bool constructed;
     }
 
     /// @dev The erc7201 storage location of the mix-in
@@ -37,6 +38,7 @@ abstract contract Implementation is IImplementation, Contract {
     constructor(string memory version_, string memory predecessor_) {
         _version = ShortStrings.toShortString(version_);
         _predecessor = ShortStrings.toShortString(predecessor_);
+        _disableInitializers();
     }
 
     /// @dev The name of the implementation.
@@ -54,6 +56,7 @@ abstract contract Implementation is IImplementation, Contract {
 
     /// @dev Called at upgrade time to initialize the contract with `data`.
     function construct(bytes memory data) external {
+        if (Implementation$().constructed) revert ImplementationAlreadyConstructedError();
         Implementation$().constructing = true;
 
         string memory constructorVersion = __constructor(data);
@@ -70,6 +73,14 @@ abstract contract Implementation is IImplementation, Contract {
     /// @dev The deployer of the contract.
     function _deployer() internal view override returns (address) {
         return IMutator(msg.sender).owner();
+    }
+
+    /// @dev Locks the contract, preventing any future reinitialization. Called in the constructor to
+    ///      prevent the implementation contract from being used directly.
+    /// @custom:oz-ref https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/proxy/utils/Initializable.sol#L192C14-L192C34
+    function _disableInitializers() internal virtual {
+        if (Implementation$().constructing) revert ImplementationAlreadyConstructedError();
+        Implementation$().constructed = true;
     }
 
     /// @dev Hook for inheriting contracts to construct the contract.

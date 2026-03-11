@@ -31,6 +31,9 @@ contract PausableTest is Test {
         vm.prank(owner);
         pausable = new MockPausable();
         mockMutable = new MockMutable(owner);
+
+        // clear `constructed` flag set by the implementation's constructor for direct unit testing
+        vm.store(address(pausable), 0x3c57b102c533ff058ebe9a7c745178ce4174563553bb3edde7874874c532c200, bytes32(0));
     }
 
     function test_constructor() public {

@@ -15,6 +15,8 @@ contract AttributeTest is Test {
         attribute = new MockAttribute();
         mockMutable = new MockMutable(address(this));
 
+        // clear `constructed` flag set by the implementation's constructor for direct unit testing
+        vm.store(address(attribute), 0x3c57b102c533ff058ebe9a7c745178ce4174563553bb3edde7874874c532c200, bytes32(0));
         vm.prank(address(mockMutable));
         attribute.construct(abi.encode("foo"));
     }

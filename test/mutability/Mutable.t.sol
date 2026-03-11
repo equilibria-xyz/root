@@ -88,6 +88,11 @@ contract MutableTestV1 is MutableTestV1Deploy {
         instance1.construct("");
     }
 
+    function test_noDirectConstructorAccessOnImplementation() public {
+        vm.expectRevert(IImplementation.ImplementationAlreadyConstructedError.selector);
+        impl1.construct("");
+    }
+
     function test_canPause() public {
         vm.prank(owner);
         vm.expectEmit();
