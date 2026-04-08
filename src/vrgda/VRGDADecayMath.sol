@@ -11,36 +11,43 @@ library VRGDADecayMath {
     }
 
     /// @notice Returns the cost of a purchase over a continuous VRGDA with exponential decay
+    /// @dev Integrates the VRGDA price curve over token amount. Since from/to are in auction-time,
+    ///      the change of variables from token-space introduces a Jacobian factor of emission (dn = emission * dt).
     /// @param timestamp The timestamp of the start of the VRGDA
-    /// @param price The price coefficient of the VRGDA
+    /// @param price The target price per token at neutral schedule
     /// @param decay The decay coefficient of the VRGDA
+    /// @param emission The issuance rate (tokens per day)
     /// @param from Where the VRGDA has sold up to in its issuance schedule as of current block.timestamp (days)
     /// @param to Where the VRGDA will have sold up to in its issuance schedule after the current purchase (days)
     /// @return cost The cost of the purchase
-    function exponentialDecay(UFixed18 timestamp, UFixed18 price, UFixed18 decay, UFixed18 from, UFixed18 to) internal view returns (UFixed18 cost) {
+    function exponentialDecay(UFixed18 timestamp, UFixed18 price, UFixed18 decay, UFixed18 emission, UFixed18 from, UFixed18 to) internal view returns (UFixed18 cost) {
         (Fixed18 a, Fixed18 b) = (convert(timestamp + to), convert(timestamp + from));
 
         Fixed18 sDecay = Fixed18Lib.from(decay);
 
-        return price * UFixed18Lib.from((-sDecay * a).exp() - (-sDecay * b).exp()) / decay;
+        return price * emission * UFixed18Lib.from((-sDecay * a).exp() - (-sDecay * b).exp()) / decay;
     }
 
     /// @notice Returns time of the latest auction after the purchase over a continuous VRGDA with exponential decay
+    /// @dev Solves the corrected forward formula: cost = price * emission * (exp(-decay*a) - exp(-decay*b)) / decay
     /// @param timestamp The timestamp of the start of the VRGDA
-    /// @param price The price coefficient of the VRGDA
+    /// @param price The target price per token at neutral schedule
     /// @param decay The decay coefficient of the VRGDA
+    /// @param emission The issuance rate (tokens per day)
     /// @param from The time of the latest auction relative to the start of the VRGDA
     /// @param cost The cost of the purchase
     /// @return to The time of the latest auction after the purchase relative to the start of the VRGDA
-    function exponentialDecayI(UFixed18 timestamp, UFixed18 price, UFixed18 decay, UFixed18 from, UFixed18 cost) internal view returns (UFixed18 to) {
+    function exponentialDecayI(UFixed18 timestamp, UFixed18 price, UFixed18 decay, UFixed18 emission, UFixed18 from, UFixed18 cost) internal view returns (UFixed18 to) {
         Fixed18 b = convert(timestamp + from);
 
-        (Fixed18 sDecay, Fixed18 sPrice, Fixed18 sCost) = (Fixed18Lib.from(decay), Fixed18Lib.from(price), Fixed18Lib.from(cost));
+        (Fixed18 sDecay, Fixed18 sPrice, Fixed18 sCost, Fixed18 sEmission) = (Fixed18Lib.from(decay), Fixed18Lib.from(price), Fixed18Lib.from(cost), Fixed18Lib.from(emission));
 
         // increase precision by inverting the input to exp() if b is negative
         Fixed18 exp = b >= Fixed18Lib.ZERO ? sPrice / (sDecay * b).exp() : sPrice * (-sDecay * b).exp();
 
-        Fixed18 a = ln(sPrice, (sCost * sDecay + exp)) / sDecay;
+        // scale both sides of the ln ratio by emission to avoid precision loss from / sEmission
+        // ln(price, cost*decay/emission + exp) = ln(price*emission, cost*decay + exp*emission)
+        Fixed18 a = ln(sPrice * sEmission, (sCost * sDecay + exp * sEmission)) / sDecay;
 
         return convert(a) - timestamp;
     }

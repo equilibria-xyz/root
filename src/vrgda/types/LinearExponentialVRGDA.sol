@@ -25,6 +25,7 @@ library LinearExponentialVRGDALib {
             self.timestamp,
             self.price,
             self.decay,
+            self.emission,
             VRGDAIssuanceMath.linearIssuanceI(self.emission, issued),
             VRGDAIssuanceMath.linearIssuanceI(self.emission, issued + amount)
         );
@@ -42,6 +43,7 @@ library LinearExponentialVRGDALib {
                 self.timestamp,
                 self.price,
                 self.decay,
+                self.emission,
                 VRGDAIssuanceMath.linearIssuanceI(self.emission, issued),
                 cost
             )
