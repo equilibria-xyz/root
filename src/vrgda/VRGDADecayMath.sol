@@ -45,7 +45,9 @@ library VRGDADecayMath {
         // increase precision by inverting the input to exp() if b is negative
         Fixed18 exp = b >= Fixed18Lib.ZERO ? sPrice / (sDecay * b).exp() : sPrice * (-sDecay * b).exp();
 
-        Fixed18 a = ln(sPrice, (sCost * sDecay / sEmission + exp)) / sDecay;
+        // scale both sides of the ln ratio by emission to avoid precision loss from / sEmission
+        // ln(price, cost*decay/emission + exp) = ln(price*emission, cost*decay + exp*emission)
+        Fixed18 a = ln(sPrice * sEmission, (sCost * sDecay + exp * sEmission)) / sDecay;
 
         return convert(a) - timestamp;
     }
