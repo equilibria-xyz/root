@@ -18,6 +18,25 @@ contract LinearExponentialVRGDATest is RootTest {
         });
     }
 
+    /// @notice At neutral time (exactly on schedule), the marginal cost of a small purchase
+    ///         should approximate price * amount, confirming the emission Jacobian is correct.
+    function test_neutralTimePriceEqualsTarget() public {
+        // set up a clean neutral-time scenario:
+        // warp so that time() - timestamp = 1 day exactly, with issued = emission * 1 day = 200 tokens
+        vm.warp(86400 + 86400); // time() = 2.0 days, timestamp = 1.0 day, elapsed = 1.0 day
+        issued = UFixed18Lib.from(200); // exactly on schedule
+
+        // buy a small amount (0.001 tokens) — marginal cost should be ≈ price * amount = 100 * 0.001 = 0.1
+        UFixed18 smallAmount = UFixed18.wrap(0.001e18);
+        UFixed18 cost = vrgda.toCost(issued, smallAmount);
+        // expected ≈ 0.1e18, allow 10% tolerance for the small-but-finite purchase size
+        assertApproxEqRel(UFixed18.unwrap(cost), 0.1e18, 0.1e18, "neutral time price should approximate price * amount");
+
+        // confirm the inverse: spending that cost should yield ≈ smallAmount tokens
+        UFixed18 recovered = vrgda.toAmount(issued, cost);
+        assertApproxEqRel(UFixed18.unwrap(recovered), UFixed18.unwrap(smallAmount), 0.1e18, "neutral time toAmount(toCost(x)) should approximate x");
+    }
+
     function test_costDecreasesWhenBehind() public {
         // initial cost to purchase 1 token quite high
         assertUFixed18Eq(vrgda.toCost(issued, UFixed18Lib.from(1)), UFixed18.wrap(2_258_380.699395315_467606000e18));
