@@ -186,7 +186,7 @@ contract VRGDAMathTest is RootTest {
     function test_exponentialDecay_fuzz(UFixed18 price, UFixed18 decay, UFixed18 from, UFixed18 to) external {
         skip(86400 * 10); // 10 days
         decay = boundUFixed18(decay, UFixed18.wrap(1e12), UFixed18.wrap(8e18));
-        price = boundUFixed18(price, UFixed18.wrap(1e12), UFixed18.wrap(1e24));
+        price = boundUFixed18(price, UFixed18.wrap(1e12), UFixed18.wrap(5e21)); // reduced by emission factor (200)
         from = boundUFixed18(from, UFixed18.wrap(1e12), UFixed18.wrap(20e18));
         to = boundUFixed18(to, from, UFixed18.wrap(20e18));
         UFixed18 cost = VRGDADecayMath.exponentialDecay(UFixed18.wrap(20_000e18), price, decay, UFixed18Lib.from(200), from, to); // not revert
